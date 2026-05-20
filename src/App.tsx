@@ -516,6 +516,23 @@ function liveStreak(ut: UserTrack): number {
   return 0;
 }
 
+const QUICK_NOTE_BANNED = [
+  "cazzo","vaffanculo","merda","stronzo","puttana","figa","coglione","minchia","porco dio",
+  "fuck","shit","bitch","asshole","bastard","cunt","dick","pussy","nigger","faggot",
+];
+
+function validateQuickNote(text: string): string | null {
+  const t = text.trim();
+  if (t.length < 10) return "Scrivi almeno qualche parola prima di inviare.";
+  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
+  if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
+  if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
+    return "Scrivi una risposta vera — anche due parole bastano.";
+  if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
+    return "Scegli parole migliori per il tuo check-in.";
+  return null;
+}
+
 function computeMomentum(tracks: UserTrack[]) {
   const t = todayStr();
   const totalStreak = tracks.reduce((s, x) => s + liveStreak(x), 0);
@@ -1981,13 +1998,9 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
 }) {
   const [showMissedModal, setShowMissedModal] = useState(false);
   const [vacationTrack, setVacationTrack] = useState<UserTrack | null>(null);
-  const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>(() => {
-    const today = todayStr();
-    const open: Record<string, boolean> = {};
-    // will be populated after first render via effect
-    return open;
-  });
+  const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>({});
   const [noteText, setNoteText] = useState<Record<string, string>>({});
+  const [noteError, setNoteError] = useState<Record<string, string>>({});
 
   // Load today's saved quick-notes from localStorage on mount / when tracks change
   useEffect(() => {
@@ -2221,7 +2234,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   );
                 })()}
               </div>
-              {/* Quick note — inline, animated */}
+              {/* Quick check-in — inline, animated */}
               <AnimatePresence>
                 {noteOpen[ut.id] && (
                   <motion.div
@@ -2229,18 +2242,70 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.18, ease: "easeInOut" }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                     className="overflow-hidden">
-                    <div className="border-t border-border/40 px-4 pb-3 pt-2.5">
-                      <textarea
-                        value={noteText[ut.id] ?? ""}
-                        onChange={e => setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }))}
-                        onBlur={e => saveNote(ut.id, e.target.value)}
-                        placeholder="Nota rapida di oggi…"
-                        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed"
-                        rows={2}
-                        autoFocus
-                      />
+                    <div className="border-t border-border/40 px-4 pb-4 pt-3 space-y-2.5">
+                      {/* Title */}
+                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">
+                        Check-in rapido
+                      </p>
+                      {/* Today's task as context */}
+                      {(() => {
+                        const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
+                        const activeDay = jDays.find(d => d.completedAt === null) ?? null;
+                        return activeDay ? (
+                          <p className="text-[11px] text-muted-foreground/70 leading-snug border-l-2 border-border pl-2.5 line-clamp-4">
+                            {activeDay.task}
+                          </p>
+                        ) : null;
+                      })()}
+                      {/* Textarea */}
+                      <motion.div
+                        animate={noteError[ut.id] ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                        transition={{ duration: 0.3 }}>
+                        <textarea
+                          value={noteText[ut.id] ?? ""}
+                          onChange={e => {
+                            setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }));
+                            if (noteError[ut.id]) setNoteError(prev => ({ ...prev, [ut.id]: "" }));
+                          }}
+                          placeholder="Racconta com'è andata oggi…"
+                          className={`w-full bg-muted/40 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed border transition ${noteError[ut.id] ? "border-[color:var(--secondary)]" : "border-border/50 focus:border-foreground/30"}`}
+                          rows={3}
+                          autoFocus
+                        />
+                      </motion.div>
+                      {/* Error */}
+                      <AnimatePresence>
+                        {noteError[ut.id] && (
+                          <motion.p
+                            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                            className="text-[11px] text-[color:var(--secondary)] font-mono">
+                            {noteError[ut.id]}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                      {/* Actions */}
+                      <div className="flex items-center justify-between pt-0.5">
+                        <button
+                          onClick={() => { toggleNote(ut.id); setNoteError(prev => ({ ...prev, [ut.id]: "" })); }}
+                          className="text-xs text-muted-foreground hover:text-foreground transition font-mono">
+                          Annulla
+                        </button>
+                        <button
+                          onClick={() => {
+                            const text = (noteText[ut.id] ?? "").trim();
+                            const err = validateQuickNote(text);
+                            if (err) { setNoteError(prev => ({ ...prev, [ut.id]: err })); return; }
+                            saveNote(ut.id, text);
+                            if (!doneToday) onCheckIn(ut.id);
+                            setNoteOpen(prev => ({ ...prev, [ut.id]: false }));
+                            setNoteError(prev => ({ ...prev, [ut.id]: "" }));
+                          }}
+                          className="btn-chunk rounded-full bg-foreground text-background px-4 py-1.5 text-xs font-semibold transition hover:opacity-80">
+                          Invia
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
