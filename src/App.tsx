@@ -1652,6 +1652,47 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SnowfallBackground
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
+
+function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?: number }) {
+  const [flakes, setFlakes] = useState<SnowflakeData[]>([]);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setFlakes(Array.from({ length: count }, (_, i) => ({
+      id: i, size: Math.random() * 14 + 7,
+      left: Math.random() * 100,
+      dur: (Math.random() * 5 + 4) / speed,
+      opacity: Math.random() * 0.65 + 0.25,
+    })));
+    setReady(true);
+  }, [count, speed]);
+  useEffect(() => {
+    if (!ready || flakes.length === 0) return;
+    const style = document.createElement("style");
+    style.innerHTML = flakes.map(f => {
+      const wx = Math.random() * 80 - 40;
+      return `@keyframes sf${f.id}{0%{transform:translateY(-8vh) translateX(0) rotate(0deg)}100%{transform:translateY(108vh) translateX(${wx}px) rotate(360deg)}}`;
+    }).join("");
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, [flakes, ready]);
+  if (!ready) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {flakes.map(f => (
+        <div key={f.id} className="absolute select-none"
+          style={{ left: `${f.left}%`, top: 0, fontSize: `${f.size}px`, opacity: f.opacity,
+            color: "#b8e0ff", animation: `sf${f.id} ${f.dur}s linear infinite`,
+            textShadow: "0 0 6px rgba(180,220,255,0.95)" }}>❄</div>
+      ))}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // VacationModal
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1661,7 +1702,9 @@ function VacationModal({ track, onSave, onClose }: {
   onClose: () => void;
 }) {
   const [days, setDays] = useState(3);
-  const until = new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+  const [customDays, setCustomDays] = useState("");
+  const activeDays = customDays !== "" ? Math.max(1, Math.min(90, parseInt(customDays) || 1)) : days;
+  const until = new Date(Date.now() + activeDays * 86_400_000).toISOString().slice(0, 10);
   const isActive = track.vacation_until && track.vacation_until >= todayStr();
 
   return (
@@ -1688,19 +1731,31 @@ function VacationModal({ track, onSave, onClose }: {
               <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium">Chiudi</button>
               <button onClick={() => { onSave(""); onClose(); }}
                 className="flex-1 btn-chunk rounded-full bg-[color:var(--secondary)] text-white px-4 py-2.5 text-sm font-semibold">
-                Rimuovi pausa
+                Termina pausa
               </button>
             </div>
           </>
         ) : (
           <>
-            <div className="flex gap-2 mb-5">
+            {/* Quick presets */}
+            <div className="flex gap-2 mb-3">
               {[3, 7, 14].map(d => (
-                <button key={d} onClick={() => setDays(d)}
-                  className={`flex-1 rounded-xl border py-3 text-sm font-semibold transition btn-chunk ${days === d ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
+                <button key={d} onClick={() => { setDays(d); setCustomDays(""); }}
+                  className={`flex-1 rounded-xl border py-3 text-sm font-semibold transition btn-chunk ${customDays === "" && days === d ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
                   {d}g
                 </button>
               ))}
+            </div>
+            {/* Custom days */}
+            <div className="flex items-center gap-2 mb-5">
+              <input
+                type="number" min={1} max={90}
+                value={customDays}
+                onChange={e => setCustomDays(e.target.value)}
+                placeholder="Giorni personalizzati…"
+                className="flex-1 rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-foreground/30 transition"
+              />
+              {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">giorni</span>}
             </div>
             <p className="text-xs text-muted-foreground text-center mb-5 font-mono">
               Streak protetta fino al <span className="text-foreground">{until}</span>
@@ -2219,6 +2274,11 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   );
                   return (
                     <div className="shrink-0 flex items-center gap-2">
+                      <button onClick={() => setVacationTrack(ut)}
+                        className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
+                        title="Metti in pausa">
+                        <Sun className="h-3.5 w-3.5" />
+                      </button>
                       <button onClick={() => toggleNote(ut.id)}
                         className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
                         title="Nota rapida">
@@ -3045,21 +3105,57 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 // TrackDetailPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn }: {
+function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation }: {
   track: UserTrack;
   onBack: () => void;
   showCheckInHint?: boolean;
   onTrackCheckIn?: () => void;
+  onVacation?: (trackId: string, until: string) => void;
 }) {
   const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
   const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
 
   const handleStarted = (j: Journey, d: JourneyDay[]) => { setJourney(j); setDays(d); };
+  const onVac = track.vacation_until && track.vacation_until >= todayStr();
 
-  if (!journey || days.length === 0) {
-    return <JourneyOnboarding track={track} onStarted={handleStarted} />;
-  }
-  return <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} />;
+  const inner = !journey || days.length === 0
+    ? <JourneyOnboarding track={track} onStarted={handleStarted} />
+    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} />;
+
+  return (
+    <div className="relative min-h-screen">
+      {/* Main content — blurred when on vacation */}
+      <div className={onVac ? "blur-sm pointer-events-none select-none" : ""}>
+        {inner}
+      </div>
+      {/* Vacation overlay */}
+      {onVac && (
+        <div className="fixed inset-0 z-30 flex flex-col items-center justify-center"
+          style={{ background: "oklch(0.14 0.07 220 / 0.88)" }}>
+          <SnowfallBackground count={55} speed={0.8} />
+          <div className="relative z-10 text-center space-y-4 px-8">
+            <p className="font-display text-6xl font-bold text-white tracking-tight"
+              style={{ textShadow: "0 0 40px rgba(160,210,255,0.6)" }}>
+              Freezed
+            </p>
+            <p className="text-white/60 text-sm font-mono tracking-widest uppercase">
+              Streak protetta · fino al {track.vacation_until}
+            </p>
+            <button
+              onClick={() => onVacation?.(track.id, "")}
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-2.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition">
+              <Sun className="h-4 w-4" />
+              End Vacation
+            </button>
+            <button onClick={onBack}
+              className="block text-xs text-white/40 hover:text-white/70 transition font-mono mx-auto pt-2">
+              ← Torna indietro
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3765,6 +3861,7 @@ export function ElevateApp() {
         onBack={handleTrackBack}
         showCheckInHint={pendingCheckIn}
         onTrackCheckIn={() => { checkIn(selectedTrack.id); setPendingCheckIn(false); }}
+        onVacation={setVacation}
       />
     );
   }
