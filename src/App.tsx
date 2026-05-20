@@ -2297,6 +2297,17 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                             const text = (noteText[ut.id] ?? "").trim();
                             const err = validateQuickNote(text);
                             if (err) { setNoteError(prev => ({ ...prev, [ut.id]: err })); return; }
+                            // Complete the active journey day → advances to next day
+                            const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
+                            const activeDayIdx = jDays.findIndex(d => d.completedAt === null);
+                            if (activeDayIdx !== -1) {
+                              const updatedDays = jDays.map((d, i) =>
+                                i === activeDayIdx
+                                  ? { ...d, completedAt: new Date().toISOString(), userNote: text }
+                                  : d
+                              );
+                              lsSave(LS_DAYS(ut.slug), updatedDays);
+                            }
                             saveNote(ut.id, text);
                             if (!doneToday) onCheckIn(ut.id);
                             setNoteOpen(prev => ({ ...prev, [ut.id]: false }));
