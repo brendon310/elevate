@@ -546,7 +546,7 @@ function computeMomentum(tracks: UserTrack[]) {
   const t = todayStr();
   const totalStreak = tracks.reduce((s, x) => s + liveStreak(x), 0);
   const totalLongest = tracks.reduce((s, x) => s + (x.longest_streak || 0), 0);
-  const breadth = tracks.length;
+  const breadth = tracks.filter(x => (x.total_done || 0) > 0).length;
   const todayDone = tracks.filter(x => x.last_log_date === t).length;
   const consistency = Math.min(400, totalStreak * 5);
   const longevity = Math.min(200, totalLongest * 2);
@@ -1455,9 +1455,9 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 }) {
   const navItems: { id: AppPage; icon: typeof Home; label: string }[] = [
     { id: "home",     icon: Home,     label: "Home" },
-    { id: "tracks",   icon: Layers,   label: "Percorsi" },
-    { id: "insights", icon: BarChart3,label: "Statistiche" },
-    { id: "settings", icon: Settings, label: "Impostazioni" },
+    { id: "tracks",   icon: Layers,   label: "Library" },
+    { id: "insights", icon: BarChart3,label: "Stats" },
+    { id: "settings", icon: Settings, label: "Settings" },
   ];
 
   return (
@@ -2100,7 +2100,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                         </div>
                         <div className="relative mt-auto pt-12">
                           <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
-                          <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut)}</p>
+                          <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut) === 0 && (ut.total_done ?? 0) === 0 ? 1 : liveStreak(ut)}</p>
                           {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
                             <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
                           ) : null; })()}
@@ -2109,7 +2109,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                             {liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) === 0 ? (
                               <button onClick={() => onView(ut)}
                                 className="inline-flex items-center gap-1.5 rounded-full grad-electric px-3 py-1.5 text-[11px] font-bold text-white shadow-[var(--shadow-violet)] hover:opacity-90 transition-opacity">
-                                Inizia oggi <ArrowRight className="h-3 w-3" />
+                                Start Day 1 <ArrowRight className="h-3 w-3" />
                               </button>
                             ) : liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
                               <p className="text-[10px] font-mono text-white/45 leading-snug">
@@ -3117,13 +3117,81 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
 // TracksPage
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// DurationPickerModal
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DURATION_PRESETS = [30, 60, 90, 120, 180, 365] as const;
+
+function DurationPickerModal({ trackName, onConfirm, onCancel }: {
+  trackName: string;
+  onConfirm: (days: number) => void;
+  onCancel: () => void;
+}) {
+  const [selected, setSelected] = useState(30);
+  const [custom, setCustom] = useState(false);
+  const [customVal, setCustomVal] = useState("");
+
+  const days = custom ? (parseInt(customVal) || 0) : selected;
+  const valid = days >= 7 && days <= 999;
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0"
+      style={{ background: "oklch(0 0 0 / 0.65)" }}
+      onClick={e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <motion.div
+        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="w-full max-w-sm rounded-3xl p-6 space-y-5"
+        style={{ background: "oklch(0.12 0.02 240)", border: "1px solid oklch(1 0 0 / 0.08)" }}>
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">Journey length</p>
+          <h2 className="font-display text-xl tracking-tight">{trackName}</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {DURATION_PRESETS.map(d => (
+            <button key={d}
+              onClick={() => { setSelected(d); setCustom(false); }}
+              className={`rounded-xl py-2.5 text-sm font-semibold border transition ${!custom && selected === d ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+              {d === 365 ? "1 year" : `${d}d`}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => { setCustom(true); setCustomVal(String(selected)); }}
+          className={`w-full rounded-xl py-2.5 text-sm font-semibold border transition ${custom ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+          Custom
+        </button>
+        {custom && (
+          <input type="number" autoFocus value={customVal}
+            onChange={e => setCustomVal(e.target.value)}
+            min={7} max={999} placeholder="Days (7–999)"
+            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+        )}
+        <div className="flex gap-3 pt-1">
+          <button onClick={onCancel}
+            className="flex-1 rounded-2xl py-3 text-sm font-semibold border border-border text-muted-foreground hover:text-foreground transition">
+            Cancel
+          </button>
+          <button onClick={() => valid && onConfirm(days)} disabled={!valid}
+            className="flex-2 flex-1 rounded-2xl py-3 text-sm font-semibold transition disabled:opacity-40"
+            style={{ background: valid ? "oklch(0.6 0.22 250)" : undefined, color: valid ? "#fff" : undefined,
+              ...(valid ? {} : { background: "oklch(0.2 0.02 240)", color: "oklch(0.5 0 0)" }) }}>
+            Start {days >= 7 && days <= 999 ? `${days === 365 ? "1-year" : days + "-day"}` : ""} journey
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   userTracks: UserTrack[];
-  onAdd: (t: typeof ALL_TRACKS[0]) => void;
+  onAdd: (t: typeof ALL_TRACKS[0], days: number) => void;
   onView: (t: UserTrack) => void;
   onRemove: (id: string) => void;
 }) {
   const [search, setSearch] = useState("");
+  const [pendingAdd, setPendingAdd] = useState<typeof ALL_TRACKS[0] | null>(null);
   const activeMap = new Map(userTracks.map(u => [u.track_id, u]));
   const q = search.toLowerCase().trim();
   const filtered = q
@@ -3138,6 +3206,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   }, {});
 
   return (
+    <>
     <div className="max-w-5xl mx-auto px-5 py-8 pb-24">
       <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">Library</p>
       <h1 className="mt-2 font-display text-4xl tracking-tight">Fifty <span className="text-yellow-400">specialists</span>.</h1>
@@ -3187,14 +3256,14 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                           className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
                           View <ArrowRight className="h-3 w-3" />
                         </button>
-                        <button onClick={() => { if (confirm(`Rimuovere "${t.name}" dalla tua lista?`)) onRemove(ut.id); }}
+                        <button onClick={() => { if (confirm(`Remove "${t.name}" from your paths?`)) onRemove(ut.id); }}
                           className="btn-chunk inline-flex items-center rounded-full px-2.5 py-1.5 text-xs border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] hover:bg-[color:var(--secondary)]/10 transition"
                           title="Rimuovi track">
                           ✕
                         </button>
                       </div>
                     ) : (
-                      <button onClick={() => onAdd(t)}
+                      <button onClick={() => setPendingAdd(t)}
                         className="btn-chunk self-start inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
                         <Plus className="h-3 w-3" />Start
                       </button>
@@ -3207,6 +3276,16 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
         ))}
       </div>
     </div>
+    <AnimatePresence>
+      {pendingAdd && (
+        <DurationPickerModal
+          trackName={pendingAdd.name}
+          onConfirm={days => { onAdd(pendingAdd, days); setPendingAdd(null); }}
+          onCancel={() => setPendingAdd(null)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   );
 }
 
@@ -3307,8 +3386,8 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl space-y-8">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Statistiche</h1>
-        <p className="text-muted-foreground mt-1">I tuoi dati, chiari e onesti.</p>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Stats</h1>
+        <p className="text-muted-foreground mt-1">Your data, clear and honest.</p>
         <button onClick={generateLetter} disabled={letterLoading}
           className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
           {letterLoading ? (
@@ -3336,7 +3415,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
           {[
             { label: "Check-in totali", value: totalCheckins },
             { label: "Giorni attivi (90g)", value: activeDays },
-            { label: "Percorsi attivi", value: userTracks.length },
+            { label: "Active paths", value: userTracks.length },
           ].map(s => (
             <div key={s.label} className="rounded-2xl border border-border bg-card p-4 text-center">
               <p className="font-bold text-2xl font-display">{s.value}</p>
@@ -3460,7 +3539,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
 function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void }) {
   const [displayName, setDisplayName] = useState(userName);
   const [nameSaved, setNameSaved] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "light" }).theme);
+  const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "dark" }).theme);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(() => lsLoad<boolean>("forge-notif", false));
   const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
@@ -3512,8 +3591,8 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
   return (
     <div className="container mx-auto px-6 py-8 max-w-2xl space-y-6">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Impostazioni</h1>
-        <p className="text-muted-foreground mt-1">Account e preferenze.</p>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Settings</h1>
+        <p className="text-muted-foreground mt-1">Account and preferences.</p>
       </header>
 
       {/* Account */}
@@ -3558,11 +3637,11 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <div className="inline-flex rounded-xl border border-border bg-card p-1">
             <button onClick={() => applyTheme("light")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              <Sun className="h-3.5 w-3.5" /> Chiaro
+              <Sun className="h-3.5 w-3.5" /> Light
             </button>
             <button onClick={() => applyTheme("dark")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              <Moon className="h-3.5 w-3.5" /> Scuro
+              <Moon className="h-3.5 w-3.5" /> Dark
             </button>
           </div>
         </div>
@@ -3608,7 +3687,7 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <h2 className="font-semibold">Dati e Privacy</h2>
         </div>
         <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-          I tuoi dati sono salvati <strong className="text-foreground">solo su questo dispositivo</strong>. Nulla viene inviato a server esterni. Cancellare la cache del browser eliminerà i tuoi progressi.
+          Your progress is saved locally and backed up to your account. Sign out to switch accounts.
         </div>
         <div className="space-y-1">
           <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -3659,14 +3738,17 @@ function FirstDayReveal({ userName, track, onComplete }: {
   track: UserTrack;
   onComplete: () => void;
 }) {
-  type FDRPhase = "welcome" | "track" | "generating" | "reveal";
+  type FDRPhase = "welcome" | "track" | "duration" | "generating" | "reveal";
   const [phase, setPhase] = useState<FDRPhase>("welcome");
   const [day1, setDay1] = useState<JourneyDay | null>(null);
+  const [targetDays, setTargetDays] = useState(30);
+  const [customDur, setCustomDur] = useState(false);
+  const [customDurVal, setCustomDurVal] = useState("");
 
-  // Phase auto-progression
+  // Phase auto-progression (welcome → track only; duration waits for user)
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("track"), 1400);
-    const t2 = setTimeout(() => setPhase("generating"), 2800);
+    const t2 = setTimeout(() => setPhase("duration"), 2800);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
@@ -3675,7 +3757,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
     if (phase !== "generating") return;
     const generate = async () => {
       const j: Journey = {
-        id: nanoid(), trackSlug: track.slug, totalDays: 30,
+        id: nanoid(), trackSlug: track.slug, totalDays: targetDays,
         startingPoint: "Ready to start fresh",
         motivation: "I want real, lasting change",
         obstacle: "Staying consistent when motivation fades",
@@ -3720,7 +3802,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
       setTimeout(() => setPhase("reveal"), 300);
     };
     generate();
-  }, [phase, track]);
+  }, [phase, track, targetDays]);
 
   // Confetti burst on reveal
   useEffect(() => {
@@ -3783,7 +3865,49 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 3 — Generating */}
+
+        {/* PHASE 3 — Duration picker */}
+        {phase === "duration" && (
+          <motion.div key="duration"
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -28, transition: { duration: 0.4 } }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-6 gap-6 text-center">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">How long?</p>
+              <h2 className="font-display text-3xl text-foreground tracking-tight">Choose your commitment.</h2>
+            </div>
+            <div className="w-full max-w-xs grid grid-cols-3 gap-2">
+              {([30, 60, 90, 120, 180, 365] as const).map(d => (
+                <button key={d}
+                  onClick={() => { setTargetDays(d); setCustomDur(false); }}
+                  className={`rounded-xl py-3 text-sm font-semibold border transition ${!customDur && targetDays === d ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+                  {d === 365 ? "1 year" : `${d}d`}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => { setCustomDur(true); setCustomDurVal(String(targetDays)); }}
+              className={`w-full max-w-xs rounded-xl py-3 text-sm font-semibold border transition ${customDur ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+              Custom
+            </button>
+            {customDur && (
+              <input type="number" autoFocus value={customDurVal}
+                onChange={e => { setCustomDurVal(e.target.value); const n = parseInt(e.target.value); if (n >= 7 && n <= 999) setTargetDays(n); }}
+                min={7} max={999} placeholder="Days (7–999)"
+                className="w-full max-w-xs rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring text-center" />
+            )}
+            <button
+              onClick={() => { lsSave("forge-track-target-days-" + track.slug, targetDays); setPhase("generating"); }}
+              className="w-full max-w-xs rounded-2xl py-4 font-semibold text-[15px] flex items-center justify-center gap-2"
+              style={{ background: "oklch(0.6 0.22 250)", color: "#fff" }}>
+              Build my {targetDays === 365 ? "year-long" : targetDays + "-day"} journey
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </motion.div>
+        )}
+
+        {/* PHASE 4 — Generating */}
         {phase === "generating" && (
           <motion.div key="generating"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -3802,7 +3926,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 4 — Day 1 Reveal */}
+        {/* PHASE 5 — Day 1 Reveal */}
         {phase === "reveal" && day1 && (
           <motion.div key="reveal"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
@@ -3923,7 +4047,7 @@ export function ElevateApp() {
     });
   }, []);
 
-  const addTrack = useCallback((trackDef: typeof ALL_TRACKS[0]) => {
+  const addTrack = useCallback((trackDef: typeof ALL_TRACKS[0], targetDays = 30) => {
     setTracks(prev => {
       if (prev.some(t => t.track_id === trackDef.id)) return prev;
       const next: UserTrack[] = [...prev, {
@@ -3931,7 +4055,7 @@ export function ElevateApp() {
         category: trackDef.category, slug: trackDef.slug,
         added_at: new Date().toISOString(),
         current_streak: 0, longest_streak: 0, total_done: 0,
-        last_log_date: null, target_days: 30,
+        last_log_date: null, target_days: targetDays,
       }];
       lsSave(LS_TRACKS, next);
       return next;
@@ -4013,7 +4137,7 @@ export function ElevateApp() {
       const ut: UserTrack = {
         id: nanoid(), track_id: full.id, name: full.name, category: full.category, slug: full.slug,
         added_at: new Date().toISOString(), current_streak: 0, longest_streak: 0, total_done: 0,
-        last_log_date: null, target_days: 30,
+        last_log_date: null, target_days: 30, // will be updated after duration selection
       };
       lsSave(LS_TRACKS, [ut]);
       setTracks([ut]);
@@ -4114,6 +4238,13 @@ export function ElevateApp() {
       userName={firstDayReveal.userName}
       track={firstDayReveal.track}
       onComplete={() => {
+        // Update the track's targetDays from what was chosen in the duration phase
+        const savedDays = lsLoad<number>("forge-track-target-days-" + firstDayReveal.track.slug, 30);
+        setTracks(prev => {
+          const next = prev.map(t => t.id === firstDayReveal.track.id ? { ...t, target_days: savedDays } : t);
+          lsSave(LS_TRACKS, next);
+          return next;
+        });
         setFirstDayReveal(null);
       }}
     />
@@ -4148,7 +4279,7 @@ export function ElevateApp() {
         {page === "home" && (
           <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
         )}
-        {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} onRemove={removeTrack} />}
+        {page === "tracks" && <TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} />}
         {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
         {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })} />}
       </DashboardLayout>
