@@ -4114,9 +4114,7 @@ export function ElevateApp() {
       userName={firstDayReveal.userName}
       track={firstDayReveal.track}
       onComplete={() => {
-        const tr = firstDayReveal.track;
         setFirstDayReveal(null);
-        setSelectedTrack(tr);
       }}
     />
   );
