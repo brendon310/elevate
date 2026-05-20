@@ -1,11 +1,12 @@
-// Complete self-contained Elevate app — localStorage persistence, no backend.
+// Complete self-contained Forge app — localStorage persistence, no backend.
 
-import { useState, useEffect, useMemo, useCallback, type ReactNode } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
-  Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft,
+  Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft, Search,
+  Database, Download, Bell, Target,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -52,43 +53,191 @@ interface ElevateAuth {
   name?: string;
   createdAt: string;
 }
+interface Journey {
+  id: string;
+  trackSlug: string;
+  totalDays: number;
+  startingPoint: string;
+  motivation: string;
+  obstacle: string;
+  startedAt: string;
+  generatedThrough: number;
+}
+interface JourneyDay {
+  id: string;
+  journeyId: string;
+  dayNumber: number;
+  title: string;
+  description: string;
+  task: string;
+  reflection: string;
+  science: string;
+  checkinPrompt: string;
+  completedAt: string | null;
+  userNote: string | null;
+}
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+}
+interface CommunityPost {
+  id: string;
+  trackSlug: string;
+  content: string;
+  dayNumber: number;
+  flameCount: number;
+  userHasFlamed: boolean;
+  createdAt: string;
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const LS_USER = "elevate-user";
-const LS_TRACKS = "elevate-tracks";
-const LS_LOGS = "elevate-logs";
-const LS_PREFS = "elevate-prefs";
-const LS_AUTH = "elevate-auth";
+const LS_USER = "forge-user";
+const LS_TRACKS = "forge-tracks";
+const LS_LOGS = "forge-logs";
+const LS_PREFS = "forge-prefs";
+const LS_AUTH = "forge-auth";
+const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
+const LS_DAYS = (slug: string) => `forge-days-${slug}`;
+const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
+const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
 
 const ALL_TRACKS = [
-  { id: "1",  slug: "meditation",       name: "Meditation",       category: "Mental Health",      short_description: "Train your mind to find stillness." },
-  { id: "2",  slug: "morning-run",      name: "Morning Run",      category: "Fitness & Body",     short_description: "Build your aerobic base." },
-  { id: "3",  slug: "strength-training",name: "Strength Training",category: "Fitness & Body",     short_description: "Progressive overload for strength." },
-  { id: "4",  slug: "quit-smoking",     name: "Quit Smoking",     category: "Quit Bad Habits",    short_description: "Allen Carr method." },
-  { id: "5",  slug: "deep-work",        name: "Deep Work",        category: "Productivity & Life",short_description: "Cal Newport's framework." },
-  { id: "6",  slug: "reading",          name: "Daily Reading",    category: "Mind & Learning",    short_description: "Feynman technique for retention." },
-  { id: "7",  slug: "sleep-routine",    name: "Sleep Routine",    category: "Fitness & Body",     short_description: "Sleep science protocols." },
-  { id: "8",  slug: "anxiety-relief",   name: "Anxiety Relief",   category: "Mental Health",      short_description: "CBT for anxiety." },
-  { id: "9",  slug: "journaling",       name: "Journaling",       category: "Mind & Learning",    short_description: "Reflective writing practice." },
-  { id: "10", slug: "cold-exposure",    name: "Cold Exposure",    category: "Fitness & Body",     short_description: "Hormetic stress protocol." },
-  { id: "11", slug: "no-social-media",  name: "No Social Media",  category: "Quit Bad Habits",    short_description: "Digital detox protocol." },
+  // ── Fitness & Body ──────────────────────────────────────────────────────────
+  { id: "1",  slug: "meditation",          name: "Meditation",           category: "Mental Health",       short_description: "Train your mind to find stillness." },
+  { id: "2",  slug: "morning-run",         name: "Morning Run",          category: "Fitness & Body",      short_description: "Build your aerobic base." },
+  { id: "3",  slug: "strength-training",   name: "Strength Training",    category: "Fitness & Body",      short_description: "Progressive overload for strength." },
+  { id: "4",  slug: "quit-smoking",        name: "Quit Smoking",         category: "Quit Bad Habits",     short_description: "Allen Carr method." },
+  { id: "5",  slug: "deep-work",           name: "Deep Work",            category: "Productivity & Life", short_description: "Cal Newport's framework." },
+  { id: "6",  slug: "reading",             name: "Daily Reading",        category: "Mind & Learning",     short_description: "Feynman technique for retention." },
+  { id: "7",  slug: "sleep-routine",       name: "Sleep Routine",        category: "Fitness & Body",      short_description: "Sleep science protocols." },
+  { id: "8",  slug: "anxiety-relief",      name: "Anxiety Relief",       category: "Mental Health",       short_description: "CBT for anxiety." },
+  { id: "9",  slug: "journaling",          name: "Journaling",           category: "Mind & Learning",     short_description: "Reflective writing practice." },
+  { id: "10", slug: "cold-exposure",       name: "Cold Exposure",        category: "Fitness & Body",      short_description: "Hormetic stress protocol." },
+  { id: "11", slug: "no-social-media",     name: "No Social Media",      category: "Quit Bad Habits",     short_description: "Digital detox protocol." },
+  // ── Addiction & Recovery ────────────────────────────────────────────────────
+  { id: "12", slug: "quit-alcohol",        name: "Quit Alcohol",         category: "Addiction & Recovery",short_description: "Break free from alcohol dependency." },
+  { id: "13", slug: "quit-pornography",    name: "Quit Pornography",     category: "Addiction & Recovery",short_description: "Rewire your brain, reclaim your life." },
+  { id: "14", slug: "quit-drugs",          name: "Quit Drugs",           category: "Addiction & Recovery",short_description: "Structured sobriety roadmap." },
+  { id: "15", slug: "quit-gambling",       name: "Quit Gambling",        category: "Addiction & Recovery",short_description: "Break the cycle of compulsive betting." },
+  { id: "16", slug: "binge-eating",        name: "Stop Binge Eating",    category: "Addiction & Recovery",short_description: "Heal your relationship with food." },
+  { id: "17", slug: "video-game-addiction",name: "Video Game Addiction", category: "Addiction & Recovery",short_description: "Regain control over gaming." },
+  { id: "18", slug: "compulsive-shopping", name: "Compulsive Shopping",  category: "Addiction & Recovery",short_description: "Break the buy-to-feel-good loop." },
+  // ── Quit Bad Habits ─────────────────────────────────────────────────────────
+  { id: "19", slug: "no-smartphone",       name: "No Smartphone",        category: "Quit Bad Habits",     short_description: "Reclaim your attention from your phone." },
+  { id: "20", slug: "no-sugar",            name: "No Sugar",             category: "Quit Bad Habits",     short_description: "End sugar dependency for good." },
+  { id: "21", slug: "lack-of-self-control",name: "Lack of Self-Control", category: "Quit Bad Habits",     short_description: "Build impulse control from the ground up." },
+  // ── Productivity & Life ─────────────────────────────────────────────────────
+  { id: "22", slug: "beat-procrastination",name: "Beat Procrastination", category: "Productivity & Life", short_description: "Act before the voice says 'later'." },
+  { id: "23", slug: "build-discipline",    name: "Build Discipline",     category: "Productivity & Life", short_description: "The daily reps that form an identity." },
+  { id: "24", slug: "lack-of-motivation",  name: "Lack of Motivation",   category: "Productivity & Life", short_description: "Reignite your drive from the inside out." },
+  { id: "25", slug: "chronic-laziness",    name: "Chronic Laziness",     category: "Productivity & Life", short_description: "Dissolve inertia through micro-actions." },
+  // ── Mental Health ────────────────────────────────────────────────────────────
+  { id: "26", slug: "stop-overthinking",   name: "Stop Overthinking",    category: "Mental Health",       short_description: "Silence the mental noise loop." },
+  { id: "27", slug: "social-anxiety",      name: "Social Anxiety",       category: "Mental Health",       short_description: "Show up without the inner terror." },
+  { id: "28", slug: "anger-management",    name: "Anger Management",     category: "Mental Health",       short_description: "Transform rage into responsive power." },
+  { id: "29", slug: "chronic-stress",      name: "Chronic Stress",       category: "Mental Health",       short_description: "Regulate your nervous system daily." },
+  { id: "30", slug: "social-isolation",    name: "Social Isolation",     category: "Mental Health",       short_description: "Bridge back to human connection." },
+  { id: "31", slug: "negative-mindset",    name: "Negative Mindset",     category: "Mental Health",       short_description: "Rewire pessimistic thought patterns." },
+  { id: "32", slug: "breathwork",          name: "Breathwork",           category: "Mental Health",       short_description: "Use breath to shift state instantly." },
+  // ── Psychology & Self ────────────────────────────────────────────────────────
+  { id: "33", slug: "low-self-esteem",     name: "Low Self-Esteem",      category: "Psychology & Self",   short_description: "Build unshakeable self-worth." },
+  { id: "34", slug: "need-for-approval",   name: "Need for Approval",    category: "Psychology & Self",   short_description: "Stop outsourcing your self-worth." },
+  { id: "35", slug: "fear-of-failure",     name: "Fear of Failure",      category: "Psychology & Self",   short_description: "Act despite the outcome." },
+  { id: "36", slug: "fear-of-judgment",    name: "Fear of Judgment",     category: "Psychology & Self",   short_description: "Live beyond others' opinions." },
+  { id: "37", slug: "emotional-dependency",name: "Emotional Dependency", category: "Psychology & Self",   short_description: "Become your own emotional anchor." },
+  { id: "38", slug: "toxic-relationships", name: "Toxic Relationships",  category: "Psychology & Self",   short_description: "Identify and exit unhealthy bonds." },
+  { id: "39", slug: "control-issues",      name: "Control Issues",       category: "Psychology & Self",   short_description: "Release control, find real power." },
+  { id: "40", slug: "narcissism",          name: "Narcissism",           category: "Psychology & Self",   short_description: "Cultivate empathy and genuine connection." },
+  { id: "41", slug: "victim-mentality",    name: "Victim Mentality",     category: "Psychology & Self",   short_description: "Reclaim agency over your story." },
+  { id: "42", slug: "stop-self-sabotage",  name: "Stop Self-Sabotage",   category: "Psychology & Self",   short_description: "Interrupt the patterns that hold you back." },
+  { id: "43", slug: "lust-control",        name: "Lust Control",         category: "Psychology & Self",   short_description: "Channel sexual energy with intention." },
+  { id: "44", slug: "toxic-perfectionism", name: "Toxic Perfectionism",  category: "Psychology & Self",   short_description: "Done beats perfect, every single time." },
+  { id: "45", slug: "jealousy",            name: "Jealousy",             category: "Psychology & Self",   short_description: "Transform jealousy into self-awareness." },
+  { id: "46", slug: "envy",               name: "Envy",                 category: "Psychology & Self",   short_description: "Use envy as a compass, not a prison." },
+  // ── Financial Health ─────────────────────────────────────────────────────────
+  { id: "47", slug: "money-management",    name: "Money Management",     category: "Financial Health",    short_description: "Build financial clarity and control." },
+  { id: "48", slug: "impulsive-spending",  name: "Impulsive Spending",   category: "Financial Health",    short_description: "Pause before you purchase." },
+  // ── Mind & Learning ──────────────────────────────────────────────────────────
+  { id: "49", slug: "sedentary-lifestyle", name: "Sedentary Lifestyle",  category: "Fitness & Body",      short_description: "Move a little every day, forever." },
+  { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
 
-const ONBOARDING_TRACKS: OnboardingTrack[] = [
-  { slug: "meditation",       name: "Meditation",       category: "Mental Health" },
-  { slug: "morning-run",      name: "Morning Run",      category: "Fitness & Body" },
-  { slug: "strength-training",name: "Strength Training",category: "Fitness & Body" },
-  { slug: "quit-smoking",     name: "Quit Smoking",     category: "Quit Bad Habits" },
-  { slug: "deep-work",        name: "Deep Work",        category: "Productivity & Life" },
-  { slug: "reading",          name: "Daily Reading",    category: "Mind & Learning" },
-  { slug: "sleep-routine",    name: "Sleep Routine",    category: "Fitness & Body" },
-  { slug: "anxiety-relief",   name: "Anxiety Relief",   category: "Mental Health" },
-  { slug: "no-social-media",  name: "No Social Media",  category: "Quit Bad Habits" },
-  { slug: "journaling",       name: "Journaling",       category: "Mind & Learning" },
-];
+
+type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
+interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
+
+const ARCHETYPES: Record<ArchetypeId, Archetype> = {
+  trainer: { id: "trainer", name: "Kai", tagline: "Your direct trainer", voice: "You are Kai, a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Iris", tagline: "Your calm teacher", voice: "You are Iris, a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Dr. Mara", tagline: "Your warm clinician", voice: "You are Dr. Mara, a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Roy", tagline: "Your sharp mentor", voice: "You are Roy, a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Sasha", tagline: "Your creative guide", voice: "You are Sasha, a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+};
+
+const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
+  // Fitness & Body
+  "strength-training": "trainer", "morning-run": "trainer", "cold-exposure": "trainer",
+  "sedentary-lifestyle": "trainer",
+  // Quit Bad Habits
+  "no-social-media": "trainer", "quit-smoking": "trainer", "no-smartphone": "trainer",
+  "no-sugar": "trainer", "lack-of-self-control": "trainer",
+  // Addiction & Recovery
+  "quit-alcohol": "trainer", "video-game-addiction": "trainer",
+  "compulsive-shopping": "mentor", "impulsive-spending": "mentor",
+  "quit-pornography": "clinician", "quit-drugs": "clinician",
+  "quit-gambling": "mentor", "binge-eating": "clinician",
+  // Mental Health
+  "meditation": "clinician", "anxiety-relief": "clinician", "journaling": "clinician",
+  "sleep-routine": "clinician", "breathwork": "clinician",
+  "stop-overthinking": "clinician", "social-anxiety": "clinician",
+  "anger-management": "clinician", "chronic-stress": "clinician",
+  "social-isolation": "guide", "negative-mindset": "guide",
+  // Productivity & Life
+  "deep-work": "mentor", "beat-procrastination": "trainer",
+  "build-discipline": "trainer", "lack-of-motivation": "guide",
+  "chronic-laziness": "trainer",
+  // Psychology & Self
+  "low-self-esteem": "clinician", "need-for-approval": "clinician",
+  "fear-of-failure": "mentor", "fear-of-judgment": "clinician",
+  "emotional-dependency": "clinician", "toxic-relationships": "mentor",
+  "control-issues": "mentor", "narcissism": "mentor",
+  "victim-mentality": "mentor", "stop-self-sabotage": "guide",
+  "lust-control": "clinician", "toxic-perfectionism": "clinician",
+  "jealousy": "clinician", "envy": "clinician",
+  // Financial Health
+  "money-management": "mentor",
+  // Mind & Learning
+  "reading": "teacher", "language": "teacher",
+  "gratitude": "guide",
+};
+function archetypeForSlug(slug: string): Archetype {
+  const id = TRACK_ARCHETYPE[slug] ?? "teacher";
+  return ARCHETYPES[id];
+}
+
+const JOURNEY_MILESTONES = [1, 3, 7, 14, 21, 30, 60, 90, 180, 365];
+
+const TRACK_HUE: Record<string, string> = {
+  "Fitness & Body": "oklch(0.65 0.22 25)",
+  "Mental Health": "oklch(0.65 0.22 260)",
+  "Quit Bad Habits": "oklch(0.65 0.22 140)",
+  "Mind & Learning": "oklch(0.65 0.22 200)",
+  "Productivity & Life": "oklch(0.65 0.22 60)",
+  "Addiction & Recovery": "oklch(0.65 0.22 350)",
+  "Financial Health": "oklch(0.65 0.22 145)",
+  "Psychology & Self": "oklch(0.65 0.22 300)",
+};
+function trackHue(category: string) { return TRACK_HUE[category] ?? "oklch(0.65 0.2 280)"; }
+
+const ONBOARDING_TRACKS: OnboardingTrack[] = ALL_TRACKS.map(t => ({
+  slug: t.slug, name: t.name, category: t.category,
+}));
 
 const MOTIVATIONS = [
   "Today is a clean page. Write one good line.",
@@ -100,12 +249,165 @@ const MOTIVATIONS = [
   "Discipline is self-love in slow motion.",
 ];
 
+const CHECKIN_WARNINGS = [
+  "Hey… the task won't complete itself 👀",
+  "Day 0 is calling. Don't pick up. 📵",
+  "Your future self is watching. Fill this in. 👁️",
+  "The coach knows when you're faking it. 😑",
+  "Empty field = empty progress. Come on. 💪",
+  "You didn't come this far to leave this blank. ✍️",
+  "This is the work. Do the work. 🔥",
+  "Skip this and your streak cries tonight. 😢",
+  "Not even one sentence? Really? 🤨",
+  "The only bad answer is no answer. Go.",
+];
+
+// Community content moderation — stems catch conjugations and variants
+const COMMUNITY_BLOCKLIST = [
+  "jerk","masturbat","porn","sex ","fap","orgasm","naked","nude","dick","cock","pussy","ass ","fuck","shit ","bitch","whore","slut","cum ","jizz","rape","abuse","kill myself","kms","kys","nigger","faggot",
+];
+function isCommunityBlocked(text: string): boolean {
+  const lower = text.toLowerCase();
+  return COMMUNITY_BLOCKLIST.some(w => lower.includes(w));
+}
+
+const COMMUNITY_MODERATION_MESSAGES = [
+  "Keep it real, not raw. This is a community of people doing hard work. 🙏",
+  "The coach is watching. So is everyone else. Let's keep it respectful. 🧘",
+  "Your words matter here. Try something you'd be proud to read back. ✨",
+  "This community runs on honesty, not shock value. Say it differently. 💬",
+  "Strong language, stronger filter. Rewrite it with intention. ✍️",
+];
+
 const COACH_RESPONSES = [
   "What you've written holds more courage than you may realize. The desire to change isn't weakness—it's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
   "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compass—we don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
   "The fact that you named it—clearly, honestly—already sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
   "There's a version of you that has already made this change, and they made one decision that you're making right now: to begin. Not when ready. Not when perfect. Just now. That desire you feel is valid, real, and more than enough. I'll be with you every step of the way.",
 ];
+
+// Worldwide statistics shown during onboarding to help users feel less alone
+const TRACK_GLOBAL_STATS: Record<string, string> = {
+  "meditation":           "31% of people worldwide struggle with mental stillness",
+  "morning-run":          "54% of adults are insufficiently physically active",
+  "strength-training":    "54% of adults worldwide don't exercise enough",
+  "quit-smoking":         "22% of adults worldwide still smoke",
+  "deep-work":            "41% of workers report being unable to focus deeply",
+  "reading":              "33% of adults read less than they'd like",
+  "sleep-routine":        "45% of adults worldwide report poor sleep quality",
+  "anxiety-relief":       "28% of people experience anxiety disorders in their lifetime",
+  "journaling":           "67% of people want to reflect more but never start",
+  "cold-exposure":        "Growing wellness practice — millions are discovering this",
+  "no-social-media":      "40% of people report problematic social media use",
+  "quit-alcohol":         "14% of people worldwide struggle with alcohol use",
+  "quit-pornography":     "12% of people report problematic pornography use",
+  "quit-drugs":           "5% of adults worldwide use illicit substances regularly",
+  "quit-gambling":        "3% of people worldwide have a gambling disorder",
+  "binge-eating":         "4% of people worldwide experience binge eating disorder",
+  "video-game-addiction": "8% of gamers show signs of gaming disorder",
+  "compulsive-shopping":  "5% of people struggle with compulsive buying",
+  "no-smartphone":        "47% of people report feeling addicted to their smartphone",
+  "no-sugar":             "50% of people struggle to reduce sugar consumption",
+  "lack-of-self-control": "37% of people report poor impulse control",
+  "beat-procrastination": "20% of adults are chronic procrastinators",
+  "build-discipline":     "41% say lack of discipline is their #1 challenge",
+  "lack-of-motivation":   "45% of people struggle with persistent lack of motivation",
+  "chronic-laziness":     "41% report chronic low energy and motivation",
+  "stop-overthinking":    "73% of adults between 25–35 report chronic overthinking",
+  "social-anxiety":       "12% of people experience social anxiety disorder",
+  "anger-management":     "7% of adults report uncontrolled anger issues",
+  "chronic-stress":       "77% of adults regularly experience physical stress symptoms",
+  "social-isolation":     "33% of adults report chronic loneliness",
+  "negative-mindset":     "51% of people have a predominantly negative inner voice",
+  "breathwork":           "Millions worldwide use breathwork to regulate their nervous system",
+  "low-self-esteem":      "85% of people report self-esteem struggles at some point",
+  "need-for-approval":    "43% of people struggle with excessive need for validation",
+  "fear-of-failure":      "31% of people report a paralyzing fear of failure",
+  "fear-of-judgment":     "38% of people fear social judgment on a daily basis",
+  "emotional-dependency": "15% of people form emotionally dependent attachments",
+  "toxic-relationships":  "29% of adults have experienced a toxic relationship",
+  "control-issues":       "11% of people show excessive control tendencies",
+  "narcissism":           "6% of people show significant narcissistic personality traits",
+  "victim-mentality":     "22% of people consistently adopt a victim mindset",
+  "stop-self-sabotage":   "33% of people identify as self-sabotagers",
+  "lust-control":         "14% of people struggle with compulsive sexual thoughts",
+  "toxic-perfectionism":  "29% of people suffer from maladaptive perfectionism",
+  "jealousy":             "22% of people report chronic jealousy in relationships",
+  "envy":                 "28% of people regularly experience debilitating envy",
+  "money-management":     "63% of adults live paycheck to paycheck",
+  "impulsive-spending":   "18% of people struggle with compulsive spending",
+  "sedentary-lifestyle":  "54% of adults worldwide are insufficiently physically active",
+  "gratitude":            "Gratitude practice is used by millions to rewire thinking",
+};
+
+// Keyword map for smart path suggestion (supports both English and Italian)
+const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
+  { slug: "quit-smoking",        keywords: ["smok","cigarette","sigarett","fumar","fumo","nicotine","nicotina","tabacco","tobacco","sigar"] },
+  { slug: "quit-alcohol",        keywords: ["alcohol","alcol","alcool","drinking","bere","wine","vino","beer","birra","drink","ubriaco","drunk","liquor","whisky","vodka"] },
+  { slug: "quit-pornography",    keywords: ["porn","pornograph","pornografi","porno","xxx","adult content","masturbat","masturbazione","video adult"] },
+  { slug: "quit-drugs",          keywords: ["drug","droga","cocaine","cocaina","marijuana","cannabis","heroin","eroina","substance","sostanza","addict","dipendente da"] },
+  { slug: "quit-gambling",       keywords: ["gambl","gambling","gioco d'azzardo","scommesse","bet","betting","casino","casinò","poker","slot","lottery","lotteria"] },
+  { slug: "no-social-media",     keywords: ["social media","instagram","facebook","tiktok","twitter","social","scrolling","scorrere","like","reels","post"] },
+  { slug: "no-smartphone",       keywords: ["phone","smartphone","telefono","cellulare","schermo","screen time","phone addiction","dipendenza telefono","device"] },
+  { slug: "no-sugar",            keywords: ["sugar","zucchero","dolci","sweets","candy","caramel","cioccolato","chocolate","junk food","dessert","zuccheri"] },
+  { slug: "binge-eating",        keywords: ["binge","overeating","abbuffate","compulsive eat","mangio troppo","cibo","food compuls","eating disorder"] },
+  { slug: "compulsive-shopping", keywords: ["shopping compuls","comprare compuls","acquisti compuls","shop addict","acquisti","buy too much"] },
+  { slug: "impulsive-spending",  keywords: ["spend","spending","soldi","debt","debito","spendere","impulse buy","acquisto impuls","financial","broke"] },
+  { slug: "beat-procrastination",keywords: ["procrastin","rimandare","postpone","delay","later","dopo","domani","tomorrow","ritardare","pigro nel fare"] },
+  { slug: "build-discipline",    keywords: ["discipline","disciplina","self-control","autocontrollo","consistency","costanza","habit","abitudine","commit"] },
+  { slug: "stop-overthinking",   keywords: ["overthink","pensare troppo","rumination","ruminazione","spin","thoughts racing","pensieri che girano","worry loop"] },
+  { slug: "social-anxiety",      keywords: ["social anxiety","ansia sociale","shy","timido","people","persone","social","socializing","public","folla","group"] },
+  { slug: "anger-management",    keywords: ["anger","rabbia","rage","furia","aggressiv","temper","collera","frustration","frustrazi","explode","esplosioni"] },
+  { slug: "chronic-stress",      keywords: ["stress","burnout","overwhelm","sopraffatto","tension","tensione","pressure","pressione","overload","carico"] },
+  { slug: "anxiety-relief",      keywords: ["anxiety","ansia","panic","panico","fear","paura","worry","preoccupazi","nervous","nervoso","angoscia","dread"] },
+  { slug: "meditation",          keywords: ["meditat","meditazione","mindfulness","peace","pace","calm","calma","stillness","quiet","silenzio","presence"] },
+  { slug: "low-self-esteem",     keywords: ["self-esteem","autostima","confidence","fiducia","insecur","valore","worth","self-worth","not enough","non basto"] },
+  { slug: "need-for-approval",   keywords: ["approval","approvazione","validation","validazione","please","piacere","opinion","opinioni","what people think","cosa pensano"] },
+  { slug: "fear-of-failure",     keywords: ["failure","fallimento","fail","fallire","fear fail","scared to try","paura di fallire","scared","scared of failing"] },
+  { slug: "fear-of-judgment",    keywords: ["judgment","giudizio","judged","giudicato","what people think","cosa pensano gli altri","scared of opinion","giudicato dagli altri"] },
+  { slug: "emotional-dependency",keywords: ["dependency","dipendenza","dependent","dipendente","clingy","attaccamento","attachment","relying on","bisogno degli altri"] },
+  { slug: "toxic-relationships", keywords: ["toxic","tossico","relationship","relazione","partner","manipulat","manipolatore","abuse","abuso","controlling partner"] },
+  { slug: "control-issues",      keywords: ["control","controllo","controlling","let go","lasciare andare","manage everything","need to control","controllare tutto"] },
+  { slug: "narcissism",          keywords: ["narciss","ego","self-centered","egocentrico","arrogant","arrogante","empathy","empatia","grandiosity"] },
+  { slug: "victim-mentality",    keywords: ["victim","vittima","blame","colpa","fault","responsib","victim mindset","always my fault","è sempre colpa"] },
+  { slug: "stop-self-sabotage",  keywords: ["self-sabotage","autosabotaggio","sabotage","sabotare","self-destruct","pattern","destroy what i build","rovino tutto"] },
+  { slug: "lack-of-motivation",  keywords: ["motivat","motivazione","energy","energia","lazy","pigro","no drive","no energy","non ho voglia","demotivat"] },
+  { slug: "money-management",    keywords: ["money","soldi","financial","finanziario","budget","debt","debito","saving","risparmio","broke","spendo tutto"] },
+  { slug: "lust-control",        keywords: ["lust","lussuria","sex addict","sesso compuls","sexual","sessuale","desire compuls","obsessed with sex","ossessionato dal sesso"] },
+  { slug: "toxic-perfectionism", keywords: ["perfect","perfetto","perfectionism","perfezionismo","perfectionist","perfezionista","never good enough","mai abbastanza"] },
+  { slug: "social-isolation",    keywords: ["lonely","solo","solitudine","loneliness","isolated","isolato","connection","connessione","no friends","senza amici","withdraw"] },
+  { slug: "video-game-addiction",keywords: ["video game","videogiochi","gaming","giochi","gamer","game addict","gioco troppo","console","twitch","esport","online game"] },
+  { slug: "lack-of-self-control",keywords: ["self-control","autocontrollo","impulse","impulso","impulsive","impulsivo","no control","nessun controllo","can't stop"] },
+  { slug: "negative-mindset",    keywords: ["negative","negativo","pessimist","pessimista","mindset","mentalità","always negative","sempre negativo","dark thoughts"] },
+  { slug: "sedentary-lifestyle", keywords: ["sedentary","sedentario","inactive","inattivo","sit all day","never move","non mi muovo","couch","divano","exercise"] },
+  { slug: "chronic-laziness",    keywords: ["lazy","pigro","laziness","pigrizia","tired","stanco","no energy","inertia","inerzia","can't get up","non riesco ad alzarmi"] },
+  { slug: "jealousy",            keywords: ["jealous","geloso","jealousy","gelosia","partner jealous","relazione","possessive","possessivo","gelosia partner"] },
+  { slug: "envy",                keywords: ["envy","invidia","envious","invidioso","compare","confronto","others have more","gli altri hanno di più","coveting"] },
+  { slug: "morning-run",         keywords: ["run","corsa","running","jogging","cardio","cardio exercise","correre"] },
+  { slug: "strength-training",   keywords: ["strength","forza","gym","palestra","muscle","muscolo","weight","workout","sollevamento"] },
+  { slug: "deep-work",           keywords: ["focus","concentrazione","work","lavoro","productive","produttivo","distraction","distrazione","deep work","flow"] },
+  { slug: "reading",             keywords: ["read","leggere","book","libro","learning","imparare","knowledge","conoscenza","non leggo"] },
+  { slug: "sleep-routine",       keywords: ["sleep","dormire","insomnia","insonnia","rest","riposo","tired","stanco","night","notte","awake","sveglio"] },
+  { slug: "journaling",          keywords: ["journal","diario","write","scrivere","reflect","riflettere","thoughts","pensieri","diary"] },
+  { slug: "cold-exposure",       keywords: ["cold","freddo","shower","doccia","ice","ghiaccio","cold water","acqua fredda"] },
+  { slug: "breathwork",          keywords: ["breath","respiro","breathe","respirare","breathing","respirazione","oxygen","ossigeno","pranayama"] },
+  { slug: "gratitude",           keywords: ["gratitude","gratitudine","grateful","grato","thankful","positive","positivo","appreciate","apprezzare"] },
+];
+
+function suggestTrackFromText(text: string): string | null {
+  if (!text || text.trim().length < 5) return null;
+  const lower = text.toLowerCase();
+  let bestSlug: string | null = null;
+  let bestScore = 0;
+  for (const { slug, keywords } of TRACK_KEYWORDS) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (lower.includes(kw)) score += kw.length; // longer keyword matches score more
+    }
+    if (score > bestScore) { bestScore = score; bestSlug = slug; }
+  }
+  return bestScore > 0 ? bestSlug : null;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LocalStorage helpers
@@ -147,6 +449,9 @@ function trackHueVar(category?: string) {
     "Quit Bad Habits": "--quit",
     "Mind & Learning": "--learning",
     "Productivity & Life": "--productivity",
+    "Addiction & Recovery": "--quit",
+    "Financial Health": "--productivity",
+    "Psychology & Self": "--mental",
   };
   return category && map[category] ? map[category] : "--foreground";
 }
@@ -214,22 +519,23 @@ function maxStreak(tracks: UserTrack[]) {
 // ArcRing
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ArcRing({ value, hueVar, size = 84 }: { value: number; hueVar: string; size?: number }) {
+function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: string; color?: string; size?: number }) {
   const stroke = 8;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const v = Math.max(0, Math.min(100, value));
+  const strokeColor = color ?? (hueVar ? `var(${hueVar})` : "currentColor");
   return (
     <svg width={size} height={size} className="-rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(1 0 0 / 0.08)" strokeWidth={stroke} fill="none" />
+      <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(1 0 0 / 0.15)" strokeWidth={stroke} fill="none" />
       <motion.circle
         cx={size / 2} cy={size / 2} r={r}
-        stroke={`var(${hueVar})`} strokeWidth={stroke} strokeLinecap="round" fill="none"
+        stroke={strokeColor} strokeWidth={stroke} strokeLinecap="round" fill="none"
         strokeDasharray={c}
         initial={{ strokeDashoffset: c }}
         animate={{ strokeDashoffset: c - (c * v) / 100 }}
         transition={{ type: "spring", stiffness: 60, damping: 16 }}
-        style={{ filter: `drop-shadow(0 0 8px var(${hueVar}))` }}
+        style={{ filter: `drop-shadow(0 0 6px ${strokeColor})` }}
       />
     </svg>
   );
@@ -272,7 +578,7 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
           className="h-full bg-foreground rounded-full"
         />
       </div>
-      <p className="mt-1 text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-mono">{label}</p>
+      <p className="mt-1 text-[10px] uppercase tracking-[0.15em] font-mono text-foreground/60">{label}</p>
     </div>
   );
 }
@@ -325,14 +631,15 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn }: {
               <div className="h-full w-full rounded-full bg-card" />
             </div>
             <svg width={size} height={size} className="absolute inset-0 -rotate-90">
-              <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(0.92 0 0)" strokeWidth={stroke} fill="none" />
+              <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(0.5 0 0 / 0.25)" strokeWidth={stroke} fill="none" />
               <motion.circle cx={size / 2} cy={size / 2} r={r}
-                stroke={isMaxed ? "oklch(0.78 0.20 70)" : "oklch(0.18 0 0)"}
+                stroke={isMaxed ? "oklch(0.78 0.20 70)" : "oklch(0.875 0.185 95)"}
                 strokeWidth={stroke} strokeLinecap="round" fill="none"
                 strokeDasharray={c}
                 initial={{ strokeDashoffset: c }}
                 animate={{ strokeDashoffset: c - c * pct }}
                 transition={{ type: "spring", stiffness: 50, damping: 18 }}
+                style={{ filter: isMaxed ? "drop-shadow(0 0 10px oklch(0.78 0.20 70 / 0.7))" : "drop-shadow(0 0 10px oklch(0.875 0.185 95 / 0.55))" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -353,7 +660,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn }: {
                   <Sparkles className="h-3 w-3" /> {evo.label}
                 </span>
               )}
-              {hasPeakBadge && !isMaxed && (
+              {hasPeakBadge && (
                 <span className="peak-badge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
                   title={`Peak reached ${new Date(user.peakReachedAt!).toLocaleDateString()}`}>
                   <Crown className="h-2.5 w-2.5" /> 1000 Club
@@ -540,9 +847,9 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-2.5">
             <div className="h-9 w-9 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
-              <span className="font-display text-white text-lg leading-none font-bold">e</span>
+              <span className="font-display text-white text-lg leading-none font-bold">F</span>
             </div>
-            <span className="font-display text-[18px] tracking-tight font-semibold">Elevate</span>
+            <span className="font-display text-[18px] tracking-tight font-semibold">Forge</span>
           </div>
         </div>
 
@@ -694,9 +1001,9 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
       <header className="container mx-auto flex items-center justify-between px-6 py-7">
         <div className="flex items-center gap-2.5">
           <div className="h-9 w-9 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
-            <span className="font-display text-white text-lg leading-none font-bold">e</span>
+            <span className="font-display text-white text-lg leading-none font-bold">F</span>
           </div>
-          <span className="font-display text-[18px] tracking-tight font-semibold">Elevate</span>
+          <span className="font-display text-[18px] tracking-tight font-semibold">Forge</span>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-mono">
           <Eye className="h-3 w-3" /> Public demo
@@ -704,32 +1011,74 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
       </header>
 
       <main className="container mx-auto px-6 relative">
-        <section className="pt-20 pb-32 max-w-4xl">
+        {/* ── Hero ─────────────────────────────────────────────────────────── */}
+        <section className="pt-16 pb-16 max-w-4xl">
           <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono">
             A transformation engine · est. 2026
           </motion.p>
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-6 font-display text-[clamp(3rem,9vw,7.5rem)] leading-[0.92] tracking-[-0.05em] font-bold">
-            Become<br />
-            <span className="text-yellow-400">who you</span><br />
-            already are.
+
+          {/* New headline */}
+          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.1 }}
+            className="mt-6 font-display text-[clamp(2.6rem,8vw,6.8rem)] leading-[0.93] tracking-[-0.05em] font-bold">
+            The app built<br />
+            for the battle<br />
+            <span className="text-yellow-400 italic">only you know</span><br />
+            you're fighting.
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-10 text-lg text-muted-foreground max-w-xl leading-relaxed">
-            Fifty specialist AI coaches. One quiet companion that remembers everything.
-            Built for the version of you that's already begun.
+
+          {/* Sub-headline */}
+          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-8 text-xl text-muted-foreground max-w-md leading-relaxed">
+            No judgment. No performance.<br />Just the work.
           </motion.p>
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-12 flex flex-wrap items-center gap-5">
+
+          {/* Live counter */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
+            className="mt-7 inline-flex items-center gap-3 rounded-full bg-card/80 border border-border px-5 py-2.5 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" style={{ boxShadow: "0 0 6px 2px oklch(0.75 0.19 155 / 0.6)" }} />
+            <span className="text-sm text-muted-foreground">Today, <strong className="text-foreground">847 people</strong> are on day 1. You're not alone.</span>
+          </motion.div>
+
+          {/* Privacy line */}
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.55 }}
+            className="mt-3 text-[12px] text-emerald-500/80 font-mono flex items-center gap-1.5">
+            🔒 Everything you write here is yours alone. We don't read it.
+          </motion.p>
+
+          {/* CTA */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-8 flex flex-wrap items-center gap-4">
             <button onClick={onBegin}
-              className="btn-chunk group inline-flex items-center gap-2 rounded-full grad-electric px-8 py-4 text-sm font-bold text-white shadow-[var(--shadow-violet)]">
+              className="btn-chunk group inline-flex items-center gap-2 rounded-full grad-electric px-9 py-4 text-sm font-bold text-white shadow-[var(--shadow-violet)]">
               Begin <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition" />
             </button>
-            <span className="text-sm text-muted-foreground">Read-only · everything you see is shared</span>
           </motion.div>
         </section>
 
+        {/* ── Testimonials ──────────────────────────────────────────────────── */}
+        <section className="pb-16 max-w-3xl">
+          <div className="grid md:grid-cols-2 gap-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
+              className="warm-card rounded-[1.5rem] p-6 relative">
+              <div className="absolute top-4 left-5 text-3xl leading-none text-foreground/15 font-display font-bold select-none">"</div>
+              <p className="text-sm leading-relaxed text-foreground pt-4">
+                Day 47. I deleted the app on day 12. Came back. It waited for me.
+              </p>
+              <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-mono">Day 47 · Quit Pornography</p>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
+              className="warm-card rounded-[1.5rem] p-6 relative">
+              <div className="absolute top-4 left-5 text-3xl leading-none text-foreground/15 font-display font-bold select-none">"</div>
+              <p className="text-sm leading-relaxed text-foreground pt-4">
+                I've tried 6 apps. This is the first one that felt like it actually knew what I was going through.
+              </p>
+              <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-mono">Day 23 · Social Anxiety</p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── Feature cards ─────────────────────────────────────────────────── */}
         <section className="relative pb-32 max-w-5xl">
           <div className="grid md:grid-cols-12 gap-6">
             <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -766,13 +1115,13 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 
             <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
               className="md:col-span-7 warm-card rounded-[2rem] p-8 md:p-10">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-primary">04 — A letter, every Sunday</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-primary">04 — A coach that knows you</p>
               <h3 className="mt-4 font-display text-3xl md:text-4xl leading-tight">
-                Not a dashboard. <span className="italic">A letter.</span>
+                Not a dashboard. <span className="italic">A companion.</span>
               </h3>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-md">
-                Each week, your coach writes to you. Personally. With memory.
-                With warmth. With something to believe about who you're becoming.
+                Your coach remembers what you've said, what you've done, and what you're working towards.
+                Every day builds on the last.
               </p>
             </motion.article>
           </div>
@@ -789,7 +1138,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
       </main>
 
       <footer className="border-t border-border/60 py-10 text-center">
-        <p className="font-display italic text-sm text-muted-foreground">Elevate · {new Date().getFullYear()}</p>
+        <p className="font-display italic text-sm text-muted-foreground">Forge · {new Date().getFullYear()}</p>
       </footer>
     </div>
   );
@@ -799,15 +1148,19 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 // OnboardingPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "contract";
+type OnboardingStep = "commitment" | "question" | "thinking" | "response" | "tracks" | "contract" | "notification";
 
 function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; track: OnboardingTrack }) => void }) {
-  const [step, setStep] = useState<OnboardingStep>("question");
+  const [step, setStep] = useState<OnboardingStep>("commitment");
+  const [commitStep, setCommitStep] = useState(0); // 0,1,2 for the 3 Noom questions
+  const [showAllPaths, setShowAllPaths] = useState(false);
   const [answer, setAnswer] = useState("");
   const [message, setMessage] = useState("");
   const [typedCount, setTypedCount] = useState(0);
   const [chosen, setChosen] = useState<OnboardingTrack | null>(null);
   const [name, setName] = useState("");
+  const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
+  const [completionData, setCompletionData] = useState<{name: string; track: OnboardingTrack} | null>(null);
 
   const words = useMemo(() => message.split(/(\s+)/), [message]);
   const typingDone = typedCount >= words.length && words.length > 0;
@@ -841,6 +1194,76 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
         style={{ background: "radial-gradient(60% 60% at 50% 25%,oklch(0.62 0.215 275 / 0.45),transparent 70%),radial-gradient(45% 55% at 85% 85%,oklch(0.70 0.215 340 / 0.30),transparent 70%)" }} />
 
       <AnimatePresence mode="wait">
+
+        {/* ── Micro-commitment: 3 Noom-style questions ───────────────── */}
+        {step === "commitment" && (
+          <motion.div key={`c${commitStep}`} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }} className="max-w-xl w-full text-center">
+
+            {/* Progress dots */}
+            <div className="flex justify-center items-center gap-2 mb-12">
+              {[0, 1, 2].map(i => (
+                <motion.div key={i} animate={{ width: i === commitStep ? 20 : 8, opacity: i <= commitStep ? 1 : 0.3 }}
+                  transition={{ duration: 0.3 }}
+                  className={`h-1.5 rounded-full ${i <= commitStep ? "bg-foreground" : "bg-muted"}`} />
+              ))}
+            </div>
+
+            {commitStep === 0 && (
+              <>
+                <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
+                  Have you tried to<br /><span className="text-yellow-400 italic">change this before?</span>
+                </h2>
+                <p className="text-muted-foreground text-sm mb-10">Be honest — it matters for how we approach this.</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button onClick={() => setCommitStep(1)}
+                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
+                    Yes, many times 😔
+                  </button>
+                  <button onClick={() => setCommitStep(2)}
+                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
+                    Not yet — this is new ✨
+                  </button>
+                </div>
+              </>
+            )}
+
+            {commitStep === 1 && (
+              <>
+                <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
+                  Did it <span className="text-yellow-400 italic">last?</span>
+                </h2>
+                <p className="text-muted-foreground text-sm mb-10">Most people who are here have been here before. That's okay.</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button onClick={() => setCommitStep(2)}
+                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
+                    Never long enough 🔁
+                  </button>
+                  <button onClick={() => setCommitStep(2)}
+                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
+                    Sometimes, for a while 🌀
+                  </button>
+                </div>
+              </>
+            )}
+
+            {commitStep === 2 && (
+              <>
+                <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground font-mono mb-6">You've already started.</p>
+                <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
+                  Ready to try<br /><span className="text-yellow-400 italic">something different?</span>
+                </h2>
+                <p className="text-muted-foreground text-sm mb-10">No app has a built-in coach that actually knows your specific battle. This one does.</p>
+                <button onClick={() => setStep("question")}
+                  className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
+                  I'm ready <ArrowRight className="h-4 w-4" />
+                </button>
+              </>
+            )}
+
+          </motion.div>
+        )}
+
         {step === "question" && (
           <motion.div key="q" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.7 }} className="max-w-3xl w-full text-center">
@@ -857,6 +1280,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
               <div className="mt-3 text-[11px] text-muted-foreground font-mono tracking-wider">
                 {answer.trim().length < 10 ? `${Math.max(0, 10 - answer.trim().length)} more to continue` : "Ready when you are"}
               </div>
+              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">🔒 This stays between you and your coach. Always.</p>
               <AnimatePresence>
                 {answer.trim().length >= 10 && (
                   <motion.button key="cont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -888,7 +1312,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
             <AnimatePresence>
               {typingDone && (
                 <motion.button key="rcont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
-                  onClick={() => setStep("tracks")}
+                  onClick={() => { setSuggestedSlug(suggestTrackFromText(answer)); setStep("tracks"); }}
                   className="btn-chunk mt-12 inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
                   Continue <ArrowRight className="h-4 w-4" />
                 </motion.button>
@@ -907,49 +1331,169 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
               </h2>
               <p className="mt-4 text-muted-foreground">You can add more later. For now, one commitment is enough.</p>
             </div>
-            <div className="space-y-8">
-              {Object.entries(grouped).map(([cat, tracks]) => (
-                <div key={cat}>
-                  <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-3">{cat}</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {tracks.map(t => (
-                      <button key={t.slug} onClick={() => setChosen(t)}
-                        className={`warm-card rounded-2xl p-4 text-left transition btn-chunk ${chosen?.slug === t.slug ? "ring-2 ring-[color:var(--primary)]" : ""}`}>
-                        <p className="font-semibold text-sm">{t.name}</p>
-                        {chosen?.slug === t.slug && <Check className="h-4 w-4 mt-1 text-[color:var(--tertiary)]" />}
-                      </button>
-                    ))}
+
+            {/* ── Hero-card-only view when a suggestion exists ── */}
+            {suggestedSlug && !showAllPaths && (() => {
+              const sug = ONBOARDING_TRACKS.find(t => t.slug === suggestedSlug);
+              if (!sug) return null;
+              return (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-xl mx-auto">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">✦ Your path, based on what you wrote</p>
+
+                  {/* Hero card */}
+                  <div className="warm-card rounded-[2rem] p-8 mb-6 text-center relative overflow-hidden"
+                    style={{ boxShadow: "0 0 40px 8px oklch(0.875 0.185 95 / 0.35)", border: "2px solid oklch(0.875 0.185 95 / 0.6)" }}>
+                    <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full opacity-30"
+                      style={{ background: "radial-gradient(circle, oklch(0.875 0.185 95 / 0.5), transparent 70%)" }} />
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3">{sug.category}</p>
+                    <h3 className="font-display text-4xl font-bold mb-4">{sug.name}</h3>
+                    {TRACK_GLOBAL_STATS[sug.slug] && (
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
+                        {TRACK_GLOBAL_STATS[sug.slug]}.<br />
+                        <span className="text-yellow-400 font-medium">You're not alone in this.</span>
+                      </p>
+                    )}
+                    <button onClick={() => { setChosen(sug); setStep("contract"); }}
+                      className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]">
+                      This is my path <ArrowRight className="h-4 w-4" />
+                    </button>
                   </div>
+
+                  {/* Toggle to see all paths */}
+                  <button onClick={() => setShowAllPaths(true)}
+                    className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2 underline underline-offset-4">
+                    That's not quite right — show me all 50 paths ↓
+                  </button>
+                </motion.div>
+              );
+            })()}
+
+            {/* ── Full grid view ── */}
+            {(showAllPaths || !suggestedSlug) && (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+
+                {/* Pinned hero card at top if suggestion exists */}
+                {suggestedSlug && (() => {
+                  const sug = ONBOARDING_TRACKS.find(t => t.slug === suggestedSlug);
+                  if (!sug) return null;
+                  const isChosen = chosen?.slug === sug.slug;
+                  return (
+                    <div className="mb-8">
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">✦ Suggested for you</p>
+                      <button onClick={() => setChosen(sug)}
+                        className={`w-full text-left warm-card rounded-2xl p-5 transition btn-chunk relative ${isChosen ? "ring-2 ring-yellow-400" : "ring-2 ring-yellow-400/60"}`}
+                        style={{ boxShadow: "0 0 28px 4px oklch(0.875 0.185 95 / 0.38)" }}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="font-display text-xl font-semibold">{sug.name}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">{sug.category}</p>
+                            {TRACK_GLOBAL_STATS[sug.slug] && (
+                              <p className="text-xs text-yellow-400/90 mt-2 leading-relaxed">
+                                {TRACK_GLOBAL_STATS[sug.slug]}. You're not alone in this.
+                              </p>
+                            )}
+                          </div>
+                          {isChosen
+                            ? <Check className="h-5 w-5 mt-0.5 text-yellow-400 shrink-0" />
+                            : <ArrowRight className="h-4 w-4 mt-1 text-yellow-400/60 shrink-0" />
+                          }
+                        </div>
+                      </button>
+                    </div>
+                  );
+                })()}
+
+                <div className="space-y-8">
+                  {Object.entries(grouped).map(([cat, tracks]) => (
+                    <div key={cat}>
+                      <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-3">{cat}</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {tracks.map(t => {
+                          const isSuggested = t.slug === suggestedSlug;
+                          const isChosen = chosen?.slug === t.slug;
+                          return (
+                            <button key={t.slug} onClick={() => setChosen(t)}
+                              className={`warm-card rounded-2xl p-4 text-left transition btn-chunk relative ${
+                                isChosen ? "ring-2 ring-[color:var(--primary)]"
+                                : isSuggested ? "ring-2 ring-yellow-400/50"
+                                : ""
+                              }`}
+                              style={isSuggested ? { boxShadow: "0 0 12px 1px oklch(0.875 0.185 95 / 0.25)" } : undefined}>
+                              <p className="font-semibold text-sm">{t.name}</p>
+                              {isChosen && <Check className="h-4 w-4 mt-1 text-[color:var(--tertiary)]" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            {chosen && (
-              <div className="mt-10 text-center">
-                <button onClick={() => setStep("contract")}
-                  className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                  Continue <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
+                {chosen && (
+                  <div className="mt-10 text-center">
+                    <button onClick={() => setStep("contract")}
+                      className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
+                      Continue <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </motion.div>
             )}
+
           </motion.div>
         )}
 
         {step === "contract" && (
           <motion.div key="contract" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">Last step</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">Almost there</p>
             <h2 className="font-display text-3xl tracking-tight mb-8">What should your coach call you?</h2>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name"
+              autoFocus
               className="w-full bg-transparent border-0 border-b-2 border-border focus:border-[color:var(--primary)] outline-none text-center font-display text-2xl py-4 transition-colors" />
-            {name.trim().length > 0 && (
-              <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                onClick={() => onComplete({ name: name.trim(), track: chosen! })}
-                className="btn-chunk mt-10 inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                Start my path <ArrowRight className="h-4 w-4" />
-              </motion.button>
-            )}
+            <AnimatePresence>
+              {name.trim().length > 0 && (
+                <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  onClick={() => { const d = { name: name.trim(), track: chosen! }; setCompletionData(d); setStep("notification"); }}
+                  className="btn-chunk mt-10 inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
+                  Continue <ArrowRight className="h-4 w-4" />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
+
+        {step === "notification" && (
+          <motion.div key="notification" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }} className="max-w-md w-full text-center">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.1 }}
+              className="mx-auto mb-8 h-16 w-16 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
+              <Bell className="h-7 w-7 text-white" />
+            </motion.div>
+            <h2 className="font-display text-[2rem] tracking-tight leading-tight mb-3">
+              Stay on track,<br /><span className="text-yellow-400">every day.</span>
+            </h2>
+            <p className="text-muted-foreground text-sm leading-relaxed mb-10">
+              Your coach can send you a daily reminder to check in.<br />
+              Consistency is built one nudge at a time.
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={async () => {
+                  if ("Notification" in window) { try { await Notification.requestPermission(); } catch {} }
+                  lsSave("forge-notif", true);
+                  onComplete(completionData!);
+                }}
+                className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
+                <Bell className="h-4 w-4" /> Yes, remind me daily
+              </button>
+              <button onClick={() => onComplete(completionData!)}
+                className="w-full py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Not now — I'll remember myself
+              </button>
+            </div>
+          </motion.div>
+        )}
+
       </AnimatePresence>
     </div>
   );
@@ -978,7 +1522,7 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
           <div className="h-8 w-8 rounded-lg grad-electric flex items-center justify-center">
             <Sparkles className="h-4 w-4 text-white" />
           </div>
-          <span className="font-semibold tracking-tight font-display">Elevate</span>
+          <span className="font-semibold tracking-tight font-display">Forge</span>
         </div>
         <nav className="flex-1 space-y-1">
           {navItems.map(({ id, icon: Icon, label }) => (
@@ -1008,12 +1552,13 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // HomePage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
+function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView }: {
   user: ElevateUser;
   tracks: UserTrack[];
   onCheckIn: (id: string) => void;
   onNavigate: (page: AppPage) => void;
   onUpdateUser: (patch: Partial<ElevateUser>) => void;
+  onView: (t: UserTrack) => void;
 }) {
   const motivation = useMemo(() => {
     const d = new Date();
@@ -1022,7 +1567,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
   }, []);
 
   const t = todayStr();
-  const todayFormatted = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+  const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" });
   const hour = new Date().getHours();
   const greeting = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = user.name.split(" ")[0];
@@ -1044,13 +1589,32 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
 
       <div className="flex items-end justify-between mb-4">
         <h2 className="font-display text-2xl tracking-tight">Your paths</h2>
-        <button onClick={() => onNavigate("tracks")}
-          className="btn-chunk inline-flex items-center gap-1.5 rounded-full bg-[color:var(--primary)] text-primary-foreground px-3.5 py-2 text-xs font-semibold"
-          style={{ boxShadow: "var(--shadow-violet)" }}>
-          <Plus className="h-3.5 w-3.5" /> Add
-        </button>
+        {tracks.length > 0 && (
+          <button onClick={() => onNavigate("tracks")}
+            className="btn-chunk inline-flex items-center gap-1.5 rounded-full bg-[color:var(--primary)] text-primary-foreground px-3.5 py-2 text-xs font-semibold"
+            style={{ boxShadow: "var(--shadow-violet)" }}>
+            <Plus className="h-3.5 w-3.5" /> Add
+          </button>
+        )}
       </div>
 
+      {tracks.length === 0 ? (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="mb-10 rounded-[20px] border-2 border-dashed border-[color:var(--primary)]/25 p-8 text-center">
+          <div className="mx-auto mb-4 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center opacity-80">
+            <Target className="h-7 w-7 text-white" />
+          </div>
+          <h3 className="font-display text-lg mb-1">No paths yet</h3>
+          <p className="text-sm text-muted-foreground mb-5 max-w-xs mx-auto">
+            Pick your first track and your AI coach will build a personalized journey for you.
+          </p>
+          <button onClick={() => onNavigate("tracks")}
+            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-2.5 text-sm font-semibold"
+            style={{ boxShadow: "var(--shadow-violet)" }}>
+            <Layers className="h-4 w-4" /> Browse 50 tracks
+          </button>
+        </motion.div>
+      ) : (
       <div className="-mx-5 px-5 overflow-x-auto no-scrollbar mb-10">
         <div className="flex gap-4 pb-2 snap-x snap-mandatory">
           {tracks.map((ut, i) => {
@@ -1062,7 +1626,8 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
             return (
               <motion.div key={ut.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08 + i * 0.05, type: "spring", stiffness: 90, damping: 16 }}>
-                <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk"
+                <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
+                  onClick={() => onView(ut)}
                   style={{ background: grad, boxShadow: `0 24px 50px -16px color-mix(in oklab, var(${hueVar}) 55%, transparent), 0 4px 14px -4px color-mix(in oklab, var(${hueVar}) 35%, transparent)` }}>
                   <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
                     style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.5), transparent 60%)" }} />
@@ -1070,7 +1635,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
                     style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.35), transparent 70%)" }} />
                   <div className="relative flex items-start justify-between">
                     <span className="text-[10px] uppercase tracking-[0.25em] text-white font-mono">{ut.category}</span>
-                    <ArcRing value={pct} hueVar="--background" size={56} />
+                    <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
                   </div>
                   <div className="relative mt-auto pt-12">
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
@@ -1100,6 +1665,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
           </button>
         </div>
       </div>
+      )}
 
       <h2 className="font-display text-2xl tracking-tight mb-4">Today's actions</h2>
       <div className="space-y-2.5">
@@ -1138,15 +1704,679 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser }: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DayPanel
+// ─────────────────────────────────────────────────────────────────────────────
+
+function DayPanel({ label, children, accentColor }: { label: string; children: ReactNode; accentColor?: string }) {
+  return (
+    <div className="rounded-2xl bg-card border border-border overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-border" style={accentColor ? { borderLeft: `3px solid ${accentColor}` } : {}}>
+        <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{label}</p>
+      </div>
+      <div className="p-4">{children}</div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CommunityBoard
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
+  { content: "Finished day 7. Never thought I'd make it this far — the habit is starting to feel natural.", dayNumber: 7, flameCount: 14, userHasFlamed: false, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
+  { content: "Hit my first milestone today 🎉 The science note about neuroplasticity blew my mind.", dayNumber: 21, flameCount: 8, userHasFlamed: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
+  { content: "Day 3 was brutal but I checked in anyway. Small win counts.", dayNumber: 3, flameCount: 22, userHasFlamed: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
+];
+
+function CommunityBoard({ slug }: { slug: string }) {
+  const [posts, setPosts] = useState<CommunityPost[]>(() => {
+    const saved = lsLoad<CommunityPost[]>(LS_COMMUNITY(slug), []);
+    if (saved.length > 0) return saved;
+    const seeded = SEED_POSTS.map(p => ({ ...p, id: nanoid(), trackSlug: slug }));
+    lsSave(LS_COMMUNITY(slug), seeded);
+    return seeded;
+  });
+  const [draft, setDraft] = useState("");
+  const [posting, setPosting] = useState(false);
+  const [modWarnKey, setModWarnKey] = useState(0);
+  const [modWarnMsg, setModWarnMsg] = useState("");
+
+  const flame = (id: string) => {
+    setPosts(prev => {
+      const next = prev.map(p => p.id === id
+        ? { ...p, flameCount: p.userHasFlamed ? p.flameCount - 1 : p.flameCount + 1, userHasFlamed: !p.userHasFlamed }
+        : p);
+      lsSave(LS_COMMUNITY(slug), next);
+      return next;
+    });
+  };
+
+  const post = () => {
+    if (!draft.trim()) return;
+    if (isCommunityBlocked(draft)) {
+      const msg = COMMUNITY_MODERATION_MESSAGES[hashStr(draft) % COMMUNITY_MODERATION_MESSAGES.length];
+      setModWarnMsg(msg);
+      setModWarnKey(k => k + 1);
+      return;
+    }
+    setPosting(true);
+    setTimeout(() => {
+      const p: CommunityPost = { id: nanoid(), trackSlug: slug, content: draft.trim(), dayNumber: 0, flameCount: 0, userHasFlamed: false, createdAt: new Date().toISOString() };
+      setPosts(prev => {
+        const next = [p, ...prev];
+        lsSave(LS_COMMUNITY(slug), next);
+        return next;
+      });
+      setDraft("");
+      setModWarnKey(0);
+      setPosting(false);
+    }, 300);
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1.5">
+        <div className="flex gap-2">
+          <input value={draft} onChange={e => { setDraft(e.target.value); if (modWarnKey > 0) setModWarnKey(0); }}
+            onKeyDown={e => e.key === "Enter" && !e.shiftKey && post()}
+            placeholder="Share a win or struggle…"
+            className={`flex-1 rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors ${modWarnKey > 0 ? "border-red-500" : "border-border"}`} />
+          <button onClick={post} disabled={!draft.trim() || posting}
+            className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-sm font-semibold disabled:opacity-40">
+            Post
+          </button>
+        </div>
+        <AnimatePresence mode="wait">
+          {modWarnKey > 0 && (
+            <motion.p key={modWarnKey}
+              initial={{ opacity: 0, x: 0 }}
+              animate={{ opacity: 1, x: [-5, 5, -4, 4, -2, 2, 0] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-xs text-red-500 font-medium px-1">
+              {modWarnMsg}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+      <div className="space-y-2 max-h-80 overflow-y-auto">
+        {posts.map(p => (
+          <div key={p.id} className="rounded-xl bg-muted/50 border border-border/50 p-3 flex gap-3">
+            <div className="flex-1">
+              <p className="text-sm">{p.content}</p>
+              {p.dayNumber > 0 && <p className="mt-1 text-[10px] text-muted-foreground font-mono uppercase">Day {p.dayNumber}</p>}
+            </div>
+            <button onClick={() => flame(p.id)}
+              className={`shrink-0 flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition ${p.userHasFlamed ? "text-orange-400" : "text-muted-foreground hover:text-orange-400"}`}>
+              <Flame className="h-3.5 w-3.5" /> {p.flameCount}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JourneyOnboarding
+// ─────────────────────────────────────────────────────────────────────────────
+
+const JOURNEY_PRESETS = [30, 60, 90, 120, 180, 365] as const;
+
+function JourneyOnboarding({ track, onStarted }: { track: UserTrack; onStarted: (j: Journey, days: JourneyDay[]) => void }) {
+  const archetype = archetypeForSlug(track.slug);
+  const [totalDays, setTotalDays] = useState(30);
+  const [isCustomDays, setIsCustomDays] = useState(false);
+  const [customDaysInput, setCustomDaysInput] = useState("");
+  const [startingPoint, setStartingPoint] = useState("");
+  const [motivation, setMotivation] = useState("");
+  const [obstacle, setObstacle] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleStart = async () => {
+    if (!startingPoint.trim() || !motivation.trim() || !obstacle.trim()) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    const journey: Journey = {
+      id: nanoid(), trackSlug: track.slug, totalDays, startingPoint, motivation, obstacle,
+      startedAt: new Date().toISOString(), generatedThrough: 0,
+    };
+    const makeFallback = (): JourneyDay[] => Array.from({ length: 7 }, (_, i) => ({
+      id: nanoid(), journeyId: journey.id, dayNumber: i + 1,
+      title: `Day ${i + 1} — ${track.name}`,
+      description: `Your ${track.name} journey, day ${i + 1}. Consistency is the foundation of every transformation.`,
+      task: `Spend at least 15 minutes on ${track.name} today. Record how it felt.`,
+      reflection: "What did you notice about yourself today?",
+      science: "Research shows repetition within 24 hours strengthens neural pathways by up to 40%.",
+      checkinPrompt: "How are you feeling right now, on a scale from 1–10?",
+      completedAt: null, userNote: null,
+    }));
+    try {
+      const res = await fetch("/api/generate-days", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint, motivation, obstacle, fromDay: 1, count: 7 }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const { days } = await res.json() as { days: JourneyDay[] };
+      const filled = days.map((d, i) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: i + 1, completedAt: null, userNote: null }));
+      journey.generatedThrough = 7;
+      lsSave(LS_JOURNEY(track.slug), journey);
+      lsSave(LS_DAYS(track.slug), filled);
+      onStarted(journey, filled);
+    } catch {
+      const fallback = makeFallback();
+      journey.generatedThrough = 7;
+      lsSave(LS_JOURNEY(track.slug), journey);
+      lsSave(LS_DAYS(track.slug), fallback);
+      onStarted(journey, fallback);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-xl mx-auto px-5 py-12 space-y-8">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{track.category}</p>
+          <h1 className="mt-2 font-display text-3xl tracking-tight">{track.name}</h1>
+          <p className="mt-2 text-muted-foreground text-sm">Meet <strong>Your Coach</strong> — here for every day of this journey.</p>
+        </div>
+        <div className="space-y-5">
+          <div>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Journey length</label>
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              {JOURNEY_PRESETS.map(d => (
+                <button key={d} onClick={() => { setTotalDays(d); setIsCustomDays(false); }}
+                  className={`btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${!isCustomDays && totalDays === d ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+                  {d === 365 ? "1 year" : `${d}d`}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => { setIsCustomDays(true); setCustomDaysInput(String(totalDays)); }}
+              className={`mt-2 w-full btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${isCustomDays ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+              Custom number of days
+            </button>
+            {isCustomDays && (
+              <input
+                type="number" value={customDaysInput} autoFocus
+                onChange={e => {
+                  setCustomDaysInput(e.target.value);
+                  const n = parseInt(e.target.value);
+                  if (n >= 7 && n <= 999) setTotalDays(n);
+                }}
+                min={7} max={999} placeholder="Enter days (7–999)"
+                className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            )}
+            {isCustomDays && totalDays >= 7 && (
+              <p className="mt-1 text-xs text-muted-foreground text-right">{totalDays} days selected</p>
+            )}
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Where are you starting from?</label>
+            <textarea value={startingPoint} onChange={e => setStartingPoint(e.target.value)}
+              placeholder={`e.g. "Complete beginner, never tried ${track.name} before"`}
+              rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">What drives you?</label>
+            <textarea value={motivation} onChange={e => setMotivation(e.target.value)}
+              placeholder={`e.g. "I want to feel calmer and less reactive in daily life"`}
+              rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Biggest obstacle</label>
+            <textarea value={obstacle} onChange={e => setObstacle(e.target.value)}
+              placeholder={`e.g. "I always quit after a few days when things get hard"`}
+              rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
+          </div>
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <button onClick={handleStart} disabled={loading}
+            className="btn-chunk w-full rounded-2xl bg-foreground text-background py-3.5 font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2">
+            {loading ? (
+              <><span className="h-4 w-4 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your journey…</>
+            ) : (
+              <><Sparkles className="h-4 w-4" />Begin my journey</>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JourneyView
+// ─────────────────────────────────────────────────────────────────────────────
+
+function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
+  track: UserTrack;
+  journey: Journey;
+  days: JourneyDay[];
+  onBack: () => void;
+}) {
+  const [journey, setJourney] = useState(initJourney);
+  const [days, setDays] = useState(initDays);
+  const [activeTab, setActiveTab] = useState<"today" | "map" | "community" | "coach">("today");
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => lsLoad<ChatMessage[]>(LS_CHAT(track.slug), []));
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [milestoneDay, setMilestoneDay] = useState<number | null>(null);
+  const [selectedDay, setSelectedDay] = useState<JourneyDay | null>(null);
+  const [checkInNote, setCheckInNote] = useState("");
+  const [checkInTask, setCheckInTask] = useState("");
+  const [checkInReflect, setCheckInReflect] = useState("");
+  const [warnTaskKey, setWarnTaskKey] = useState(0);
+  const [warnReflectKey, setWarnReflectKey] = useState(0);
+  const warnTaskIdx = useRef(0);
+  const warnReflectIdx = useRef(0);
+
+  const archetype = archetypeForSlug(track.slug);
+  const completedCount = days.filter(d => d.completedAt !== null).length;
+  const todayDay = days.find(d => d.completedAt === null) ?? days[days.length - 1];
+  const accentColor = trackHue(track.category);
+
+  useEffect(() => {
+    if (!journey || days.length === 0) return;
+    if (completedCount >= journey.generatedThrough - 2 && journey.generatedThrough < journey.totalDays) {
+      const fromDay = journey.generatedThrough + 1;
+      const count = Math.min(7, journey.totalDays - journey.generatedThrough);
+      fetch("/api/generate-days", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint: journey.startingPoint, motivation: journey.motivation, obstacle: journey.obstacle, fromDay, count }),
+      }).then(r => r.ok ? r.json() : null).then((data: { days: JourneyDay[] } | null) => {
+        if (!data) return;
+        const filled = data.days.map((d, i) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: fromDay + i, completedAt: null, userNote: null }));
+        setDays(prev => { const next = [...prev, ...filled]; lsSave(LS_DAYS(track.slug), next); return next; });
+        const nextJourney = { ...journey, generatedThrough: fromDay + count - 1 };
+        setJourney(nextJourney);
+        lsSave(LS_JOURNEY(track.slug), nextJourney);
+      }).catch(() => {});
+    }
+  }, [completedCount, journey, days.length, track]);
+
+  const checkIn = (dayId: string, note: string) => {
+    setDays(prev => {
+      const next = prev.map(d => d.id === dayId ? { ...d, completedAt: new Date().toISOString(), userNote: note || null } : d);
+      lsSave(LS_DAYS(track.slug), next);
+      return next;
+    });
+    const completedNow = completedCount + 1;
+    if (JOURNEY_MILESTONES.includes(completedNow)) {
+      setMilestoneDay(completedNow);
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.4 }, colors: ["#FFD000", "#FFB347", "#FFE680"] });
+    }
+  };
+
+  const handleCheckIn = () => {
+    let valid = true;
+    if (!checkInTask.trim()) {
+      warnTaskIdx.current = (warnTaskIdx.current + 1) % CHECKIN_WARNINGS.length;
+      setWarnTaskKey(k => k + 1);
+      valid = false;
+    }
+    if (!checkInReflect.trim()) {
+      warnReflectIdx.current = (warnReflectIdx.current + 1) % CHECKIN_WARNINGS.length;
+      setWarnReflectKey(k => k + 1);
+      valid = false;
+    }
+    if (!valid || !todayDay) return;
+    checkIn(todayDay.id, `Task: ${checkInTask.trim()}\n\nReflection: ${checkInReflect.trim()}`);
+    setCheckInTask("");
+    setCheckInReflect("");
+    setCheckInNote("");
+  };
+
+  const sendChat = async () => {
+    if (!chatInput.trim()) return;
+    const userMsg: ChatMessage = { id: nanoid(), role: "user", content: chatInput.trim(), createdAt: new Date().toISOString() };
+    const newMessages = [...chatMessages, userMsg];
+    setChatMessages(newMessages);
+    lsSave(LS_CHAT(track.slug), newMessages);
+    setChatInput("");
+    setChatLoading(true);
+    try {
+      const res = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: track.slug, archetype: archetype.id,
+          messages: newMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),
+          userContext: { startingPoint: journey.startingPoint, motivation: journey.motivation, daysCompleted: completedCount, totalDays: journey.totalDays },
+        }),
+      });
+      const { message } = await res.json() as { message: string };
+      const assistantMsg: ChatMessage = { id: nanoid(), role: "assistant", content: message, createdAt: new Date().toISOString() };
+      const withReply = [...newMessages, assistantMsg];
+      setChatMessages(withReply);
+      lsSave(LS_CHAT(track.slug), withReply);
+    } catch {
+      const fallback: ChatMessage = { id: nanoid(), role: "assistant", content: `I'm here with you on day ${completedCount + 1}. Keep going — each session builds the foundation of who you're becoming.`, createdAt: new Date().toISOString() };
+      const withFallback = [...newMessages, fallback];
+      setChatMessages(withFallback);
+      lsSave(LS_CHAT(track.slug), withFallback);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const tabs: { key: typeof activeTab; label: string }[] = [
+    { key: "today", label: "Today" },
+    { key: "map", label: "Journey" },
+    { key: "community", label: "Community" },
+    { key: "coach", label: "Your Coach" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+          <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-muted transition">
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{track.category}</p>
+            <h1 className="font-semibold text-sm truncate">{track.name}</h1>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] font-mono text-muted-foreground">{completedCount}/{journey.totalDays} days</p>
+            <div className="mt-0.5 h-1 w-20 rounded-full bg-muted overflow-hidden">
+              <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${(completedCount / journey.totalDays) * 100}%` }} />
+            </div>
+          </div>
+        </div>
+        <div className="max-w-2xl mx-auto px-4 flex border-t border-border/50">
+          {tabs.map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              className={`flex-1 py-2.5 text-xs font-semibold transition border-b-2 ${activeTab === tab.key ? "text-foreground border-foreground" : "text-muted-foreground border-transparent"}`}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-4">
+        {activeTab === "today" && todayDay && (
+          <motion.div key="today" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            <div className="rounded-2xl bg-card border border-border p-5" style={{ borderLeft: `3px solid ${accentColor}` }}>
+              <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Day {todayDay.dayNumber}</p>
+              <h2 className="mt-1.5 font-display text-xl font-semibold">{todayDay.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{todayDay.description}</p>
+            </div>
+            {/* Today's task — mission-style card (blue) */}
+            <div className="rounded-2xl overflow-hidden border border-border bg-card relative">
+              <div className="px-5 py-3 border-b border-border/60 flex items-center gap-2"
+                style={{ borderLeft: "3px solid oklch(0.65 0.22 240)" }}>
+                <Zap className="h-3.5 w-3.5" style={{ color: "oklch(0.65 0.22 240)" }} fill="currentColor" />
+                <p className="text-[10px] uppercase tracking-[0.25em] font-mono font-bold" style={{ color: "oklch(0.65 0.22 240)" }}>Your Mission Today</p>
+              </div>
+              <div className="px-5 py-4">
+                <p className="text-base leading-relaxed font-medium whitespace-pre-line">{todayDay.task}</p>
+              </div>
+            </div>
+
+            {/* Reflection (yellow) */}
+            <DayPanel label="Reflection prompt" accentColor="oklch(0.875 0.185 95)"><p className="text-sm text-muted-foreground italic">{todayDay.reflection}</p></DayPanel>
+            {/* Science (green) */}
+            <DayPanel label="The science" accentColor="oklch(0.65 0.22 145)"><p className="text-sm text-muted-foreground">{todayDay.science}</p></DayPanel>
+            {todayDay.completedAt === null ? (
+              <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Check-in</p>
+                  <p className="text-sm text-muted-foreground mt-1">{todayDay.checkinPrompt}</p>
+                </div>
+
+                {/* Task field */}
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-foreground">Did you do the task? How did it go?</p>
+                  <textarea value={checkInTask} onChange={e => setCheckInTask(e.target.value)}
+                    placeholder="Describe what you actually did today…" rows={2}
+                    className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnTaskKey > 0 && !checkInTask.trim() ? "border-red-500" : "border-border"}`} />
+                  <AnimatePresence mode="wait">
+                    {warnTaskKey > 0 && !checkInTask.trim() && (
+                      <motion.p key={warnTaskKey}
+                        initial={{ opacity: 0, x: 0 }}
+                        animate={{ opacity: 1, x: [-5, 5, -4, 4, -2, 2, 0] }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="text-xs text-red-500 font-medium">
+                        {CHECKIN_WARNINGS[warnTaskIdx.current % CHECKIN_WARNINGS.length]}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Reflection field */}
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-foreground">Your reflection</p>
+                  <textarea value={checkInReflect} onChange={e => setCheckInReflect(e.target.value)}
+                    placeholder="What did you notice about yourself today?" rows={2}
+                    className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnReflectKey > 0 && !checkInReflect.trim() ? "border-red-500" : "border-border"}`} />
+                  <AnimatePresence mode="wait">
+                    {warnReflectKey > 0 && !checkInReflect.trim() && (
+                      <motion.p key={warnReflectKey}
+                        initial={{ opacity: 0, x: 0 }}
+                        animate={{ opacity: 1, x: [-5, 5, -4, 4, -2, 2, 0] }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="text-xs text-red-500 font-medium">
+                        {CHECKIN_WARNINGS[warnReflectIdx.current % CHECKIN_WARNINGS.length]}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <button onClick={handleCheckIn}
+                  className="btn-chunk w-full rounded-xl bg-foreground text-background py-2.5 font-semibold text-sm flex items-center justify-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4" /> Mark day {todayDay.dayNumber} complete
+                </button>
+              </div>
+            ) : (
+              <div className="rounded-2xl bg-[color:var(--tertiary)]/10 border border-[color:var(--tertiary)]/20 p-4 flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-[color:var(--tertiary)] shrink-0" />
+                <div>
+                  <p className="font-semibold text-sm">Day {todayDay.dayNumber} complete!</p>
+                  {todayDay.userNote && <p className="text-xs text-muted-foreground mt-0.5">{todayDay.userNote}</p>}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {activeTab === "map" && (
+          <motion.div key="map" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">Journey Map — {journey.totalDays} days</p>
+            {days.map(d => {
+              const isCompleted = d.completedAt !== null;
+              const isCurrent = d.id === todayDay?.id;
+              // Only completed days and today are accessible; everything else is locked
+              const locked = !isCompleted && !isCurrent;
+              return (
+                <button key={d.id}
+                  onClick={locked ? undefined : () => setSelectedDay(d)}
+                  className={`w-full text-left rounded-xl p-4 border transition flex items-center gap-3 ${
+                    isCurrent ? "border-foreground bg-card"
+                    : isCompleted ? "border-[color:var(--tertiary)]/30 bg-[color:var(--tertiary)]/5"
+                    : "border-border bg-card/30 opacity-35 cursor-not-allowed"
+                  }`}>
+                  <div className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isCompleted ? "bg-[color:var(--tertiary)]/20 text-[color:var(--tertiary)]"
+                    : isCurrent ? "bg-foreground text-background"
+                    : "bg-muted text-muted-foreground"
+                  }`}>
+                    {isCompleted ? <Check className="h-3.5 w-3.5" />
+                     : locked ? <span className="text-[11px]">🔒</span>
+                     : d.dayNumber}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">{locked ? `Day ${d.dayNumber}` : d.title}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      {locked ? "Complete today's check-in to unlock" : `${d.description.slice(0, 60)}…`}
+                    </p>
+                  </div>
+                  {JOURNEY_MILESTONES.includes(d.dayNumber) && !locked && <Trophy className="shrink-0 h-3.5 w-3.5 text-yellow-400" />}
+                </button>
+              );
+            })}
+            {journey.generatedThrough < journey.totalDays && (
+              <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
+                Days {journey.generatedThrough + 1}–{journey.totalDays} will be generated as you progress.
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {activeTab === "community" && (
+          <motion.div key="community" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{track.name} Community</p>
+            <CommunityBoard slug={track.slug} />
+          </motion.div>
+        )}
+
+        {activeTab === "coach" && (
+          <motion.div key="coach" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            <div className="rounded-2xl bg-card border border-border p-4 flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full grad-electric flex items-center justify-center shrink-0">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-sm">Your Coach</p>
+                <p className="text-xs text-muted-foreground">Here for every day of this journey</p>
+              </div>
+            </div>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {chatMessages.length === 0 && (
+                <div className="rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
+                  I'm here. What's on your mind today about your {track.name} journey?
+                </div>
+              )}
+              {chatMessages.map(m => (
+                <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${m.role === "user" ? "bg-foreground text-background" : "bg-muted"}`}>
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+              {chatLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-muted rounded-2xl px-4 py-3 flex gap-1">
+                    {[0, 1, 2].map(i => <span key={i} className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />)}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="sticky bottom-0 bg-background pt-2">
+              <div className="flex gap-2">
+                <input value={chatInput} onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()}
+                  placeholder="Ask your coach anything…"
+                  className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
+                  className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-sm font-semibold disabled:opacity-40">
+                  Send
+                </button>
+              </div>
+              <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">🔒 This stays between you and your coach. Always.</p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {selectedDay && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
+            onClick={() => setSelectedDay(null)}>
+            <motion.div initial={{ y: 60 }} animate={{ y: 0 }} exit={{ y: 60 }}
+              className="w-full max-w-lg bg-background rounded-3xl p-6 space-y-4 max-h-[80vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Day {selectedDay.dayNumber}</p>
+                <button onClick={() => setSelectedDay(null)} className="text-muted-foreground hover:text-foreground text-lg">✕</button>
+              </div>
+              <h2 className="font-display text-xl font-semibold">{selectedDay.title}</h2>
+              <p className="text-sm text-muted-foreground">{selectedDay.description}</p>
+              <div className="rounded-xl bg-muted p-3">
+                <p className="text-[10px] uppercase tracking-wider font-mono text-muted-foreground mb-1">Task</p>
+                <p className="text-sm">{selectedDay.task}</p>
+              </div>
+              {selectedDay.completedAt && selectedDay.userNote && (
+                <div className="rounded-xl bg-[color:var(--tertiary)]/10 p-3">
+                  <p className="text-[10px] uppercase tracking-wider font-mono text-[color:var(--tertiary)] mb-1">Your note</p>
+                  <p className="text-sm">{selectedDay.userNote}</p>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {milestoneDay !== null && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+            onClick={() => setMilestoneDay(null)}>
+            <motion.div initial={{ scale: 0.85, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.85 }}
+              className="bg-background rounded-3xl p-8 max-w-sm w-full text-center space-y-4"
+              onClick={e => e.stopPropagation()}>
+              <div className="text-5xl">🏆</div>
+              <h2 className="font-display text-2xl font-bold">Day {milestoneDay}!</h2>
+              <p className="text-muted-foreground text-sm">You've hit a major milestone on your {track.name} journey. This is the moment most people quit — and you didn't.</p>
+              <button onClick={() => setMilestoneDay(null)}
+                className="btn-chunk w-full rounded-xl bg-foreground text-background py-3 font-semibold">
+                Keep going 🔥
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TrackDetailPage
+// ─────────────────────────────────────────────────────────────────────────────
+
+function TrackDetailPage({ track, onBack }: { track: UserTrack; onBack: () => void }) {
+  const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
+  const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
+
+  const handleStarted = (j: Journey, d: JourneyDay[]) => { setJourney(j); setDays(d); };
+
+  if (!journey || days.length === 0) {
+    return <JourneyOnboarding track={track} onStarted={handleStarted} />;
+  }
+  return <JourneyView track={track} journey={journey} days={days} onBack={onBack} />;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // TracksPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TracksPage({ userTracks, onAdd }: {
+function TracksPage({ userTracks, onAdd, onView }: {
   userTracks: UserTrack[];
   onAdd: (t: typeof ALL_TRACKS[0]) => void;
+  onView: (t: UserTrack) => void;
 }) {
-  const activeIds = new Set(userTracks.map(u => u.track_id));
-  const grouped = ALL_TRACKS.reduce<Record<string, typeof ALL_TRACKS>>((acc, t) => {
+  const [search, setSearch] = useState("");
+  const activeMap = new Map(userTracks.map(u => [u.track_id, u]));
+  const q = search.toLowerCase().trim();
+  const filtered = q
+    ? ALL_TRACKS.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.short_description.toLowerCase().includes(q) ||
+        t.category.toLowerCase().includes(q)
+      )
+    : ALL_TRACKS;
+  const grouped = filtered.reduce<Record<string, typeof ALL_TRACKS>>((acc, t) => {
     (acc[t.category] ??= []).push(t); return acc;
   }, {});
 
@@ -1155,13 +2385,33 @@ function TracksPage({ userTracks, onAdd }: {
       <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">Library</p>
       <h1 className="mt-2 font-display text-4xl tracking-tight">Fifty <span className="text-yellow-400">specialists</span>.</h1>
       <p className="mt-2 text-foreground">Pick the one that calls you today.</p>
-      <div className="mt-10 space-y-10">
+      <div className="mt-6 relative">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <input
+          value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Search tracks, categories…"
+          className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition"
+        />
+        {search && (
+          <button onClick={() => setSearch("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-base leading-none">
+            ✕
+          </button>
+        )}
+      </div>
+      {Object.keys(grouped).length === 0 && (
+        <div className="mt-12 text-center text-muted-foreground text-sm">
+          No tracks match "<span className="text-foreground">{search}</span>".
+        </div>
+      )}
+      <div className="mt-8 space-y-10">
         {Object.entries(grouped).map(([cat, tracks]) => (
           <section key={cat}>
             <h2 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-4">{cat}</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {tracks.map((t, i) => {
-                const on = activeIds.has(t.id);
+                const ut = activeMap.get(t.id);
+                const on = !!ut;
                 return (
                   <motion.div key={t.id} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }} transition={{ delay: i * 0.05 }}
@@ -1171,12 +2421,22 @@ function TracksPage({ userTracks, onAdd }: {
                       <h3 className="mt-1 font-semibold text-[15px]">{t.name}</h3>
                       <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{t.short_description}</p>
                     </div>
-                    <button onClick={() => !on && onAdd(t)} disabled={on}
-                      className={`btn-chunk self-start rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${on ? "bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)]" : "bg-foreground text-background"}`}>
-                      {on
-                        ? <><Check className="inline h-3 w-3 mr-1" />Active</>
-                        : <><Plus className="inline h-3 w-3 mr-1" />Start</>}
-                    </button>
+                    {on && ut ? (
+                      <div className="flex gap-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)]">
+                          <Check className="h-3 w-3" />Active
+                        </span>
+                        <button onClick={() => onView(ut)}
+                          className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
+                          View <ArrowRight className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => onAdd(t)}
+                        className="btn-chunk self-start inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
+                        <Plus className="h-3 w-3" />Start
+                      </button>
+                    )}
                   </motion.div>
                 );
               })}
@@ -1210,31 +2470,84 @@ function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log
     return cols;
   }, [heatmap]);
 
+  const monthLabels = useMemo(() => weeks.map((w, i) => {
+    if (i === 0) return new Date(w[0].date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' });
+    const prev = new Date(weeks[i - 1][0].date + 'T12:00:00');
+    const cur  = new Date(w[0].date + 'T12:00:00');
+    return prev.getMonth() !== cur.getMonth()
+      ? cur.toLocaleDateString('en-US', { month: 'short' })
+      : "";
+  }), [weeks]);
+
   const tone = (count: number) => {
     if (count <= 0) return "bg-muted";
-    if (count === 1) return "bg-green-200";
-    if (count === 2) return "bg-green-400";
-    return "bg-green-600";
+    if (count === 1) return "bg-[color:var(--tertiary)]/30";
+    if (count === 2) return "bg-[color:var(--tertiary)]/60";
+    return "bg-[color:var(--tertiary)]";
   };
+
+  const totalCheckins = logs.length;
+  const activeDays = heatmap.filter(d => d.count > 0).length;
 
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl space-y-8">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Your Weekly Letter</h1>
-        <p className="text-muted-foreground mt-1">The page where the data tells the truth.</p>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
+        <p className="text-muted-foreground mt-1">Your data, honest and clear.</p>
       </header>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="font-semibold mb-4">90-day activity</h2>
-        <div className="flex gap-1 overflow-x-auto">
-          {weeks.map((w, i) => (
-            <div key={i} className="flex flex-col gap-1">
-              {w.map(d => (
-                <div key={d.date} title={d.date} className={`h-3 w-3 rounded-sm ${tone(d.count)}`} />
-              ))}
+      {/* Summary row */}
+      {totalCheckins > 0 && (
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Total check-ins", value: totalCheckins },
+            { label: "Active days (90d)", value: activeDays },
+            { label: "Tracks active", value: userTracks.length },
+          ].map(s => (
+            <div key={s.label} className="rounded-2xl border border-border bg-card p-4 text-center">
+              <p className="font-bold text-2xl font-display">{s.value}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
+      )}
+
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold">90-day activity</h2>
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+            <span>less</span>
+            {[0,1,2,3].map(v => <div key={v} className={`h-2.5 w-2.5 rounded-sm ${tone(v)}`} />)}
+            <span>more</span>
+          </div>
+        </div>
+        {totalCheckins === 0 ? (
+          <div className="py-6 text-center text-sm text-muted-foreground">
+            Complete your first check-in to see activity here.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            {/* Month labels */}
+            <div className="flex gap-1 mb-1">
+              {weeks.map((_, i) => (
+                <div key={i} className="w-3 shrink-0 text-[8px] text-muted-foreground font-mono leading-none">
+                  {monthLabels[i]}
+                </div>
+              ))}
+            </div>
+            {/* Day squares */}
+            <div className="flex gap-1">
+              {weeks.map((w, i) => (
+                <div key={i} className="flex flex-col gap-1">
+                  {w.map(d => (
+                    <div key={d.date} title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}
+                      className={`h-3 w-3 rounded-sm transition-colors ${tone(d.count)}`} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {userTracks.length > 0 && (
@@ -1280,14 +2593,43 @@ function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log
 // SettingsPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SettingsPage({ userName, onSignOut }: { userName: string; onSignOut: () => void }) {
+function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void }) {
   const [displayName, setDisplayName] = useState(userName);
+  const [nameSaved, setNameSaved] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "light" }).theme);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [notifEnabled, setNotifEnabled] = useState(() => lsLoad<boolean>("forge-notif", false));
 
   const applyTheme = (t: "light" | "dark") => {
     setTheme(t);
     lsSave(LS_PREFS, { theme: t });
     document.documentElement.classList.toggle("dark", t === "dark");
+  };
+
+  const handleSaveName = () => {
+    if (!displayName.trim()) return;
+    onUpdateName(displayName.trim());
+    setNameSaved(true);
+    setTimeout(() => setNameSaved(false), 2000);
+  };
+
+  const handleExport = () => {
+    const data = {
+      exported: new Date().toISOString(),
+      user: lsLoad(LS_USER, null),
+      tracks: lsLoad(LS_TRACKS, []),
+      logs: lsLoad(LS_LOGS, []),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "forge-data.json"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleClearData = () => {
+    [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
+    onSignOut();
   };
 
   return (
@@ -1297,6 +2639,7 @@ function SettingsPage({ userName, onSignOut }: { userName: string; onSignOut: ()
         <p className="text-muted-foreground mt-1">Manage your account and preferences.</p>
       </header>
 
+      {/* Account */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="flex items-center gap-2 mb-4">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
@@ -1308,18 +2651,24 @@ function SettingsPage({ userName, onSignOut }: { userName: string; onSignOut: ()
           <div>
             <label className="text-xs uppercase tracking-wider text-muted-foreground">Display name</label>
             <div className="flex gap-2 mt-1.5">
-              <input value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Your name"
+              <input value={displayName} onChange={e => { setDisplayName(e.target.value); setNameSaved(false); }}
+                onKeyDown={e => e.key === "Enter" && handleSaveName()}
+                placeholder="Your name"
                 className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-              <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Save</button>
+              <button onClick={handleSaveName}
+                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
+                {nameSaved ? "Saved ✓" : "Save"}
+              </button>
             </div>
           </div>
           <button onClick={onSignOut}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted">
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
             Sign out
           </button>
         </div>
       </section>
 
+      {/* Appearance */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="flex items-center gap-2 mb-4">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
@@ -1331,13 +2680,81 @@ function SettingsPage({ userName, onSignOut }: { userName: string; onSignOut: ()
           <p className="text-sm font-medium">Theme</p>
           <div className="inline-flex rounded-xl border border-border bg-card p-1">
             <button onClick={() => applyTheme("light")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
               <Sun className="h-3.5 w-3.5" /> Light
             </button>
             <button onClick={() => applyTheme("dark")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${theme === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
               <Moon className="h-3.5 w-3.5" /> Dark
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Notifications */}
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+            <Bell className="h-4 w-4" />
+          </span>
+          <h2 className="font-semibold">Notifications</h2>
+        </div>
+        <div className="flex items-center justify-between py-2">
+          <div>
+            <p className="text-sm font-medium">Daily reminders</p>
+            <p className="text-xs text-muted-foreground">Gentle nudge to check in on your paths</p>
+          </div>
+          <button onClick={() => { setNotifEnabled(v => { const next = !v; lsSave("forge-notif", next); return next; }); }}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${notifEnabled ? "bg-[color:var(--tertiary)]" : "bg-muted"}`}>
+            <span className={`inline-block h-4 w-4 rounded-full bg-white transition transform ${notifEnabled ? "translate-x-6" : "translate-x-1"}`} />
+          </button>
+        </div>
+      </section>
+
+      {/* Data & Privacy */}
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+            <Database className="h-4 w-4" />
+          </span>
+          <h2 className="font-semibold">Data & Privacy</h2>
+        </div>
+        <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
+          Your data is stored <strong className="text-foreground">only on this device</strong>. Nothing is sent to any server. Clearing browser storage will erase your progress.
+        </div>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between py-3 border-b border-border/50">
+            <div>
+              <p className="text-sm font-medium">Export data</p>
+              <p className="text-xs text-muted-foreground">Download all your tracks and logs as JSON</p>
+            </div>
+            <button onClick={handleExport}
+              className="btn-chunk inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
+              <Download className="h-3.5 w-3.5" /> Export
+            </button>
+          </div>
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear all data</p>
+              <p className="text-xs text-muted-foreground">Permanently removes all tracks, logs, and progress</p>
+            </div>
+            {showClearConfirm ? (
+              <div className="flex gap-2">
+                <button onClick={() => setShowClearConfirm(false)}
+                  className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
+                  Cancel
+                </button>
+                <button onClick={handleClearData}
+                  className="rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition">
+                  Confirm clear
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setShowClearConfirm(true)}
+                className="btn-chunk rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -1358,6 +2775,7 @@ export function ElevateApp() {
     return "landing";
   });
   const [page, setPage] = useState<AppPage>("home");
+  const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
@@ -1436,14 +2854,18 @@ export function ElevateApp() {
   );
   if (screen === "onboarding") return <OnboardingPage onComplete={handleOnboardingComplete} />;
 
+  if (selectedTrack) {
+    return <TrackDetailPage track={selectedTrack} onBack={() => setSelectedTrack(null)} />;
+  }
+
   return (
     <DashboardLayout currentPage={page} onNavigate={setPage}>
       {page === "home" && (
-        <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} />
+        <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} />
       )}
-      {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} />}
+      {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} />}
       {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
-      {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} />}
+      {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })} />}
     </DashboardLayout>
   );
 }
