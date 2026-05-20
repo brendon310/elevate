@@ -822,15 +822,13 @@ function AppleIcon() {
 // LoginPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-type LoginMode = "options" | "email" | "phone" | "otp";
+type LoginMode = "options" | "phone" | "otp";
 
 function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () => void }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [mode, setMode] = useState<LoginMode>("options");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
 
   const simulateAuth = useCallback(async (
@@ -844,22 +842,12 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
     onSuccess();
   }, [onSuccess]);
 
-  const handleGoogle = () => simulateAuth("google", { email: "user@gmail.com", name: "Elevate User" });
-  const handleApple  = () => simulateAuth("apple",  { email: "user@icloud.com", name: "Elevate User" });
-
-  const handleEmailContinue = () => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError("Enter a valid email address");
-      return;
-    }
-    setEmailError("");
-    simulateAuth("email", { email });
-  };
+  const handleGoogle = () => simulateAuth("google", { email: "user@gmail.com", name: "Forge User" });
 
   const handlePhoneContinue = () => {
     const digits = phone.replace(/\D/g, "");
-    if (digits.length < 10) {
-      setPhoneError("Enter a valid phone number");
+    if (digits.length < 8) {
+      setPhoneError("Inserisci un numero valido");
       return;
     }
     setPhoneError("");
@@ -893,7 +881,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
 
       <button onClick={onBack}
         className="absolute top-7 left-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ChevronLeft className="h-4 w-4" /> Back
+        <ChevronLeft className="h-4 w-4" /> Indietro
       </button>
 
       <motion.div
@@ -917,84 +905,47 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
 
             {mode === "options" && (
               <motion.div key="options" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Welcome back</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Continue your transformation.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">Quasi fatto</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">Salva il tuo percorso. Inizia il Day 1.</p>
 
                 <div className="space-y-3">
                   <button onClick={handleGoogle} disabled={!!loading} className={btnSecondary}>
-                    {loading === "google" ? <Spinner /> : <><GoogleIcon /> Continue with Google</>}
-                  </button>
-                  <button onClick={handleApple} disabled={!!loading}
-                    className="w-full inline-flex items-center justify-center gap-2.5 rounded-xl bg-foreground text-background px-4 py-3 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40">
-                    {loading === "apple" ? <Spinner light /> : <><AppleIcon /> Continue with Apple</>}
+                    {loading === "google" ? <Spinner /> : <><GoogleIcon /> Continua con Google</>}
                   </button>
                 </div>
 
                 <div className="my-5 flex items-center gap-3">
                   <div className="flex-1 h-px bg-border" />
-                  <span className="text-[11px] text-muted-foreground font-mono uppercase tracking-widest">or</span>
+                  <span className="text-[11px] text-muted-foreground font-mono uppercase tracking-widest">o</span>
                   <div className="flex-1 h-px bg-border" />
                 </div>
 
-                <div className="space-y-2.5">
-                  <button onClick={() => setMode("email")} disabled={!!loading} className={btnSecondary}>
-                    <Mail className="h-4 w-4 text-muted-foreground" /> Continue with Email
-                  </button>
-                  <button onClick={() => setMode("phone")} disabled={!!loading} className={btnSecondary}>
-                    <Phone className="h-4 w-4 text-muted-foreground" /> Continue with Phone
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {mode === "email" && (
-              <motion.div key="email" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-                <button onClick={() => setMode("options")} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors">
-                  <ChevronLeft className="h-4 w-4" /> Back
+                <button onClick={() => setMode("phone")} disabled={!!loading} className={btnSecondary}>
+                  <Phone className="h-4 w-4 text-muted-foreground" /> Continua con il telefono
                 </button>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Your email</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">We'll send you a sign-in link.</p>
-                <div className="space-y-3">
-                  <div>
-                    <input
-                      type="email" value={email} autoFocus
-                      onChange={e => { setEmail(e.target.value); setEmailError(""); }}
-                      onKeyDown={e => e.key === "Enter" && handleEmailContinue()}
-                      placeholder="you@example.com"
-                      className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition"
-                    />
-                    {emailError && <p className="text-xs text-red-400 mt-1.5">{emailError}</p>}
-                  </div>
-                  <button onClick={handleEmailContinue} disabled={!!loading} className={btnPrimary}>
-                    {loading === "email" ? <Spinner light /> : "Continue →"}
-                  </button>
-                </div>
               </motion.div>
             )}
 
             {mode === "phone" && (
               <motion.div key="phone" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
                 <button onClick={() => setMode("options")} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors">
-                  <ChevronLeft className="h-4 w-4" /> Back
+                  <ChevronLeft className="h-4 w-4" /> Indietro
                 </button>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Your phone</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">We'll send a verification code.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">Il tuo numero</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">Ti mandiamo un codice via SMS.</p>
                 <div className="space-y-3">
                   <div>
-                    <div className="flex gap-2">
-                      <div className="rounded-xl border border-border bg-background px-3 py-3 text-sm text-muted-foreground font-mono">+1</div>
-                      <input
-                        type="tel" value={phone} autoFocus
-                        onChange={e => { setPhone(e.target.value); setPhoneError(""); }}
-                        onKeyDown={e => e.key === "Enter" && handlePhoneContinue()}
-                        placeholder="(555) 000-0000"
-                        className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition"
-                      />
-                    </div>
+                    <input
+                      type="tel" value={phone} autoFocus
+                      onChange={e => { setPhone(e.target.value); setPhoneError(""); }}
+                      onKeyDown={e => e.key === "Enter" && handlePhoneContinue()}
+                      placeholder="+39 333 000 0000"
+                      className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition"
+                    />
                     {phoneError && <p className="text-xs text-red-400 mt-1.5">{phoneError}</p>}
                   </div>
                   <button onClick={handlePhoneContinue} disabled={!!loading} className={btnPrimary}>
-                    {loading === "phone-send" ? <Spinner light /> : "Send Code →"}
+                    {loading === "phone-send" ? <Spinner light /> : "Invia codice →"}
                   </button>
                 </div>
               </motion.div>
@@ -1002,8 +953,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
 
             {mode === "otp" && (
               <motion.div key="otp" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Enter the code</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Sent to {phone}.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">Inserisci il codice</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">Inviato al {phone}.</p>
                 <div className="space-y-4">
                   <div className="flex gap-2 justify-center">
                     {otp.map((digit, i) => (
@@ -1021,12 +972,12 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
                     ))}
                   </div>
                   <button onClick={handleOtpVerify} disabled={otp.join("").length < 6 || !!loading} className={btnPrimary}>
-                    {loading === "phone" ? <Spinner light /> : "Verify →"}
+                    {loading === "phone" ? <Spinner light /> : "Verifica →"}
                   </button>
                   <p className="text-xs text-center text-muted-foreground">
-                    Didn't get it?{" "}
+                    Non è arrivato?{" "}
                     <button onClick={() => { setOtp(["","","","","",""]); setMode("phone"); }} className="underline hover:text-foreground transition-colors">
-                      Try again
+                      Riprova
                     </button>
                   </p>
                 </div>
@@ -1037,9 +988,9 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
         </div>
 
         <p className="mt-4 text-center text-[11px] text-muted-foreground leading-relaxed">
-          By continuing you agree to our{" "}
-          <span className="underline cursor-pointer hover:text-foreground transition-colors">Terms</span>
-          {" & "}
+          Continuando accetti i nostri{" "}
+          <span className="underline cursor-pointer hover:text-foreground transition-colors">Termini</span>
+          {" e la "}
           <span className="underline cursor-pointer hover:text-foreground transition-colors">Privacy Policy</span>
         </p>
       </motion.div>
@@ -1207,19 +1158,16 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 // OnboardingPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-type OnboardingStep = "commitment" | "question" | "thinking" | "response" | "tracks" | "contract" | "notification";
+type OnboardingStep = "question" | "thinking" | "response" | "tracks";
 
-function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; track: OnboardingTrack }) => void }) {
-  const [step, setStep] = useState<OnboardingStep>("commitment");
-  const [commitStep, setCommitStep] = useState(0); // 0,1,2 for the 3 Noom questions
+function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack }) => void }) {
+  const [step, setStep] = useState<OnboardingStep>("question");
   const [showAllPaths, setShowAllPaths] = useState(false);
   const [answer, setAnswer] = useState("");
   const [message, setMessage] = useState("");
   const [typedCount, setTypedCount] = useState(0);
   const [chosen, setChosen] = useState<OnboardingTrack | null>(null);
-  const [name, setName] = useState("");
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
-  const [completionData, setCompletionData] = useState<{name: string; track: OnboardingTrack} | null>(null);
 
   const words = useMemo(() => message.split(/(\s+)/), [message]);
   const typingDone = typedCount >= words.length && words.length > 0;
@@ -1253,75 +1201,6 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
         style={{ background: "radial-gradient(60% 60% at 50% 25%,oklch(0.52 0.22 232 / 0.45),transparent 70%),radial-gradient(45% 55% at 85% 85%,oklch(0.55 0.20 255 / 0.28),transparent 70%)" }} />
 
       <AnimatePresence mode="wait">
-
-        {/* ── Micro-commitment: 3 Noom-style questions ───────────────── */}
-        {step === "commitment" && (
-          <motion.div key={`c${commitStep}`} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }} className="max-w-xl w-full text-center">
-
-            {/* Progress dots */}
-            <div className="flex justify-center items-center gap-2 mb-12">
-              {[0, 1, 2].map(i => (
-                <motion.div key={i} animate={{ width: i === commitStep ? 20 : 8, opacity: i <= commitStep ? 1 : 0.3 }}
-                  transition={{ duration: 0.3 }}
-                  className={`h-1.5 rounded-full ${i <= commitStep ? "bg-foreground" : "bg-muted"}`} />
-              ))}
-            </div>
-
-            {commitStep === 0 && (
-              <>
-                <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
-                  Have you tried to<br /><span className="text-[color:var(--secondary)] italic">change this before?</span>
-                </h2>
-                <p className="text-muted-foreground text-sm mb-10">Be honest — it matters for how we approach this.</p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button onClick={() => setCommitStep(1)}
-                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Yes, many times
-                  </button>
-                  <button onClick={() => setCommitStep(2)}
-                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Not yet — this is new
-                  </button>
-                </div>
-              </>
-            )}
-
-            {commitStep === 1 && (
-              <>
-                <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
-                  Did it <span className="text-[color:var(--secondary)] italic">last?</span>
-                </h2>
-                <p className="text-muted-foreground text-sm mb-10">Most people who are here have been here before. That's okay.</p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button onClick={() => setCommitStep(2)}
-                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Never long enough
-                  </button>
-                  <button onClick={() => setCommitStep(2)}
-                    className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Sometimes, for a while
-                  </button>
-                </div>
-              </>
-            )}
-
-            {commitStep === 2 && (
-              <>
-                <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground font-mono mb-6">You've already started.</p>
-                <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
-                  Ready to try<br /><span className="text-[color:var(--secondary)] italic">something different?</span>
-                </h2>
-                <p className="text-muted-foreground text-sm mb-10">No app has a built-in coach that actually knows your specific battle. This one does.</p>
-                <button onClick={() => setStep("question")}
-                  className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                  I'm ready <ArrowRight className="h-4 w-4" />
-                </button>
-              </>
-            )}
-
-          </motion.div>
-        )}
 
         {step === "question" && (
           <motion.div key="q" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
@@ -1412,9 +1291,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
                         <span className="text-yellow-400 font-medium">You're not alone in this.</span>
                       </p>
                     )}
-                    <button onClick={() => { setChosen(sug); setStep("contract"); }}
+                    <button onClick={() => onComplete({ track: sug })}
                       className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]">
-                      This is my path <ArrowRight className="h-4 w-4" />
+                      Questo è il mio percorso <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
 
@@ -1489,9 +1368,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
                 </div>
                 {chosen && (
                   <div className="mt-10 text-center">
-                    <button onClick={() => setStep("contract")}
+                    <button onClick={() => onComplete({ track: chosen })}
                       className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                      Continue <ArrowRight className="h-4 w-4" />
+                      Questo è il mio percorso <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
                 )}
@@ -1501,57 +1380,6 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
           </motion.div>
         )}
 
-        {step === "contract" && (
-          <motion.div key="contract" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">Almost there</p>
-            <h2 className="font-display text-3xl tracking-tight mb-8">What should your coach call you?</h2>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name"
-              autoFocus
-              className="w-full bg-transparent border-0 border-b-2 border-border focus:border-foreground outline-none text-center font-display text-2xl py-4 transition-colors" />
-            <AnimatePresence>
-              {name.trim().length > 0 && (
-                <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  onClick={() => { const d = { name: name.trim(), track: chosen! }; setCompletionData(d); setStep("notification"); }}
-                  className="btn-chunk mt-10 inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                  Continue <ArrowRight className="h-4 w-4" />
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        )}
-
-        {step === "notification" && (
-          <motion.div key="notification" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }} className="max-w-md w-full text-center">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.1 }}
-              className="mx-auto mb-8 h-16 w-16 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
-              <Bell className="h-7 w-7 text-white" />
-            </motion.div>
-            <h2 className="font-display text-[2rem] tracking-tight leading-tight mb-3">
-              Stay on track,<br /><span className="text-yellow-400">every day.</span>
-            </h2>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-10">
-              Your coach can send you a daily reminder to check in.<br />
-              Consistency is built one nudge at a time.
-            </p>
-            <div className="space-y-3">
-              <button
-                onClick={async () => {
-                  if ("Notification" in window) { try { await Notification.requestPermission(); } catch {} }
-                  lsSave("forge-notif", true);
-                  onComplete(completionData!);
-                }}
-                className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                <Bell className="h-4 w-4" /> Yes, remind me daily
-              </button>
-              <button onClick={() => onComplete(completionData!)}
-                className="w-full py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Not now — I'll remember myself
-              </button>
-            </div>
-          </motion.div>
-        )}
 
       </AnimatePresence>
     </div>
@@ -3745,8 +3573,11 @@ export function ElevateApp() {
   const [screen, setScreen] = useState<Screen>(() => {
     const user = lsLoad<ElevateUser | null>(LS_USER, null);
     const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);
+    const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
     if (user) return "dashboard";
-    if (auth) return "onboarding";
+    // Auth done but no user yet → finish setting up
+    if (auth && !pendingTrack) return "onboarding";
+    if (auth && pendingTrack) return "dashboard"; // should not happen, but safe fallback
     return "landing";
   });
   const [page, setPage] = useState<AppPage>("home");
@@ -3828,20 +3659,33 @@ export function ElevateApp() {
     setPendingCheckIn(false);
   }, []);
 
-  const handleOnboardingComplete = useCallback(({ name, track }: { name: string; track: OnboardingTrack }) => {
+  // Called after user picks their track — save it and go to login
+  const handleOnboardingComplete = useCallback(({ track }: { track: OnboardingTrack }) => {
+    lsSave("forge-pending-track", track);
+    setScreen("login");
+  }, []);
+
+  // Called after successful login — create user from auth + pending track
+  const handleLoginSuccess = useCallback(() => {
+    const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);
+    const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
+    const name = auth?.name ?? "Forger";
     const newUser: ElevateUser = { name, createdAt: new Date().toISOString() };
     lsSave(LS_USER, newUser);
     setUser(newUser);
-    const full = ALL_TRACKS.find(t => t.slug === track.slug) ?? {
-      id: nanoid(), slug: track.slug, name: track.name, category: track.category, short_description: "",
-    };
-    const ut: UserTrack = {
-      id: nanoid(), track_id: full.id, name: full.name, category: full.category, slug: full.slug,
-      added_at: new Date().toISOString(), current_streak: 0, longest_streak: 0, total_done: 0,
-      last_log_date: null, target_days: 30,
-    };
-    lsSave(LS_TRACKS, [ut]);
-    setTracks([ut]);
+    if (pendingTrack) {
+      const full = ALL_TRACKS.find(t => t.slug === pendingTrack.slug) ?? {
+        id: nanoid(), slug: pendingTrack.slug, name: pendingTrack.name, category: pendingTrack.category, short_description: "",
+      };
+      const ut: UserTrack = {
+        id: nanoid(), track_id: full.id, name: full.name, category: full.category, slug: full.slug,
+        added_at: new Date().toISOString(), current_streak: 0, longest_streak: 0, total_done: 0,
+        last_log_date: null, target_days: 30,
+      };
+      lsSave(LS_TRACKS, [ut]);
+      setTracks([ut]);
+      localStorage.removeItem("forge-pending-track");
+    }
     setScreen("dashboard");
   }, []);
 
@@ -3898,14 +3742,14 @@ export function ElevateApp() {
     return () => clearInterval(interval);
   }, [tracks]);
 
-  if (screen === "landing") return <LandingPage onBegin={() => setScreen("login")} />;
+  if (screen === "landing") return <LandingPage onBegin={() => setScreen("onboarding")} />;
+  if (screen === "onboarding") return <OnboardingPage onComplete={handleOnboardingComplete} />;
   if (screen === "login") return (
     <LoginPage
-      onSuccess={() => setScreen("onboarding")}
-      onBack={() => setScreen("landing")}
+      onSuccess={handleLoginSuccess}
+      onBack={() => setScreen("onboarding")}
     />
   );
-  if (screen === "onboarding") return <OnboardingPage onComplete={handleOnboardingComplete} />;
 
   if (selectedTrack) {
     return (
