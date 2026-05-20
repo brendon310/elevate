@@ -35,6 +35,7 @@ interface UserTrack {
   total_done: number;
   last_log_date: string | null;
   target_days: number;
+  vacation_until?: string | null;
 }
 
 interface Log {
@@ -510,6 +511,7 @@ function trackHueGradient(slug: string) {
 function liveStreak(ut: UserTrack): number {
   const t = todayStr();
   const y = yesterdayStr();
+  if (ut.vacation_until && ut.vacation_until >= t) return ut.current_streak || 0;
   if (ut.last_log_date === t || ut.last_log_date === y) return ut.current_streak || 0;
   return 0;
 }
@@ -1591,6 +1593,115 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // HomePage
 // ─────────────────────────────────────────────────────────────────────────────
+// ReEntryOverlay — shown when user returns after 3+ days away
+// ─────────────────────────────────────────────────────────────────────────────
+
+const REENTRY_MESSAGES = [
+  "Sei tornato. È tutto quello che conta.",
+  "Il gap non definisce il percorso. Sei qui ora.",
+  "I migliori non si arrendono — si ripartono. Ricominciamo.",
+  "Ogni grande storia ha un capitolo in cui il protagonista rientra. Questo è il tuo.",
+];
+
+function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: () => void }) {
+  const msg = REENTRY_MESSAGES[hashStr(todayStr()) % REENTRY_MESSAGES.length];
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center px-7"
+      style={{ background: "oklch(0.06 0.01 250 / 0.97)" }}
+    >
+      <div aria-hidden className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(55% 50% at 50% 40%, oklch(0.645 0.245 25 / 0.10), transparent 70%)" }} />
+      <div className="relative max-w-sm w-full text-center">
+        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6">
+          Bentornato — {gapDays} giorni dopo
+        </motion.p>
+        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          className="font-display text-[2rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-10">
+          {msg}
+        </motion.p>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+          <button onClick={onDismiss}
+            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-8 py-3 text-sm font-semibold">
+            Ricominciamo <ArrowRight className="h-4 w-4" />
+          </button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VacationModal
+// ─────────────────────────────────────────────────────────────────────────────
+
+function VacationModal({ track, onSave, onClose }: {
+  track: UserTrack;
+  onSave: (until: string) => void;
+  onClose: () => void;
+}) {
+  const [days, setDays] = useState(3);
+  const until = new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+  const isActive = track.vacation_until && track.vacation_until >= todayStr();
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+      style={{ background: "oklch(0 0 0 / 0.65)" }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="w-full max-w-sm rounded-3xl bg-card border border-border p-6"
+        onClick={e => e.stopPropagation()}>
+        <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Vacation mode</p>
+        <h3 className="font-display text-xl mb-1">Proteggi la tua streak</h3>
+        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+          Se sei in viaggio o non puoi accedere, metti in pausa. La streak non si azzera.
+        </p>
+        {isActive ? (
+          <>
+            <div className="rounded-2xl bg-[color:var(--tertiary)]/10 border border-[color:var(--tertiary)]/20 p-4 mb-4 text-center">
+              <p className="text-sm font-semibold text-[color:var(--tertiary)]">Pausa attiva fino al {track.vacation_until}</p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium">Chiudi</button>
+              <button onClick={() => { onSave(""); onClose(); }}
+                className="flex-1 btn-chunk rounded-full bg-[color:var(--secondary)] text-white px-4 py-2.5 text-sm font-semibold">
+                Rimuovi pausa
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-2 mb-5">
+              {[3, 7, 14].map(d => (
+                <button key={d} onClick={() => setDays(d)}
+                  className={`flex-1 rounded-xl border py-3 text-sm font-semibold transition btn-chunk ${days === d ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
+                  {d}g
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground text-center mb-5 font-mono">
+              Streak protetta fino al <span className="text-foreground">{until}</span>
+            </p>
+            <div className="flex gap-3">
+              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">Annulla</button>
+              <button onClick={() => { onSave(until); onClose(); }}
+                className="flex-1 btn-chunk rounded-full bg-foreground text-background px-4 py-2.5 text-sm font-semibold">
+                Attiva pausa
+              </button>
+            </div>
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MissedAccessModal
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1858,7 +1969,7 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn }: {
+function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn, onVacation }: {
   user: ElevateUser;
   tracks: UserTrack[];
   onCheckIn: (id: string) => void;
@@ -1866,8 +1977,10 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   onUpdateUser: (patch: Partial<ElevateUser>) => void;
   onView: (t: UserTrack) => void;
   onViewForCheckIn: (t: UserTrack) => void;
+  onVacation: (trackId: string, until: string) => void;
 }) {
   const [showMissedModal, setShowMissedModal] = useState(false);
+  const [vacationTrack, setVacationTrack] = useState<UserTrack | null>(null);
 
   const motivation = useMemo(() => {
     const d = new Date();
@@ -2035,17 +2148,34 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   <p className="font-semibold text-[15px] truncate">{ut.name}</p>
                 </div>
               </div>
-              {doneToday ? (
-                <div className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)] px-3.5 py-2 text-xs font-semibold">
-                  <Check className="h-3.5 w-3.5" /> Done
-                </div>
-              ) : (
-                <button onClick={() => onViewForCheckIn(ut)}
-                  className="shrink-0 btn-chunk rounded-full bg-foreground text-background px-3.5 py-2 text-xs font-semibold transition"
-                  aria-label={`Check in for ${ut.name}`}>
-                  Check in
-                </button>
-              )}
+              {(() => {
+                const onVac = ut.vacation_until && ut.vacation_until >= t;
+                if (doneToday) return (
+                  <div className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)] px-3.5 py-2 text-xs font-semibold">
+                    <Check className="h-3.5 w-3.5" /> Done
+                  </div>
+                );
+                if (onVac) return (
+                  <button onClick={() => setVacationTrack(ut)}
+                    className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-3.5 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition">
+                    In pausa
+                  </button>
+                );
+                return (
+                  <div className="shrink-0 flex items-center gap-2">
+                    <button onClick={() => setVacationTrack(ut)}
+                      className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
+                      title="Metti in pausa">
+                      <Sun className="h-3.5 w-3.5" />
+                    </button>
+                    <button onClick={() => onViewForCheckIn(ut)}
+                      className="btn-chunk rounded-full bg-foreground text-background px-3.5 py-2 text-xs font-semibold transition"
+                      aria-label={`Check in for ${ut.name}`}>
+                      Check in
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
@@ -2066,6 +2196,15 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
       <AnimatePresence>
         {showMissedModal && (
           <MissedAccessModal tracks={tracks} onClose={() => setShowMissedModal(false)} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {vacationTrack && (
+          <VacationModal
+            track={vacationTrack}
+            onSave={(until) => { onVacation(vacationTrack.id, until); }}
+            onClose={() => setVacationTrack(null)}
+          />
         )}
       </AnimatePresence>
     </div>
@@ -2727,6 +2866,13 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 className="btn-chunk w-full rounded-xl bg-foreground text-background py-3 font-semibold">
                 Keep going
               </button>
+              <button onClick={() => {
+                const text = `Day ${milestoneDay} on ${track.name} with Forge. The streak continues. 🔥`;
+                if (navigator.share) navigator.share({ text });
+                else navigator.clipboard?.writeText(text);
+              }} className="btn-chunk w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition">
+                Condividi questo momento
+              </button>
             </motion.div>
           </motion.div>
         )}
@@ -2760,10 +2906,11 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn }: {
 // TracksPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TracksPage({ userTracks, onAdd, onView }: {
+function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   userTracks: UserTrack[];
   onAdd: (t: typeof ALL_TRACKS[0]) => void;
   onView: (t: UserTrack) => void;
+  onRemove: (id: string) => void;
 }) {
   const [search, setSearch] = useState("");
   const activeMap = new Map(userTracks.map(u => [u.track_id, u]));
@@ -2828,6 +2975,11 @@ function TracksPage({ userTracks, onAdd, onView }: {
                         <button onClick={() => onView(ut)}
                           className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
                           View <ArrowRight className="h-3 w-3" />
+                        </button>
+                        <button onClick={() => { if (confirm(`Rimuovere "${t.name}" dalla tua lista?`)) onRemove(ut.id); }}
+                          className="btn-chunk inline-flex items-center rounded-full px-2.5 py-1.5 text-xs border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] hover:bg-[color:var(--secondary)]/10 transition"
+                          title="Rimuovi track">
+                          ✕
                         </button>
                       </div>
                     ) : (
@@ -3089,6 +3241,19 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
   const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "light" }).theme);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(() => lsLoad<boolean>("forge-notif", false));
+  const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
+  const [reminderTime, setReminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
+
+  const toggleReminder = async () => {
+    if (!reminderOn) {
+      if (!("Notification" in window)) return;
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") return;
+    }
+    const next = !reminderOn;
+    setReminderOn(next);
+    lsSave("forge-reminder-on", next);
+  };
 
   const applyTheme = (t: "light" | "dark") => {
     setTheme(t);
@@ -3191,14 +3356,25 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
         </div>
         <div className="flex items-center justify-between py-2">
           <div>
-            <p className="text-sm font-medium">Daily reminders</p>
-            <p className="text-xs text-muted-foreground">Gentle nudge to check in on your paths</p>
+            <p className="text-sm font-medium">Reminder giornaliero</p>
+            <p className="text-xs text-muted-foreground">Notifica se non hai fatto check-in all'orario scelto</p>
           </div>
-          <button onClick={() => { setNotifEnabled(v => { const next = !v; lsSave("forge-notif", next); return next; }); }}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${notifEnabled ? "bg-[color:var(--tertiary)]" : "bg-muted"}`}>
-            <span className={`inline-block h-4 w-4 rounded-full bg-white transition transform ${notifEnabled ? "translate-x-6" : "translate-x-1"}`} />
+          <button onClick={toggleReminder}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${reminderOn ? "bg-[color:var(--tertiary)]" : "bg-muted"}`}>
+            <span className={`inline-block h-4 w-4 rounded-full bg-white transition transform ${reminderOn ? "translate-x-6" : "translate-x-1"}`} />
           </button>
         </div>
+        {reminderOn && (
+          <div className="flex items-center justify-between py-2 border-t border-border/50">
+            <p className="text-sm text-muted-foreground">Orario</p>
+            <input
+              type="time"
+              value={reminderTime}
+              onChange={e => { setReminderTime(e.target.value); lsSave("forge-reminder-time", e.target.value); }}
+              className="rounded-xl border border-border bg-muted px-3 py-1.5 text-sm text-foreground focus:outline-none focus:border-foreground"
+            />
+          </div>
+        )}
       </section>
 
       {/* Data & Privacy */}
@@ -3268,6 +3444,8 @@ export function ElevateApp() {
   const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
   const [pendingCheckIn, setPendingCheckIn] = useState(false);
   const [showMorningCoach, setShowMorningCoach] = useState(false);
+  const [showReEntry, setShowReEntry] = useState(false);
+  const [reEntryGap, setReEntryGap] = useState(0);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
@@ -3295,7 +3473,24 @@ export function ElevateApp() {
     });
   }, []);
 
+  const removeTrack = useCallback((trackId: string) => {
+    setTracks(prev => {
+      const next = prev.filter(t => t.id !== trackId);
+      lsSave(LS_TRACKS, next);
+      return next;
+    });
+  }, []);
+
+  const setVacation = useCallback((trackId: string, until: string) => {
+    setTracks(prev => {
+      const next = prev.map(t => t.id === trackId ? { ...t, vacation_until: until || null } : t);
+      lsSave(LS_TRACKS, next);
+      return next;
+    });
+  }, []);
+
   const checkIn = useCallback((userTrackId: string) => {
+    navigator.vibrate?.(40);
     const t = todayStr();
     const y = yesterdayStr();
     setTracks(prev => {
@@ -3347,20 +3542,52 @@ export function ElevateApp() {
     setScreen("landing");
   }, []);
 
-  // Morning coach: show once per day on first dashboard open
+  // Morning coach / re-entry: show once per day
   useEffect(() => {
     if (screen !== "dashboard" || tracks.length === 0) return;
     const key = `forge-morning-${todayStr()}`;
-    if (!lsLoad<boolean>(key, false)) {
-      const timer = setTimeout(() => setShowMorningCoach(true), 900);
-      return () => clearTimeout(timer);
-    }
+    if (lsLoad<boolean>(key, false)) return;
+    const maxGap = Math.max(...tracks.map(ut => {
+      if (!ut.last_log_date) return 0;
+      return Math.floor((Date.now() - new Date(ut.last_log_date).getTime()) / 86_400_000);
+    }));
+    const timer = setTimeout(() => {
+      if (maxGap >= 3) { setReEntryGap(maxGap); setShowReEntry(true); }
+      else setShowMorningCoach(true);
+    }, 900);
+    return () => clearTimeout(timer);
   }, [screen, tracks.length]);
 
   const handleMorningDismiss = useCallback(() => {
     lsSave(`forge-morning-${todayStr()}`, true);
     setShowMorningCoach(false);
   }, []);
+
+  const handleReEntryDismiss = useCallback(() => {
+    lsSave(`forge-morning-${todayStr()}`, true);
+    setShowReEntry(false);
+  }, []);
+
+  // Notification reminder check — every minute
+  useEffect(() => {
+    if (!("Notification" in window)) return;
+    const interval = setInterval(() => {
+      if (!lsLoad<boolean>("forge-reminder-on", false)) return;
+      if (Notification.permission !== "granted") return;
+      const time = lsLoad<string>("forge-reminder-time", "21:00");
+      const now = new Date();
+      const [h, m] = time.split(":").map(Number);
+      if (now.getHours() !== h || now.getMinutes() !== m) return;
+      const t = todayStr();
+      const allDone = tracks.every(tr => tr.last_log_date === t);
+      if (allDone) return;
+      const sentKey = `forge-notif-sent-${t}`;
+      if (lsLoad<boolean>(sentKey, false)) return;
+      lsSave(sentKey, true);
+      new Notification("Forge", { body: "Non hai ancora fatto check-in oggi. Il tuo streak ti aspetta." });
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [tracks]);
 
   if (screen === "landing") return <LandingPage onBegin={() => setScreen("login")} />;
   if (screen === "login") return (
@@ -3385,15 +3612,18 @@ export function ElevateApp() {
   return (
     <>
       <AnimatePresence>
+        {showReEntry && (
+          <ReEntryOverlay gapDays={reEntryGap} onDismiss={handleReEntryDismiss} />
+        )}
         {showMorningCoach && (
           <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
         )}
       </AnimatePresence>
       <DashboardLayout currentPage={page} onNavigate={setPage}>
         {page === "home" && (
-          <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} />
+          <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
         )}
-        {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} />}
+        {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} onRemove={removeTrack} />}
         {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
         {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })} />}
       </DashboardLayout>
