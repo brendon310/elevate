@@ -1666,6 +1666,7 @@ function VacationModal({ track, onSave, onClose }: {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
       style={{ background: "oklch(0 0 0 / 0.65)" }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
@@ -2001,19 +2002,22 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>({});
   const [noteText, setNoteText] = useState<Record<string, string>>({});
   const [noteError, setNoteError] = useState<Record<string, string>>({});
+  const [noteSubmitted, setNoteSubmitted] = useState<Record<string, boolean>>({});
 
   // Load today's saved quick-notes from localStorage on mount / when tracks change
   useEffect(() => {
     const today = todayStr();
     const loadedText: Record<string, string> = {};
     const autoOpen: Record<string, boolean> = {};
+    const autoSubmitted: Record<string, boolean> = {};
     tracks.forEach(ut => {
       const saved = lsLoad<string>(`forge-quick-note-${ut.id}-${today}`, "");
       loadedText[ut.id] = saved;
-      if (saved) autoOpen[ut.id] = true;
+      if (saved) { autoOpen[ut.id] = true; autoSubmitted[ut.id] = true; }
     });
     setNoteText(loadedText);
     setNoteOpen(prev => ({ ...prev, ...autoOpen }));
+    setNoteSubmitted(autoSubmitted);
   }, [tracks.length]);
 
   const saveNote = (trackId: string, text: string) => {
@@ -2215,11 +2219,6 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   );
                   return (
                     <div className="shrink-0 flex items-center gap-2">
-                      <button onClick={() => setVacationTrack(ut)}
-                        className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
-                        title="Metti in pausa">
-                        <Sun className="h-3.5 w-3.5" />
-                      </button>
                       <button onClick={() => toggleNote(ut.id)}
                         className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
                         title="Nota rapida">
@@ -2259,64 +2258,80 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                           </p>
                         ) : null;
                       })()}
-                      {/* Textarea */}
-                      <motion.div
-                        animate={noteError[ut.id] ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
-                        transition={{ duration: 0.3 }}>
-                        <textarea
-                          value={noteText[ut.id] ?? ""}
-                          onChange={e => {
-                            setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }));
-                            if (noteError[ut.id]) setNoteError(prev => ({ ...prev, [ut.id]: "" }));
-                          }}
-                          placeholder="Racconta com'è andata oggi…"
-                          className={`w-full bg-muted/40 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed border transition ${noteError[ut.id] ? "border-[color:var(--secondary)]" : "border-border/50 focus:border-foreground/30"}`}
-                          rows={3}
-                          autoFocus
-                        />
-                      </motion.div>
-                      {/* Error */}
-                      <AnimatePresence>
-                        {noteError[ut.id] && (
-                          <motion.p
-                            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                            className="text-[11px] text-[color:var(--secondary)] font-mono">
-                            {noteError[ut.id]}
-                          </motion.p>
-                        )}
-                      </AnimatePresence>
-                      {/* Actions */}
-                      <div className="flex items-center justify-between pt-0.5">
-                        <button
-                          onClick={() => { toggleNote(ut.id); setNoteError(prev => ({ ...prev, [ut.id]: "" })); }}
-                          className="text-xs text-muted-foreground hover:text-foreground transition font-mono">
-                          Annulla
-                        </button>
-                        <button
-                          onClick={() => {
-                            const text = (noteText[ut.id] ?? "").trim();
-                            const err = validateQuickNote(text);
-                            if (err) { setNoteError(prev => ({ ...prev, [ut.id]: err })); return; }
-                            // Complete the active journey day → advances to next day
-                            const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
-                            const activeDayIdx = jDays.findIndex(d => d.completedAt === null);
-                            if (activeDayIdx !== -1) {
-                              const updatedDays = jDays.map((d, i) =>
-                                i === activeDayIdx
-                                  ? { ...d, completedAt: new Date().toISOString(), userNote: text }
-                                  : d
-                              );
-                              lsSave(LS_DAYS(ut.slug), updatedDays);
-                            }
-                            saveNote(ut.id, text);
-                            if (!doneToday) onCheckIn(ut.id);
-                            setNoteOpen(prev => ({ ...prev, [ut.id]: false }));
-                            setNoteError(prev => ({ ...prev, [ut.id]: "" }));
-                          }}
-                          className="btn-chunk rounded-full bg-foreground text-background px-4 py-1.5 text-xs font-semibold transition hover:opacity-80">
-                          Invia
-                        </button>
-                      </div>
+                      {/* Read-only note (after submit) */}
+                      {noteSubmitted[ut.id] ? (
+                        <div className="space-y-2">
+                          <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                            {noteText[ut.id]}
+                          </p>
+                          <button
+                            onClick={() => setNoteSubmitted(prev => ({ ...prev, [ut.id]: false }))}
+                            className="text-[11px] font-mono text-muted-foreground hover:text-foreground transition underline underline-offset-2">
+                            Modifica
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Textarea */}
+                          <motion.div
+                            animate={noteError[ut.id] ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+                            transition={{ duration: 0.3 }}>
+                            <textarea
+                              value={noteText[ut.id] ?? ""}
+                              onChange={e => {
+                                setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }));
+                                if (noteError[ut.id]) setNoteError(prev => ({ ...prev, [ut.id]: "" }));
+                              }}
+                              placeholder="Racconta com'è andata oggi…"
+                              className={`w-full bg-muted/40 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed border transition ${noteError[ut.id] ? "border-[color:var(--secondary)]" : "border-border/50 focus:border-foreground/30"}`}
+                              rows={3}
+                              autoFocus
+                            />
+                          </motion.div>
+                          {/* Error */}
+                          <AnimatePresence>
+                            {noteError[ut.id] && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                                className="text-[11px] text-[color:var(--secondary)] font-mono">
+                                {noteError[ut.id]}
+                              </motion.p>
+                            )}
+                          </AnimatePresence>
+                          {/* Actions */}
+                          <div className="flex items-center justify-between pt-0.5">
+                            <button
+                              onClick={() => { toggleNote(ut.id); setNoteError(prev => ({ ...prev, [ut.id]: "" })); }}
+                              className="text-xs text-muted-foreground hover:text-foreground transition font-mono">
+                              Annulla
+                            </button>
+                            <button
+                              onClick={() => {
+                                const text = (noteText[ut.id] ?? "").trim();
+                                const err = validateQuickNote(text);
+                                if (err) { setNoteError(prev => ({ ...prev, [ut.id]: err })); return; }
+                                // Complete the active journey day → advances to next day
+                                const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
+                                const activeDayIdx = jDays.findIndex(d => d.completedAt === null);
+                                if (activeDayIdx !== -1) {
+                                  const updatedDays = jDays.map((d, i) =>
+                                    i === activeDayIdx
+                                      ? { ...d, completedAt: new Date().toISOString(), userNote: text }
+                                      : d
+                                  );
+                                  lsSave(LS_DAYS(ut.slug), updatedDays);
+                                }
+                                saveNote(ut.id, text);
+                                if (!doneToday) onCheckIn(ut.id);
+                                setNoteSubmitted(prev => ({ ...prev, [ut.id]: true }));
+                                setNoteError(prev => ({ ...prev, [ut.id]: "" }));
+                              }}
+                              className="btn-chunk rounded-full bg-foreground text-background px-4 py-1.5 text-xs font-semibold transition hover:opacity-80">
+                              Invia
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </motion.div>
                 )}
