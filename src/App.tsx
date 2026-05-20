@@ -1281,7 +1281,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
               <div className="mt-3 text-[11px] text-muted-foreground font-mono tracking-wider">
                 {answer.trim().length < 10 ? `${Math.max(0, 10 - answer.trim().length)} more to continue` : "Ready when you are"}
               </div>
-              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">This stays between you and your coach. Always.</p>
+              <p className="mt-1.5 text-[11px] text-muted-foreground font-mono">This stays between you and your coach. Always.</p>
               <AnimatePresence>
                 {answer.trim().length >= 10 && (
                   <motion.button key="cont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -2307,7 +2307,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   Send
                 </button>
               </div>
-              <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">This stays between you and your coach. Always.</p>
+              <p className="mt-2 text-[10px] text-muted-foreground font-mono text-center">This stays between you and your coach. Always.</p>
             </div>
           </motion.div>
         )}
