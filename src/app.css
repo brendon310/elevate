@@ -365,7 +365,7 @@
     50% { background-position: 100% 50%; }
   }
   .flow-banner {
-    background: linear-gradient(110deg, oklch(0.55 0.21 145), oklch(0.875 0.185 95), oklch(0.55 0.21 145));
+    background: linear-gradient(110deg, oklch(0.38 0.22 240), oklch(0.62 0.22 232), oklch(0.38 0.22 240));
     background-size: 220% 100%;
     animation: flow-shimmer 4s ease-in-out infinite;
   }

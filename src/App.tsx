@@ -625,7 +625,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
         className="rounded-3xl p-5 depth-card relative overflow-hidden">
         <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, oklch(0.875 0.185 95), transparent 60%)" }} />
+          style={{ background: "radial-gradient(circle, oklch(0.52 0.22 232), transparent 60%)" }} />
         <div className="flex items-center gap-5 relative">
           <div className="relative shrink-0" style={{ width: size, height: size }}>
             <div className={`absolute inset-0 rounded-full ${isMaxed ? "peak-ring" : evo.ringClass}`} style={{ padding: 3 }}>
@@ -634,13 +634,13 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
             <svg width={size} height={size} className="absolute inset-0 -rotate-90">
               <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(0.5 0 0 / 0.25)" strokeWidth={stroke} fill="none" />
               <motion.circle cx={size / 2} cy={size / 2} r={r}
-                stroke={isMaxed ? "oklch(0.78 0.20 70)" : "oklch(0.875 0.185 95)"}
+                stroke={isMaxed ? "oklch(0.78 0.20 70)" : "oklch(0.62 0.22 232)"}
                 strokeWidth={stroke} strokeLinecap="round" fill="none"
                 strokeDasharray={c}
                 initial={{ strokeDashoffset: c }}
                 animate={{ strokeDashoffset: c - c * pct }}
                 transition={{ type: "spring", stiffness: 50, damping: 18 }}
-                style={{ filter: isMaxed ? "drop-shadow(0 0 10px oklch(0.78 0.20 70 / 0.7))" : "drop-shadow(0 0 10px oklch(0.875 0.185 95 / 0.55))" }}
+                style={{ filter: isMaxed ? "drop-shadow(0 0 10px oklch(0.78 0.20 70 / 0.7))" : "drop-shadow(0 0 12px oklch(0.62 0.22 232 / 0.65))" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -831,7 +831,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
   return (
     <div className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10"
-        style={{ background: "radial-gradient(70% 60% at 50% -10%,oklch(0.62 0.215 275 / 0.4),transparent 70%),radial-gradient(40% 50% at 85% 10%,oklch(0.70 0.215 340 / 0.25),transparent 60%),radial-gradient(40% 40% at 15% 30%,oklch(0.82 0.165 165 / 0.15),transparent 70%)" }} />
+        style={{ background: "radial-gradient(70% 60% at 50% -10%,oklch(0.52 0.22 232 / 0.40),transparent 70%),radial-gradient(40% 50% at 85% 10%,oklch(0.55 0.20 255 / 0.25),transparent 60%),radial-gradient(40% 40% at 15% 30%,oklch(0.62 0.18 210 / 0.15),transparent 70%)" }} />
 
       <button onClick={onBack}
         className="absolute top-7 left-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -997,7 +997,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
   return (
     <div className="relative min-h-screen overflow-x-hidden text-foreground">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[900px]"
-        style={{ background: "radial-gradient(70% 60% at 50% -10%,oklch(0.62 0.215 275 / 0.5),transparent 70%),radial-gradient(40% 50% at 85% 10%,oklch(0.70 0.215 340 / 0.35),transparent 60%),radial-gradient(40% 40% at 15% 30%,oklch(0.82 0.165 165 / 0.20),transparent 70%)" }} />
+        style={{ background: "radial-gradient(70% 60% at 50% -10%,oklch(0.52 0.22 232 / 0.50),transparent 70%),radial-gradient(40% 50% at 85% 10%,oklch(0.55 0.20 255 / 0.30),transparent 60%),radial-gradient(40% 40% at 15% 30%,oklch(0.62 0.18 210 / 0.18),transparent 70%)" }} />
 
       <header className="container mx-auto flex items-center justify-between px-6 py-7">
         <div className="flex items-center gap-2.5">
@@ -1192,7 +1192,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
   return (
     <div className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10"
-        style={{ background: "radial-gradient(60% 60% at 50% 25%,oklch(0.62 0.215 275 / 0.45),transparent 70%),radial-gradient(45% 55% at 85% 85%,oklch(0.70 0.215 340 / 0.30),transparent 70%)" }} />
+        style={{ background: "radial-gradient(60% 60% at 50% 25%,oklch(0.52 0.22 232 / 0.45),transparent 70%),radial-gradient(45% 55% at 85% 85%,oklch(0.55 0.20 255 / 0.28),transparent 70%)" }} />
 
       <AnimatePresence mode="wait">
 
