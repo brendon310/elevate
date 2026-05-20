@@ -2068,7 +2068,8 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
     tracks.forEach(ut => {
       const saved = lsLoad<string>(`forge-quick-note-${ut.id}-${today}`, "");
       loadedText[ut.id] = saved;
-      if (saved) { autoOpen[ut.id] = true; autoSubmitted[ut.id] = true; }
+      if (saved) { autoSubmitted[ut.id] = true; }
+      // Never auto-open the textarea on home load
     });
     setNoteText(loadedText);
     setNoteOpen(prev => ({ ...prev, ...autoOpen }));
@@ -2264,7 +2265,29 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
           const hueVar = trackHueVar(ut.category);
           const doneToday = ut.last_log_date === t;
           return (
-            <div key={ut.id} className="rounded-2xl depth-card overflow-hidden">
+            <div key={ut.id} className="rounded-2xl depth-card overflow-hidden relative">
+              {/* Frozen overlay on row */}
+              {ut.vacation_until && ut.vacation_until >= t && (
+                <div className="absolute inset-0 z-10 flex items-center justify-between px-4 rounded-2xl overflow-hidden"
+                  style={{ background: "oklch(0.13 0.08 220 / 0.88)" }}>
+                  <SnowfallBackground count={12} speed={0.7} />
+                  <div className="relative z-10 flex items-center gap-2">
+                    <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white/30 font-display text-base shrink-0 blur-[1px]"
+                      style={{ background: trackHueGradient(ut.slug) }}>
+                      {ut.name.slice(0, 2)}
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: "#b8e0ff" }}>Freezed</p>
+                      <p className="font-semibold text-[15px] text-white/80 truncate">{ut.name}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setVacationTrack(ut)}
+                    className="relative z-10 shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition"
+                    style={{ borderColor: "oklch(0.55 0.1 220 / 0.5)", color: "#b8e0ff", background: "oklch(0.2 0.08 220 / 0.6)" }}>
+                    ❄ until {ut.vacation_until}
+                  </button>
+                </div>
+              )}
               <div className="flex items-center gap-4 p-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white font-display text-base shrink-0"
