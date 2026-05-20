@@ -2184,44 +2184,68 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
             return (
               <motion.div key={ut.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08 + i * 0.05, type: "spring", stiffness: 90, damping: 16 }}>
-                <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
-                  onClick={() => onView(ut)}
-                  style={{ background: grad, boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
-                  <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
-                    style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.5), transparent 60%)" }} />
-                  <div aria-hidden className="absolute right-3 top-3 h-20 w-20 rounded-full opacity-70"
-                    style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.35), transparent 70%)" }} />
-                  <div className="relative flex items-start justify-between">
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-white font-mono">{ut.category}</span>
-                    <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
-                  </div>
-                  <div className="relative mt-auto pt-12">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
-                    <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut)}</p>
-                    {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
-                      <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
-                    ) : null; })()}
-                    <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
-                    <div className="mt-2 flex items-center gap-2 flex-wrap">
-                      {liveStreak(ut) === 0 && !doneToday ? (
-                        <p className="text-[10px] font-mono text-white/45 leading-snug">
-                          Nessun problema —<br />ricomincia quando vuoi.
-                        </p>
-                      ) : (
-                        <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
-                          <Flame className="h-3 w-3 flame text-[color:var(--highlight)]" />
-                          <span className="font-mono">{liveStreak(ut)}</span>
-                          <span>streak</span>
+                {(() => {
+                  const onVacCard = ut.vacation_until && ut.vacation_until >= t;
+                  return (
+                    <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
+                      onClick={() => onView(ut)}
+                      style={{ background: grad, boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
+                      {/* Normal card content — blurred when frozen */}
+                      <div className={onVacCard ? "blur-[2px] pointer-events-none" : ""}>
+                        <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
+                          style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.5), transparent 60%)" }} />
+                        <div aria-hidden className="absolute right-3 top-3 h-20 w-20 rounded-full opacity-70"
+                          style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.35), transparent 70%)" }} />
+                        <div className="relative flex items-start justify-between">
+                          <span className="text-[10px] uppercase tracking-[0.25em] text-white font-mono">{ut.category}</span>
+                          <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
                         </div>
-                      )}
-                      {doneToday && (
-                        <div className="inline-flex items-center gap-1 rounded-full bg-[color:var(--tertiary)] px-2.5 py-1 text-[11px] text-white font-semibold">
-                          <Check className="h-3 w-3" /> Done
+                        <div className="relative mt-auto pt-12">
+                          <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
+                          <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut)}</p>
+                          {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
+                            <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
+                          ) : null; })()}
+                          <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
+                          <div className="mt-2 flex items-center gap-2 flex-wrap">
+                            {liveStreak(ut) === 0 && !doneToday ? (
+                              <p className="text-[10px] font-mono text-white/45 leading-snug">
+                                Nessun problema —<br />ricomincia quando vuoi.
+                              </p>
+                            ) : (
+                              <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
+                                <Flame className="h-3 w-3 flame text-[color:var(--highlight)]" />
+                                <span className="font-mono">{liveStreak(ut)}</span>
+                                <span>streak</span>
+                              </div>
+                            )}
+                            {doneToday && (
+                              <div className="inline-flex items-center gap-1 rounded-full bg-[color:var(--tertiary)] px-2.5 py-1 text-[11px] text-white font-semibold">
+                                <Check className="h-3 w-3" /> Done
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Frozen overlay */}
+                      {onVacCard && (
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-[20px]"
+                          style={{ background: "oklch(0.13 0.08 220 / 0.82)" }}>
+                          <SnowfallBackground count={22} speed={0.75} />
+                          <div className="relative z-10 text-center pointer-events-none">
+                            <p className="font-display text-4xl font-bold text-white tracking-tight"
+                              style={{ textShadow: "0 0 28px rgba(160,215,255,0.7)" }}>
+                              Freezed
+                            </p>
+                            <p className="text-white/50 text-[10px] font-mono mt-1.5 tracking-widest uppercase">
+                              until {ut.vacation_until}
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
               </motion.div>
             );
           })}
@@ -2273,8 +2297,9 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   );
                   if (onVac) return (
                     <button onClick={() => setVacationTrack(ut)}
-                      className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-3.5 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition">
-                      In pausa
+                      className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition"
+                      style={{ background: "oklch(0.18 0.07 220 / 0.9)", borderColor: "oklch(0.55 0.1 220 / 0.4)", color: "#b8e0ff" }}>
+                      ❄ Freezed
                     </button>
                   );
                   return (
