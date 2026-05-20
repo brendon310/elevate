@@ -9,6 +9,7 @@ import {
   Database, Download, Bell, Target, Lock, PenLine,
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { supabase } from "./supabase";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -840,33 +841,53 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
   const [phoneError, setPhoneError] = useState("");
   const [enteredName, setEnteredName] = useState("");
 
-  const simulateAuth = useCallback(async (
-    provider: ElevateAuth["provider"],
-    data?: Partial<Omit<ElevateAuth, "provider" | "createdAt">>
-  ) => {
-    setLoading(provider);
-    await new Promise(r => setTimeout(r, 1500));
-    lsSave(LS_AUTH, { provider, ...data, createdAt: new Date().toISOString() } as ElevateAuth);
-    setLoading(null);
-    setMode("name"); // ask name before proceeding
+  // ── Real Supabase auth ──────────────────────────────────────────────────────
+
+  // On mount: if we already have a Supabase session (e.g. returning from
+  // Google OAuth redirect), jump straight to the name step.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setMode("name");
+    });
   }, []);
 
-  const handleGoogle = () => simulateAuth("google", { email: "user@gmail.com", name: "Forge User" });
+  const [authError, setAuthError] = useState<string | null>(null);
 
-  const handlePhoneContinue = () => {
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length < 8) {
-      setPhoneError("Inserisci un numero valido");
-      return;
-    }
-    setPhoneError("");
-    setLoading("phone-send");
-    setTimeout(() => { setLoading(null); setMode("otp"); }, 1000);
+  const handleGoogle = async () => {
+    setLoading("google");
+    setAuthError(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) { setAuthError(error.message); setLoading(null); }
+    // on success the browser will redirect — no further action needed here
   };
 
-  const handleOtpVerify = () => {
+  const handlePhoneContinue = async () => {
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 8) { setPhoneError("Inserisci un numero valido"); return; }
+    setPhoneError("");
+    setAuthError(null);
+    setLoading("phone-send");
+    const { error } = await supabase.auth.signInWithOtp({ phone });
+    setLoading(null);
+    if (error) { setPhoneError(error.message); return; }
+    setMode("otp");
+  };
+
+  const handleOtpVerify = async () => {
     if (otp.join("").length < 6) return;
-    simulateAuth("phone", { phone });
+    setLoading("phone");
+    setAuthError(null);
+    const { error } = await supabase.auth.verifyOtp({
+      phone,
+      token: otp.join(""),
+      type: "sms",
+    });
+    setLoading(null);
+    if (error) { setAuthError(error.message); return; }
+    setMode("name");
   };
 
   const handleOtpChange = (i: number, val: string) => {
@@ -921,6 +942,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                   <button onClick={handleGoogle} disabled={!!loading} className={btnSecondary}>
                     {loading === "google" ? <Spinner /> : <><GoogleIcon /> Continua con Google</>}
                   </button>
+                  {authError && <p className="text-xs text-red-400 text-center mt-1">{authError}</p>}
                 </div>
 
                 <div className="my-5 flex items-center gap-3">
@@ -3762,10 +3784,25 @@ export function ElevateApp() {
     setScreen("dashboard");
   }, []);
 
-  const handleSignOut = useCallback(() => {
+  const handleSignOut = useCallback(async () => {
+    await supabase.auth.signOut();
     [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
     setUser(null); setTracks([]); setLogs([]);
     setScreen("landing");
+  }, []);
+
+  // Handle Google OAuth redirect: app reloads after returning from Google,
+  // Supabase session exists but we haven't created the local user yet.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return;
+      const existingUser = lsLoad<ElevateUser | null>(LS_USER, null);
+      if (!existingUser) {
+        // Auth done, no profile yet → send to login page (name step)
+        setScreen("login");
+      }
+      // If existingUser already set, screen is already "dashboard" from initial state
+    });
   }, []);
 
   // Morning coach / re-entry: show once per day
