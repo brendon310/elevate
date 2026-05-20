@@ -6,7 +6,7 @@ import {
   ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
   Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft, Search,
-  Database, Download, Bell, Target,
+  Database, Download, Bell, Target, Lock,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -173,11 +173,11 @@ type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
 interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
 
 const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  trainer: { id: "trainer", name: "Kai", tagline: "Your direct trainer", voice: "You are Kai, a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
-  teacher: { id: "teacher", name: "Iris", tagline: "Your calm teacher", voice: "You are Iris, a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
-  clinician: { id: "clinician", name: "Dr. Mara", tagline: "Your warm clinician", voice: "You are Dr. Mara, a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
-  mentor: { id: "mentor", name: "Roy", tagline: "Your sharp mentor", voice: "You are Roy, a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
-  guide: { id: "guide", name: "Sasha", tagline: "Your creative guide", voice: "You are Sasha, a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+  trainer: { id: "trainer", name: "Trainer", tagline: "Your direct trainer", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Teacher", tagline: "Your calm teacher", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Clinician", tagline: "Your warm clinician", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Mentor", tagline: "Your sharp mentor", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Guide", tagline: "Your creative guide", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
 };
 
 const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
@@ -250,15 +250,15 @@ const MOTIVATIONS = [
 ];
 
 const CHECKIN_WARNINGS = [
-  "Hey… the task won't complete itself 👀",
-  "Day 0 is calling. Don't pick up. 📵",
-  "Your future self is watching. Fill this in. 👁️",
-  "The coach knows when you're faking it. 😑",
-  "Empty field = empty progress. Come on. 💪",
-  "You didn't come this far to leave this blank. ✍️",
-  "This is the work. Do the work. 🔥",
-  "Skip this and your streak cries tonight. 😢",
-  "Not even one sentence? Really? 🤨",
+  "The task won't complete itself. Write something.",
+  "Day 0 is calling. Don't pick up.",
+  "Your future self is watching. Fill this in.",
+  "The coach knows when you're faking it.",
+  "Empty field = empty progress. Come on.",
+  "You didn't come this far to leave this blank.",
+  "This is the work. Do the work.",
+  "Skip this and your streak takes the hit.",
+  "Not even one sentence? Really?",
   "The only bad answer is no answer. Go.",
 ];
 
@@ -272,11 +272,11 @@ function isCommunityBlocked(text: string): boolean {
 }
 
 const COMMUNITY_MODERATION_MESSAGES = [
-  "Keep it real, not raw. This is a community of people doing hard work. 🙏",
-  "The coach is watching. So is everyone else. Let's keep it respectful. 🧘",
-  "Your words matter here. Try something you'd be proud to read back. ✨",
-  "This community runs on honesty, not shock value. Say it differently. 💬",
-  "Strong language, stronger filter. Rewrite it with intention. ✍️",
+  "Keep it real, not raw. This is a community of people doing hard work.",
+  "The coach is watching. So is everyone else. Let's keep it respectful.",
+  "Your words matter here. Try something you'd be proud to read back.",
+  "This community runs on honesty, not shock value. Say it differently.",
+  "Strong language, stronger filter. Rewrite it with intention.",
 ];
 
 const COACH_RESPONSES = [
@@ -1044,7 +1044,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
           {/* Privacy line */}
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.55 }}
             className="mt-3 text-[12px] text-emerald-500/80 font-mono flex items-center gap-1.5">
-            🔒 Everything you write here is yours alone. We don't read it.
+            Everything you write here is yours alone. We don't read it.
           </motion.p>
 
           {/* CTA */}
@@ -1219,11 +1219,11 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button onClick={() => setCommitStep(1)}
                     className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Yes, many times 😔
+                    Yes, many times
                   </button>
                   <button onClick={() => setCommitStep(2)}
                     className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Not yet — this is new ✨
+                    Not yet — this is new
                   </button>
                 </div>
               </>
@@ -1238,11 +1238,11 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button onClick={() => setCommitStep(2)}
                     className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Never long enough 🔁
+                    Never long enough
                   </button>
                   <button onClick={() => setCommitStep(2)}
                     className="btn-chunk rounded-2xl bg-card border-2 border-border hover:border-foreground px-8 py-4 text-sm font-semibold transition-all duration-200 hover:scale-[1.02]">
-                    Sometimes, for a while 🌀
+                    Sometimes, for a while
                   </button>
                 </div>
               </>
@@ -1281,7 +1281,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
               <div className="mt-3 text-[11px] text-muted-foreground font-mono tracking-wider">
                 {answer.trim().length < 10 ? `${Math.max(0, 10 - answer.trim().length)} more to continue` : "Ready when you are"}
               </div>
-              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">🔒 This stays between you and your coach. Always.</p>
+              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">This stays between you and your coach. Always.</p>
               <AnimatePresence>
                 {answer.trim().length >= 10 && (
                   <motion.button key="cont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -2119,7 +2119,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
                   transition={{ type: "spring", stiffness: 200, damping: 22 }}
                   className="rounded-2xl border-2 border-[color:var(--secondary)]/40 bg-[color:var(--secondary)]/8 p-4 flex items-start gap-3">
-                  <span className="text-2xl mt-0.5" aria-hidden>👇</span>
+                  <svg className="h-5 w-5 mt-0.5 shrink-0 text-[color:var(--secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                   <div className="flex-1 min-w-0">
                     <p className="font-display font-semibold text-sm text-[color:var(--secondary)]">Fill this in first!</p>
                     <p className="text-xs text-muted-foreground mt-0.5">Write down what you did and your reflection — then you're ready to check in.</p>
@@ -2236,7 +2236,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                     : "bg-muted text-muted-foreground"
                   }`}>
                     {isCompleted ? <Check className="h-3.5 w-3.5" />
-                     : locked ? <span className="text-[11px]">🔒</span>
+                     : locked ? <Lock className="h-3 w-3" />
                      : d.dayNumber}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -2307,7 +2307,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   Send
                 </button>
               </div>
-              <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">🔒 This stays between you and your coach. Always.</p>
+              <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">This stays between you and your coach. Always.</p>
             </div>
           </motion.div>
         )}
@@ -2350,12 +2350,14 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             <motion.div initial={{ scale: 0.85, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.85 }}
               className="bg-background rounded-3xl p-8 max-w-sm w-full text-center space-y-4"
               onClick={e => e.stopPropagation()}>
-              <div className="text-5xl">🏆</div>
+              <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-400/15 mx-auto">
+                <Trophy className="h-8 w-8 text-yellow-400" />
+              </div>
               <h2 className="font-display text-2xl font-bold">Day {milestoneDay}!</h2>
               <p className="text-muted-foreground text-sm">You've hit a major milestone on your {track.name} journey. This is the moment most people quit — and you didn't.</p>
               <button onClick={() => setMilestoneDay(null)}
                 className="btn-chunk w-full rounded-xl bg-foreground text-background py-3 font-semibold">
-                Keep going 🔥
+                Keep going
               </button>
             </motion.div>
           </motion.div>
@@ -2700,7 +2702,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
               <div className="rounded-2xl bg-card border border-border p-5">
                 <p className="text-sm leading-[1.75] whitespace-pre-line text-foreground">{letter}</p>
               </div>
-              <p className="mt-3 text-center text-[10px] text-muted-foreground font-mono">🔒 Generated privately for you alone</p>
+              <p className="mt-3 text-center text-[10px] text-muted-foreground font-mono">Generated privately for you alone</p>
             </motion.div>
           </motion.div>
         )}
