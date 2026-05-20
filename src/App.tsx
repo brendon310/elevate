@@ -6,7 +6,7 @@ import {
   ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
   Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft, Search,
-  Database, Download, Bell, Target, Lock,
+  Database, Download, Bell, Target, Lock, PenLine,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -1981,6 +1981,37 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
 }) {
   const [showMissedModal, setShowMissedModal] = useState(false);
   const [vacationTrack, setVacationTrack] = useState<UserTrack | null>(null);
+  const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>(() => {
+    const today = todayStr();
+    const open: Record<string, boolean> = {};
+    // will be populated after first render via effect
+    return open;
+  });
+  const [noteText, setNoteText] = useState<Record<string, string>>({});
+
+  // Load today's saved quick-notes from localStorage on mount / when tracks change
+  useEffect(() => {
+    const today = todayStr();
+    const loadedText: Record<string, string> = {};
+    const autoOpen: Record<string, boolean> = {};
+    tracks.forEach(ut => {
+      const saved = lsLoad<string>(`forge-quick-note-${ut.id}-${today}`, "");
+      loadedText[ut.id] = saved;
+      if (saved) autoOpen[ut.id] = true;
+    });
+    setNoteText(loadedText);
+    setNoteOpen(prev => ({ ...prev, ...autoOpen }));
+  }, [tracks.length]);
+
+  const saveNote = (trackId: string, text: string) => {
+    const today = todayStr();
+    lsSave(`forge-quick-note-${trackId}-${today}`, text);
+    setNoteText(prev => ({ ...prev, [trackId]: text }));
+  };
+
+  const toggleNote = (trackId: string) => {
+    setNoteOpen(prev => ({ ...prev, [trackId]: !prev[trackId] }));
+  };
 
   const motivation = useMemo(() => {
     const d = new Date();
@@ -2137,45 +2168,83 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
           const hueVar = trackHueVar(ut.category);
           const doneToday = ut.last_log_date === t;
           return (
-            <div key={ut.id} className="group flex items-center gap-4 rounded-2xl p-4 depth-card">
-              <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white font-display text-base shrink-0"
-                  style={{ background: trackHueGradient(ut.slug), boxShadow: "0 6px 16px -4px oklch(0 0 0 / 0.5)" }}>
-                  {ut.name.slice(0, 2)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: `var(${hueVar})` }}>{ut.category}</p>
-                  <p className="font-semibold text-[15px] truncate">{ut.name}</p>
-                </div>
-              </div>
-              {(() => {
-                const onVac = ut.vacation_until && ut.vacation_until >= t;
-                if (doneToday) return (
-                  <div className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)] px-3.5 py-2 text-xs font-semibold">
-                    <Check className="h-3.5 w-3.5" /> Done
+            <div key={ut.id} className="rounded-2xl depth-card overflow-hidden">
+              <div className="flex items-center gap-4 p-4">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white font-display text-base shrink-0"
+                    style={{ background: trackHueGradient(ut.slug), boxShadow: "0 6px 16px -4px oklch(0 0 0 / 0.5)" }}>
+                    {ut.name.slice(0, 2)}
                   </div>
-                );
-                if (onVac) return (
-                  <button onClick={() => setVacationTrack(ut)}
-                    className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-3.5 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition">
-                    In pausa
-                  </button>
-                );
-                return (
-                  <div className="shrink-0 flex items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: `var(${hueVar})` }}>{ut.category}</p>
+                    <p className="font-semibold text-[15px] truncate">{ut.name}</p>
+                  </div>
+                </div>
+                {(() => {
+                  const onVac = ut.vacation_until && ut.vacation_until >= t;
+                  if (doneToday) return (
+                    <div className="shrink-0 flex items-center gap-2">
+                      <button onClick={() => toggleNote(ut.id)}
+                        className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
+                        title="Nota rapida">
+                        <PenLine className="h-3.5 w-3.5" />
+                      </button>
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)] px-3.5 py-2 text-xs font-semibold">
+                        <Check className="h-3.5 w-3.5" /> Done
+                      </div>
+                    </div>
+                  );
+                  if (onVac) return (
                     <button onClick={() => setVacationTrack(ut)}
-                      className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
-                      title="Metti in pausa">
-                      <Sun className="h-3.5 w-3.5" />
+                      className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-muted border border-border px-3.5 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition">
+                      In pausa
                     </button>
-                    <button onClick={() => onViewForCheckIn(ut)}
-                      className="btn-chunk rounded-full bg-foreground text-background px-3.5 py-2 text-xs font-semibold transition"
-                      aria-label={`Check in for ${ut.name}`}>
-                      Check in
-                    </button>
-                  </div>
-                );
-              })()}
+                  );
+                  return (
+                    <div className="shrink-0 flex items-center gap-2">
+                      <button onClick={() => setVacationTrack(ut)}
+                        className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
+                        title="Metti in pausa">
+                        <Sun className="h-3.5 w-3.5" />
+                      </button>
+                      <button onClick={() => toggleNote(ut.id)}
+                        className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
+                        title="Nota rapida">
+                        <PenLine className="h-3.5 w-3.5" />
+                      </button>
+                      <button onClick={() => onViewForCheckIn(ut)}
+                        className="btn-chunk rounded-full bg-foreground text-background px-3.5 py-2 text-xs font-semibold transition"
+                        aria-label={`Check in for ${ut.name}`}>
+                        Check in
+                      </button>
+                    </div>
+                  );
+                })()}
+              </div>
+              {/* Quick note — inline, animated */}
+              <AnimatePresence>
+                {noteOpen[ut.id] && (
+                  <motion.div
+                    key="note"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.18, ease: "easeInOut" }}
+                    className="overflow-hidden">
+                    <div className="border-t border-border/40 px-4 pb-3 pt-2.5">
+                      <textarea
+                        value={noteText[ut.id] ?? ""}
+                        onChange={e => setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }))}
+                        onBlur={e => saveNote(ut.id, e.target.value)}
+                        placeholder="Nota rapida di oggi…"
+                        className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed"
+                        rows={2}
+                        autoFocus
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
