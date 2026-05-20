@@ -2014,7 +2014,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                           ) : null; })()}
                           <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
                           <div className="mt-2 flex items-center gap-2 flex-wrap">
-                            {liveStreak(ut) === 0 && !doneToday ? (
+                            {liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
                               <p className="text-[10px] font-mono text-white/45 leading-snug">
                                 Nessun problema —<br />ricomincia quando vuoi.
                               </p>
