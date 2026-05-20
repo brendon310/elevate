@@ -3791,18 +3791,23 @@ export function ElevateApp() {
     setScreen("landing");
   }, []);
 
-  // Handle Google OAuth redirect: app reloads after returning from Google,
-  // Supabase session exists but we haven't created the local user yet.
+  // Handle Google OAuth redirect using onAuthStateChange (safer than getSession
+  // which can fire before the PKCE code exchange completes).
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) return;
-      const existingUser = lsLoad<ElevateUser | null>(LS_USER, null);
-      if (!existingUser) {
-        // Auth done, no profile yet → send to login page (name step)
-        setScreen("login");
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        const existingUser = lsLoad<ElevateUser | null>(LS_USER, null);
+        if (!existingUser) {
+          // New user: came back from Google OAuth or just verified phone OTP → show name step
+          setScreen("login");
+        }
+        // Existing user stays on dashboard (initial state handles it)
       }
-      // If existingUser already set, screen is already "dashboard" from initial state
+      if (event === "SIGNED_OUT") {
+        setScreen("landing");
+      }
     });
+    return () => subscription.unsubscribe();
   }, []);
 
   // Morning coach / re-entry: show once per day
