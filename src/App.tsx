@@ -506,9 +506,17 @@ function trackHueGradient(slug: string) {
 // Momentum (mirrors momentum.ts, pure client-side)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Returns 0 if the user hasn't checked in today or yesterday — streak visually resets in real time */
+function liveStreak(ut: UserTrack): number {
+  const t = todayStr();
+  const y = yesterdayStr();
+  if (ut.last_log_date === t || ut.last_log_date === y) return ut.current_streak || 0;
+  return 0;
+}
+
 function computeMomentum(tracks: UserTrack[]) {
   const t = todayStr();
-  const totalStreak = tracks.reduce((s, x) => s + (x.current_streak || 0), 0);
+  const totalStreak = tracks.reduce((s, x) => s + liveStreak(x), 0);
   const totalLongest = tracks.reduce((s, x) => s + (x.longest_streak || 0), 0);
   const breadth = tracks.length;
   const todayDone = tracks.filter(x => x.last_log_date === t).length;
@@ -536,7 +544,7 @@ function evolutionFor(mxStreak: number) {
 }
 
 function detectFlow(tracks: UserTrack[]) {
-  return tracks.filter(x => (x.current_streak || 0) >= 5).length >= 3;
+  return tracks.filter(x => liveStreak(x) >= 5).length >= 3;
 }
 
 function atRiskTracks(tracks: UserTrack[]) {
@@ -1865,7 +1873,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   </div>
                   <div className="relative mt-auto pt-12">
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
-                    <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{ut.current_streak || 0}</p>
+                    <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut)}</p>
                     {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
                       <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
                     ) : null; })()}
@@ -1873,7 +1881,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                     <div className="mt-2 flex items-center gap-2 flex-wrap">
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
                         <Flame className="h-3 w-3 flame text-[color:var(--highlight)]" />
-                        <span className="font-mono">{ut.current_streak || 0}</span>
+                        <span className="font-mono">{liveStreak(ut)}</span>
                         <span>streak</span>
                       </div>
                       {doneToday && (
@@ -2885,7 +2893,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
                     <div className="flex items-center justify-center gap-1 text-muted-foreground text-[10px] uppercase">
                       <Flame className="h-3 w-3" />Streak
                     </div>
-                    <p className="font-bold text-base mt-0.5">{t.current_streak || 0}</p>
+                    <p className="font-bold text-base mt-0.5">{liveStreak(t)}</p>
                   </div>
                   <div className="rounded-xl bg-muted p-2">
                     <div className="flex items-center justify-center gap-1 text-muted-foreground text-[10px] uppercase">
