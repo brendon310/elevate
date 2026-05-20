@@ -1928,16 +1928,6 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
     return MOTIVATIONS[seed % MOTIVATIONS.length];
   }, []);
 
-  /** Window vignette: grows from 0 at 15:00 to 1 at 23:00 when no check-in done */
-  const windowIntensity = useMemo(() => {
-    if (tracks.length === 0) return 0;
-    const allDone = tracks.every(t2 => t2.last_log_date === todayStr());
-    if (allDone) return 0;
-    const now = new Date();
-    const hour = now.getHours() + now.getMinutes() / 60;
-    if (hour < 15) return 0;
-    return Math.min(1, (hour - 15) / 8);
-  }, [tracks]);
 
   const t = todayStr();
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" });
@@ -1947,27 +1937,6 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
 
   return (
     <div className="relative">
-    {/* Window vignette — darkens when day is slipping away without check-in */}
-    {windowIntensity > 0 && (
-      <div
-        aria-hidden
-        className="fixed inset-0 pointer-events-none z-20 transition-opacity duration-[3000ms]"
-        style={{
-          background: `radial-gradient(ellipse 80% 70% at 50% 35%, transparent 30%, oklch(0 0 0 / ${(windowIntensity * 0.72).toFixed(2)}) 100%)`,
-        }}
-      >
-        {windowIntensity > 0.65 && (
-          <div className="fixed bottom-32 inset-x-0 flex flex-col items-center gap-1 pointer-events-none select-none">
-            <p className="text-[11px] uppercase tracking-[0.35em] font-mono text-white/40">
-              {tracks.filter(tr => tr.last_log_date !== todayStr()).map(tr => tr.name).join(" · ")}
-            </p>
-            <p className="font-display text-base tracking-[-0.02em] text-[color:var(--secondary)] opacity-90">
-              Day 0 tonight
-            </p>
-          </div>
-        )}
-      </div>
-    )}
     <div className="relative max-w-5xl mx-auto px-5 pt-8 pb-32">
       <motion.header initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-7">
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">{todayFormatted}</p>
