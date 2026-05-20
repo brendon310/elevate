@@ -671,7 +671,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                 initial={{ strokeDashoffset: c }}
                 animate={{ strokeDashoffset: c - c * pct }}
                 transition={{ type: "spring", stiffness: 50, damping: 18 }}
-                style={{ filter: isMaxed ? "drop-shadow(0 0 12px oklch(0.90 0.18 70 / 0.8))" : "drop-shadow(0 0 10px oklch(0.78 0.20 70 / 0.65))" }}
+                style={{  }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
