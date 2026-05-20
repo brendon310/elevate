@@ -1591,6 +1591,112 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // HomePage
 // ─────────────────────────────────────────────────────────────────────────────
+// MissedAccessModal
+// ─────────────────────────────────────────────────────────────────────────────
+
+function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: () => void }) {
+  const [message, setMessage] = useState("");
+  const [track, setTrack] = useState(tracks[0]?.name ?? "");
+  const [phase, setPhase] = useState<"form" | "sending" | "done">("form");
+
+  const submit = async () => {
+    if (!message.trim()) return;
+    setPhase("sending");
+    try {
+      await fetch("/api/report-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: message.trim(),
+          trackName: track,
+          date: todayStr(),
+        }),
+      });
+    } catch { /* best-effort */ }
+    setPhase("done");
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+      style={{ background: "oklch(0 0 0 / 0.65)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 40, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="w-full max-w-sm rounded-3xl bg-card border border-border p-6"
+      >
+        {phase === "done" ? (
+          <div className="text-center py-4">
+            <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[color:var(--tertiary)]/15 flex items-center justify-center">
+              <Check className="h-6 w-6 text-[color:var(--tertiary)]" />
+            </div>
+            <p className="font-display text-lg mb-1">Grazie.</p>
+            <p className="text-sm text-muted-foreground">Prenderemo in considerazione il tuo feedback.</p>
+            <button onClick={onClose} className="mt-5 btn-chunk rounded-full bg-foreground text-background px-6 py-2.5 text-sm font-semibold">
+              Chiudi
+            </button>
+          </div>
+        ) : (
+          <>
+            <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Feedback</p>
+            <h3 className="font-display text-xl mb-1">Non hai potuto accedere?</h3>
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              Se hai avuto problemi ad aprire l'app, raccontaci cosa è successo. Ci aiuta a migliorare.
+            </p>
+
+            {tracks.length > 1 && (
+              <div className="mb-3">
+                <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">Track</label>
+                <select
+                  value={track}
+                  onChange={e => setTrack(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-foreground"
+                >
+                  {tracks.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
+                </select>
+              </div>
+            )}
+
+            <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">Cosa è successo?</label>
+            <textarea
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              placeholder="Es. non avevo connessione, l'app non si apriva..."
+              rows={3}
+              className="w-full rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground resize-none mb-4"
+            />
+
+            <div className="flex gap-3">
+              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition">
+                Annulla
+              </button>
+              <button
+                onClick={submit}
+                disabled={!message.trim() || phase === "sending"}
+                className="flex-1 btn-chunk rounded-full bg-foreground text-background px-4 py-2.5 text-sm font-semibold disabled:opacity-40 transition"
+              >
+                {phase === "sending" ? "Invio..." : "Invia"}
+              </button>
+            </div>
+
+            <p className="mt-3 text-center text-[10px] text-emerald-500/70 font-mono">
+              Inviato privatamente al team Forge.
+            </p>
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MorningCoachOverlay
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1761,6 +1867,8 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   onView: (t: UserTrack) => void;
   onViewForCheckIn: (t: UserTrack) => void;
 }) {
+  const [showMissedModal, setShowMissedModal] = useState(false);
+
   const motivation = useMemo(() => {
     const d = new Date();
     const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
@@ -1879,11 +1987,17 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                     ) : null; })()}
                     <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
                     <div className="mt-2 flex items-center gap-2 flex-wrap">
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
-                        <Flame className="h-3 w-3 flame text-[color:var(--highlight)]" />
-                        <span className="font-mono">{liveStreak(ut)}</span>
-                        <span>streak</span>
-                      </div>
+                      {liveStreak(ut) === 0 && !doneToday ? (
+                        <p className="text-[10px] font-mono text-white/45 leading-snug">
+                          Nessun problema —<br />ricomincia quando vuoi.
+                        </p>
+                      ) : (
+                        <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
+                          <Flame className="h-3 w-3 flame text-[color:var(--highlight)]" />
+                          <span className="font-mono">{liveStreak(ut)}</span>
+                          <span>streak</span>
+                        </div>
+                      )}
                       {doneToday && (
                         <div className="inline-flex items-center gap-1 rounded-full bg-[color:var(--tertiary)] px-2.5 py-1 text-[11px] text-white font-semibold">
                           <Check className="h-3 w-3" /> Done
@@ -1936,6 +2050,24 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
           );
         })}
       </div>
+
+      {/* Missed access nudge — only when at least one track is behind */}
+      {tracks.length > 0 && tracks.some(tr => liveStreak(tr) === 0 && tr.last_log_date !== t) && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => setShowMissedModal(true)}
+            className="text-[11px] text-muted-foreground hover:text-foreground transition underline underline-offset-2 font-mono"
+          >
+            Non hai avuto possibilità di accedere all'app?
+          </button>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {showMissedModal && (
+          <MissedAccessModal tracks={tracks} onClose={() => setShowMissedModal(false)} />
+        )}
+      </AnimatePresence>
     </div>
     </div>
   );
