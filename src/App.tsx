@@ -830,14 +830,15 @@ function AppleIcon() {
 // LoginPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-type LoginMode = "options" | "phone" | "otp";
+type LoginMode = "options" | "phone" | "otp" | "name";
 
-function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () => void }) {
+function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; onBack: () => void }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [mode, setMode] = useState<LoginMode>("options");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [phoneError, setPhoneError] = useState("");
+  const [enteredName, setEnteredName] = useState("");
 
   const simulateAuth = useCallback(async (
     provider: ElevateAuth["provider"],
@@ -847,8 +848,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
     await new Promise(r => setTimeout(r, 1500));
     lsSave(LS_AUTH, { provider, ...data, createdAt: new Date().toISOString() } as ElevateAuth);
     setLoading(null);
-    onSuccess();
-  }, [onSuccess]);
+    setMode("name"); // ask name before proceeding
+  }, []);
 
   const handleGoogle = () => simulateAuth("google", { email: "user@gmail.com", name: "Forge User" });
 
@@ -988,6 +989,33 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =>
                       Riprova
                     </button>
                   </p>
+                </div>
+              </motion.div>
+            )}
+
+            {mode === "name" && (
+              <motion.div key="name" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+                <div className="text-center mb-8">
+                  <div className="mx-auto mb-5 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
+                    <span className="font-display text-white text-2xl font-bold">👋</span>
+                  </div>
+                  <h1 className="font-display text-2xl font-bold tracking-tight">Come ti chiami?</h1>
+                  <p className="text-sm text-muted-foreground mt-1">Il tuo coach ti chiamerà così ogni giorno.</p>
+                </div>
+                <div className="space-y-3">
+                  <input
+                    type="text" value={enteredName} autoFocus
+                    onChange={e => setEnteredName(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
+                    placeholder="Il tuo nome"
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition text-center font-display text-lg"
+                  />
+                  <button
+                    onClick={() => enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
+                    disabled={enteredName.trim().length === 0}
+                    className={btnPrimary}>
+                    Inizia il Day 1 →
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -1405,9 +1433,9 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 }) {
   const navItems: { id: AppPage; icon: typeof Home; label: string }[] = [
     { id: "home",     icon: Home,     label: "Home" },
-    { id: "tracks",   icon: Layers,   label: "Tracks" },
-    { id: "insights", icon: BarChart3,label: "Insights" },
-    { id: "settings", icon: Settings, label: "Settings" },
+    { id: "tracks",   icon: Layers,   label: "Percorsi" },
+    { id: "insights", icon: BarChart3,label: "Statistiche" },
+    { id: "settings", icon: Settings, label: "Impostazioni" },
   ];
 
   return (
@@ -1878,6 +1906,48 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MilestoneOverlay
+// ─────────────────────────────────────────────────────────────────────────────
+const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
+  1:   { emoji: "🌱", title: "Day 1 completato.", sub: "Il viaggio comincia adesso." },
+  3:   { emoji: "🔥", title: "3 giorni di fila.", sub: "Stai costruendo qualcosa di reale." },
+  7:   { emoji: "⚡", title: "Una settimana intera.", sub: "7 giorni di fila. Non è poco." },
+  14:  { emoji: "💎", title: "Due settimane.", sub: "Stai diventando questa persona." },
+  30:  { emoji: "🏆", title: "30 giorni.", sub: "Un mese. Un'abitudine vera." },
+  66:  { emoji: "🧬", title: "66 giorni.", sub: "La scienza dice che è ora nella tua natura." },
+  100: { emoji: "👑", title: "100 giorni.", sub: "Tre cifre. Pochi arrivano qui." },
+  365: { emoji: "🌟", title: "Un anno intero.", sub: "Sei irriconoscibile rispetto a chi eri." },
+};
+
+function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
+  const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Continua così." };
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="fixed inset-0 z-50 flex items-center justify-center px-6"
+      style={{ background: "oklch(0.05 0.03 260 / 0.92)" }}>
+      <motion.div initial={{ scale: 0.85, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        className="max-w-sm w-full text-center space-y-5">
+        <motion.p initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.15 }}
+          className="text-7xl">{m.emoji}</motion.p>
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground font-mono mb-2">{trackName}</p>
+          <h2 className="font-display text-4xl font-bold tracking-tight leading-tight">{m.title}</h2>
+          <p className="mt-2 text-muted-foreground text-lg">{m.sub}</p>
+        </div>
+        <button onClick={onDismiss}
+          className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-8 py-3.5 text-sm font-bold shadow-[var(--shadow-violet)]">
+          Continua <ArrowRight className="h-4 w-4" />
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn, onVacation }: {
   user: ElevateUser;
   tracks: UserTrack[];
@@ -1930,9 +2000,9 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
 
 
   const t = todayStr();
-  const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" });
+  const todayFormatted = new Date().toLocaleDateString('it-IT', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
   const hour = new Date().getHours();
-  const greeting = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 5 ? "È tardi" : hour < 12 ? "Buongiorno" : hour < 18 ? "Buon pomeriggio" : "Buonasera";
   const firstName = user.name.split(" ")[0];
 
   return (
@@ -2014,7 +2084,12 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                           ) : null; })()}
                           <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
                           <div className="mt-2 flex items-center gap-2 flex-wrap">
-                            {liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
+                            {liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) === 0 ? (
+                              <button onClick={() => onView(ut)}
+                                className="inline-flex items-center gap-1.5 rounded-full grad-electric px-3 py-1.5 text-[11px] font-bold text-white shadow-[var(--shadow-violet)] hover:opacity-90 transition-opacity">
+                                Inizia oggi <ArrowRight className="h-3 w-3" />
+                              </button>
+                            ) : liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
                               <p className="text-[10px] font-mono text-white/45 leading-snug">
                                 Nessun problema —<br />ricomincia quando vuoi.
                               </p>
@@ -3210,8 +3285,8 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl space-y-8">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
-        <p className="text-muted-foreground mt-1">Your data, honest and clear.</p>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Statistiche</h1>
+        <p className="text-muted-foreground mt-1">I tuoi dati, chiari e onesti.</p>
         <button onClick={generateLetter} disabled={letterLoading}
           className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
           {letterLoading ? (
@@ -3222,13 +3297,24 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
         </button>
       </header>
 
+      {/* Empty state */}
+      {totalCheckins === 0 && (
+        <div className="rounded-2xl border border-border bg-card p-10 text-center space-y-3">
+          <p className="text-4xl">📊</p>
+          <h3 className="font-display text-xl font-semibold">Nessun dato ancora</h3>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            Completa il tuo primo check-in per vedere le statistiche del tuo percorso qui.
+          </p>
+        </div>
+      )}
+
       {/* Summary row */}
       {totalCheckins > 0 && (
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Total check-ins", value: totalCheckins },
-            { label: "Active days (90d)", value: activeDays },
-            { label: "Tracks active", value: userTracks.length },
+            { label: "Check-in totali", value: totalCheckins },
+            { label: "Giorni attivi (90g)", value: activeDays },
+            { label: "Percorsi attivi", value: userTracks.length },
           ].map(s => (
             <div key={s.label} className="rounded-2xl border border-border bg-card p-4 text-center">
               <p className="font-bold text-2xl font-display">{s.value}</p>
@@ -3240,11 +3326,11 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
 
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">90-day activity</h2>
+          <h2 className="font-semibold">Attività 90 giorni</h2>
           <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-            <span>less</span>
+            <span>meno</span>
             {[0,1,2,3].map(v => <div key={v} className={`h-2.5 w-2.5 rounded-sm ${tone(v)}`} />)}
-            <span>more</span>
+            <span>più</span>
           </div>
         </div>
         {totalCheckins === 0 ? (
@@ -3404,8 +3490,8 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
   return (
     <div className="container mx-auto px-6 py-8 max-w-2xl space-y-6">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage your account and preferences.</p>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Impostazioni</h1>
+        <p className="text-muted-foreground mt-1">Account e preferenze.</p>
       </header>
 
       {/* Account */}
@@ -3418,21 +3504,21 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
         </div>
         <div className="space-y-3">
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Display name</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Il tuo nome</label>
             <div className="flex gap-2 mt-1.5">
               <input value={displayName} onChange={e => { setDisplayName(e.target.value); setNameSaved(false); }}
                 onKeyDown={e => e.key === "Enter" && handleSaveName()}
-                placeholder="Your name"
+                placeholder="Come ti chiami?"
                 className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               <button onClick={handleSaveName}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
-                {nameSaved ? "Saved ✓" : "Save"}
+                {nameSaved ? "Salvato ✓" : "Salva"}
               </button>
             </div>
           </div>
           <button onClick={onSignOut}
             className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
-            Sign out
+            Esci dall'account
           </button>
         </div>
       </section>
@@ -3443,18 +3529,18 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Sun className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Appearance</h2>
+          <h2 className="font-semibold">Aspetto</h2>
         </div>
         <div className="flex items-center justify-between gap-3 py-3">
-          <p className="text-sm font-medium">Theme</p>
+          <p className="text-sm font-medium">Tema</p>
           <div className="inline-flex rounded-xl border border-border bg-card p-1">
             <button onClick={() => applyTheme("light")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              <Sun className="h-3.5 w-3.5" /> Light
+              <Sun className="h-3.5 w-3.5" /> Chiaro
             </button>
             <button onClick={() => applyTheme("dark")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              <Moon className="h-3.5 w-3.5" /> Dark
+              <Moon className="h-3.5 w-3.5" /> Scuro
             </button>
           </div>
         </div>
@@ -3466,12 +3552,12 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Bell className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Notifications</h2>
+          <h2 className="font-semibold">Notifiche</h2>
         </div>
         <div className="flex items-center justify-between py-2">
           <div>
             <p className="text-sm font-medium">Reminder giornaliero</p>
-            <p className="text-xs text-muted-foreground">Notifica se non hai fatto check-in all'orario scelto</p>
+            <p className="text-xs text-muted-foreground">Ti avvisiamo se non hai fatto check-in all'orario scelto</p>
           </div>
           <button onClick={toggleReminder}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${reminderOn ? "bg-[color:var(--tertiary)]" : "bg-muted"}`}>
@@ -3497,42 +3583,42 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Database className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Data & Privacy</h2>
+          <h2 className="font-semibold">Dati e Privacy</h2>
         </div>
         <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-          Your data is stored <strong className="text-foreground">only on this device</strong>. Nothing is sent to any server. Clearing browser storage will erase your progress.
+          I tuoi dati sono salvati <strong className="text-foreground">solo su questo dispositivo</strong>. Nulla viene inviato a server esterni. Cancellare la cache del browser eliminerà i tuoi progressi.
         </div>
         <div className="space-y-1">
           <div className="flex items-center justify-between py-3 border-b border-border/50">
             <div>
-              <p className="text-sm font-medium">Export data</p>
-              <p className="text-xs text-muted-foreground">Download all your tracks and logs as JSON</p>
+              <p className="text-sm font-medium">Esporta dati</p>
+              <p className="text-xs text-muted-foreground">Scarica tutti i tuoi percorsi e log in formato JSON</p>
             </div>
             <button onClick={handleExport}
               className="btn-chunk inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-              <Download className="h-3.5 w-3.5" /> Export
+              <Download className="h-3.5 w-3.5" /> Esporta
             </button>
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear all data</p>
-              <p className="text-xs text-muted-foreground">Permanently removes all tracks, logs, and progress</p>
+              <p className="text-sm font-medium text-[color:var(--secondary)]">Cancella tutti i dati</p>
+              <p className="text-xs text-muted-foreground">Elimina permanentemente percorsi, log e progressi</p>
             </div>
             {showClearConfirm ? (
               <div className="flex gap-2">
                 <button onClick={() => setShowClearConfirm(false)}
                   className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-                  Cancel
+                  Annulla
                 </button>
                 <button onClick={handleClearData}
                   className="rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition">
-                  Confirm clear
+                  Conferma
                 </button>
               </div>
             ) : (
               <button onClick={() => setShowClearConfirm(true)}
                 className="btn-chunk rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
-                Clear
+                Cancella
               </button>
             )}
           </div>
@@ -3563,6 +3649,7 @@ export function ElevateApp() {
   const [showMorningCoach, setShowMorningCoach] = useState(false);
   const [showReEntry, setShowReEntry] = useState(false);
   const [reEntryGap, setReEntryGap] = useState(0);
+  const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
@@ -3606,6 +3693,8 @@ export function ElevateApp() {
     });
   }, []);
 
+  const MILESTONE_DAYS = new Set([1, 3, 7, 14, 30, 66, 100, 365]);
+
   const checkIn = useCallback((userTrackId: string) => {
     navigator.vibrate?.(40);
     const t = todayStr();
@@ -3614,7 +3703,14 @@ export function ElevateApp() {
       const next = prev.map(ut => {
         if (ut.id !== userTrackId || ut.last_log_date === t) return ut;
         const newStreak = ut.last_log_date === y ? (ut.current_streak || 0) + 1 : 1;
-        return { ...ut, current_streak: newStreak, longest_streak: Math.max(ut.longest_streak || 0, newStreak), total_done: (ut.total_done || 0) + 1, last_log_date: t };
+        const newTotal = (ut.total_done || 0) + 1;
+        // Check milestone after update
+        const milestoneKey = `forge-milestone-${ut.id}-${newStreak}`;
+        if (MILESTONE_DAYS.has(newStreak) && !lsLoad<boolean>(milestoneKey, false)) {
+          lsSave(milestoneKey, true);
+          setTimeout(() => setMilestone({ days: newStreak, trackName: ut.name }), 600);
+        }
+        return { ...ut, current_streak: newStreak, longest_streak: Math.max(ut.longest_streak || 0, newStreak), total_done: newTotal, last_log_date: t };
       });
       lsSave(LS_TRACKS, next);
       return next;
@@ -3642,12 +3738,11 @@ export function ElevateApp() {
     setScreen("login");
   }, []);
 
-  // Called after successful login — create user from auth + pending track
-  const handleLoginSuccess = useCallback(() => {
-    const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);
+  // Called after successful login — create user from entered name + pending track, then open Day 1
+  const handleLoginSuccess = useCallback((enteredName: string) => {
     const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
-    const name = auth?.name ?? "Forger";
-    const newUser: ElevateUser = { name, createdAt: new Date().toISOString() };
+    const displayName = enteredName.trim() || "Forger";
+    const newUser: ElevateUser = { name: displayName, createdAt: new Date().toISOString() };
     lsSave(LS_USER, newUser);
     setUser(newUser);
     if (pendingTrack) {
@@ -3662,6 +3757,7 @@ export function ElevateApp() {
       lsSave(LS_TRACKS, [ut]);
       setTracks([ut]);
       localStorage.removeItem("forge-pending-track");
+      setSelectedTrack(ut); // auto-open Day 1 immediately
     }
     setScreen("dashboard");
   }, []);
@@ -3743,10 +3839,13 @@ export function ElevateApp() {
   return (
     <>
       <AnimatePresence>
-        {showReEntry && (
+        {milestone && (
+          <MilestoneOverlay days={milestone.days} trackName={milestone.trackName} onDismiss={() => setMilestone(null)} />
+        )}
+        {!milestone && showReEntry && (
           <ReEntryOverlay gapDays={reEntryGap} onDismiss={handleReEntryDismiss} />
         )}
-        {showMorningCoach && (
+        {!milestone && showMorningCoach && (
           <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
         )}
       </AnimatePresence>
