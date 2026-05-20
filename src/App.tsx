@@ -658,7 +658,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
         className="rounded-3xl p-5 depth-card relative overflow-hidden">
         <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, oklch(0.52 0.22 232), transparent 60%)" }} />
+          style={{ background: "radial-gradient(circle, oklch(0.75 0.20 70), transparent 60%)" }} />
         <div className="flex items-center gap-5 relative">
           <div className="relative shrink-0" style={{ width: size, height: size }}>
             <div className={`absolute inset-0 rounded-full ${isMaxed ? "peak-ring" : evo.ringClass}`} style={{ padding: 3 }}>
@@ -667,13 +667,13 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
             <svg width={size} height={size} className="absolute inset-0 -rotate-90">
               <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(0.5 0 0 / 0.25)" strokeWidth={stroke} fill="none" />
               <motion.circle cx={size / 2} cy={size / 2} r={r}
-                stroke={isMaxed ? "oklch(0.78 0.20 70)" : "oklch(0.62 0.22 232)"}
+                stroke={isMaxed ? "oklch(0.90 0.18 70)" : "oklch(0.78 0.20 70)"}
                 strokeWidth={stroke} strokeLinecap="round" fill="none"
                 strokeDasharray={c}
                 initial={{ strokeDashoffset: c }}
                 animate={{ strokeDashoffset: c - c * pct }}
                 transition={{ type: "spring", stiffness: 50, damping: 18 }}
-                style={{ filter: isMaxed ? "drop-shadow(0 0 10px oklch(0.78 0.20 70 / 0.7))" : "drop-shadow(0 0 12px oklch(0.62 0.22 232 / 0.65))" }}
+                style={{ filter: isMaxed ? "drop-shadow(0 0 12px oklch(0.90 0.18 70 / 0.8))" : "drop-shadow(0 0 10px oklch(0.78 0.20 70 / 0.65))" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -1856,7 +1856,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                 transition={{ delay: 0.08 + i * 0.05, type: "spring", stiffness: 90, damping: 16 }}>
                 <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
                   onClick={() => onView(ut)}
-                  style={{ background: grad, boxShadow: `0 24px 50px -16px color-mix(in oklab, var(${hueVar}) 55%, transparent), 0 4px 14px -4px color-mix(in oklab, var(${hueVar}) 35%, transparent)` }}>
+                  style={{ background: grad, boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
                   <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
                     style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.5), transparent 60%)" }} />
                   <div aria-hidden className="absolute right-3 top-3 h-20 w-20 rounded-full opacity-70"
@@ -1907,7 +1907,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
             <div key={ut.id} className="group flex items-center gap-4 rounded-2xl p-4 depth-card">
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white font-display text-base shrink-0"
-                  style={{ background: trackHueGradient(ut.slug), boxShadow: `0 8px 20px -6px color-mix(in oklab, var(${hueVar}) 60%, transparent)` }}>
+                  style={{ background: trackHueGradient(ut.slug), boxShadow: "0 6px 16px -4px oklch(0 0 0 / 0.5)" }}>
                   {ut.name.slice(0, 2)}
                 </div>
                 <div className="flex-1 min-w-0">
