@@ -221,6 +221,39 @@ function archetypeForSlug(slug: string): Archetype {
   return ARCHETYPES[id];
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Ghost + Morning Coach constants
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** The day number the user would be on if they had checked in every single day. */
+function ghostDayFor(ut: UserTrack): number {
+  const ms = Date.now() - new Date(ut.added_at).getTime();
+  return Math.max(1, Math.floor(ms / 86_400_000) + 1);
+}
+
+const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
+  trainer: [
+    "Yesterday you chose to show up. Today is the test of whether that was a fluke or a pattern. It wasn't a fluke.",
+    "Every rep you do today compounds what you built yesterday. Clock's ticking. Get moving.",
+  ],
+  teacher: [
+    "Consistency is the silent teacher that no class can replicate. Your streak is already teaching you something. Keep the lesson going.",
+    "Yesterday's work laid a foundation. Today you get to build one more floor. Simple. Repeatable. Effective.",
+  ],
+  clinician: [
+    "Coming back again takes more courage than you may realize. I'm glad you're here. Let's make today gentle and intentional.",
+    "Progress isn't always visible in a day — but it lives in the choice to return. You returned. That matters deeply.",
+  ],
+  mentor: [
+    "The gap between who you are and who you're becoming closes one check-in at a time. Today is one of those times.",
+    "Execution is the only strategy that counts. You know what to do. Now go do it.",
+  ],
+  guide: [
+    "Morning has a particular kind of light. It's the same light that was here the day you started. You're still in it. Keep going.",
+    "Every day you return, you deepen the groove of the person you're becoming. Today, go a little deeper.",
+  ],
+};
+
 const JOURNEY_MILESTONES = [1, 3, 7, 14, 21, 30, 60, 90, 180, 365];
 
 const TRACK_HUE: Record<string, string> = {
@@ -1552,6 +1585,166 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // ─────────────────────────────────────────────────────────────────────────────
 // HomePage
 // ─────────────────────────────────────────────────────────────────────────────
+// MorningCoachOverlay
+// ─────────────────────────────────────────────────────────────────────────────
+
+function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () => void }) {
+  const [phase, setPhase] = useState<"typing" | "message">("typing");
+  const [message, setMessage] = useState<string>("");
+  const [revealed, setRevealed] = useState(0);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  useEffect(() => {
+    // Pick best track (most recent activity, or first)
+    const best = tracks.reduce<UserTrack | null>((acc, t) => {
+      if (!acc) return t;
+      if ((t.total_done || 0) > (acc.total_done || 0)) return t;
+      return acc;
+    }, null);
+    if (!best) { onDismiss(); return; }
+
+    const archetype = archetypeForSlug(best.slug);
+    const fallbacks = MORNING_FALLBACKS[archetype.id];
+    const fallback = fallbacks[hashStr(todayStr()) % fallbacks.length];
+
+    // Try to get yesterday's note
+    const days = lsLoad<JourneyDay[]>(LS_DAYS(best.slug), []);
+    const yDay = yesterdayStr();
+    const noteDay = days.find(d => d.completedAt?.slice(0, 10) === yDay && d.userNote?.trim());
+    const userNote = noteDay?.userNote?.trim() ?? null;
+
+    const run = async () => {
+      // Show typing for 1.8s, then fetch/fallback
+      await new Promise(r => setTimeout(r, 1800));
+      if (!mountedRef.current) return;
+
+      let result = fallback;
+      if (userNote) {
+        try {
+          const res = await fetch("/api/coach", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [{ role: "user", content: userNote }],
+              voice: archetype.voice,
+              context: `This is the user's morning check-in message from yesterday for their "${best.name}" journey. Write 2–3 sentences that feel personal, seen, and motivating — as if you read what they wrote and you're responding this morning. Do not use phrases like "I can see" or "I understand". Be warm, direct, human. No lists. Just speak to them.`,
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json() as { reply?: string };
+            if (data.reply?.trim() && mountedRef.current) result = data.reply.trim();
+          }
+        } catch { /* use fallback */ }
+      }
+
+      if (!mountedRef.current) return;
+      setMessage(result);
+      setPhase("message");
+    };
+    run();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Word-by-word typewriter reveal
+  const words = message.split(" ");
+  useEffect(() => {
+    if (phase !== "message" || !message) return;
+    setRevealed(0);
+    const interval = setInterval(() => {
+      setRevealed(prev => {
+        if (prev >= words.length) { clearInterval(interval); return prev; }
+        return prev + 1;
+      });
+    }, 60);
+    return () => clearInterval(interval);
+  }, [phase, message]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const visibleText = words.slice(0, revealed).join(" ");
+  const archetype = archetypeForSlug(tracks[0]?.slug ?? "meditation");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center px-7"
+      style={{ background: "oklch(0.06 0.01 250 / 0.97)" }}
+    >
+      {/* Ambient glow */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(60% 55% at 50% 40%, oklch(0.52 0.22 232 / 0.12), transparent 70%)" }} />
+
+      <div className="relative max-w-sm w-full">
+        {/* Coach label */}
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6 text-center"
+        >
+          {archetype.tagline}
+        </motion.p>
+
+        {/* Message area */}
+        <div className="min-h-[120px] flex items-center justify-center">
+          {phase === "typing" ? (
+            <div className="flex items-center gap-2">
+              {[0, 1, 2].map(i => (
+                <motion.div
+                  key={i}
+                  className="h-2 w-2 rounded-full bg-muted-foreground"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 0.7, delay: i * 0.15, repeat: Infinity, ease: "easeInOut" }}
+                />
+              ))}
+            </div>
+          ) : (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="font-display text-[1.6rem] leading-[1.25] tracking-[-0.02em] text-center text-foreground"
+            >
+              {visibleText}
+              {revealed < words.length && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.5, repeat: Infinity }}
+                  className="inline-block w-[2px] h-6 bg-foreground ml-1 align-middle"
+                />
+              )}
+            </motion.p>
+          )}
+        </div>
+
+        {/* CTA — shown once message is fully revealed */}
+        <AnimatePresence>
+          {phase === "message" && revealed >= words.length && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mt-10 flex justify-center"
+            >
+              <button
+                onClick={onDismiss}
+                className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-8 py-3 text-sm font-semibold"
+              >
+                Begin today <ArrowRight className="h-4 w-4" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn }: {
   user: ElevateUser;
@@ -1568,6 +1761,17 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
     return MOTIVATIONS[seed % MOTIVATIONS.length];
   }, []);
 
+  /** Window vignette: grows from 0 at 15:00 to 1 at 23:00 when no check-in done */
+  const windowIntensity = useMemo(() => {
+    if (tracks.length === 0) return 0;
+    const allDone = tracks.every(t2 => t2.last_log_date === todayStr());
+    if (allDone) return 0;
+    const now = new Date();
+    const hour = now.getHours() + now.getMinutes() / 60;
+    if (hour < 15) return 0;
+    return Math.min(1, (hour - 15) / 8);
+  }, [tracks]);
+
   const t = todayStr();
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" });
   const hour = new Date().getHours();
@@ -1575,6 +1779,28 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   const firstName = user.name.split(" ")[0];
 
   return (
+    <div className="relative">
+    {/* Window vignette — darkens when day is slipping away without check-in */}
+    {windowIntensity > 0 && (
+      <div
+        aria-hidden
+        className="fixed inset-0 pointer-events-none z-20 transition-opacity duration-[3000ms]"
+        style={{
+          background: `radial-gradient(ellipse 80% 70% at 50% 35%, transparent 30%, oklch(0 0 0 / ${(windowIntensity * 0.72).toFixed(2)}) 100%)`,
+        }}
+      >
+        {windowIntensity > 0.65 && (
+          <div className="fixed bottom-32 inset-x-0 flex flex-col items-center gap-1 pointer-events-none select-none">
+            <p className="text-[11px] uppercase tracking-[0.35em] font-mono text-white/40">
+              {tracks.filter(tr => tr.last_log_date !== todayStr()).map(tr => tr.name).join(" · ")}
+            </p>
+            <p className="font-display text-base tracking-[-0.02em] text-[color:var(--secondary)] opacity-90">
+              Day 0 tonight
+            </p>
+          </div>
+        )}
+      </div>
+    )}
     <div className="relative max-w-5xl mx-auto px-5 pt-8 pb-32">
       <motion.header initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-7">
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">{todayFormatted}</p>
@@ -1642,6 +1868,9 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   <div className="relative mt-auto pt-12">
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
                     <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{ut.current_streak || 0}</p>
+                    {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
+                      <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
+                    ) : null; })()}
                     <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
                     <div className="mt-2 flex items-center gap-2 flex-wrap">
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
@@ -1701,6 +1930,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
           );
         })}
       </div>
+    </div>
     </div>
   );
 }
@@ -2899,6 +3129,7 @@ export function ElevateApp() {
   const [page, setPage] = useState<AppPage>("home");
   const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
   const [pendingCheckIn, setPendingCheckIn] = useState(false);
+  const [showMorningCoach, setShowMorningCoach] = useState(false);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
@@ -2978,6 +3209,21 @@ export function ElevateApp() {
     setScreen("landing");
   }, []);
 
+  // Morning coach: show once per day on first dashboard open
+  useEffect(() => {
+    if (screen !== "dashboard" || tracks.length === 0) return;
+    const key = `forge-morning-${todayStr()}`;
+    if (!lsLoad<boolean>(key, false)) {
+      const timer = setTimeout(() => setShowMorningCoach(true), 900);
+      return () => clearTimeout(timer);
+    }
+  }, [screen, tracks.length]);
+
+  const handleMorningDismiss = useCallback(() => {
+    lsSave(`forge-morning-${todayStr()}`, true);
+    setShowMorningCoach(false);
+  }, []);
+
   if (screen === "landing") return <LandingPage onBegin={() => setScreen("login")} />;
   if (screen === "login") return (
     <LoginPage
@@ -2999,13 +3245,20 @@ export function ElevateApp() {
   }
 
   return (
-    <DashboardLayout currentPage={page} onNavigate={setPage}>
-      {page === "home" && (
-        <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} />
-      )}
-      {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} />}
-      {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
-      {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })} />}
-    </DashboardLayout>
+    <>
+      <AnimatePresence>
+        {showMorningCoach && (
+          <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
+        )}
+      </AnimatePresence>
+      <DashboardLayout currentPage={page} onNavigate={setPage}>
+        {page === "home" && (
+          <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} />
+        )}
+        {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} />}
+        {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
+        {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })} />}
+      </DashboardLayout>
+    </>
   );
 }
