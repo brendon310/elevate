@@ -657,8 +657,6 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
     <div className="space-y-3 mb-7">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
         className="rounded-3xl p-5 depth-card relative overflow-hidden">
-        <div aria-hidden className="absolute -right-16 -top-16 h-56 w-56 rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, oklch(0.75 0.20 70), transparent 60%)" }} />
         <div className="flex items-center gap-5 relative">
           <div className="relative shrink-0" style={{ width: size, height: size }}>
             <div className={`absolute inset-0 rounded-full ${isMaxed ? "peak-ring" : evo.ringClass}`} style={{ padding: 3 }}>
@@ -667,7 +665,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
             <svg width={size} height={size} className="absolute inset-0 -rotate-90">
               <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(0.5 0 0 / 0.25)" strokeWidth={stroke} fill="none" />
               <motion.circle cx={size / 2} cy={size / 2} r={r}
-                stroke={isMaxed ? "oklch(0.90 0.18 70)" : "oklch(0.78 0.20 70)"}
+                stroke={isMaxed ? "oklch(0.92 0.18 88)" : "oklch(0.83 0.22 88)"}
                 strokeWidth={stroke} strokeLinecap="round" fill="none"
                 strokeDasharray={c}
                 initial={{ strokeDashoffset: c }}
