@@ -3791,17 +3791,21 @@ export function ElevateApp() {
     setScreen("landing");
   }, []);
 
-  // Handle Google OAuth redirect using onAuthStateChange (safer than getSession
-  // which can fire before the PKCE code exchange completes).
+  // Handle auth state changes.
+  // SIGNED_IN: fires after OAuth code exchange completes (may race with useEffect).
+  // INITIAL_SESSION: fires immediately when listener is registered — catches the case
+  //   where Supabase already processed the OAuth code before useEffect ran.
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
         const existingUser = lsLoad<ElevateUser | null>(LS_USER, null);
         if (!existingUser) {
-          // New user: came back from Google OAuth or just verified phone OTP → show name step
+          // No local profile yet → show name step (new user or cleared localStorage)
           setScreen("login");
+        } else {
+          // Returning user with full profile → go to dashboard
+          setScreen("dashboard");
         }
-        // Existing user stays on dashboard (initial state handles it)
       }
       if (event === "SIGNED_OUT") {
         setScreen("landing");
