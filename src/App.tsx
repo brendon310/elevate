@@ -2256,6 +2256,11 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   const onVac = ut.vacation_until && ut.vacation_until >= t;
                   if (doneToday) return (
                     <div className="shrink-0 flex items-center gap-2">
+                      <button onClick={() => setVacationTrack(ut)}
+                        className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
+                        title="Metti in pausa">
+                        <Sun className="h-3.5 w-3.5" />
+                      </button>
                       <button onClick={() => toggleNote(ut.id)}
                         className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
                         title="Nota rapida">
