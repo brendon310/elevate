@@ -1024,7 +1024,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
             className="mt-6 font-display text-[clamp(2.6rem,8vw,6.8rem)] leading-[0.93] tracking-[-0.05em] font-bold">
             The app built<br />
             for the battle<br />
-            <span className="text-yellow-400 italic">only you know</span><br />
+            <span className="text-[color:var(--secondary)] italic">only you know</span><br />
             you're fighting.
           </motion.h1>
 
@@ -1084,7 +1084,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
           <div className="grid md:grid-cols-12 gap-6">
             <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="md:col-span-7 warm-card rounded-[2rem] p-8 md:p-10 relative ambient-warm">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-primary">01 — Specialist coaches</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">01 — Specialist coaches</p>
               <h3 className="mt-4 font-display text-3xl md:text-4xl leading-tight">
                 Each habit, its own <span className="italic">world-class mind</span>.
               </h3>
@@ -1096,7 +1096,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 
             <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="md:col-span-5 md:mt-12 warm-card rounded-[2rem] p-8">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-primary">02 — Streaks that breathe</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">02 — Streaks that breathe</p>
               <h3 className="mt-4 font-display text-3xl leading-tight italic">Shielded, not shamed.</h3>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
                 Life happens. Earn Shields. Spend them. Your story keeps its shape.
@@ -1105,7 +1105,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 
             <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
               className="md:col-span-5 md:-mt-6 warm-card rounded-[2rem] p-8">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-primary">03 — Identity, not points</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">03 — Identity, not points</p>
               <h3 className="mt-4 font-display text-3xl leading-tight">
                 <span className="italic">You are becoming</span> someone.
               </h3>
@@ -1116,7 +1116,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 
             <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
               className="md:col-span-7 warm-card rounded-[2rem] p-8 md:p-10">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-primary">04 — A coach that knows you</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">04 — A coach that knows you</p>
               <h3 className="mt-4 font-display text-3xl md:text-4xl leading-tight">
                 Not a dashboard. <span className="italic">A companion.</span>
               </h3>
@@ -1132,7 +1132,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
           <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Five worlds. Fifty paths.</p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs">
             {["Fitness & Body", "Mental Health", "Quit Bad Habits", "Mind & Learning", "Productivity & Life"].map(c => (
-              <span key={c} className="rounded-full border border-[color:var(--primary)]/30 bg-card px-4 py-2 text-foreground font-mono uppercase tracking-widest text-[10px]">{c}</span>
+              <span key={c} className="rounded-full border border-border bg-card px-4 py-2 text-foreground font-mono uppercase tracking-widest text-[10px]">{c}</span>
             ))}
           </div>
         </section>
@@ -1213,7 +1213,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
             {commitStep === 0 && (
               <>
                 <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
-                  Have you tried to<br /><span className="text-yellow-400 italic">change this before?</span>
+                  Have you tried to<br /><span className="text-[color:var(--secondary)] italic">change this before?</span>
                 </h2>
                 <p className="text-muted-foreground text-sm mb-10">Be honest — it matters for how we approach this.</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -1232,7 +1232,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
             {commitStep === 1 && (
               <>
                 <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
-                  Did it <span className="text-yellow-400 italic">last?</span>
+                  Did it <span className="text-[color:var(--secondary)] italic">last?</span>
                 </h2>
                 <p className="text-muted-foreground text-sm mb-10">Most people who are here have been here before. That's okay.</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -1252,7 +1252,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
               <>
                 <p className="text-[11px] uppercase tracking-[0.4em] text-muted-foreground font-mono mb-6">You've already started.</p>
                 <h2 className="font-display text-[clamp(1.8rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em] font-semibold mb-3">
-                  Ready to try<br /><span className="text-yellow-400 italic">something different?</span>
+                  Ready to try<br /><span className="text-[color:var(--secondary)] italic">something different?</span>
                 </h2>
                 <p className="text-muted-foreground text-sm mb-10">No app has a built-in coach that actually knows your specific battle. This one does.</p>
                 <button onClick={() => setStep("question")}
@@ -1272,16 +1272,16 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
             <h1 className="font-display text-[clamp(2rem,6vw,4.5rem)] leading-[1.05] tracking-[-0.04em] font-semibold">
               What is the one thing that,<br />
               if you changed it,<br />
-              <span className="text-yellow-400 italic">would change everything?</span>
+              <span className="text-[color:var(--secondary)] italic">would change everything?</span>
             </h1>
             <div className="mt-14">
               <textarea autoFocus value={answer} onChange={e => setAnswer(e.target.value.slice(0, 1000))}
                 placeholder="Be honest. No one else will read this."
-                className="w-full bg-transparent border-0 border-b-2 border-border focus:border-[color:var(--primary)] outline-none text-center font-display text-2xl placeholder:text-muted-foreground py-5 px-2 resize-none min-h-[140px] transition-colors" />
+                className="w-full bg-transparent border-0 border-b-2 border-border focus:border-foreground outline-none text-center font-display text-2xl placeholder:text-muted-foreground py-5 px-2 resize-none min-h-[140px] transition-colors" />
               <div className="mt-3 text-[11px] text-muted-foreground font-mono tracking-wider">
                 {answer.trim().length < 10 ? `${Math.max(0, 10 - answer.trim().length)} more to continue` : "Ready when you are"}
               </div>
-              <p className="mt-1.5 text-[11px] text-muted-foreground font-mono">This stays between you and your coach. Always.</p>
+              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">This stays between you and your coach. Always.</p>
               <AnimatePresence>
                 {answer.trim().length >= 10 && (
                   <motion.button key="cont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -1328,7 +1328,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
             <div className="text-center mb-10">
               <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-4">Choose your path</p>
               <h2 className="font-display text-[clamp(1.75rem,4vw,3rem)] tracking-[-0.03em] leading-tight">
-                Let's start with <span className="text-yellow-400 italic">one thing</span>.
+                Let's start with <span className="text-[color:var(--secondary)] italic">one thing</span>.
               </h2>
               <p className="mt-4 text-muted-foreground">You can add more later. For now, one commitment is enough.</p>
             </div>
@@ -1450,7 +1450,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { name: string; tra
             <h2 className="font-display text-3xl tracking-tight mb-8">What should your coach call you?</h2>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name"
               autoFocus
-              className="w-full bg-transparent border-0 border-b-2 border-border focus:border-[color:var(--primary)] outline-none text-center font-display text-2xl py-4 transition-colors" />
+              className="w-full bg-transparent border-0 border-b-2 border-border focus:border-foreground outline-none text-center font-display text-2xl py-4 transition-colors" />
             <AnimatePresence>
               {name.trim().length > 0 && (
                 <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -2307,7 +2307,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   Send
                 </button>
               </div>
-              <p className="mt-2 text-[10px] text-muted-foreground font-mono text-center">This stays between you and your coach. Always.</p>
+              <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">This stays between you and your coach. Always.</p>
             </div>
           </motion.div>
         )}
