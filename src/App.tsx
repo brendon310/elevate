@@ -4013,6 +4013,137 @@ function FirstDayReveal({ userName, track, onComplete }: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// CheckInCelebration overlay
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CELEBRATION_PHRASES = [
+  "The version of you who quit is getting further away.",
+  "You showed up. That's the whole game.",
+  "Discipline is just self-love spelled differently.",
+  "Another rep. Another brick. Another day.",
+  "The streak doesn't care how you feel. It cares that you came.",
+  "Most people talked about it. You did it.",
+  "One day you'll look back — this is when it started.",
+  "Your future self just exhaled.",
+  "Identity is built in moments like this one.",
+  "The hard days count double.",
+  "You're not building a habit. You're building a person.",
+  "Small reps. Big identity.",
+  "Every check-in is a vote for who you're becoming.",
+  "Consistency isn't glamorous. Neither is greatness — until it is.",
+  "This is what the comeback looks like.",
+  "No one can take today away from you.",
+  "The gap between who you are and who you want to be just got smaller.",
+  "Showing up when you don't want to — that's the real flex.",
+  "You didn't need motivation. You used discipline. That's stronger.",
+  "Day by day. That's how empires are built.",
+];
+
+function CheckInCelebration({ trackName, streak, onDismiss }: {
+  trackName: string;
+  streak: number;
+  onDismiss: () => void;
+}) {
+  const phrase = useMemo(() => CELEBRATION_PHRASES[Math.floor(Math.random() * CELEBRATION_PHRASES.length)], []);
+  const [progress, setProgress] = useState(100);
+  const DURATION = 3000;
+
+  // confetti on mount
+  useEffect(() => {
+    confetti({ particleCount: 70, spread: 60, origin: { y: 0.5 }, colors: ["#3b82f6","#6366f1","#8b5cf6","#ffffff","#fbbf24"] });
+    const start = Date.now();
+    const raf = requestAnimationFrame(function tick() {
+      const elapsed = Date.now() - start;
+      const pct = Math.max(0, 100 - (elapsed / DURATION) * 100);
+      setProgress(pct);
+      if (pct > 0) requestAnimationFrame(tick);
+      else onDismiss();
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.25 }}
+      className="fixed inset-0 z-[90] flex flex-col items-center justify-center cursor-pointer select-none"
+      style={{ background: "oklch(0.07 0.02 240)" }}
+      onClick={onDismiss}>
+
+      {/* ambient glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1.4, opacity: 0.18 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full"
+          style={{ background: "radial-gradient(circle, oklch(0.65 0.25 250), transparent 70%)" }} />
+      </div>
+
+      <div className="relative flex flex-col items-center gap-6 px-8 text-center max-w-sm">
+        {/* Streak ring + number */}
+        <motion.div
+          initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 220, damping: 18, delay: 0.05 }}
+          className="relative flex items-center justify-center">
+          <svg width="140" height="140" className="-rotate-90">
+            <circle cx="70" cy="70" r="58" stroke="oklch(1 0 0 / 0.08)" strokeWidth="8" fill="none" />
+            <motion.circle cx="70" cy="70" r="58"
+              stroke="oklch(0.65 0.22 250)" strokeWidth="8" fill="none"
+              strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 58}`}
+              initial={{ strokeDashoffset: 2 * Math.PI * 58 }}
+              animate={{ strokeDashoffset: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }} />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.p
+              initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 280, damping: 18, delay: 0.2 }}
+              className="font-display text-5xl text-white tracking-tight leading-none">
+              {streak}
+            </motion.p>
+            <p className="text-[10px] uppercase tracking-[0.35em] font-mono text-white/50 mt-1">
+              {streak === 1 ? "day" : "days"}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Track + completion */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">{trackName}</p>
+          <h2 className="font-display text-2xl text-white tracking-tight">
+            Day {streak} complete.
+          </h2>
+        </motion.div>
+
+        {/* Phrase */}
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="text-sm text-muted-foreground leading-relaxed italic">
+          "{phrase}"
+        </motion.p>
+
+        {/* See you tomorrow */}
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 0.75, duration: 0.5 }}
+          className="text-[11px] font-mono uppercase tracking-[0.4em] text-white/30">
+          See you tomorrow.
+        </motion.p>
+      </div>
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5">
+        <motion.div className="h-full" style={{ background: "oklch(0.65 0.22 250)", width: `${progress}%` }} />
+      </div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // ElevateApp — root component
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -4030,6 +4161,7 @@ export function ElevateApp() {
   const [page, setPage] = useState<AppPage>("home");
   const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
   const [firstDayReveal, setFirstDayReveal] = useState<{ track: UserTrack; userName: string } | null>(null);
+  const [checkInCelebration, setCheckInCelebration] = useState<{ trackName: string; streak: number } | null>(null);
   const [pendingCheckIn, setPendingCheckIn] = useState(false);
   const [showMorningCoach, setShowMorningCoach] = useState(false);
   const [showReEntry, setShowReEntry] = useState(false);
@@ -4094,6 +4226,12 @@ export function ElevateApp() {
         if (MILESTONE_DAYS.has(newStreak) && !lsLoad<boolean>(milestoneKey, false)) {
           lsSave(milestoneKey, true);
           setTimeout(() => setMilestone({ days: newStreak, trackName: ut.name }), 600);
+        }
+        // Trigger celebration for every check-in
+        if (!MILESTONE_DAYS.has(newStreak)) {
+          setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak }), 250);
+        } else {
+          setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak }), 250);
         }
         return { ...ut, current_streak: newStreak, longest_streak: Math.max(ut.longest_streak || 0, newStreak), total_done: newTotal, last_log_date: t };
       });
@@ -4231,6 +4369,16 @@ export function ElevateApp() {
       onSuccess={handleLoginSuccess}
       onBack={() => setScreen("onboarding")}
     />
+  );
+
+  if (checkInCelebration) return (
+    <AnimatePresence>
+      <CheckInCelebration
+        trackName={checkInCelebration.trackName}
+        streak={checkInCelebration.streak}
+        onDismiss={() => setCheckInCelebration(null)}
+      />
+    </AnimatePresence>
   );
 
   if (firstDayReveal) return (
