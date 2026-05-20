@@ -428,19 +428,27 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "gratitude",           keywords: ["gratitude","gratitudine","grateful","grato","thankful","positive","positivo","appreciate","apprezzare"] },
 ];
 
-function suggestTrackFromText(text: string): string | null {
-  if (!text || text.trim().length < 5) return null;
+// Always returns a slug — either the best keyword match, or a smart fallback based on text hash.
+// This ensures the onboarding "Suggested path" hero card always appears.
+const FALLBACK_SLUGS = [
+  "build-discipline", "stop-self-sabotage", "beat-procrastination",
+  "lack-of-motivation", "low-self-esteem", "chronic-stress",
+  "stop-overthinking", "negative-mindset", "toxic-perfectionism",
+];
+function suggestTrackFromText(text: string): string {
+  if (!text || text.trim().length < 5) return FALLBACK_SLUGS[0];
   const lower = text.toLowerCase();
   let bestSlug: string | null = null;
   let bestScore = 0;
   for (const { slug, keywords } of TRACK_KEYWORDS) {
     let score = 0;
     for (const kw of keywords) {
-      if (lower.includes(kw)) score += kw.length; // longer keyword matches score more
+      if (lower.includes(kw)) score += kw.length;
     }
     if (score > bestScore) { bestScore = score; bestSlug = slug; }
   }
-  return bestScore > 0 ? bestSlug : null;
+  // If no keyword matched, pick a deterministic fallback from the text hash
+  return bestSlug ?? FALLBACK_SLUGS[hashStr(text) % FALLBACK_SLUGS.length];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
