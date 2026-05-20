@@ -587,11 +587,12 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
 // MomentumHero
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MomentumHero({ tracks, user, onUpdateUser, onCheckIn }: {
+function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   tracks: UserTrack[];
   user: ElevateUser;
   onUpdateUser: (patch: Partial<ElevateUser>) => void;
   onCheckIn: (id: string) => void;
+  onView: (t: UserTrack) => void;
 }) {
   const m = computeMomentum(tracks);
   const mxStreak = maxStreak(tracks);
@@ -713,7 +714,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn }: {
             </p>
             <p className="text-[11px] text-muted-foreground">Check in today. I know you can do this.</p>
           </div>
-          <button onClick={() => onCheckIn(t.id)}
+          <button onClick={() => onView(t)}
             className="shrink-0 rounded-full bg-[color:var(--secondary)] text-white px-3 py-1.5 text-xs font-semibold flex items-center gap-1 btn-chunk">
             <Flame className="h-3 w-3" /> Save it
           </button>
@@ -1552,13 +1553,14 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // HomePage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView }: {
+function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn }: {
   user: ElevateUser;
   tracks: UserTrack[];
   onCheckIn: (id: string) => void;
   onNavigate: (page: AppPage) => void;
   onUpdateUser: (patch: Partial<ElevateUser>) => void;
   onView: (t: UserTrack) => void;
+  onViewForCheckIn: (t: UserTrack) => void;
 }) {
   const motivation = useMemo(() => {
     const d = new Date();
@@ -1584,7 +1586,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView }:
       </motion.header>
 
       {tracks.length > 0 && (
-        <MomentumHero tracks={tracks} user={user} onUpdateUser={onUpdateUser} onCheckIn={onCheckIn} />
+        <MomentumHero tracks={tracks} user={user} onUpdateUser={onUpdateUser} onCheckIn={onCheckIn} onView={onViewForCheckIn} />
       )}
 
       <div className="flex items-end justify-between mb-4">
@@ -1689,7 +1691,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView }:
                   <Check className="h-3.5 w-3.5" /> Done
                 </div>
               ) : (
-                <button onClick={() => onCheckIn(ut.id)}
+                <button onClick={() => onViewForCheckIn(ut)}
                   className="shrink-0 btn-chunk rounded-full bg-foreground text-background px-3.5 py-2 text-xs font-semibold transition"
                   aria-label={`Check in for ${ut.name}`}>
                   Check in
@@ -1955,11 +1957,13 @@ function JourneyOnboarding({ track, onStarted }: { track: UserTrack; onStarted: 
 // JourneyView
 // ─────────────────────────────────────────────────────────────────────────────
 
-function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
+function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn }: {
   track: UserTrack;
   journey: Journey;
   days: JourneyDay[];
   onBack: () => void;
+  showCheckInHint?: boolean;
+  onTrackCheckIn?: () => void;
 }) {
   const [journey, setJourney] = useState(initJourney);
   const [days, setDays] = useState(initDays);
@@ -1976,6 +1980,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
   const [warnReflectKey, setWarnReflectKey] = useState(0);
   const warnTaskIdx = useRef(0);
   const warnReflectIdx = useRef(0);
+  const [fillFirstBanner, setFillFirstBanner] = useState(showCheckInHint ?? false);
 
   const archetype = archetypeForSlug(track.slug);
   const completedCount = days.filter(d => d.completedAt !== null).length;
@@ -2029,6 +2034,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
     }
     if (!valid || !todayDay) return;
     checkIn(todayDay.id, `Task: ${checkInTask.trim()}\n\nReflection: ${checkInReflect.trim()}`);
+    onTrackCheckIn?.();
     setCheckInTask("");
     setCheckInReflect("");
     setCheckInNote("");
@@ -2105,6 +2111,24 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
       <div className="max-w-2xl mx-auto px-4 py-6 pb-24 space-y-4">
         {activeTab === "today" && todayDay && (
           <motion.div key="today" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            <AnimatePresence>
+              {fillFirstBanner && todayDay.completedAt === null && (
+                <motion.div key="fill-first"
+                  initial={{ opacity: 0, y: -10, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 22 }}
+                  className="rounded-2xl border-2 border-[color:var(--secondary)]/40 bg-[color:var(--secondary)]/8 p-4 flex items-start gap-3">
+                  <span className="text-2xl mt-0.5" aria-hidden>👇</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display font-semibold text-sm text-[color:var(--secondary)]">Fill this in first!</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Write down what you did and your reflection — then you're ready to check in.</p>
+                  </div>
+                  <button onClick={() => setFillFirstBanner(false)}
+                    className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0 mt-0.5">✕</button>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div className="rounded-2xl bg-card border border-border p-5" style={{ borderLeft: `3px solid ${accentColor}` }}>
               <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Day {todayDay.dayNumber}</p>
               <h2 className="mt-1.5 font-display text-xl font-semibold">{todayDay.title}</h2>
@@ -2136,7 +2160,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
                 {/* Task field */}
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-foreground">Did you do the task? How did it go?</p>
-                  <textarea value={checkInTask} onChange={e => setCheckInTask(e.target.value)}
+                  <textarea value={checkInTask} onChange={e => { setCheckInTask(e.target.value); if (e.target.value) setFillFirstBanner(false); }}
                     placeholder="Describe what you actually did today…" rows={2}
                     className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnTaskKey > 0 && !checkInTask.trim() ? "border-red-500" : "border-border"}`} />
                   <AnimatePresence mode="wait">
@@ -2156,7 +2180,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
                 {/* Reflection field */}
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-foreground">Your reflection</p>
-                  <textarea value={checkInReflect} onChange={e => setCheckInReflect(e.target.value)}
+                  <textarea value={checkInReflect} onChange={e => { setCheckInReflect(e.target.value); if (e.target.value) setFillFirstBanner(false); }}
                     placeholder="What did you notice about yourself today?" rows={2}
                     className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnReflectKey > 0 && !checkInReflect.trim() ? "border-red-500" : "border-border"}`} />
                   <AnimatePresence mode="wait">
@@ -2345,7 +2369,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack }: {
 // TrackDetailPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TrackDetailPage({ track, onBack }: { track: UserTrack; onBack: () => void }) {
+function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn }: {
+  track: UserTrack;
+  onBack: () => void;
+  showCheckInHint?: boolean;
+  onTrackCheckIn?: () => void;
+}) {
   const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
   const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
 
@@ -2354,7 +2383,7 @@ function TrackDetailPage({ track, onBack }: { track: UserTrack; onBack: () => vo
   if (!journey || days.length === 0) {
     return <JourneyOnboarding track={track} onStarted={handleStarted} />;
   }
-  return <JourneyView track={track} journey={journey} days={days} onBack={onBack} />;
+  return <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} />;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2453,6 +2482,59 @@ function TracksPage({ userTracks, onAdd, onView }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log[] }) {
+  const [letterLoading, setLetterLoading] = useState(false);
+  const [letter, setLetter] = useState<string | null>(null);
+  const [showLetter, setShowLetter] = useState(false);
+
+  const generateLetter = async () => {
+    setLetterLoading(true);
+    try {
+      const journeyData = userTracks.map(t => {
+        const days = lsLoad<JourneyDay[]>(LS_DAYS(t.slug), []);
+        const completedDays = days.filter(d => d.completedAt !== null);
+        const recentNotes = completedDays
+          .filter(d => d.userNote)
+          .slice(-7)
+          .map(d => `Day ${d.dayNumber}: ${d.userNote}`);
+        return { trackName: t.name, category: t.category, streak: t.current_streak || 0, totalDone: t.total_done || 0, recentNotes };
+      });
+
+      const hasNotes = journeyData.some(d => d.recentNotes.length > 0);
+      const prompt = `You are a warm, personal growth coach writing a weekly recap letter for someone using the Forge app. Based on their journey data below, write a heartfelt letter (3-4 paragraphs, 150-200 words total) that:
+- Acknowledges their specific progress with genuine warmth
+${hasNotes ? "- Reflects back meaningful moments from their own notes/reflections — use their actual words where possible" : "- Encourages them to start writing notes after check-ins so you can reflect their journey back to them"}
+- Feels deeply personal, never generic or motivational-poster-ish
+- Ends with one concrete, specific thing to focus on this week
+
+Their journey data:
+${journeyData.map(d => `
+${d.trackName} (${d.category})
+Streak: ${d.streak} days | Total completed: ${d.totalDone} days
+${d.recentNotes.length > 0 ? `Recent reflections:\n${d.recentNotes.join("\n")}` : "No notes yet — they are just getting started"}`).join("\n---\n")}
+
+Start with "This week," and sign it "— Your Coach". Write like you actually know and care about them.`;
+
+      const res = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: "weekly-letter",
+          archetype: "mentor",
+          messages: [{ role: "user", content: prompt }],
+          userContext: { totalTracks: userTracks.length, totalCheckins: logs.length },
+        }),
+      });
+      const data = await res.json() as { message: string };
+      setLetter(data.message);
+      setShowLetter(true);
+    } catch {
+      setLetter("Something went wrong generating your letter. Check your connection and try again in a moment.");
+      setShowLetter(true);
+    } finally {
+      setLetterLoading(false);
+    }
+  };
+
   const heatmap = useMemo(() => {
     const byDay = new Map<string, number>();
     logs.forEach(l => byDay.set(l.log_date, (byDay.get(l.log_date) || 0) + 1));
@@ -2494,6 +2576,14 @@ function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log
       <header>
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
         <p className="text-muted-foreground mt-1">Your data, honest and clear.</p>
+        <button onClick={generateLetter} disabled={letterLoading}
+          className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
+          {letterLoading ? (
+            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your letter…</>
+          ) : (
+            <><Mail className="h-3.5 w-3.5" />Weekly recap letter</>
+          )}
+        </button>
       </header>
 
       {/* Summary row */}
@@ -2585,6 +2675,36 @@ function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log
           </div>
         </section>
       )}
+
+      {/* Weekly Letter Modal */}
+      <AnimatePresence>
+        {showLetter && letter && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowLetter(false)}>
+            <motion.div initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 220, damping: 24 }}
+              className="bg-background rounded-3xl p-6 max-w-lg w-full max-h-[82vh] overflow-y-auto shadow-2xl"
+              onClick={e => e.stopPropagation()}>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-10 w-10 rounded-full grad-electric flex items-center justify-center shrink-0">
+                  <Sparkles className="h-4 w-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-display font-semibold text-base">Weekly Letter</p>
+                  <p className="text-[11px] text-muted-foreground font-mono">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
+                </div>
+                <button onClick={() => setShowLetter(false)}
+                  className="text-muted-foreground hover:text-foreground text-xl leading-none shrink-0">✕</button>
+              </div>
+              <div className="rounded-2xl bg-card border border-border p-5">
+                <p className="text-sm leading-[1.75] whitespace-pre-line text-foreground">{letter}</p>
+              </div>
+              <p className="mt-3 text-center text-[10px] text-muted-foreground font-mono">🔒 Generated privately for you alone</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -2776,6 +2896,7 @@ export function ElevateApp() {
   });
   const [page, setPage] = useState<AppPage>("home");
   const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
+  const [pendingCheckIn, setPendingCheckIn] = useState(false);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
@@ -2822,6 +2943,16 @@ export function ElevateApp() {
     });
   }, []);
 
+  const handleViewForCheckIn = useCallback((t: UserTrack) => {
+    setPendingCheckIn(true);
+    setSelectedTrack(t);
+  }, []);
+
+  const handleTrackBack = useCallback(() => {
+    setSelectedTrack(null);
+    setPendingCheckIn(false);
+  }, []);
+
   const handleOnboardingComplete = useCallback(({ name, track }: { name: string; track: OnboardingTrack }) => {
     const newUser: ElevateUser = { name, createdAt: new Date().toISOString() };
     lsSave(LS_USER, newUser);
@@ -2855,13 +2986,20 @@ export function ElevateApp() {
   if (screen === "onboarding") return <OnboardingPage onComplete={handleOnboardingComplete} />;
 
   if (selectedTrack) {
-    return <TrackDetailPage track={selectedTrack} onBack={() => setSelectedTrack(null)} />;
+    return (
+      <TrackDetailPage
+        track={selectedTrack}
+        onBack={handleTrackBack}
+        showCheckInHint={pendingCheckIn}
+        onTrackCheckIn={() => { checkIn(selectedTrack.id); setPendingCheckIn(false); }}
+      />
+    );
   }
 
   return (
     <DashboardLayout currentPage={page} onNavigate={setPage}>
       {page === "home" && (
-        <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} />
+        <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} />
       )}
       {page === "tracks" && <TracksPage userTracks={tracks} onAdd={addTrack} onView={setSelectedTrack} />}
       {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
