@@ -3651,6 +3651,244 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// FirstDayReveal — cinematic first-login experience
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FirstDayReveal({ userName, track, onComplete }: {
+  userName: string;
+  track: UserTrack;
+  onComplete: () => void;
+}) {
+  type FDRPhase = "welcome" | "track" | "generating" | "reveal";
+  const [phase, setPhase] = useState<FDRPhase>("welcome");
+  const [day1, setDay1] = useState<JourneyDay | null>(null);
+
+  // Phase auto-progression
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("track"), 1400);
+    const t2 = setTimeout(() => setPhase("generating"), 2800);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  // Generate days when phase reaches "generating"
+  useEffect(() => {
+    if (phase !== "generating") return;
+    const generate = async () => {
+      const j: Journey = {
+        id: nanoid(), trackSlug: track.slug, totalDays: 30,
+        startingPoint: "Ready to start fresh",
+        motivation: "I want real, lasting change",
+        obstacle: "Staying consistent when motivation fades",
+        startedAt: new Date().toISOString(), generatedThrough: 0,
+      };
+      const makeFallback = (): JourneyDay[] => Array.from({ length: 7 }, (_, i) => ({
+        id: nanoid(), journeyId: j.id, dayNumber: i + 1,
+        title: `Day ${i + 1} — ${track.name}`,
+        description: `Your ${track.name} journey begins. Every day forward counts.`,
+        task: `Spend at least 15 minutes on ${track.name} today. Notice how it feels.`,
+        reflection: "What surprised you about today's experience?",
+        science: "Repetition within 24 hours strengthens neural pathways by up to 40%.",
+        checkinPrompt: "How are you feeling right now, 1–10?",
+        completedAt: null, userNote: null,
+      }));
+      try {
+        const res = await fetch("/api/generate-days", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug: track.slug, trackName: track.name, category: track.category,
+            startingPoint: "Complete beginner, first time",
+            motivation: "I want real and lasting change in my life",
+            obstacle: "Staying consistent when motivation drops",
+            fromDay: 1, count: 7,
+          }),
+        });
+        if (!res.ok) throw new Error();
+        const { days } = await res.json() as { days: JourneyDay[] };
+        const filled = days.map((d, i) => ({ ...d, id: nanoid(), journeyId: j.id, dayNumber: i + 1, completedAt: null, userNote: null }));
+        j.generatedThrough = 7;
+        lsSave(LS_JOURNEY(track.slug), j);
+        lsSave(LS_DAYS(track.slug), filled);
+        setDay1(filled[0]);
+      } catch {
+        const fallback = makeFallback();
+        j.generatedThrough = 7;
+        lsSave(LS_JOURNEY(track.slug), j);
+        lsSave(LS_DAYS(track.slug), fallback);
+        setDay1(fallback[0]);
+      }
+      setTimeout(() => setPhase("reveal"), 300);
+    };
+    generate();
+  }, [phase, track]);
+
+  // Confetti burst on reveal
+  useEffect(() => {
+    if (phase !== "reveal") return;
+    setTimeout(() => {
+      confetti({ particleCount: 90, spread: 75, origin: { y: 0.38 }, colors: ["#3b82f6", "#6366f1", "#8b5cf6", "#ffffff", "#38bdf8"] });
+    }, 600);
+  }, [phase]);
+
+  return (
+    <div className="fixed inset-0 z-[100] overflow-hidden" style={{ background: "oklch(0.08 0.02 240)" }}>
+      {/* Ambient glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] rounded-full opacity-[0.15]"
+          style={{ background: "radial-gradient(circle, oklch(0.55 0.22 250) 0%, transparent 70%)" }} />
+      </div>
+
+      <AnimatePresence mode="wait">
+        {/* PHASE 1 — Welcome */}
+        {phase === "welcome" && (
+          <motion.div key="welcome"
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -28, transition: { duration: 0.4 } }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-muted-foreground text-[10px] uppercase tracking-[0.5em] font-mono mb-5">
+              Forge
+            </motion.p>
+            <h1 className="font-display text-5xl text-foreground tracking-tight">
+              Welcome, {userName}.
+            </h1>
+          </motion.div>
+        )}
+
+        {/* PHASE 2 — Track name */}
+        {phase === "track" && (
+          <motion.div key="track"
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -28, transition: { duration: 0.4 } }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-muted-foreground text-[10px] uppercase tracking-[0.5em] font-mono mb-3">
+              {track.category}
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="font-display text-5xl text-foreground tracking-tight mb-4">
+              {track.name}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }}
+              className="text-muted-foreground text-sm">
+              Your 30-day journey starts now.
+            </motion.p>
+          </motion.div>
+        )}
+
+        {/* PHASE 3 — Generating */}
+        {phase === "generating" && (
+          <motion.div key="generating"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+            className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center gap-6">
+            <div className="flex gap-2 items-center">
+              {[0, 1, 2].map(i => (
+                <motion.div key={i}
+                  className="w-2 h-2 rounded-full"
+                  style={{ background: "oklch(0.65 0.2 250)" }}
+                  animate={{ opacity: [0.25, 1, 0.25], scale: [0.7, 1.3, 0.7] }}
+                  transition={{ duration: 1.3, repeat: Infinity, delay: i * 0.22 }} />
+              ))}
+            </div>
+            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">Building your Day 1…</p>
+          </motion.div>
+        )}
+
+        {/* PHASE 4 — Day 1 Reveal */}
+        {phase === "reveal" && day1 && (
+          <motion.div key="reveal"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
+            className="absolute inset-0 flex flex-col overflow-y-auto">
+
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.6 }}
+              className="pt-14 pb-6 px-6 text-center flex-shrink-0">
+              <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">Day 1</p>
+              <h1 className="font-display text-3xl text-foreground tracking-tight leading-tight">
+                {day1.title.replace(/^Day\s+\d+\s*[—\-–]\s*/i, "")}
+              </h1>
+            </motion.div>
+
+            {/* Cards */}
+            <div className="flex-1 px-5 space-y-3 pb-6">
+              {/* Task */}
+              <motion.div
+                initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-2xl p-5 border-l-4"
+                style={{ background: "oklch(0.13 0.04 250)", borderLeftColor: "oklch(0.6 0.22 250)" }}>
+                <p className="text-[9px] uppercase tracking-[0.4em] font-mono mb-2.5"
+                  style={{ color: "oklch(0.65 0.2 250)" }}>Today's Task</p>
+                <p className="text-foreground text-[15px] leading-relaxed">{day1.task}</p>
+              </motion.div>
+
+              {/* Description */}
+              <motion.div
+                initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-2xl p-5"
+                style={{ background: "oklch(0.11 0.02 240)" }}>
+                <p className="text-[9px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-2.5">Context</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{day1.description}</p>
+              </motion.div>
+
+              {/* Science */}
+              <motion.div
+                initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-2xl p-5 border-l-4"
+                style={{ background: "oklch(0.12 0.04 150)", borderLeftColor: "oklch(0.62 0.2 150)" }}>
+                <p className="text-[9px] uppercase tracking-[0.4em] font-mono mb-2.5"
+                  style={{ color: "oklch(0.65 0.2 150)" }}>The Science</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{day1.science}</p>
+              </motion.div>
+
+              {/* Reflection */}
+              <motion.div
+                initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="rounded-2xl p-5 border-l-4"
+                style={{ background: "oklch(0.13 0.04 65)", borderLeftColor: "oklch(0.72 0.18 65)" }}>
+                <p className="text-[9px] uppercase tracking-[0.4em] font-mono mb-2.5"
+                  style={{ color: "oklch(0.72 0.18 65)" }}>Tonight's Reflection</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{day1.reflection}</p>
+              </motion.div>
+            </div>
+
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.95, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="flex-shrink-0 px-5 pb-10 pt-3">
+              <button
+                onClick={onComplete}
+                className="w-full rounded-2xl py-4 font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity active:opacity-80"
+                style={{ background: "oklch(0.6 0.22 250)", color: "#fff" }}>
+                I'm ready. Start Day 1
+                <ArrowRight className="h-5 w-5" />
+              </button>
+              <p className="text-center text-[11px] text-muted-foreground mt-3 font-mono">
+                30-day journey · {track.name}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // ElevateApp — root component
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -3667,6 +3905,7 @@ export function ElevateApp() {
   });
   const [page, setPage] = useState<AppPage>("home");
   const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
+  const [firstDayReveal, setFirstDayReveal] = useState<{ track: UserTrack; userName: string } | null>(null);
   const [pendingCheckIn, setPendingCheckIn] = useState(false);
   const [showMorningCoach, setShowMorningCoach] = useState(false);
   const [showReEntry, setShowReEntry] = useState(false);
@@ -3779,7 +4018,7 @@ export function ElevateApp() {
       lsSave(LS_TRACKS, [ut]);
       setTracks([ut]);
       localStorage.removeItem("forge-pending-track");
-      setSelectedTrack(ut); // auto-open Day 1 immediately
+      setFirstDayReveal({ track: ut, userName: displayName }); // cinematic Day 1 reveal
     }
     setScreen("dashboard");
   }, []);
@@ -3867,6 +4106,18 @@ export function ElevateApp() {
     <LoginPage
       onSuccess={handleLoginSuccess}
       onBack={() => setScreen("onboarding")}
+    />
+  );
+
+  if (firstDayReveal) return (
+    <FirstDayReveal
+      userName={firstDayReveal.userName}
+      track={firstDayReveal.track}
+      onComplete={() => {
+        const tr = firstDayReveal.track;
+        setFirstDayReveal(null);
+        setSelectedTrack(tr);
+      }}
     />
   );
 
