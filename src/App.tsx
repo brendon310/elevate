@@ -2058,7 +2058,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
             onClick={() => setShowMissedModal(true)}
             className="text-[11px] text-muted-foreground hover:text-foreground transition underline underline-offset-2 font-mono"
           >
-            Non hai avuto possibilità di accedere all'app?
+            Non hai potuto accedere e hai perso la streak? Clicca qui
           </button>
         </div>
       )}
