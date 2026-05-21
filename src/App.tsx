@@ -4250,14 +4250,8 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           </button>
         </div>
         {reminderOn && (
-          <div className="flex items-center justify-between py-2 border-t border-border/50 mt-1">
-            <p className="text-xs text-muted-foreground">Remind me at</p>
-            <input
-              type="time"
-              value={reminderTime}
-              onChange={e => { setReminderTime(e.target.value); lsSave("forge-reminder-time", e.target.value); }}
-              className="rounded-lg border border-border bg-background px-2 py-1 text-xs font-mono outline-none focus:ring-2 focus:ring-ring"
-            />
+                    <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
+            <p className="text-xs text-muted-foreground">{"You'll get a daily nudge each morning if you haven't checked in."}</p>
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
