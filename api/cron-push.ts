@@ -22,16 +22,14 @@ const MESSAGES = [
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Allow both cron invocations and manual POST
   if (req.method !== "GET" && req.method !== "POST") return res.status(405).end();
 
   const today = new Date().toISOString().slice(0, 10);
-  const currentHour = new Date().getUTCHours();
 
-  // Get all subscriptions
+  // Send to all opted-in users who haven't checked in today
   const { data: subs, error } = await supabase
     .from("push_subscriptions")
-    .select("user_id, subscription, reminder_hour");
+    .select("user_id, subscription");
 
   if (error || !subs) return res.status(500).json({ error: "DB error" });
 
@@ -39,10 +37,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let skipped = 0;
 
   for (const sub of subs) {
-    // Only send if it's the user's reminder hour (±1 hour window)
-    if (Math.abs(sub.reminder_hour - currentHour) > 1) { skipped++; continue; }
-
-    // Check if user already checked in today
     const { data: logs } = await supabase
       .from("check_ins")
       .select("id")
@@ -52,7 +46,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (logs && logs.length > 0) { skipped++; continue; }
 
-    // Send push
     try {
       const msg = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
       await webpush.sendNotification(
@@ -61,12 +54,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
       sent++;
     } catch (e: unknown) {
-      // Subscription expired — remove it
       if ((e as { statusCode?: number }).statusCode === 410) {
         await supabase.from("push_subscriptions").delete().eq("user_id", sub.user_id);
       }
     }
   }
 
-  return res.status(200).json({ sent, skipped });
+  return res.status(200).json({ sent, skipped, date: today });
 }
