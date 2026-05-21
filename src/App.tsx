@@ -9,6 +9,7 @@ import {
   Database, Download, Bell, Target, Lock, PenLine, X, BarChart2} from "lucide-react";
 import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
+import * as db from "./db";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -21,6 +22,7 @@ interface ElevateUser {
   name: string;
   createdAt: string;
   peakReachedAt?: string | null;
+  supabaseId?: string;
 }
 
 interface UserTrack {
@@ -2763,7 +2765,7 @@ function CommunityBoard({ slug }: { slug: string }) {
 
 const JOURNEY_PRESETS = [30, 60, 90, 120, 180, 365] as const;
 
-function JourneyOnboarding({ track, onStarted }: { track: UserTrack; onStarted: (j: Journey, days: JourneyDay[]) => void }) {
+function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onStarted: (j: Journey, days: JourneyDay[]) => void; userId?: string | null }) {
   const archetype = archetypeForSlug(track.slug);
   const [totalDays, setTotalDays] = useState(30);
   const [isCustomDays, setIsCustomDays] = useState(false);
@@ -2807,12 +2809,14 @@ function JourneyOnboarding({ track, onStarted }: { track: UserTrack; onStarted: 
       journey.generatedThrough = 7;
       lsSave(LS_JOURNEY(track.slug), journey);
       lsSave(LS_DAYS(track.slug), filled);
+      if (userId) { db.saveJourney(userId, journey).catch(() => {}); db.saveJourneyDays(userId, track.slug, filled).catch(() => {}); }
       onStarted(journey, filled);
     } catch {
       const fallback = makeFallback();
       journey.generatedThrough = 7;
       lsSave(LS_JOURNEY(track.slug), journey);
       lsSave(LS_DAYS(track.slug), fallback);
+      if (userId) { db.saveJourney(userId, journey).catch(() => {}); db.saveJourneyDays(userId, track.slug, fallback).catch(() => {}); }
       onStarted(journey, fallback);
     } finally {
       setLoading(false);
@@ -2895,13 +2899,14 @@ function JourneyOnboarding({ track, onStarted }: { track: UserTrack; onStarted: 
 // JourneyView
 // ─────────────────────────────────────────────────────────────────────────────
 
-function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn }: {
+function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn, userId }: {
   track: UserTrack;
   journey: Journey;
   days: JourneyDay[];
   onBack: () => void;
   showCheckInHint?: boolean;
   onTrackCheckIn?: () => void;
+  userId?: string | null;
 }) {
   const [journey, setJourney] = useState(initJourney);
   const [days, setDays] = useState(initDays);
@@ -2950,10 +2955,11 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       }).then(r => r.ok ? r.json() : null).then((data: { days: JourneyDay[] } | null) => {
         if (!data) return;
         const filled = data.days.map((d, i) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: fromDay + i, completedAt: null, userNote: null }));
-        setDays(prev => { const next = [...prev, ...filled]; lsSave(LS_DAYS(track.slug), next); return next; });
+        setDays(prev => { const next = [...prev, ...filled]; lsSave(LS_DAYS(track.slug), next); if (userId) db.saveJourneyDays(userId, track.slug, next).catch(() => {}); return next; });
         const nextJourney = { ...journey, generatedThrough: fromDay + count - 1 };
         setJourney(nextJourney);
         lsSave(LS_JOURNEY(track.slug), nextJourney);
+        if (userId) db.saveJourney(userId, nextJourney).catch(() => {});
       }).catch(() => {});
     }
   }, [completedCount, journey, days.length, track]);
@@ -2962,6 +2968,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     setDays(prev => {
       const next = prev.map(d => d.id === dayId ? { ...d, completedAt: new Date().toISOString(), userNote: note || null } : d);
       lsSave(LS_DAYS(track.slug), next);
+      if (userId) db.saveJourneyDays(userId, track.slug, next).catch(() => {});
       return next;
     });
     const completedNow = completedCount + 1;
@@ -3344,22 +3351,52 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 // TrackDetailPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation }: {
+function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation, userId }: {
   track: UserTrack;
   onBack: () => void;
   showCheckInHint?: boolean;
   onTrackCheckIn?: () => void;
   onVacation?: (trackId: string, until: string) => void;
+  userId?: string | null;
 }) {
   const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
   const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
+
+  // Load journey days from Supabase if localStorage is empty (cross-device / cleared cache)
+  useEffect(() => {
+    if (!userId || days.length > 0) return;
+    db.loadJourneyDays(userId, track.slug).then(dbDays => {
+      if (dbDays.length === 0) return;
+      const mapped = dbDays.map(d => ({
+        id: d.id, journeyId: d.journey_id ?? "", dayNumber: d.day_number,
+        title: d.title ?? "", description: d.description ?? "",
+        task: d.task ?? "", reflection: d.reflection ?? "",
+        science: d.science ?? "", checkinPrompt: d.checkin_prompt ?? "",
+        completedAt: d.completed_at ?? null, userNote: d.user_note ?? null,
+      })) as JourneyDay[];
+      lsSave(LS_DAYS(track.slug), mapped);
+      setDays(mapped);
+    }).catch(() => {});
+    db.loadJourneys(userId).then(dbJourneys => {
+      const j = dbJourneys.find(j => j.track_slug === track.slug);
+      if (!j || journey) return;
+      const mapped: Journey = {
+        id: j.id, trackSlug: j.track_slug, totalDays: j.total_days,
+        startingPoint: j.starting_point ?? "", motivation: j.motivation ?? "",
+        obstacle: j.obstacle ?? "", startedAt: j.started_at ?? "",
+        generatedThrough: j.generated_through ?? 0,
+      };
+      lsSave(LS_JOURNEY(track.slug), mapped);
+      setJourney(mapped);
+    }).catch(() => {});
+  }, [userId, track.slug]);
 
   const handleStarted = (j: Journey, d: JourneyDay[]) => { setJourney(j); setDays(d); };
   const onVac = track.vacation_until && track.vacation_until >= todayStr();
 
   const inner = !journey || days.length === 0
-    ? <JourneyOnboarding track={track} onStarted={handleStarted} />
-    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} />;
+    ? <JourneyOnboarding track={track} onStarted={handleStarted} userId={userId} />
+    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} userId={userId} />;
 
   return (
     <div className="relative min-h-screen">
@@ -4570,14 +4607,18 @@ export function ElevateApp() {
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
+  const [supabaseId, setSupabaseId] = useState<string | null>(() => lsLoad<ElevateUser | null>(LS_USER, null)?.supabaseId ?? null);
 
   const updateUser = useCallback((patch: Partial<ElevateUser>) => {
     setUser(prev => {
       const next = { ...prev!, ...patch };
       lsSave(LS_USER, next);
+      if (supabaseId && patch.name !== undefined) {
+        db.saveProfile(supabaseId, next.name).catch(() => {});
+      }
       return next;
     });
-  }, []);
+  }, [supabaseId]);
 
   const addTrack = useCallback((trackDef: typeof ALL_TRACKS[0], targetDays = 30) => {
     setTracks(prev => {
@@ -4590,25 +4631,28 @@ export function ElevateApp() {
         last_log_date: null, target_days: targetDays,
       }];
       lsSave(LS_TRACKS, next);
+      if (supabaseId) db.saveTracks(supabaseId, next).catch(() => {});
       return next;
     });
-  }, []);
+  }, [supabaseId]);
 
   const removeTrack = useCallback((trackId: string) => {
     setTracks(prev => {
       const next = prev.filter(t => t.id !== trackId);
       lsSave(LS_TRACKS, next);
+      if (supabaseId) db.deleteTrack(supabaseId, trackId).catch(() => {});
       return next;
     });
-  }, []);
+  }, [supabaseId]);
 
   const setVacation = useCallback((trackId: string, until: string) => {
     setTracks(prev => {
       const next = prev.map(t => t.id === trackId ? { ...t, vacation_until: until || null } : t);
       lsSave(LS_TRACKS, next);
+      if (supabaseId) db.saveTracks(supabaseId, next).catch(() => {});
       return next;
     });
-  }, []);
+  }, [supabaseId]);
 
   const MILESTONE_DAYS = new Set([1, 3, 7, 14, 30, 66, 100, 365]);
 
@@ -4639,11 +4683,20 @@ export function ElevateApp() {
       return next;
     });
     setLogs(prev => {
-      const next = [...prev, { id: nanoid(), track_id: userTrackId, log_date: todayStr(), created_at: new Date().toISOString() }];
+      const newLog = { id: nanoid(), track_id: userTrackId, log_date: todayStr(), created_at: new Date().toISOString() };
+      const next = [...prev, newLog];
       lsSave(LS_LOGS, next);
+      if (supabaseId) db.saveLog(supabaseId, newLog).catch(() => {});
       return next;
     });
-  }, []);
+    // Also persist updated track stats
+    if (supabaseId) {
+      setTracks(current => {
+        db.saveTracks(supabaseId, current).catch(() => {});
+        return current;
+      });
+    }
+  }, [supabaseId]);
 
   const handleViewForCheckIn = useCallback((t: UserTrack) => {
     setPendingCheckIn(true);
@@ -4668,30 +4721,47 @@ export function ElevateApp() {
     const savedName = lsLoad<string | null>("forge-pending-name", null);
     const displayName = savedName || enteredName.trim() || "Forger";
     localStorage.removeItem("forge-pending-name");
-    const newUser: ElevateUser = { name: displayName, createdAt: new Date().toISOString() };
-    lsSave(LS_USER, newUser);
-    setUser(newUser);
-    if (pendingTrack) {
-      const full = ALL_TRACKS.find(t => t.slug === pendingTrack.slug) ?? {
-        id: nanoid(), slug: pendingTrack.slug, name: pendingTrack.name, category: pendingTrack.category, short_description: "",
-      };
-      const ut: UserTrack = {
-        id: nanoid(), track_id: full.id, name: full.name, category: full.category, slug: full.slug,
-        added_at: new Date().toISOString(), current_streak: 0, longest_streak: 0, total_done: 0,
-        last_log_date: null, target_days: 30, // will be updated after duration selection
-      };
-      lsSave(LS_TRACKS, [ut]);
-      setTracks([ut]);
-      localStorage.removeItem("forge-pending-track");
-      setFirstDayReveal({ track: ut, userName: displayName }); // cinematic Day 1 reveal
-    }
+
+    // Get Supabase auth user
+    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+      const uid = authUser?.id ?? null;
+      if (uid) setSupabaseId(uid);
+
+      const newUser: ElevateUser = { name: displayName, createdAt: new Date().toISOString(), supabaseId: uid ?? undefined };
+      lsSave(LS_USER, newUser);
+      setUser(newUser);
+
+      if (pendingTrack) {
+        const full = ALL_TRACKS.find(t => t.slug === pendingTrack.slug) ?? {
+          id: nanoid(), slug: pendingTrack.slug, name: pendingTrack.name, category: pendingTrack.category, short_description: "",
+        };
+        const ut: UserTrack = {
+          id: nanoid(), track_id: full.id, name: full.name, category: full.category, slug: full.slug,
+          added_at: new Date().toISOString(), current_streak: 0, longest_streak: 0, total_done: 0,
+          last_log_date: null, target_days: 30,
+        };
+        lsSave(LS_TRACKS, [ut]);
+        setTracks([ut]);
+        localStorage.removeItem("forge-pending-track");
+        setFirstDayReveal({ track: ut, userName: displayName });
+
+        // Save to Supabase
+        if (uid) {
+          db.saveProfile(uid, displayName).catch(() => {});
+          db.saveTracks(uid, [ut]).catch(() => {});
+        }
+      } else if (uid) {
+        // No pending track — save profile only
+        db.saveProfile(uid, displayName).catch(() => {});
+      }
+    });
     setScreen("dashboard");
   }, []);
 
   const handleSignOut = useCallback(async () => {
     await supabase.auth.signOut();
     [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
-    setUser(null); setTracks([]); setLogs([]);
+    setUser(null); setTracks([]); setLogs([]); setSupabaseId(null);
     setScreen("landing");
   }, []);
 
@@ -4702,16 +4772,56 @@ export function ElevateApp() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
-        const existingUser = lsLoad<ElevateUser | null>(LS_USER, null);
-        if (!existingUser) {
-          // No local profile yet → show name step (new user or cleared localStorage)
-          setScreen("login");
-        } else {
-          // Returning user with full profile → go to dashboard
-          setScreen("dashboard");
-        }
+        const uid = session.user.id;
+        setSupabaseId(uid);
+
+        // Try to load from Supabase first
+        db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
+          const localUser = lsLoad<ElevateUser | null>(LS_USER, null);
+          const localTracks = lsLoad<UserTrack[]>(LS_TRACKS, []);
+          const localLogs = lsLoad<Log[]>(LS_LOGS, []);
+
+          if (profile && dbTracks.length > 0) {
+            // ── Supabase has data: use it as source of truth ──
+            const restoredUser: ElevateUser = {
+              name: profile.name,
+              createdAt: profile.created_at,
+              supabaseId: uid,
+            };
+            lsSave(LS_USER, restoredUser);
+            lsSave(LS_TRACKS, dbTracks);
+            lsSave(LS_LOGS, dbLogs);
+            setUser(restoredUser);
+            setTracks(dbTracks as UserTrack[]);
+            setLogs(dbLogs as Log[]);
+            setScreen("dashboard");
+          } else if (localUser) {
+            // ── No Supabase data but have localStorage: migrate up ──
+            db.migrateFromLocalStorage(
+              uid, localUser, localTracks, localLogs,
+              (slug) => lsLoad<JourneyDay[]>(LS_DAYS(slug), []),
+              (slug) => {
+                const j = lsLoad<Journey | null>(LS_JOURNEY(slug), null);
+                return j;
+              }
+            ).catch(() => {});
+            const merged = { ...localUser, supabaseId: uid };
+            lsSave(LS_USER, merged);
+            setUser(merged);
+            setScreen("dashboard");
+          } else {
+            // ── Brand new user ──
+            setScreen("login");
+          }
+        }).catch(() => {
+          // Network error: fall back to localStorage
+          const existingUser = lsLoad<ElevateUser | null>(LS_USER, null);
+          if (existingUser) setScreen("dashboard");
+          else setScreen("login");
+        });
       }
       if (event === "SIGNED_OUT") {
+        setSupabaseId(null);
         setScreen("landing");
       }
     });
@@ -4809,6 +4919,7 @@ export function ElevateApp() {
         showCheckInHint={pendingCheckIn}
         onTrackCheckIn={() => { checkIn(selectedTrack.id); setPendingCheckIn(false); }}
         onVacation={setVacation}
+        userId={supabaseId}
       />
     );
   }
