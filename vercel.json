@@ -4,5 +4,8 @@
       "path": "/api/cron-push",
       "schedule": "0 9 * * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
