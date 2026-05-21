@@ -2275,7 +2275,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
 
 
   const t = todayStr();
-  const todayFormatted = new Date().toLocaleDateString('it-IT', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
+  const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
   const hour = new Date().getHours();
   const greeting = hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = user.name.split(" ")[0];
