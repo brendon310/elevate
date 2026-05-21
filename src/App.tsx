@@ -2838,13 +2838,23 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       completedAt: null, userNote: null,
     }));
     try {
-      const res = await fetch("/api/generate-days", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint, motivation, obstacle, fromDay: 1, count: 7 }),
-      });
-      if (!res.ok) throw new Error("API error");
-      const { days } = await res.json() as { days: JourneyDay[] };
+      let rawDays: JourneyDay[] | null = null;
+      // Check cache first
+      const cached1 = await db.loadJourneyTemplate(track.slug, 1, 7).catch(() => null);
+      if (cached1) {
+        rawDays = cached1 as JourneyDay[];
+      } else {
+        const res = await fetch("/api/generate-days", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint, motivation, obstacle, fromDay: 1, count: 7 }),
+        });
+        if (!res.ok) throw new Error("API error");
+        const { days: freshDays } = await res.json() as { days: JourneyDay[] };
+        rawDays = freshDays;
+        db.saveJourneyTemplate(track.slug, 1, 7, freshDays).catch(() => {});
+      }
+      const days = rawDays!;
       const filled = days.map((d, i) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: i + 1, completedAt: null, userNote: null }));
       journey.generatedThrough = 7;
       lsSave(LS_JOURNEY(track.slug), journey);
@@ -3006,19 +3016,31 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     if (completedCount >= journey.generatedThrough - 2 && journey.generatedThrough < journey.totalDays) {
       const fromDay = journey.generatedThrough + 1;
       const count = Math.min(7, journey.totalDays - journey.generatedThrough);
-      fetch("/api/generate-days", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint: journey.startingPoint, motivation: journey.motivation, obstacle: journey.obstacle, fromDay, count }),
-      }).then(r => r.ok ? r.json() : null).then((data: { days: JourneyDay[] } | null) => {
-        if (!data) return;
-        const filled = data.days.map((d, i) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: fromDay + i, completedAt: null, userNote: null }));
+      (async () => {
+        let rawNext: JourneyDay[] | null = null;
+        const cachedNext = await db.loadJourneyTemplate(track.slug, fromDay, count).catch(() => null);
+        if (cachedNext) {
+          rawNext = cachedNext as JourneyDay[];
+        } else {
+          const r = await fetch("/api/generate-days", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint: journey.startingPoint, motivation: journey.motivation, obstacle: journey.obstacle, fromDay, count }),
+          }).catch(() => null);
+          if (!r || !r.ok) return;
+          const data = await r.json() as { days: JourneyDay[] };
+          rawNext = data.days;
+          db.saveJourneyTemplate(track.slug, fromDay, count, data.days).catch(() => {});
+        }
+        if (!rawNext) return;
+        const data = { days: rawNext };
+        const filled = data.days.map((d: JourneyDay, i: number) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: fromDay + i, completedAt: null, userNote: null }));
         setDays(prev => { const next = [...prev, ...filled]; lsSave(LS_DAYS(track.slug), next); if (userId) db.saveJourneyDays(userId, track.slug, next).catch(() => {}); return next; });
         const nextJourney = { ...journey, generatedThrough: fromDay + count - 1 };
         setJourney(nextJourney);
         lsSave(LS_JOURNEY(track.slug), nextJourney);
         if (userId) db.saveJourney(userId, nextJourney).catch(() => {});
-      }).catch(() => {});
+      })();
     }
   }, [completedCount, journey, days.length, track]);
 
@@ -4282,19 +4304,28 @@ function FirstDayReveal({ userName, track, onComplete }: {
         completedAt: null, userNote: null,
       }));
       try {
-        const res = await fetch("/api/generate-days", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slug: track.slug, trackName: track.name, category: track.category,
-            startingPoint: "Complete beginner, first time",
-            motivation: "I want real and lasting change in my life",
-            obstacle: "Staying consistent when motivation drops",
-            fromDay: 1, count: 7,
-          }),
-        });
-        if (!res.ok) throw new Error();
-        const { days } = await res.json() as { days: JourneyDay[] };
+        let rawDays3: JourneyDay[] | null = null;
+        const cached3 = await db.loadJourneyTemplate(track.slug, 1, 7).catch(() => null);
+        if (cached3) {
+          rawDays3 = cached3 as JourneyDay[];
+        } else {
+          const res = await fetch("/api/generate-days", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              slug: track.slug, trackName: track.name, category: track.category,
+              startingPoint: "Complete beginner, first time",
+              motivation: "I want real and lasting change in my life",
+              obstacle: "Staying consistent when motivation drops",
+              fromDay: 1, count: 7,
+            }),
+          });
+          if (!res.ok) throw new Error();
+          const { days: freshDays3 } = await res.json() as { days: JourneyDay[] };
+          rawDays3 = freshDays3;
+          db.saveJourneyTemplate(track.slug, 1, 7, freshDays3).catch(() => {});
+        }
+        const days = rawDays3!;
         const filled = days.map((d, i) => ({ ...d, id: nanoid(), journeyId: j.id, dayNumber: i + 1, completedAt: null, userNote: null }));
         j.generatedThrough = 7;
         lsSave(LS_JOURNEY(track.slug), j);

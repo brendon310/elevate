@@ -240,3 +240,29 @@ export async function migrateFromLocalStorage(
   await Promise.all(ops);
   console.log('[db] migration complete');
 }
+
+// ─── Journey Template Cache ────────────────────────────────────────────────────
+
+export interface DbJourneyTemplate {
+  id: string;
+  track_slug: string;
+  from_day: number;
+  count: number;
+  days: object[];
+}
+
+export async function loadJourneyTemplate(slug: string, fromDay: number, count: number): Promise<object[] | null> {
+  const id = `${slug}-${fromDay}-${count}`;
+  const { data, error } = await supabase.from('journey_templates').select('days').eq('id', id).single();
+  if (error || !data) return null;
+  return data.days as object[];
+}
+
+export async function saveJourneyTemplate(slug: string, fromDay: number, count: number, days: object[]): Promise<void> {
+  const id = `${slug}-${fromDay}-${count}`;
+  const { error } = await supabase.from('journey_templates').upsert(
+    { id, track_slug: slug, from_day: fromDay, count, days },
+    { onConflict: 'id' }
+  );
+  if (error) console.warn('[db] saveJourneyTemplate:', error.message);
+}
