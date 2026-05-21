@@ -557,7 +557,7 @@ function getMomentumTier(score: number): MilestoneTier {
   return "yellow";
 }
 function getMomentumTierColor(tier: MilestoneTier) {
-  if (tier === "red-pulse" || tier === "red") return { stroke: "#E24B4A", bg: "#FCEBEB", text: "#791F1F", glow: "rgba(226,75,74,0.45)" };
+  if (tier === "red-pulse" || tier === "red") return { stroke: "#C0392B", bg: "#C0392B", text: "#fff", glow: "rgba(192,57,43,0.6)" };
   return { stroke: "#EF9F27", bg: "#FAEEDA", text: "#633806", glow: "rgba(239,159,39,0.45)" };
 }
 function getNextMilestone(score: number) {
@@ -884,16 +884,24 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                 {evo.label}
               </span>
               {/* Permanent milestone badges */}
-              {reachedMilestones.map(ms => (
-                <span key={ms.key}
-                  onClick={ms.key === "100k" ? () => setShowPrizeModal(true) : undefined}
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold cursor-default"
-                  style={{ background: ms.icon === "flame" ? "#FCEBEB" : "#FAEEDA", color: ms.icon === "flame" ? "#791F1F" : "#633806" }}
-                  title={ms.key === "100k" ? "Clicca per richiedere il premio" : `${ms.label} raggiunto`}>
-                  {ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
-                  {ms.label}
-                </span>
-              ))}
+              {reachedMilestones.map(ms => {
+                const is100k = ms.key === "100k";
+                const is50k  = ms.key === "50k";
+                const style100k: React.CSSProperties = { background: "#0D0D0D", color: "#FFD700", animation: "legend-pulse 2s ease-in-out infinite", letterSpacing: "0.12em" };
+                const style50k:  React.CSSProperties = { background: "#C0392B", color: "#fff",    animation: "momentum-pulse 1.4s ease-in-out infinite" };
+                const styleAmber: React.CSSProperties = { background: ms.key === "10k" ? "#FAC775" : "#FAEEDA", color: ms.key === "10k" ? "#412402" : "#633806", animation: ms.key === "10k" ? "momentum-pulse 1.6s ease-in-out infinite" : undefined };
+                const badgeStyle = is100k ? style100k : is50k ? style50k : styleAmber;
+                return (
+                  <span key={ms.key}
+                    onClick={is100k ? () => setShowPrizeModal(true) : undefined}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
+                    style={{ cursor: is100k ? "pointer" : "default", ...badgeStyle }}
+                    title={is100k ? "Clicca per richiedere il premio" : `${ms.label} raggiunto`}>
+                    {is100k ? "★" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
+                    {is100k ? " 100k ★" : ms.label}
+                  </span>
+                );
+              })}
             </div>
 
             <h2 className="font-display text-2xl leading-tight tracking-tight">
