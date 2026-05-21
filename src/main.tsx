@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./app.css";
 import { ElevateApp } from "./App";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 // Register service worker for push notifications
 if ('serviceWorker' in navigator) {
@@ -12,6 +13,8 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ElevateApp />
+    <ErrorBoundary>
+      <ElevateApp />
+    </ErrorBoundary>
   </StrictMode>
 );
