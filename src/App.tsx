@@ -101,7 +101,6 @@ interface CommunityPost {
   createdAt: string;
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
@@ -138,14 +137,10 @@ const ALL_TRACKS = [
   { id: "17", slug: "video-game-addiction",name: "Video Game Addiction", category: "Addiction & Recovery",short_description: "Regain control over gaming." },
   { id: "18", slug: "compulsive-shopping", name: "Compulsive Shopping",  category: "Addiction & Recovery",short_description: "Break the buy-to-feel-good loop." },
   // ── Quit Bad Habits ─────────────────────────────────────────────────────────
-  { id: "19", slug: "no-smartphone",       name: "No Smartphone",        category: "Quit Bad Habits",     short_description: "Reclaim your attention from your phone." },
   { id: "20", slug: "no-sugar",            name: "No Sugar",             category: "Quit Bad Habits",     short_description: "End sugar dependency for good." },
-  { id: "21", slug: "lack-of-self-control",name: "Lack of Self-Control", category: "Quit Bad Habits",     short_description: "Build impulse control from the ground up." },
   // ── Productivity & Life ─────────────────────────────────────────────────────
   { id: "22", slug: "beat-procrastination",name: "Beat Procrastination", category: "Productivity & Life", short_description: "Act before the voice says 'later'." },
   { id: "23", slug: "build-discipline",    name: "Build Discipline",     category: "Productivity & Life", short_description: "The daily reps that form an identity." },
-  { id: "24", slug: "lack-of-motivation",  name: "Lack of Motivation",   category: "Productivity & Life", short_description: "Reignite your drive from the inside out." },
-  { id: "25", slug: "chronic-laziness",    name: "Chronic Laziness",     category: "Productivity & Life", short_description: "Dissolve inertia through micro-actions." },
   // ── Mental Health ────────────────────────────────────────────────────────────
   { id: "26", slug: "stop-overthinking",   name: "Stop Overthinking",    category: "Mental Health",       short_description: "Silence the mental noise loop." },
   { id: "27", slug: "social-anxiety",      name: "Social Anxiety",       category: "Mental Health",       short_description: "Show up without the inner terror." },
@@ -162,21 +157,15 @@ const ALL_TRACKS = [
   { id: "37", slug: "emotional-dependency",name: "Emotional Dependency", category: "Psychology & Self",   short_description: "Become your own emotional anchor." },
   { id: "38", slug: "toxic-relationships", name: "Toxic Relationships",  category: "Psychology & Self",   short_description: "Identify and exit unhealthy bonds." },
   { id: "39", slug: "control-issues",      name: "Control Issues",       category: "Psychology & Self",   short_description: "Release control, find real power." },
-  { id: "40", slug: "narcissism",          name: "Narcissism",           category: "Psychology & Self",   short_description: "Cultivate empathy and genuine connection." },
-  { id: "41", slug: "victim-mentality",    name: "Victim Mentality",     category: "Psychology & Self",   short_description: "Reclaim agency over your story." },
   { id: "42", slug: "stop-self-sabotage",  name: "Stop Self-Sabotage",   category: "Psychology & Self",   short_description: "Interrupt the patterns that hold you back." },
-  { id: "43", slug: "lust-control",        name: "Lust Control",         category: "Psychology & Self",   short_description: "Channel sexual energy with intention." },
   { id: "44", slug: "toxic-perfectionism", name: "Toxic Perfectionism",  category: "Psychology & Self",   short_description: "Done beats perfect, every single time." },
   { id: "45", slug: "jealousy",            name: "Jealousy",             category: "Psychology & Self",   short_description: "Transform jealousy into self-awareness." },
-  { id: "46", slug: "envy",               name: "Envy",                 category: "Psychology & Self",   short_description: "Use envy as a compass, not a prison." },
   // ── Financial Health ─────────────────────────────────────────────────────────
   { id: "47", slug: "money-management",    name: "Money Management",     category: "Financial Health",    short_description: "Build financial clarity and control." },
-  { id: "48", slug: "impulsive-spending",  name: "Impulsive Spending",   category: "Financial Health",    short_description: "Pause before you purchase." },
   // ── Mind & Learning ──────────────────────────────────────────────────────────
   { id: "49", slug: "sedentary-lifestyle", name: "Sedentary Lifestyle",  category: "Fitness & Body",      short_description: "Move a little every day, forever." },
   { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
-
 
 const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
   trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
@@ -210,12 +199,9 @@ const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
   "strength-training": "trainer", "morning-run": "trainer", "cold-exposure": "trainer",
   "sedentary-lifestyle": "trainer",
   // Quit Bad Habits
-  "no-social-media": "trainer", "quit-smoking": "trainer", "no-smartphone": "trainer",
-  "no-sugar": "trainer", "lack-of-self-control": "trainer",
-  // Addiction & Recovery
+  "no-social-media": "trainer", "quit-smoking": "trainer", "no-sugar": "trainer", // Addiction & Recovery
   "quit-alcohol": "trainer", "video-game-addiction": "trainer",
-  "compulsive-shopping": "mentor", "impulsive-spending": "mentor",
-  "quit-pornography": "clinician", "quit-drugs": "clinician",
+  "compulsive-shopping": "mentor", "quit-pornography": "clinician", "quit-drugs": "clinician",
   "quit-gambling": "mentor", "binge-eating": "clinician",
   // Mental Health
   "meditation": "clinician", "anxiety-relief": "clinician", "journaling": "clinician",
@@ -225,17 +211,13 @@ const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
   "social-isolation": "guide", "negative-mindset": "guide",
   // Productivity & Life
   "deep-work": "mentor", "beat-procrastination": "trainer",
-  "build-discipline": "trainer", "lack-of-motivation": "guide",
-  "chronic-laziness": "trainer",
-  // Psychology & Self
+  "build-discipline": "trainer", // Psychology & Self
   "low-self-esteem": "clinician", "need-for-approval": "clinician",
   "fear-of-failure": "mentor", "fear-of-judgment": "clinician",
   "emotional-dependency": "clinician", "toxic-relationships": "mentor",
-  "control-issues": "mentor", "narcissism": "mentor",
-  "victim-mentality": "mentor", "stop-self-sabotage": "guide",
-  "lust-control": "clinician", "toxic-perfectionism": "clinician",
-  "jealousy": "clinician", "envy": "clinician",
-  // Financial Health
+  "control-issues": "mentor", "stop-self-sabotage": "guide",
+  "toxic-perfectionism": "clinician",
+  "jealousy": "clinician", // Financial Health
   "money-management": "mentor",
   // Mind & Learning
   "reading": "teacher", "language": "teacher",
@@ -364,13 +346,9 @@ const TRACK_GLOBAL_STATS: Record<string, string> = {
   "binge-eating":         "4% of people worldwide experience binge eating disorder",
   "video-game-addiction": "8% of gamers show signs of gaming disorder",
   "compulsive-shopping":  "5% of people struggle with compulsive buying",
-  "no-smartphone":        "47% of people report feeling addicted to their smartphone",
   "no-sugar":             "50% of people struggle to reduce sugar consumption",
-  "lack-of-self-control": "37% of people report poor impulse control",
   "beat-procrastination": "20% of adults are chronic procrastinators",
   "build-discipline":     "41% say lack of discipline is their #1 challenge",
-  "lack-of-motivation":   "45% of people struggle with persistent lack of motivation",
-  "chronic-laziness":     "41% report chronic low energy and motivation",
   "stop-overthinking":    "73% of adults between 25–35 report chronic overthinking",
   "social-anxiety":       "12% of people experience social anxiety disorder",
   "anger-management":     "7% of adults report uncontrolled anger issues",
@@ -385,15 +363,10 @@ const TRACK_GLOBAL_STATS: Record<string, string> = {
   "emotional-dependency": "15% of people form emotionally dependent attachments",
   "toxic-relationships":  "29% of adults have experienced a toxic relationship",
   "control-issues":       "11% of people show excessive control tendencies",
-  "narcissism":           "6% of people show significant narcissistic personality traits",
-  "victim-mentality":     "22% of people consistently adopt a victim mindset",
   "stop-self-sabotage":   "33% of people identify as self-sabotagers",
-  "lust-control":         "14% of people struggle with compulsive sexual thoughts",
   "toxic-perfectionism":  "29% of people suffer from maladaptive perfectionism",
   "jealousy":             "22% of people report chronic jealousy in relationships",
-  "envy":                 "28% of people regularly experience debilitating envy",
   "money-management":     "63% of adults live paycheck to paycheck",
-  "impulsive-spending":   "18% of people struggle with compulsive spending",
   "sedentary-lifestyle":  "54% of adults worldwide are insufficiently physically active",
   "gratitude":            "Gratitude practice is used by millions to rewire thinking",
 };
@@ -406,11 +379,9 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "quit-drugs",          keywords: ["drug","droga","cocaine","cocaina","marijuana","cannabis","heroin","eroina","substance","sostanza","addict","dipendente da"] },
   { slug: "quit-gambling",       keywords: ["gambl","gambling","gioco d'azzardo","scommesse","bet","betting","casino","casinò","poker","slot","lottery","lotteria"] },
   { slug: "no-social-media",     keywords: ["social media","instagram","facebook","tiktok","twitter","social","scrolling","scorrere","like","reels","post"] },
-  { slug: "no-smartphone",       keywords: ["phone","smartphone","telefono","cellulare","schermo","screen time","phone addiction","dipendenza telefono","device"] },
   { slug: "no-sugar",            keywords: ["sugar","zucchero","dolci","sweets","candy","caramel","cioccolato","chocolate","junk food","dessert","zuccheri"] },
   { slug: "binge-eating",        keywords: ["binge","overeating","abbuffate","compulsive eat","mangio troppo","cibo","food compuls","eating disorder"] },
   { slug: "compulsive-shopping", keywords: ["shopping compuls","comprare compuls","acquisti compuls","shop addict","acquisti","buy too much"] },
-  { slug: "impulsive-spending",  keywords: ["spend","spending","soldi","debt","debito","spendere","impulse buy","acquisto impuls","financial","broke"] },
   { slug: "beat-procrastination",keywords: ["procrastin","rimandare","postpone","delay","later","dopo","domani","tomorrow","ritardare","pigro nel fare"] },
   { slug: "build-discipline",    keywords: ["discipline","disciplina","self-control","autocontrollo","consistency","costanza","habit","abitudine","commit"] },
   { slug: "stop-overthinking",   keywords: ["overthink","pensare troppo","rumination","ruminazione","spin","thoughts racing","pensieri che girano","worry loop"] },
@@ -426,21 +397,14 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "emotional-dependency",keywords: ["dependency","dipendenza","dependent","dipendente","clingy","attaccamento","attachment","relying on","bisogno degli altri"] },
   { slug: "toxic-relationships", keywords: ["toxic","tossico","relationship","relazione","partner","manipulat","manipolatore","abuse","abuso","controlling partner"] },
   { slug: "control-issues",      keywords: ["control","controllo","controlling","let go","lasciare andare","manage everything","need to control","controllare tutto"] },
-  { slug: "narcissism",          keywords: ["narciss","ego","self-centered","egocentrico","arrogant","arrogante","empathy","empatia","grandiosity"] },
-  { slug: "victim-mentality",    keywords: ["victim","vittima","blame","colpa","fault","responsib","victim mindset","always my fault","è sempre colpa"] },
   { slug: "stop-self-sabotage",  keywords: ["self-sabotage","autosabotaggio","sabotage","sabotare","self-destruct","pattern","destroy what i build","rovino tutto"] },
-  { slug: "lack-of-motivation",  keywords: ["motivat","motivazione","energy","energia","lazy","pigro","no drive","no energy","non ho voglia","demotivat"] },
   { slug: "money-management",    keywords: ["money","soldi","financial","finanziario","budget","debt","debito","saving","risparmio","broke","spendo tutto"] },
-  { slug: "lust-control",        keywords: ["lust","lussuria","sex addict","sesso compuls","sexual","sessuale","desire compuls","obsessed with sex","ossessionato dal sesso"] },
   { slug: "toxic-perfectionism", keywords: ["perfect","perfetto","perfectionism","perfezionismo","perfectionist","perfezionista","never good enough","mai abbastanza"] },
   { slug: "social-isolation",    keywords: ["lonely","solo","solitudine","loneliness","isolated","isolato","connection","connessione","no friends","senza amici","withdraw"] },
   { slug: "video-game-addiction",keywords: ["video game","videogiochi","gaming","giochi","gamer","game addict","gioco troppo","console","twitch","esport","online game"] },
-  { slug: "lack-of-self-control",keywords: ["self-control","autocontrollo","impulse","impulso","impulsive","impulsivo","no control","nessun controllo","can't stop"] },
   { slug: "negative-mindset",    keywords: ["negative","negativo","pessimist","pessimista","mindset","mentalità","always negative","sempre negativo","dark thoughts"] },
   { slug: "sedentary-lifestyle", keywords: ["sedentary","sedentario","inactive","inattivo","sit all day","never move","non mi muovo","couch","divano","exercise"] },
-  { slug: "chronic-laziness",    keywords: ["lazy","pigro","laziness","pigrizia","tired","stanco","no energy","inertia","inerzia","can't get up","non riesco ad alzarmi"] },
   { slug: "jealousy",            keywords: ["jealous","geloso","jealousy","gelosia","partner jealous","relazione","possessive","possessivo","gelosia partner"] },
-  { slug: "envy",                keywords: ["envy","invidia","envious","invidioso","compare","confronto","others have more","gli altri hanno di più","coveting"] },
   { slug: "morning-run",         keywords: ["run","corsa","running","jogging","cardio","cardio exercise","correre"] },
   { slug: "strength-training",   keywords: ["strength","forza","gym","palestra","muscle","muscolo","weight","workout","sollevamento"] },
   { slug: "deep-work",           keywords: ["focus","concentrazione","work","lavoro","productive","produttivo","distraction","distrazione","deep work","flow"] },
@@ -456,7 +420,6 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
 // This ensures the onboarding "Suggested path" hero card always appears.
 const FALLBACK_SLUGS = [
   "build-discipline", "stop-self-sabotage", "beat-procrastination",
-  "lack-of-motivation", "low-self-esteem", "chronic-stress",
   "stop-overthinking", "negative-mindset", "toxic-perfectionism",
 ];
 function suggestTrackFromText(text: string): string {
@@ -698,7 +661,6 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   );
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // PrizeRequestModal — shown at 100k milestone
 // ─────────────────────────────────────────────────────────────────────────────
@@ -760,7 +722,7 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
                   <Crown className="h-5 w-5" style={{ color: "#E24B4A" }} />
                 </div>
                 <div>
-                  <p className="font-display text-lg leading-tight">Hai raggiunto 100k Momentum</p>
+                  <p className="font-display text-lg leading-tight">You've reached 100k Momentum</p>
                   <p className="text-xs text-muted-foreground">Enter your address to receive the physical badge</p>
                 </div>
               </div>
@@ -920,7 +882,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                     onClick={is100k ? () => setShowPrizeModal(true) : undefined}
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
                     style={{ cursor: is100k ? "pointer" : "default", ...badgeStyle }}
-                    title={is100k ? "Clicca per richiedere il premio" : `${ms.label} raggiunto`}>
+                    title={is100k ? "Click to claim your prize" : `${ms.label} reached`}>
                     {is100k ? "★" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
                     {is100k ? " 100k ★" : ms.label}
                   </span>
@@ -930,9 +892,9 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 
             <h2 className="font-display text-2xl leading-tight tracking-tight">
               {isMaxed
-                ? "Leggenda assoluta. Sei nella storia."
-                : m.score >= 50_000 ? "Sei tra i migliori al mondo."
-                : m.score >= 10_000 ? "Livello élite. Continua così."
+                ? "Absolute legend. You made history."
+                : m.score >= 50_000 ? "You're among the best in the world."
+                : m.score >= 10_000 ? "Elite level. Keep pushing."
                 : m.score >= 1_000 ? "You're on fire."
                 : m.score >= 300 ? "Momentum is building."
                 : "Today is day one."}
@@ -943,7 +905,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               <p className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5"
                 style={{ background: "#FCEBEB", color: "#791F1F" }}>
                 <Crown className="h-3 w-3 shrink-0" />
-                A 100k puoi <button onClick={() => setShowPrizeModal(false)} className="underline font-semibold">richiedere il badge fisico</button>
+                At 100k you can <button onClick={() => setShowPrizeModal(false)} className="underline font-semibold">claim the physical badge</button>
               </p>
             )}
             {effectivePeak >= 100_000 && (
@@ -2185,10 +2147,10 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
 // MilestoneOverlay
 // ─────────────────────────────────────────────────────────────────────────────
 const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
-  1:   { emoji: "🌱", title: "Day 1 completato.", sub: "Il viaggio comincia adesso." },
+  1:   { emoji: "🌱", title: "Day 1. Done.", sub: "The journey begins now." },
   3:   { emoji: "🔥", title: "3 days straight.", sub: "You're building something real." },
   7:   { emoji: "⚡", title: "A full week.", sub: "7 days straight. That's not nothing." },
-  14:  { emoji: "💎", title: "Due settimane.", sub: "Stai diventando questa persona." },
+  14:  { emoji: "💎", title: "Due settimane.", sub: "You're becoming this person." },
   30:  { emoji: "🏆", title: "30 days.", sub: "A month. A real habit." },
   66:  { emoji: "🧬", title: "66 days.", sub: "Science says it's now in your nature." },
   100: { emoji: "👑", title: "100 days.", sub: "Triple digits. Very few get here." },
@@ -2272,7 +2234,6 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
     const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
     return MOTIVATIONS[seed % MOTIVATIONS.length];
   }, []);
-
 
   const t = todayStr();
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
@@ -4452,7 +4413,6 @@ function FirstDayReveal({ userName, track, onComplete }: {
             </motion.p>
           </motion.div>
         )}
-
 
         {/* PHASE 3 — Duration picker */}
         {phase === "duration" && (
