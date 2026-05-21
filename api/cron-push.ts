@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .from("push_subscriptions")
     .select("user_id, subscription");
 
-  if (error || !subs) return res.status(500).json({ error: "DB error", detail: error?.message, code: error?.code, hint: error?.hint, url: process.env.SUPABASE_URL?.slice(0,30) });
+  if (error || !subs) return res.status(500).json({ error: "DB error" });
 
   let sent = 0;
   let skipped = 0;
