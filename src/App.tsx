@@ -1857,20 +1857,20 @@ function VacationModal({ track, onSave, onClose }: {
         className="w-full max-w-sm rounded-3xl bg-card border border-border p-6"
         onClick={e => e.stopPropagation()}>
         <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Vacation mode</p>
-        <h3 className="font-display text-xl mb-1">Proteggi la tua streak</h3>
+        <h3 className="font-display text-xl mb-1">Protect your streak</h3>
         <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-          Se sei in viaggio o non puoi accedere, metti in pausa. La streak non si azzera.
+          Traveling or need a break? Pause your streak — it won't reset.
         </p>
         {isActive ? (
           <>
             <div className="rounded-2xl bg-[color:var(--tertiary)]/10 border border-[color:var(--tertiary)]/20 p-4 mb-4 text-center">
-              <p className="text-sm font-semibold text-[color:var(--tertiary)]">Pausa attiva fino al {track.vacation_until}</p>
+              <p className="text-sm font-semibold text-[color:var(--tertiary)]">Pause active until {track.vacation_until}</p>
             </div>
             <div className="flex gap-3">
               <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium">Chiudi</button>
               <button onClick={() => { onSave(""); onClose(); }}
                 className="flex-1 btn-chunk rounded-full bg-[color:var(--secondary)] text-white px-4 py-2.5 text-sm font-semibold">
-                Termina pausa
+                End pause
               </button>
             </div>
           </>
@@ -1891,7 +1891,7 @@ function VacationModal({ track, onSave, onClose }: {
                 type="number" min={1} max={90}
                 value={customDays}
                 onChange={e => setCustomDays(e.target.value)}
-                placeholder="Giorni personalizzati…"
+                placeholder="Custom days…"
                 className="flex-1 rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-foreground/30 transition"
               />
               {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">days</span>}
@@ -1900,10 +1900,10 @@ function VacationModal({ track, onSave, onClose }: {
               Streak protetta fino al <span className="text-foreground">{until}</span>
             </p>
             <div className="flex gap-3">
-              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">Annulla</button>
+              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">Cancel</button>
               <button onClick={() => { onSave(until); onClose(); }}
                 className="flex-1 btn-chunk rounded-full bg-foreground text-background px-4 py-2.5 text-sm font-semibold">
-                Attiva pausa
+                Pause streak
               </button>
             </div>
           </>
@@ -1991,14 +1991,14 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
-              placeholder="Es. non avevo connessione, l'app non si apriva..."
+              placeholder="e.g. no connection, app wouldn't open..."
               rows={3}
               className="w-full rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground resize-none mb-4"
             />
 
             <div className="flex gap-3">
               <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition">
-                Annulla
+                Cancel
               </button>
               <button
                 onClick={submit}
@@ -2277,7 +2277,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   const t = todayStr();
   const todayFormatted = new Date().toLocaleDateString('it-IT', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
   const hour = new Date().getHours();
-  const greeting = hour < 5 ? "È tardi" : hour < 12 ? "Buongiorno" : hour < 18 ? "Buon pomeriggio" : "Buonasera";
+  const greeting = hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = user.name.split(" ")[0];
 
   return (
@@ -2476,7 +2476,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                     <div className="shrink-0 flex items-center gap-2">
                       <button onClick={() => setVacationTrack(ut)}
                         className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
-                        title="Metti in pausa">
+                        title="Pause streak">
                         <Sun className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={() => toggleNote(ut.id)}
@@ -2500,7 +2500,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                     <div className="shrink-0 flex items-center gap-2">
                       <button onClick={() => setVacationTrack(ut)}
                         className="rounded-full border border-border px-2.5 py-2 text-xs text-muted-foreground hover:text-foreground transition btn-chunk"
-                        title="Metti in pausa">
+                        title="Pause streak">
                         <Sun className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={() => toggleNote(ut.id)}
@@ -2566,7 +2566,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                                 setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }));
                                 if (noteError[ut.id]) setNoteError(prev => ({ ...prev, [ut.id]: "" }));
                               }}
-                              placeholder="Racconta com'è andata oggi…"
+                              placeholder="How did today go…"
                               className={`w-full bg-muted/40 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed border transition ${noteError[ut.id] ? "border-[color:var(--secondary)]" : "border-border/50 focus:border-foreground/30"}`}
                               rows={3}
                               autoFocus
@@ -2587,7 +2587,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                             <button
                               onClick={() => { toggleNote(ut.id); setNoteError(prev => ({ ...prev, [ut.id]: "" })); }}
                               className="text-xs text-muted-foreground hover:text-foreground transition font-mono">
-                              Annulla
+                              Cancel
                             </button>
                             <button
                               onClick={() => {
@@ -2632,7 +2632,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
             onClick={() => setShowMissedModal(true)}
             className="text-[11px] text-muted-foreground hover:text-foreground transition underline underline-offset-2 font-mono"
           >
-            Non hai potuto accedere e hai perso la streak? Clicca qui
+            Missed a day and lost your streak? Click here
           </button>
         </div>
       )}
@@ -4085,16 +4085,56 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
   const [notifEnabled, setNotifEnabled] = useState(() => lsLoad<boolean>("forge-notif", false));
   const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
   const [reminderTime, setReminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
+  const [pushLoading, setPushLoading] = useState(false);
+  const [pushError, setPushError] = useState<string | null>(null);
+
+  const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BLsx3Fhbc_Z2gD4jDBRaIUgwd8A2jAo2aBeTeZ800-y2y4yrbTDCJJoYnfaZk83VNdwKiFN6LciifgkZj5q4US4";
+
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = "=".repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+  };
 
   const toggleReminder = async () => {
-    if (!reminderOn) {
-      if (!("Notification" in window)) return;
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") return;
+    setPushError(null);
+    if (reminderOn) {
+      // Unsubscribe
+      const reg = await navigator.serviceWorker.ready.catch(() => null);
+      if (reg) {
+        const sub = await reg.pushManager.getSubscription().catch(() => null);
+        if (sub) await sub.unsubscribe().catch(() => {});
+      }
+      const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
+      if (userId) fetch("/api/push-unsubscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) }).catch(() => {});
+      setReminderOn(false);
+      lsSave("forge-reminder-on", false);
+      return;
     }
-    const next = !reminderOn;
-    setReminderOn(next);
-    lsSave("forge-reminder-on", next);
+    // Subscribe
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      setPushError("Push notifications are not supported in this browser.");
+      return;
+    }
+    setPushLoading(true);
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") { setPushError("Permission denied. Enable notifications in browser settings."); return; }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+      const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
+      const hour = parseInt(reminderTime.split(":")[0], 10);
+      if (userId) {
+        await fetch("/api/push-subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, subscription: sub, reminderHour: hour }) });
+      }
+      setReminderOn(true);
+      lsSave("forge-reminder-on", true);
+    } catch (e) {
+      setPushError("Could not enable notifications. Try again.");
+    } finally {
+      setPushLoading(false);
+    }
   };
 
   const applyTheme = (t: "light" | "dark") => {
@@ -4154,13 +4194,13 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
                 className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               <button onClick={handleSaveName}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
-                {nameSaved ? "Salvato ✓" : "Salva"}
+                {nameSaved ? "Saved ✓" : "Save"}
               </button>
             </div>
           </div>
           <button onClick={onSignOut}
             className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
-            Esci dall'account
+            Sign out
           </button>
         </div>
       </section>
@@ -4171,10 +4211,10 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Sun className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Aspetto</h2>
+          <h2 className="font-semibold">Appearance</h2>
         </div>
         <div className="flex items-center justify-between gap-3 py-3">
-          <p className="text-sm font-medium">Tema</p>
+          <p className="text-sm font-medium">Theme</p>
           <div className="inline-flex rounded-xl border border-border bg-card p-1">
             <button onClick={() => applyTheme("light")}
               className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
@@ -4189,23 +4229,38 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
       </section>
 
       {/* Notifications */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6 opacity-60">
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="flex items-center gap-2 mb-4">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Bell className="h-4 w-4" />
           </span>
           <h2 className="font-semibold">Notifications</h2>
-          <span className="ml-auto rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Coming soon</span>
         </div>
         <div className="flex items-center justify-between py-2">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Daily reminder</p>
-            <p className="text-xs text-muted-foreground">Push notifications are coming in a future update.</p>
+            <p className="text-sm font-medium">Daily reminder</p>
+            <p className="text-xs text-muted-foreground">Get a nudge when you haven't checked in yet.</p>
           </div>
-          <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-muted cursor-not-allowed" title="Coming soon">
-            <span className="inline-block h-4 w-4 rounded-full bg-white/50 translate-x-1" />
-          </div>
+          <button
+            onClick={toggleReminder}
+            disabled={pushLoading}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${reminderOn ? "bg-primary" : "bg-muted"} ${pushLoading ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
+          >
+            <span className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${reminderOn ? "translate-x-6" : "translate-x-1"}`} />
+          </button>
         </div>
+        {reminderOn && (
+          <div className="flex items-center justify-between py-2 border-t border-border/50 mt-1">
+            <p className="text-xs text-muted-foreground">Remind me at</p>
+            <input
+              type="time"
+              value={reminderTime}
+              onChange={e => { setReminderTime(e.target.value); lsSave("forge-reminder-time", e.target.value); }}
+              className="rounded-lg border border-border bg-background px-2 py-1 text-xs font-mono outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+        )}
+        {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
       </section>
 
       {/* Data & Privacy */}
@@ -4214,7 +4269,7 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Database className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Dati e Privacy</h2>
+          <h2 className="font-semibold">Data & Privacy</h2>
         </div>
         <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
           Your progress is saved locally and backed up to your account. Sign out to switch accounts.
@@ -4222,34 +4277,34 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
         <div className="space-y-1">
           <div className="flex items-center justify-between py-3 border-b border-border/50">
             <div>
-              <p className="text-sm font-medium">Esporta dati</p>
+              <p className="text-sm font-medium">Export data</p>
               <p className="text-xs text-muted-foreground">Download all your paths and logs as JSON</p>
             </div>
             <button onClick={handleExport}
               className="btn-chunk inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-              <Download className="h-3.5 w-3.5" /> Esporta
+              <Download className="h-3.5 w-3.5" /> Export
             </button>
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm font-medium text-[color:var(--secondary)]">Cancella tutti i dati</p>
-              <p className="text-xs text-muted-foreground">Elimina permanentemente percorsi, log e progressi</p>
+              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear all data</p>
+              <p className="text-xs text-muted-foreground">Permanently delete all your paths, logs, and progress</p>
             </div>
             {showClearConfirm ? (
               <div className="flex gap-2">
                 <button onClick={() => setShowClearConfirm(false)}
                   className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-                  Annulla
+                  Cancel
                 </button>
                 <button onClick={handleClearData}
                   className="rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition">
-                  Conferma
+                  Confirm
                 </button>
               </div>
             ) : (
               <button onClick={() => setShowClearConfirm(true)}
                 className="btn-chunk rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
-                Cancella
+                Clear
               </button>
             )}
           </div>
@@ -4709,6 +4764,7 @@ export function ElevateApp() {
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
   useEffect(() => {
     const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); setShowInstallBanner(true); };
     window.addEventListener("beforeinstallprompt", handler);
@@ -5001,6 +5057,24 @@ export function ElevateApp() {
     setShowReEntry(false);
   }, []);
 
+  // Re-engagement check — show overlay if user was active but missed 3+ days
+  useEffect(() => {
+    if (tracks.length === 0) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const alreadyShown = lsLoad<string>("forge-reengagement-shown", "");
+    if (alreadyShown === today) return;
+    const dormant = tracks.find(t => {
+      if (!t.last_log_date || t.total_done === 0) return false;
+      if (t.vacation_until && t.vacation_until >= today) return false;
+      const daysMissed = Math.floor((Date.now() - new Date(t.last_log_date).getTime()) / 864e5);
+      return daysMissed >= 3;
+    });
+    if (!dormant) return;
+    const daysMissed = Math.floor((Date.now() - new Date(dormant.last_log_date!).getTime()) / 864e5);
+    lsSave("forge-reengagement-shown", today);
+    setTimeout(() => setReengagement({ daysMissed, trackName: dormant.name }), 1200);
+  }, [tracks]);
+
   // Notification reminder check — every minute
   useEffect(() => {
     if (!("Notification" in window)) return;
@@ -5029,6 +5103,54 @@ export function ElevateApp() {
       onSuccess={handleLoginSuccess}
       onBack={() => setScreen("onboarding")}
     />
+  );
+
+  // Re-engagement overlay
+  if (reengagement) return (
+    <AnimatePresence>
+      <motion.div key="reengagement" className="fixed inset-0 z-50 flex flex-col items-center justify-center px-6"
+        style={{ background: "oklch(0.08 0.02 260 / 0.97)" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div className="text-center max-w-sm space-y-5 w-full"
+          initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 80, damping: 14, delay: 0.1 }}>
+          <div className="text-5xl">👋</div>
+          <div>
+            <p className="font-display text-3xl font-bold text-white tracking-tight leading-tight mb-2">
+              Welcome back.
+            </p>
+            <p className="text-white/50 text-sm leading-relaxed">
+              {reengagement.daysMissed === 1
+                ? `You missed yesterday on ${reengagement.trackName}.`
+                : `You've been away for ${reengagement.daysMissed} days.`}
+              <br />That's okay. The path is still here.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-left space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-white/30">What helps</p>
+            <p className="text-white/70 text-sm leading-relaxed">
+              {reengagement.daysMissed >= 7
+                ? "Start with one minute. Seriously — open your journey, read today's task, and just begin. That's the whole job."
+                : reengagement.daysMissed >= 3
+                ? "Three days off doesn't erase what you built. Your identity is still there. One check-in and you're back."
+                : "Missing a day happens to everyone. The only mistake is letting one miss become two."}
+            </p>
+          </div>
+          <div className="space-y-2 w-full">
+            <button
+              onClick={() => { setReengagement(null); setPage("home"); }}
+              className="w-full btn-chunk rounded-full bg-white text-black px-8 py-3 text-sm font-bold">
+              Let's go →
+            </button>
+            <button
+              onClick={() => setReengagement(null)}
+              className="w-full text-white/30 text-xs py-2">
+              Maybe later
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 
   if (trackCompletion) return (
