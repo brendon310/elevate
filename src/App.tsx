@@ -543,17 +543,16 @@ function validateQuickNote(text: string): string | null {
 }
 
 function computeMomentum(tracks: UserTrack[]) {
-  const t = todayStr();
   const totalStreak = tracks.reduce((s, x) => s + liveStreak(x), 0);
   const totalLongest = tracks.reduce((s, x) => s + (x.longest_streak || 0), 0);
+  const totalDone = tracks.reduce((s, x) => s + (x.total_done || 0), 0);
   const breadth = tracks.filter(x => (x.total_done || 0) > 0).length;
-  const todayDone = tracks.filter(x => x.last_log_date === t).length;
-  const consistency = Math.min(400, totalStreak * 5);
+  const consistency = Math.min(400, totalStreak * 8);
   const longevity = Math.min(200, totalLongest * 2);
   const breadthScore = Math.min(150, breadth * 30);
-  const todayScore = breadth === 0 ? 0 : Math.round((todayDone / breadth) * 250);
-  const score = consistency + longevity + breadthScore + todayScore;
-  return { score: Math.max(0, Math.min(1000, score)), consistency, longevity, breadth: breadthScore, today: todayScore };
+  const volumeScore = Math.min(250, Math.round(totalDone * 1.5));
+  const score = consistency + longevity + breadthScore + volumeScore;
+  return { score: Math.max(0, Math.min(1000, score)), consistency, longevity, breadth: breadthScore, volume: volumeScore };
 }
 
 function evolutionFor(mxStreak: number) {
@@ -750,7 +749,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               </p>
             )}
             <div className="mt-3 grid grid-cols-4 gap-1.5">
-              <Meter label="Today" v={m.today} max={250} />
+              <Meter label="Volume" v={m.volume} max={250} />
               <Meter label="Streak" v={m.consistency} max={400} />
               <Meter label="Depth" v={m.longevity} max={200} />
               <Meter label="Breadth" v={m.breadth} max={150} />
