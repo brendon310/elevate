@@ -6,7 +6,7 @@ import {
   ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
   Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft, Search,
-  Database, Download, Bell, Target, Lock, PenLine, X} from "lucide-react";
+  Database, Download, Bell, Target, Lock, PenLine, X, BarChart2} from "lucide-react";
 import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
 
@@ -547,13 +547,13 @@ const QUICK_NOTE_BANNED = [
 
 function validateQuickNote(text: string): string | null {
   const t = text.trim();
-  if (t.length < 10) return "Scrivi almeno qualche parola prima di inviare.";
+  if (t.length < 10) return "Write at least a few words before sending.";
   if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
   if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
   if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
     return "Scrivi una risposta vera — anche due parole bastano.";
   if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
-    return "Scegli parole migliori per il tuo check-in.";
+    return "Choose better words for your check-in.";
   return null;
 }
 
@@ -740,8 +740,8 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
           {status === "done" ? (
             <div className="text-center py-8">
               <div className="text-5xl mb-4">🏆</div>
-              <h2 className="font-display text-2xl mb-2">Richiesta inviata!</h2>
-              <p className="text-muted-foreground text-sm">Riceverai il tuo badge fisico entro 7-10 giorni lavorativi. Sei una leggenda.</p>
+              <h2 className="font-display text-2xl mb-2">Request submitted!</h2>
+              <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7–10 business days. You're a legend.</p>
               <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Chiudi</button>
             </div>
           ) : (
@@ -753,7 +753,7 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div>
                   <p className="font-display text-lg leading-tight">Hai raggiunto 100k Momentum</p>
-                  <p className="text-xs text-muted-foreground">Inserisci l'indirizzo per ricevere il badge fisico</p>
+                  <p className="text-xs text-muted-foreground">Enter your address to receive the physical badge</p>
                 </div>
               </div>
 
@@ -774,27 +774,27 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">CAP</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">ZIP</label>
                   <input required value={form.zip} onChange={f("zip")} placeholder="20100"
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Paese</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Country</label>
                 <input required value={form.country} onChange={f("country")} placeholder="Italia"
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
 
               {status === "error" && (
-                <p className="text-xs text-red-500">Errore nell'invio. Riprova tra poco.</p>
+                <p className="text-xs text-red-500">Something went wrong. Please try again shortly.</p>
               )}
               <button type="submit" disabled={status === "loading"}
                 className="w-full py-3 rounded-2xl font-semibold text-sm text-white flex items-center justify-center gap-2"
                 style={{ background: "#E24B4A" }}>
-                {status === "loading" ? <Spinner light /> : <><Crown className="h-4 w-4" /> Richiedi il badge fisico</>}
+                {status === "loading" ? <Spinner light /> : <><Crown className="h-4 w-4" /> Request physical badge</>}
               </button>
               <p className="text-[10px] text-muted-foreground text-center">
-                L'indirizzo viene usato solo per la spedizione. Non viene condiviso con terze parti.
+                Your address is only used for shipping. It is never shared with third parties.
               </p>
             </form>
           )}
@@ -942,7 +942,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               <button onClick={() => setShowPrizeModal(true)}
                 className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5 font-semibold"
                 style={{ background: "#E24B4A", color: "#fff" }}>
-                <Crown className="h-3 w-3 shrink-0" /> Richiedi il tuo premio fisico →
+                <Crown className="h-3 w-3 shrink-0" /> Claim your physical prize →
               </button>
             )}
 
@@ -1045,7 +1045,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [phoneError, setPhoneError] = useState("");
-  const [enteredName, setEnteredName] = useState("");
+  const [enteredName, setEnteredName] = useState<string>(() => lsLoad<string | null>("forge-pending-name", null) ?? "");
 
   // ── Real Supabase auth ──────────────────────────────────────────────────────
 
@@ -1072,7 +1072,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
   const handlePhoneContinue = async () => {
     const digits = phone.replace(/\D/g, "");
-    if (digits.length < 8) { setPhoneError("Inserisci un numero valido"); return; }
+    if (digits.length < 8) { setPhoneError("Enter a valid number"); return; }
     setPhoneError("");
     setAuthError(null);
     setLoading("phone-send");
@@ -1117,7 +1117,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
       <button onClick={onBack}
         className="absolute top-7 left-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ChevronLeft className="h-4 w-4" /> Indietro
+        <ChevronLeft className="h-4 w-4" /> Back
       </button>
 
       <motion.div
@@ -1141,12 +1141,12 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
             {mode === "options" && (
               <motion.div key="options" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Quasi fatto</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Salva il tuo percorso. Inizia il Day 1.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">Almost there</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">Save your path. Start Day 1.</p>
 
                 <div className="space-y-3">
                   <button onClick={handleGoogle} disabled={!!loading} className={btnSecondary}>
-                    {loading === "google" ? <Spinner /> : <><GoogleIcon /> Continua con Google</>}
+                    {loading === "google" ? <Spinner /> : <><GoogleIcon /> Continue with Google</>}
                   </button>
                   {authError && <p className="text-xs text-red-400 text-center mt-1">{authError}</p>}
                 </div>
@@ -1158,7 +1158,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                 </div>
 
                 <button onClick={() => setMode("phone")} disabled={!!loading} className={btnSecondary}>
-                  <Phone className="h-4 w-4 text-muted-foreground" /> Continua con il telefono
+                  <Phone className="h-4 w-4 text-muted-foreground" /> Continue with phone
                 </button>
               </motion.div>
             )}
@@ -1166,10 +1166,10 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
             {mode === "phone" && (
               <motion.div key="phone" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
                 <button onClick={() => setMode("options")} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors">
-                  <ChevronLeft className="h-4 w-4" /> Indietro
+                  <ChevronLeft className="h-4 w-4" /> Back
                 </button>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Il tuo numero</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Ti mandiamo un codice via SMS.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">Your number</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">We'll send you a code via SMS.</p>
                 <div className="space-y-3">
                   <div>
                     <input
@@ -1182,7 +1182,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     {phoneError && <p className="text-xs text-red-400 mt-1.5">{phoneError}</p>}
                   </div>
                   <button onClick={handlePhoneContinue} disabled={!!loading} className={btnPrimary}>
-                    {loading === "phone-send" ? <Spinner light /> : "Invia codice →"}
+                    {loading === "phone-send" ? <Spinner light /> : "Send code →"}
                   </button>
                 </div>
               </motion.div>
@@ -1190,8 +1190,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
             {mode === "otp" && (
               <motion.div key="otp" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Inserisci il codice</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Inviato al {phone}.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">Enter the code</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">Sent to {phone}.</p>
                 <div className="space-y-4">
                   <div className="flex gap-2 justify-center">
                     {otp.map((digit, i) => (
@@ -1209,12 +1209,12 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     ))}
                   </div>
                   <button onClick={handleOtpVerify} disabled={otp.join("").length < 6 || !!loading} className={btnPrimary}>
-                    {loading === "phone" ? <Spinner light /> : "Verifica →"}
+                    {loading === "phone" ? <Spinner light /> : "Verify →"}
                   </button>
                   <p className="text-xs text-center text-muted-foreground">
-                    Non è arrivato?{" "}
+                    Didn't receive it?{" "}
                     <button onClick={() => { setOtp(["","","","","",""]); setMode("phone"); }} className="underline hover:text-foreground transition-colors">
-                      Riprova
+                      Try again
                     </button>
                   </p>
                 </div>
@@ -1227,22 +1227,22 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                   <div className="mx-auto mb-5 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
                     <span className="font-display text-white text-2xl font-bold">👋</span>
                   </div>
-                  <h1 className="font-display text-2xl font-bold tracking-tight">Come ti chiami?</h1>
-                  <p className="text-sm text-muted-foreground mt-1">Il tuo coach ti chiamerà così ogni giorno.</p>
+                  <h1 className="font-display text-2xl font-bold tracking-tight">What's your name?</h1>
+                  <p className="text-sm text-muted-foreground mt-1">Your coach will use this every day.</p>
                 </div>
                 <div className="space-y-3">
                   <input
                     type="text" value={enteredName} autoFocus
                     onChange={e => setEnteredName(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
-                    placeholder="Il tuo nome"
+                    placeholder="Your name"
                     className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition text-center font-display text-lg"
                   />
                   <button
                     onClick={() => enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
                     disabled={enteredName.trim().length === 0}
                     className={btnPrimary}>
-                    Inizia il Day 1 →
+                    Start Day 1 →
                   </button>
                 </div>
               </motion.div>
@@ -1252,8 +1252,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
         </div>
 
         <p className="mt-4 text-center text-[11px] text-muted-foreground leading-relaxed">
-          Continuando accetti i nostri{" "}
-          <span className="underline cursor-pointer hover:text-foreground transition-colors">Termini</span>
+          By continuing you agree to our{" "}
+          <span className="underline cursor-pointer hover:text-foreground transition-colors">Terms of Service</span>
           {" e la "}
           <span className="underline cursor-pointer hover:text-foreground transition-colors">Privacy Policy</span>
         </p>
@@ -1422,9 +1422,9 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 // OnboardingPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-type OnboardingStep = "question" | "thinking" | "response" | "tracks";
+type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "name";
 
-function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack }) => void }) {
+function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack; name?: string }) => void }) {
   const [step, setStep] = useState<OnboardingStep>("question");
   const [showAllPaths, setShowAllPaths] = useState(false);
   const [answer, setAnswer] = useState("");
@@ -1432,6 +1432,8 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   const [typedCount, setTypedCount] = useState(0);
   const [chosen, setChosen] = useState<OnboardingTrack | null>(null);
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
+  const [pendingTrackForName, setPendingTrackForName] = useState<OnboardingTrack | null>(null);
+  const [onboardingName, setOnboardingName] = useState("");
 
   const words = useMemo(() => message.split(/(\s+)/), [message]);
   const typingDone = typedCount >= words.length && words.length > 0;
@@ -1555,9 +1557,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                         <span className="text-yellow-400 font-medium">You're not alone in this.</span>
                       </p>
                     )}
-                    <button onClick={() => onComplete({ track: sug })}
+                    <button onClick={() => { setPendingTrackForName(sug); setStep("name"); }}
                       className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]">
-                      Questo è il mio percorso <ArrowRight className="h-4 w-4" />
+                      This is my path <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
 
@@ -1632,9 +1634,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                 </div>
                 {chosen && (
                   <div className="mt-10 text-center">
-                    <button onClick={() => onComplete({ track: chosen })}
+                    <button onClick={() => { setPendingTrackForName(chosen!); setStep("name"); }}
                       className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                      Questo è il mio percorso <ArrowRight className="h-4 w-4" />
+                      This is my path <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
                 )}
@@ -1644,6 +1646,43 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
           </motion.div>
         )}
 
+        {step === "name" && (
+          <motion.div key="name" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">One last thing</p>
+            <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.04em] font-semibold mb-4">
+              What should your coach<br />
+              <span className="text-[color:var(--secondary)] italic">call you?</span>
+            </h1>
+            <p className="text-muted-foreground text-sm mb-12">Your coach will use this every day.</p>
+            <input
+              type="text" autoFocus value={onboardingName}
+              onChange={e => setOnboardingName(e.target.value.slice(0, 40))}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  const n = onboardingName.trim() || "Forger";
+                  onComplete({ track: pendingTrackForName!, name: n });
+                }
+              }}
+              placeholder="Your name"
+              className="w-full bg-transparent border-0 border-b-2 border-border focus:border-foreground outline-none text-center font-display text-3xl placeholder:text-muted-foreground py-4 transition-colors"
+            />
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <button
+                onClick={() => {
+                  const n = onboardingName.trim() || "Forger";
+                  onComplete({ track: pendingTrackForName!, name: n });
+                }}
+                className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
+                Start Day 1 <ArrowRight className="h-4 w-4" />
+              </button>
+              <button onClick={() => onComplete({ track: pendingTrackForName! })}
+                className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
+                Skip for now
+              </button>
+            </div>
+          </motion.div>
+        )}
 
       </AnimatePresence>
     </div>
@@ -1706,10 +1745,10 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const REENTRY_MESSAGES = [
-  "Sei tornato. È tutto quello che conta.",
-  "Il gap non definisce il percorso. Sei qui ora.",
+  "You're back. That's all that matters.",
+  "The gap doesn't define the path. You're here now.",
   "I migliori non si arrendono — si ripartono. Ricominciamo.",
-  "Ogni grande storia ha un capitolo in cui il protagonista rientra. Questo è il tuo.",
+  "Every great story has a chapter where the main character comes back. This is yours.",
 ];
 
 function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: () => void }) {
@@ -1726,7 +1765,7 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
       <div className="relative max-w-sm w-full text-center">
         <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6">
-          Bentornato — {gapDays} giorni dopo
+          Welcome back — {gapDays} days later
         </motion.p>
         <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           className="font-display text-[2rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-10">
@@ -1847,7 +1886,7 @@ function VacationModal({ track, onSave, onClose }: {
                 placeholder="Giorni personalizzati…"
                 className="flex-1 rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-foreground/30 transition"
               />
-              {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">giorni</span>}
+              {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">days</span>}
             </div>
             <p className="text-xs text-muted-foreground text-center mb-5 font-mono">
               Streak protetta fino al <span className="text-foreground">{until}</span>
@@ -1914,7 +1953,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
               <Check className="h-6 w-6 text-[color:var(--tertiary)]" />
             </div>
             <p className="font-display text-lg mb-1">Grazie.</p>
-            <p className="text-sm text-muted-foreground">Prenderemo in considerazione il tuo feedback.</p>
+            <p className="text-sm text-muted-foreground">We'll take your feedback into account.</p>
             <button onClick={onClose} className="mt-5 btn-chunk rounded-full bg-foreground text-background px-6 py-2.5 text-sm font-semibold">
               Chiudi
             </button>
@@ -1958,7 +1997,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
                 disabled={!message.trim() || phase === "sending"}
                 className="flex-1 btn-chunk rounded-full bg-foreground text-background px-4 py-2.5 text-sm font-semibold disabled:opacity-40 transition"
               >
-                {phase === "sending" ? "Invio..." : "Invia"}
+                {phase === "sending" ? "Sending..." : "Send"}
               </button>
             </div>
 
@@ -2139,17 +2178,17 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
 // ─────────────────────────────────────────────────────────────────────────────
 const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
   1:   { emoji: "🌱", title: "Day 1 completato.", sub: "Il viaggio comincia adesso." },
-  3:   { emoji: "🔥", title: "3 giorni di fila.", sub: "Stai costruendo qualcosa di reale." },
-  7:   { emoji: "⚡", title: "Una settimana intera.", sub: "7 giorni di fila. Non è poco." },
+  3:   { emoji: "🔥", title: "3 days straight.", sub: "You're building something real." },
+  7:   { emoji: "⚡", title: "A full week.", sub: "7 days straight. That's not nothing." },
   14:  { emoji: "💎", title: "Due settimane.", sub: "Stai diventando questa persona." },
-  30:  { emoji: "🏆", title: "30 giorni.", sub: "Un mese. Un'abitudine vera." },
-  66:  { emoji: "🧬", title: "66 giorni.", sub: "La scienza dice che è ora nella tua natura." },
-  100: { emoji: "👑", title: "100 giorni.", sub: "Tre cifre. Pochi arrivano qui." },
-  365: { emoji: "🌟", title: "Un anno intero.", sub: "Sei irriconoscibile rispetto a chi eri." },
+  30:  { emoji: "🏆", title: "30 days.", sub: "A month. A real habit." },
+  66:  { emoji: "🧬", title: "66 days.", sub: "Science says it's now in your nature." },
+  100: { emoji: "👑", title: "100 days.", sub: "Triple digits. Very few get here." },
+  365: { emoji: "🌟", title: "A full year.", sub: "You're unrecognizable compared to who you were." },
 };
 
 function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
-  const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Continua così." };
+  const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Keep it up." };
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
@@ -2330,7 +2369,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                               </button>
                             ) : liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
                               <p className="text-[10px] font-mono text-white/45 leading-snug">
-                                Nessun problema —<br />ricomincia quando vuoi.
+                                No problem —<br />start again whenever you're ready.
                               </p>
                             ) : (
                               <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
@@ -3436,16 +3475,16 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   onRemove: (id: string) => void;
 }) {
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [pendingAdd, setPendingAdd] = useState<typeof ALL_TRACKS[0] | null>(null);
   const activeMap = new Map(userTracks.map(u => [u.track_id, u]));
+  const allCategories = useMemo(() => Array.from(new Set(ALL_TRACKS.map(t => t.category))), []);
   const q = search.toLowerCase().trim();
-  const filtered = q
-    ? ALL_TRACKS.filter(t =>
-        t.name.toLowerCase().includes(q) ||
-        t.short_description.toLowerCase().includes(q) ||
-        t.category.toLowerCase().includes(q)
-      )
-    : ALL_TRACKS;
+  const filtered = ALL_TRACKS.filter(t => {
+    const matchesSearch = !q || t.name.toLowerCase().includes(q) || t.short_description.toLowerCase().includes(q) || t.category.toLowerCase().includes(q);
+    const matchesCat = !categoryFilter || t.category === categoryFilter;
+    return matchesSearch && matchesCat;
+  });
   const grouped = filtered.reduce<Record<string, typeof ALL_TRACKS>>((acc, t) => {
     (acc[t.category] ??= []).push(t); return acc;
   }, {});
@@ -3469,6 +3508,21 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
             ✕
           </button>
         )}
+      </div>
+      {/* Category filter chips */}
+      <div className="mt-3 flex gap-2 flex-wrap">
+        <button
+          onClick={() => setCategoryFilter(null)}
+          className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${!categoryFilter ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+          All
+        </button>
+        {allCategories.map(cat => (
+          <button key={cat}
+            onClick={() => setCategoryFilter(cat === categoryFilter ? null : cat)}
+            className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${categoryFilter === cat ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+            {cat}
+          </button>
+        ))}
       </div>
       {Object.keys(grouped).length === 0 && (
         <div className="mt-12 text-center text-muted-foreground text-sm">
@@ -3628,10 +3682,35 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
   const totalCheckins = logs.length;
   const activeDays = heatmap.filter(d => d.count > 0).length;
 
+  // Weekly comparison
+  const todayTs = Date.now();
+  const thisWeekStart = todayTs - 7 * 86_400_000;
+  const lastWeekStart = todayTs - 14 * 86_400_000;
+  const thisWeekCount = logs.filter(l => new Date(l.log_date).getTime() >= thisWeekStart).length;
+  const lastWeekCount = logs.filter(l => {
+    const t = new Date(l.log_date).getTime();
+    return t >= lastWeekStart && t < thisWeekStart;
+  }).length;
+  const weekDelta = thisWeekCount - lastWeekCount;
+
+  // 28-day bar chart data
+  const last28 = useMemo(() => {
+    const byDay = new Map<string, number>();
+    logs.forEach(l => byDay.set(l.log_date, (byDay.get(l.log_date) || 0) + 1));
+    return Array.from({ length: 28 }, (_, i) => {
+      const d = new Date(Date.now() - (27 - i) * 86_400_000).toISOString().slice(0, 10);
+      return { date: d, count: byDay.get(d) || 0, isToday: i === 27 };
+    });
+  }, [logs]);
+  const maxBar = Math.max(1, ...last28.map(d => d.count));
+
+  // Best streak across all tracks
+  const bestStreak = userTracks.reduce((best, t) => Math.max(best, t.longest_streak || 0), 0);
+
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl space-y-8">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Stats</h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
         <p className="text-muted-foreground mt-1">Your data, clear and honest.</p>
         <button onClick={generateLetter} disabled={letterLoading}
           className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
@@ -3646,37 +3725,91 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
       {/* Empty state */}
       {totalCheckins === 0 && (
         <div className="rounded-2xl border border-border bg-card p-10 text-center space-y-3">
-          <p className="text-4xl">📊</p>
-          <h3 className="font-display text-xl font-semibold">Nessun dato ancora</h3>
+          <BarChart2 className="h-10 w-10 mx-auto text-muted-foreground/50" />
+          <h3 className="font-display text-xl font-semibold">No data yet</h3>
           <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            Completa il tuo primo check-in per vedere le statistiche del tuo percorso qui.
+            Complete your first check-in to see your progress here.
           </p>
         </div>
       )}
 
       {/* Summary row */}
       {totalCheckins > 0 && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Check-in totali", value: totalCheckins },
-            { label: "Giorni attivi (90g)", value: activeDays },
+            { label: "Total check-ins", value: totalCheckins },
+            { label: "Active days (90d)", value: activeDays },
+            { label: "Best streak", value: bestStreak, unit: "d" },
             { label: "Active paths", value: userTracks.length },
           ].map(s => (
             <div key={s.label} className="rounded-2xl border border-border bg-card p-4 text-center">
-              <p className="font-bold text-2xl font-display">{s.value}</p>
+              <p className="font-bold text-2xl font-display">{s.value}{s.unit ?? ""}</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
       )}
 
+      {/* Weekly comparison */}
+      {totalCheckins > 0 && (
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-4">This week vs last week</h2>
+          <div className="flex items-end gap-6">
+            {/* Last week bar */}
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <p className="text-xl font-bold font-display text-muted-foreground">{lastWeekCount}</p>
+              <div className="w-full rounded-t-lg bg-muted/60 transition-all" style={{ height: `${Math.round((lastWeekCount / Math.max(1, thisWeekCount, lastWeekCount)) * 80) + 8}px` }} />
+              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Last week</p>
+            </div>
+            {/* Delta */}
+            <div className="flex flex-col items-center gap-1 pb-6 shrink-0">
+              <span className={`text-sm font-bold ${weekDelta > 0 ? "text-emerald-400" : weekDelta < 0 ? "text-red-400" : "text-muted-foreground"}`}>
+                {weekDelta > 0 ? `+${weekDelta}` : weekDelta === 0 ? "=" : weekDelta}
+              </span>
+              <span className="text-[10px] text-muted-foreground font-mono">vs</span>
+            </div>
+            {/* This week bar */}
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <p className="text-xl font-bold font-display" style={{ color: "var(--tertiary)" }}>{thisWeekCount}</p>
+              <div className="w-full rounded-t-lg transition-all" style={{ height: `${Math.round((thisWeekCount / Math.max(1, thisWeekCount, lastWeekCount)) * 80) + 8}px`, background: "var(--tertiary)", opacity: 0.8 }} />
+              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">This week</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 28-day activity bar chart */}
+      {totalCheckins > 0 && (
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <h2 className="font-semibold mb-4">Daily activity — last 28 days</h2>
+          <div className="flex items-end gap-[3px] h-16">
+            {last28.map(d => (
+              <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full" title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}>
+                <div
+                  className={`w-full rounded-t-sm transition-all ${d.isToday ? "opacity-100" : "opacity-70"}`}
+                  style={{
+                    height: d.count > 0 ? `${Math.max(8, Math.round((d.count / maxBar) * 52))}px` : "3px",
+                    background: d.count > 0 ? "var(--tertiary)" : "oklch(1 0 0 / 0.08)",
+                    borderRadius: "3px 3px 1px 1px",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between mt-2">
+            <p className="text-[9px] text-muted-foreground font-mono">{last28[0]?.date.slice(5)}</p>
+            <p className="text-[9px] text-muted-foreground font-mono">today</p>
+          </div>
+        </section>
+      )}
+
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Attività 90 giorni</h2>
+          <h2 className="font-semibold">90-day activity</h2>
           <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-            <span>meno</span>
+            <span>less</span>
             {[0,1,2,3].map(v => <div key={v} className={`h-2.5 w-2.5 rounded-sm ${tone(v)}`} />)}
-            <span>più</span>
+            <span>more</span>
           </div>
         </div>
         {totalCheckins === 0 ? (
@@ -3710,36 +3843,69 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
 
       {userTracks.length > 0 && (
         <section>
-          <h2 className="font-semibold mb-3">Per-track</h2>
+          <h2 className="font-semibold mb-3">Per path</h2>
           <div className="grid sm:grid-cols-2 gap-3">
-            {userTracks.map(t => (
-              <div key={t.id} className="rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold truncate">{t.name}</h3>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.category}</span>
+            {userTracks.map(t => {
+              const streak = liveStreak(t);
+              const best = t.longest_streak || 0;
+              const done = t.total_done || 0;
+              const target = t.target_days || 30;
+              const progressPct = Math.min(1, done / target);
+              const streakPct = best > 0 ? Math.min(1, streak / best) : 0;
+              return (
+                <div key={t.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="font-semibold text-[15px] leading-tight">{t.name}</h3>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">{t.category}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-bold text-lg font-display leading-none" style={{ color: streak > 0 ? "var(--tertiary)" : undefined }}>{streak}d</p>
+                      <p className="text-[9px] text-muted-foreground font-mono mt-0.5">streak</p>
+                    </div>
+                  </div>
+
+                  {/* Journey progress bar */}
+                  <div>
+                    <div className="flex justify-between text-[10px] text-muted-foreground font-mono mb-1">
+                      <span>Journey progress</span>
+                      <span>{done}/{target} days</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${progressPct * 100}%`, background: "var(--tertiary)" }} />
+                    </div>
+                  </div>
+
+                  {/* Streak vs best */}
+                  {best > 0 && (
+                    <div>
+                      <div className="flex justify-between text-[10px] text-muted-foreground font-mono mb-1">
+                        <span>Streak vs best</span>
+                        <span>{streak} / {best}d</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${streakPct * 100}%`, background: streak >= best && best > 0 ? "#f59e0b" : "oklch(0.6 0.22 250)" }} />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-1">
+                    <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
+                      <p className="font-bold text-sm">{best}d</p>
+                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Best</p>
+                    </div>
+                    <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
+                      <p className="font-bold text-sm">{done}</p>
+                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Done</p>
+                    </div>
+                    <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
+                      <p className="font-bold text-sm">{target - done > 0 ? target - done : "✓"}</p>
+                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{target - done > 0 ? "Left" : "Complete"}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 mt-3 text-center">
-                  <div className="rounded-xl bg-muted p-2">
-                    <div className="flex items-center justify-center gap-1 text-muted-foreground text-[10px] uppercase">
-                      <Flame className="h-3 w-3" />Streak
-                    </div>
-                    <p className="font-bold text-base mt-0.5">{liveStreak(t)}</p>
-                  </div>
-                  <div className="rounded-xl bg-muted p-2">
-                    <div className="flex items-center justify-center gap-1 text-muted-foreground text-[10px] uppercase">
-                      <Trophy className="h-3 w-3" />Best
-                    </div>
-                    <p className="font-bold text-base mt-0.5">{t.longest_streak || 0}</p>
-                  </div>
-                  <div className="rounded-xl bg-muted p-2">
-                    <div className="flex items-center justify-center gap-1 text-muted-foreground text-[10px] uppercase">
-                      <CheckCircle2 className="h-3 w-3" />Done
-                    </div>
-                    <p className="font-bold text-base mt-0.5">{t.total_done || 0}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -3850,11 +4016,11 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
         </div>
         <div className="space-y-3">
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Il tuo nome</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">Your name</label>
             <div className="flex gap-2 mt-1.5">
               <input value={displayName} onChange={e => { setDisplayName(e.target.value); setNameSaved(false); }}
                 onKeyDown={e => e.key === "Enter" && handleSaveName()}
-                placeholder="Come ti chiami?"
+                placeholder="What's your name?"
                 className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               <button onClick={handleSaveName}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
@@ -3893,34 +4059,23 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
       </section>
 
       {/* Notifications */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6 opacity-60">
         <div className="flex items-center gap-2 mb-4">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Bell className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Notifiche</h2>
+          <h2 className="font-semibold">Notifications</h2>
+          <span className="ml-auto rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Coming soon</span>
         </div>
         <div className="flex items-center justify-between py-2">
           <div>
-            <p className="text-sm font-medium">Reminder giornaliero</p>
-            <p className="text-xs text-muted-foreground">Ti avvisiamo se non hai fatto check-in all'orario scelto</p>
+            <p className="text-sm font-medium text-muted-foreground">Daily reminder</p>
+            <p className="text-xs text-muted-foreground">Push notifications are coming in a future update.</p>
           </div>
-          <button onClick={toggleReminder}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${reminderOn ? "bg-[color:var(--tertiary)]" : "bg-muted"}`}>
-            <span className={`inline-block h-4 w-4 rounded-full bg-white transition transform ${reminderOn ? "translate-x-6" : "translate-x-1"}`} />
-          </button>
+          <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-muted cursor-not-allowed" title="Coming soon">
+            <span className="inline-block h-4 w-4 rounded-full bg-white/50 translate-x-1" />
+          </div>
         </div>
-        {reminderOn && (
-          <div className="flex items-center justify-between py-2 border-t border-border/50">
-            <p className="text-sm text-muted-foreground">Orario</p>
-            <input
-              type="time"
-              value={reminderTime}
-              onChange={e => { setReminderTime(e.target.value); lsSave("forge-reminder-time", e.target.value); }}
-              className="rounded-xl border border-border bg-muted px-3 py-1.5 text-sm text-foreground focus:outline-none focus:border-foreground"
-            />
-          </div>
-        )}
       </section>
 
       {/* Data & Privacy */}
@@ -3938,7 +4093,7 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           <div className="flex items-center justify-between py-3 border-b border-border/50">
             <div>
               <p className="text-sm font-medium">Esporta dati</p>
-              <p className="text-xs text-muted-foreground">Scarica tutti i tuoi percorsi e log in formato JSON</p>
+              <p className="text-xs text-muted-foreground">Download all your paths and logs as JSON</p>
             </div>
             <button onClick={handleExport}
               className="btn-chunk inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
@@ -4501,15 +4656,18 @@ export function ElevateApp() {
   }, []);
 
   // Called after user picks their track — save it and go to login
-  const handleOnboardingComplete = useCallback(({ track }: { track: OnboardingTrack }) => {
+  const handleOnboardingComplete = useCallback(({ track, name }: { track: OnboardingTrack; name?: string }) => {
     lsSave("forge-pending-track", track);
+    if (name) lsSave("forge-pending-name", name);
     setScreen("login");
   }, []);
 
   // Called after successful login — create user from entered name + pending track, then open Day 1
   const handleLoginSuccess = useCallback((enteredName: string) => {
     const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
-    const displayName = enteredName.trim() || "Forger";
+    const savedName = lsLoad<string | null>("forge-pending-name", null);
+    const displayName = savedName || enteredName.trim() || "Forger";
+    localStorage.removeItem("forge-pending-name");
     const newUser: ElevateUser = { name: displayName, createdAt: new Date().toISOString() };
     lsSave(LS_USER, newUser);
     setUser(newUser);
@@ -4602,7 +4760,7 @@ export function ElevateApp() {
       const sentKey = `forge-notif-sent-${t}`;
       if (lsLoad<boolean>(sentKey, false)) return;
       lsSave(sentKey, true);
-      new Notification("Forge", { body: "Non hai ancora fatto check-in oggi. Il tuo streak ti aspetta." });
+      new Notification("Forge", { body: "You haven't checked in yet today. Your streak is waiting." });
     }, 60_000);
     return () => clearInterval(interval);
   }, [tracks]);
