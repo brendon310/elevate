@@ -6,8 +6,7 @@ import {
   ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
   Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft, Search,
-  Database, Download, Bell, Target, Lock, PenLine,
-} from "lucide-react";
+  Database, Download, Bell, Target, Lock, PenLine, X} from "lucide-react";
 import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
 
@@ -542,17 +541,41 @@ function validateQuickNote(text: string): string | null {
   return null;
 }
 
+// Milestones: 1k (yellow), 10k (yellow-pulse), 50k (red), 100k (red-pulse)
+const MOMENTUM_MILESTONES = [
+  { key: "1k",   threshold: 1_000,   label: "1k",   icon: "bolt"  },
+  { key: "10k",  threshold: 10_000,  label: "10k",  icon: "bolt"  },
+  { key: "50k",  threshold: 50_000,  label: "50k",  icon: "flame" },
+  { key: "100k", threshold: 100_000, label: "100k", icon: "flame" },
+] as const;
+
+type MilestoneTier = "yellow" | "yellow-pulse" | "red" | "red-pulse";
+function getMomentumTier(score: number): MilestoneTier {
+  if (score >= 50_000) return "red-pulse";
+  if (score >= 10_000) return "red";
+  if (score >= 1_000)  return "yellow-pulse";
+  return "yellow";
+}
+function getMomentumTierColor(tier: MilestoneTier) {
+  if (tier === "red-pulse" || tier === "red") return { stroke: "#E24B4A", bg: "#FCEBEB", text: "#791F1F", glow: "rgba(226,75,74,0.45)" };
+  return { stroke: "#EF9F27", bg: "#FAEEDA", text: "#633806", glow: "rgba(239,159,39,0.45)" };
+}
+function getNextMilestone(score: number) {
+  return MOMENTUM_MILESTONES.find(m => score < m.threshold) ?? MOMENTUM_MILESTONES[MOMENTUM_MILESTONES.length - 1];
+}
+
 function computeMomentum(tracks: UserTrack[]) {
   const totalStreak = tracks.reduce((s, x) => s + liveStreak(x), 0);
   const totalLongest = tracks.reduce((s, x) => s + (x.longest_streak || 0), 0);
   const totalDone = tracks.reduce((s, x) => s + (x.total_done || 0), 0);
   const breadth = tracks.filter(x => (x.total_done || 0) > 0).length;
-  const consistency = Math.min(400, totalStreak * 8);
-  const longevity = Math.min(200, totalLongest * 2);
-  const breadthScore = Math.min(150, breadth * 30);
-  const volumeScore = Math.min(250, Math.round(totalDone * 1.5));
+  // No caps — momentum grows forever with real effort
+  const consistency = totalStreak * 100;          // 100/day per active path
+  const longevity   = totalLongest * 50;           // personal record bonus
+  const breadthScore = breadth * 300;              // +300 first check-in on any path
+  const volumeScore  = Math.round(Math.sqrt(totalDone) * 300); // sqrt growth
   const score = consistency + longevity + breadthScore + volumeScore;
-  return { score: Math.max(0, Math.min(1000, score)), consistency, longevity, breadth: breadthScore, volume: volumeScore };
+  return { score, consistency, longevity, breadth: breadthScore, volume: volumeScore };
 }
 
 function evolutionFor(mxStreak: number) {
@@ -651,6 +674,120 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   );
 }
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PrizeRequestModal — shown at 100k milestone
+// ─────────────────────────────────────────────────────────────────────────────
+function PrizeRequestModal({ onClose }: { onClose: () => void }) {
+  const [form, setForm] = useState({ name: "", address: "", city: "", zip: "", country: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const { supabase } = await import('./supabase');
+      await supabase.from("prize_requests").insert({
+        name: form.name, address: form.address, city: form.city,
+        zip: form.zip, country: form.country, momentum_score: 100000,
+        created_at: new Date().toISOString(),
+      });
+      // Also notify via API route if available
+      try {
+        await fetch("/api/prize-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+      } catch (_) { /* API route optional */ }
+      setStatus("done");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const f = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm(p => ({ ...p, [k]: e.target.value }));
+
+  return (
+    <AnimatePresence>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: "rgba(0,0,0,0.6)" }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}>
+        <motion.div initial={{ scale: 0.93, y: 24 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.93, y: 24 }}
+          className="w-full max-w-md bg-card rounded-3xl p-6 relative shadow-2xl">
+          <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" />
+          </button>
+
+          {status === "done" ? (
+            <div className="text-center py-8">
+              <div className="text-5xl mb-4">🏆</div>
+              <h2 className="font-display text-2xl mb-2">Richiesta inviata!</h2>
+              <p className="text-muted-foreground text-sm">Riceverai il tuo badge fisico entro 7-10 giorni lavorativi. Sei una leggenda.</p>
+              <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Chiudi</button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: "#FCEBEB" }}>
+                  <Crown className="h-5 w-5" style={{ color: "#E24B4A" }} />
+                </div>
+                <div>
+                  <p className="font-display text-lg leading-tight">Hai raggiunto 100k Momentum</p>
+                  <p className="text-xs text-muted-foreground">Inserisci l'indirizzo per ricevere il badge fisico</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Nome e cognome</label>
+                <input required value={form.name} onChange={f("name")} placeholder="Brendon Hoxha"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Indirizzo</label>
+                <input required value={form.address} onChange={f("address")} placeholder="Via Roma 12, Appartamento 3"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Città</label>
+                  <input required value={form.city} onChange={f("city")} placeholder="Milano"
+                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">CAP</label>
+                  <input required value={form.zip} onChange={f("zip")} placeholder="20100"
+                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Paese</label>
+                <input required value={form.country} onChange={f("country")} placeholder="Italia"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
+              </div>
+
+              {status === "error" && (
+                <p className="text-xs text-red-500">Errore nell'invio. Riprova tra poco.</p>
+              )}
+              <button type="submit" disabled={status === "loading"}
+                className="w-full py-3 rounded-2xl font-semibold text-sm text-white flex items-center justify-center gap-2"
+                style={{ background: "#E24B4A" }}>
+                {status === "loading" ? <Spinner light /> : <><Crown className="h-4 w-4" /> Richiedi il badge fisico</>}
+              </button>
+              <p className="text-[10px] text-muted-foreground text-center">
+                L'indirizzo viene usato solo per la spedizione. Non viene condiviso con terze parti.
+              </p>
+            </form>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // MomentumHero
 // ─────────────────────────────────────────────────────────────────────────────
@@ -668,20 +805,37 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   const inFlow = detectFlow(tracks);
   const atRisk = atRiskTracks(tracks);
   const animated = useCountUp(m.score);
-  const pct = m.score / 1000;
-  const isMaxed = m.score >= 1000;
+
+  // Peak momentum — persists forever, drives milestone badges
+  const [peakScore, setPeakScore] = useState<number>(() => lsLoad<number>("forge-peak-momentum", 0));
+  const [showPrizeModal, setShowPrizeModal] = useState(false);
+  useEffect(() => {
+    if (m.score > peakScore) {
+      setPeakScore(m.score);
+      lsSave("forge-peak-momentum", m.score);
+    }
+  }, [m.score]);
+
+  const effectivePeak = Math.max(m.score, peakScore);
+  const reachedMilestones = MOMENTUM_MILESTONES.filter(ms => effectivePeak >= ms.threshold);
+  const nextMs = getNextMilestone(m.score);
+  const tier = getMomentumTier(m.score);
+  const tierColor = getMomentumTierColor(tier);
+  const pct = Math.min(1, m.score / nextMs.threshold);
+  const isMaxed = m.score >= 100_000;
   const hasPeakBadge = !!user.peakReachedAt;
 
+  // Milestone confetti bursts
+  const prevPeakRef = useRef(peakScore);
   useEffect(() => {
-    if (!isMaxed || hasPeakBadge) return;
-    onUpdateUser({ peakReachedAt: new Date().toISOString() });
-    const gold = ["#FFD000", "#FFB347", "#FFE680", "#F5C518", "#FFFFFF"];
-    const burst = (originX: number) =>
-      confetti({ particleCount: 90, spread: 75, startVelocity: 45, gravity: 0.9, ticks: 220, origin: { x: originX, y: 0.35 }, colors: gold, scalar: 1.05 });
-    burst(0.25);
-    setTimeout(() => burst(0.75), 180);
-    setTimeout(() => confetti({ particleCount: 140, spread: 120, startVelocity: 35, origin: { x: 0.5, y: 0.4 }, colors: gold }), 360);
-  }, [isMaxed, hasPeakBadge, onUpdateUser]);
+    const prev = prevPeakRef.current;
+    prevPeakRef.current = effectivePeak;
+    const justHit = MOMENTUM_MILESTONES.find(ms => prev < ms.threshold && effectivePeak >= ms.threshold);
+    if (!justHit) return;
+    const gold = justHit.icon === "flame" ? ["#E24B4A","#F09595","#FFFFFF","#F7C1C1"] : ["#EF9F27","#FAC775","#FFFFFF","#FAEEDA"];
+    confetti({ particleCount: 120, spread: 90, startVelocity: 45, gravity: 0.9, ticks: 250, origin: { x: 0.5, y: 0.35 }, colors: gold });
+    if (justHit.key === "100k") onUpdateUser({ peakReachedAt: new Date().toISOString() });
+  }, [effectivePeak]);
 
   const size = 168;
   const stroke = 12;
@@ -700,48 +854,74 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
             <svg width={size} height={size} className="absolute inset-0 -rotate-90">
               <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(0.5 0 0 / 0.25)" strokeWidth={stroke} fill="none" />
               <motion.circle cx={size / 2} cy={size / 2} r={r}
-                stroke={isMaxed ? "oklch(0.92 0.18 88)" : "oklch(0.83 0.22 88)"}
+                stroke={tierColor.stroke}
                 strokeWidth={stroke} strokeLinecap="round" fill="none"
                 strokeDasharray={c}
                 initial={{ strokeDashoffset: c }}
                 animate={{ strokeDashoffset: c - c * pct }}
                 transition={{ type: "spring", stiffness: 50, damping: 18 }}
-                style={{  }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-mono">Momentum</p>
-              <p className="font-display text-[3.25rem] leading-none text-foreground num-rise">{animated}</p>
-              <p className="text-[10px] text-muted-foreground font-mono">/ 1000</p>
+              <p className="font-display text-[3.25rem] leading-none text-foreground num-rise">{animated.toLocaleString()}</p>
+              <p className="text-[10px] text-muted-foreground font-mono">/ {nextMs.label}</p>
             </div>
           </div>
 
           <div className="flex-1 min-w-0">
+            {/* Tier badge + evo label */}
             <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-              {isMaxed ? (
-                <span className="peak-badge inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.2em] font-bold">
-                  <Crown className="h-3 w-3" /> Maxed
+              <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.2em]"
+                style={{
+                  background: tierColor.bg, color: tierColor.text,
+                  ...(tier === "yellow-pulse" || tier === "red-pulse"
+                    ? { animation: "momentum-pulse 1.6s ease-in-out infinite" } : {})
+                }}>
+                {tier === "red" || tier === "red-pulse"
+                  ? <Flame className="h-3 w-3" />
+                  : <Zap className="h-3 w-3" />}
+                {evo.label}
+              </span>
+              {/* Permanent milestone badges */}
+              {reachedMilestones.map(ms => (
+                <span key={ms.key}
+                  onClick={ms.key === "100k" ? () => setShowPrizeModal(true) : undefined}
+                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold cursor-default"
+                  style={{ background: ms.icon === "flame" ? "#FCEBEB" : "#FAEEDA", color: ms.icon === "flame" ? "#791F1F" : "#633806" }}
+                  title={ms.key === "100k" ? "Clicca per richiedere il premio" : `${ms.label} raggiunto`}>
+                  {ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
+                  {ms.label}
                 </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.2em]">
-                  <Sparkles className="h-3 w-3" /> {evo.label}
-                </span>
-              )}
-              {hasPeakBadge && (
-                <span className="peak-badge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
-                  title={`Peak reached ${new Date(user.peakReachedAt!).toLocaleDateString()}`}>
-                  <Crown className="h-2.5 w-2.5" /> 1000 Club
-                </span>
-              )}
+              ))}
             </div>
+
             <h2 className="font-display text-2xl leading-tight tracking-tight">
               {isMaxed
-                ? "Peak momentum. Hold the line."
-                : m.score >= 700 ? "You're on fire."
-                : m.score >= 400 ? "Momentum is building."
-                : m.score >= 150 ? "You've started. Don't stop."
+                ? "Leggenda assoluta. Sei nella storia."
+                : m.score >= 50_000 ? "Sei tra i migliori al mondo."
+                : m.score >= 10_000 ? "Livello élite. Continua così."
+                : m.score >= 1_000 ? "You're on fire."
+                : m.score >= 300 ? "Momentum is building."
                 : "Today is day one."}
             </h2>
+
+            {/* 50k → 100k teaser */}
+            {effectivePeak >= 50_000 && effectivePeak < 100_000 && (
+              <p className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5"
+                style={{ background: "#FCEBEB", color: "#791F1F" }}>
+                <Crown className="h-3 w-3 shrink-0" />
+                A 100k puoi <button onClick={() => setShowPrizeModal(false)} className="underline font-semibold">richiedere il badge fisico</button>
+              </p>
+            )}
+            {effectivePeak >= 100_000 && (
+              <button onClick={() => setShowPrizeModal(true)}
+                className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5 font-semibold"
+                style={{ background: "#E24B4A", color: "#fff" }}>
+                <Crown className="h-3 w-3 shrink-0" /> Richiedi il tuo premio fisico →
+              </button>
+            )}
+
             {!isMaxed && evo.next && (
               <p className="mt-2 text-xs text-muted-foreground">
                 <span className="font-semibold text-foreground">{evo.daysToNext}</span> day{evo.daysToNext === 1 ? "" : "s"} to{" "}
@@ -749,11 +929,14 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               </p>
             )}
             <div className="mt-3 grid grid-cols-4 gap-1.5">
-              <Meter label="Volume" v={m.volume} max={250} />
-              <Meter label="Streak" v={m.consistency} max={400} />
-              <Meter label="Depth" v={m.longevity} max={200} />
-              <Meter label="Breadth" v={m.breadth} max={150} />
+              <Meter label="Volume" v={m.volume} max={Math.max(300, m.volume)} />
+              <Meter label="Streak" v={m.consistency} max={Math.max(400, m.consistency)} />
+              <Meter label="Depth" v={m.longevity} max={Math.max(200, m.longevity)} />
+              <Meter label="Breadth" v={m.breadth} max={Math.max(1500, m.breadth)} />
             </div>
+
+            {/* Prize modal */}
+            {showPrizeModal && <PrizeRequestModal onClose={() => setShowPrizeModal(false)} />}
           </div>
         </div>
       </motion.div>
