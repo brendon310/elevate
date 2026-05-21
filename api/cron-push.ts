@@ -14,51 +14,58 @@ const supabase = createClient(
 );
 
 const MESSAGES = [
-  "Your streak is waiting. 30 seconds to keep it alive.",
-  "One check-in. That's all it takes today.",
-  "The version of you that showed up yesterday is counting on today's version.",
+  "You built momentum yesterday. Keep it alive.",
+  "One check-in. That’s all it takes today.",
+  "The version of you that showed up yesterday is counting on today’s version.",
   "Small rep. Big identity. Open Forge.",
-  "Your future self will thank today's version for not skipping.",
+  "Your future self will thank today’s version for not skipping.",
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET" && req.method !== "POST") return res.status(405).end();
 
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  const currentHour = now.getUTCHours();
 
-  // Send to all opted-in users who haven't checked in today
+  // Only send to users whose reminder_hour matches the current UTC hour
   const { data: subs, error } = await supabase
     .from("push_subscriptions")
-    .select("user_id, subscription");
+    .select("user_id, subscription, reminder_hour")
+    .eq("reminder_hour", currentHour);
 
   if (error || !subs) return res.status(500).json({ error: "DB error" });
 
   let sent = 0;
   let skipped = 0;
+  const toDelete: string[] = [];
 
   for (const sub of subs) {
-    const { data: logs } = await supabase
-      .from("check_ins")
-      .select("id")
+    // Skip users who already checked in today
+    const { count } = await supabase
+      .from("checkins")
+      .select("*", { count: "exact", head: true })
       .eq("user_id", sub.user_id)
-      .gte("logged_at", today)
-      .limit(1);
+      .eq("date", today);
 
-    if (logs && logs.length > 0) { skipped++; continue; }
+    if ((count ?? 0) > 0) { skipped++; continue; }
 
+    const msg = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
     try {
-      const msg = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
       await webpush.sendNotification(
         JSON.parse(sub.subscription),
-        JSON.stringify({ title: "Forge", body: msg })
+        JSON.stringify({ title: "Forge", body: msg, url: "/home" })
       );
       sent++;
-    } catch (e: unknown) {
-      if ((e as { statusCode?: number }).statusCode === 410) {
-        await supabase.from("push_subscriptions").delete().eq("user_id", sub.user_id);
-      }
+    } catch (e: any) {
+      if (e.statusCode === 410) toDelete.push(sub.user_id);
     }
   }
 
-  return res.status(200).json({ sent, skipped, date: today });
+  // Clean up expired subscriptions
+  for (const uid of toDelete) {
+    await supabase.from("push_subscriptions").delete().eq("user_id", uid);
+  }
+
+  return res.status(200).json({ sent, skipped, date: today, hour: currentHour });
 }
