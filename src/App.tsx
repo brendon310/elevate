@@ -9,6 +9,12 @@ import {
   Database, Download, Bell, Target, Lock, PenLine, X, BarChart2} from "lucide-react";
 import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
+
+// PWA install prompt type
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
 import * as db from "./db";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2346,8 +2352,13 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                           <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
                         </div>
                         <div className="relative mt-auto pt-12">
-                          <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">Day</p>
+                          <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">{(ut.total_done ?? 0) >= (ut.target_days ?? 30) ? "Done" : "Day"}</p>
                           <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut) === 0 && (ut.total_done ?? 0) === 0 ? 1 : liveStreak(ut)}</p>
+                          {(ut.total_done ?? 0) >= (ut.target_days ?? 30) && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 px-2 py-0.5 text-[9px] font-bold text-yellow-300 uppercase tracking-widest mt-1">
+                              ✓ Completed
+                            </span>
+                          )}
                           {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
                             <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
                           ) : null; })()}
@@ -2670,7 +2681,7 @@ const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
   { content: "Day 3 was brutal but I checked in anyway. Small win counts.", dayNumber: 3, flameCount: 22, userHasFlamed: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
 ];
 
-function CommunityBoard({ slug }: { slug: string }) {
+function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null }) {
   const [posts, setPosts] = useState<CommunityPost[]>(() => {
     const saved = lsLoad<CommunityPost[]>(LS_COMMUNITY(slug), []);
     if (saved.length > 0) return saved;
@@ -2678,6 +2689,26 @@ function CommunityBoard({ slug }: { slug: string }) {
     lsSave(LS_COMMUNITY(slug), seeded);
     return seeded;
   });
+  const [communityLoaded, setCommunityLoaded] = useState(false);
+  const [flamedIds] = useState<Set<string>>(() => {
+    const arr = lsLoad<string[]>(`forge-flamed-${slug}`, []);
+    return new Set(arr);
+  });
+  // Load real posts from Supabase on mount
+  useEffect(() => {
+    if (communityLoaded) return;
+    setCommunityLoaded(true);
+    db.loadCommunityPosts(slug).then(dbPosts => {
+      if (dbPosts.length === 0) return;
+      const mapped: CommunityPost[] = dbPosts.map(p => ({
+        id: p.id, trackSlug: p.track_slug, content: p.content,
+        dayNumber: p.day_number, flameCount: p.flame_count,
+        userHasFlamed: flamedIds.has(p.id), createdAt: p.created_at,
+      }));
+      setPosts(mapped);
+      lsSave(LS_COMMUNITY(slug), mapped);
+    }).catch(() => {});
+  }, [slug]);
   const [draft, setDraft] = useState("");
   const [posting, setPosting] = useState(false);
   const [modWarnKey, setModWarnKey] = useState(0);
@@ -2685,9 +2716,17 @@ function CommunityBoard({ slug }: { slug: string }) {
 
   const flame = (id: string) => {
     setPosts(prev => {
-      const next = prev.map(p => p.id === id
-        ? { ...p, flameCount: p.userHasFlamed ? p.flameCount - 1 : p.flameCount + 1, userHasFlamed: !p.userHasFlamed }
-        : p);
+      const next = prev.map(p => {
+        if (p.id !== id) return p;
+        const newFlamed = !p.userHasFlamed;
+        const newCount = newFlamed ? p.flameCount + 1 : p.flameCount - 1;
+        // Persist flamed IDs in localStorage
+        const arr = lsLoad<string[]>(`forge-flamed-${slug}`, []);
+        const updated = newFlamed ? [...arr.filter(x => x !== id), id] : arr.filter(x => x !== id);
+        lsSave(`forge-flamed-${slug}`, updated);
+        db.updateFlameCount(id, newCount).catch(() => {});
+        return { ...p, flameCount: newCount, userHasFlamed: newFlamed };
+      });
       lsSave(LS_COMMUNITY(slug), next);
       return next;
     });
@@ -2702,17 +2741,18 @@ function CommunityBoard({ slug }: { slug: string }) {
       return;
     }
     setPosting(true);
-    setTimeout(() => {
-      const p: CommunityPost = { id: nanoid(), trackSlug: slug, content: draft.trim(), dayNumber: 0, flameCount: 0, userHasFlamed: false, createdAt: new Date().toISOString() };
-      setPosts(prev => {
-        const next = [p, ...prev];
-        lsSave(LS_COMMUNITY(slug), next);
-        return next;
-      });
-      setDraft("");
-      setModWarnKey(0);
-      setPosting(false);
-    }, 300);
+    const p: CommunityPost = { id: nanoid(), trackSlug: slug, content: draft.trim(), dayNumber: 0, flameCount: 0, userHasFlamed: false, createdAt: new Date().toISOString() };
+    if (userId) {
+      db.saveCommunityPost(userId, { id: p.id, track_slug: slug, content: p.content, day_number: 0, flame_count: 0, created_at: p.createdAt }).catch(() => {});
+    }
+    setPosts(prev => {
+      const next = [p, ...prev];
+      lsSave(LS_COMMUNITY(slug), next);
+      return next;
+    });
+    setDraft("");
+    setModWarnKey(0);
+    setPosting(false);
   };
 
   return (
@@ -2899,13 +2939,14 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
 // JourneyView
 // ─────────────────────────────────────────────────────────────────────────────
 
-function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn, userId }: {
+function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn, onRestart, userId }: {
   track: UserTrack;
   journey: Journey;
   days: JourneyDay[];
   onBack: () => void;
   showCheckInHint?: boolean;
   onTrackCheckIn?: () => void;
+  onRestart?: (trackId: string) => void;
   userId?: string | null;
 }) {
   const [journey, setJourney] = useState(initJourney);
@@ -2915,6 +2956,22 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [coachOpening, setCoachOpening] = useState(false);
+
+  // Load coach messages from Supabase on first open
+  const [coachLoaded, setCoachLoaded] = useState(false);
+  useEffect(() => {
+    if (!userId || coachLoaded) return;
+    setCoachLoaded(true);
+    db.loadCoachMessages(userId, track.slug).then(dbMsgs => {
+      if (dbMsgs.length === 0) return;
+      const mapped: ChatMessage[] = dbMsgs.map(m => ({
+        id: m.id, role: m.role as 'user' | 'assistant',
+        content: m.content, createdAt: m.created_at,
+      }));
+      setChatMessages(mapped);
+      lsSave(LS_CHAT(track.slug), mapped);
+    }).catch(() => {});
+  }, [userId, track.slug]);
 
   // Auto-generate opening message on first coach tab visit
   useEffect(() => {
@@ -2926,6 +2983,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     const withOpening = [openingMsg];
     setChatMessages(withOpening);
     lsSave(LS_CHAT(track.slug), withOpening);
+    if (userId) db.saveCoachMessage(userId, { id: openingMsg.id, track_slug: track.slug, role: "assistant", content: openingMsg.content, created_at: openingMsg.createdAt }).catch(() => {});
   }, [activeTab, chatMessages.length, coachOpening]);
   const [milestoneDay, setMilestoneDay] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<JourneyDay | null>(null);
@@ -3004,6 +3062,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     const newMessages = [...chatMessages, userMsg];
     setChatMessages(newMessages);
     lsSave(LS_CHAT(track.slug), newMessages);
+    if (userId) db.saveCoachMessage(userId, { id: userMsg.id, track_slug: track.slug, role: "user", content: userMsg.content, created_at: userMsg.createdAt }).catch(() => {});
     setChatInput("");
     setChatLoading(true);
     try {
@@ -3018,6 +3077,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       });
       const { message } = await res.json() as { message: string };
       const assistantMsg: ChatMessage = { id: nanoid(), role: "assistant", content: message, createdAt: new Date().toISOString() };
+      if (userId) db.saveCoachMessage(userId, { id: assistantMsg.id, track_slug: track.slug, role: "assistant", content: assistantMsg.content, created_at: assistantMsg.createdAt }).catch(() => {});
       const withReply = [...newMessages, assistantMsg];
       setChatMessages(withReply);
       lsSave(LS_CHAT(track.slug), withReply);
@@ -3049,11 +3109,21 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{track.category}</p>
             <h1 className="font-semibold text-sm truncate">{track.name}</h1>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] font-mono text-muted-foreground">{completedCount}/{journey.totalDays} days</p>
-            <div className="mt-0.5 h-1 w-20 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${(completedCount / journey.totalDays) * 100}%` }} />
+          <div className="text-right flex items-center gap-2">
+            <div>
+              <p className="text-[10px] font-mono text-muted-foreground">{completedCount}/{journey.totalDays} days</p>
+              <div className="mt-0.5 h-1 w-20 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${(completedCount / journey.totalDays) * 100}%` }} />
+              </div>
             </div>
+            {onRestart && (
+              <button
+                onClick={() => { if (confirm("Restart this journey? Your streak and progress will be reset.")) { onRestart(track.id); onBack(); } }}
+                className="text-[10px] text-muted-foreground hover:text-foreground border border-border rounded-lg px-2 py-1 transition"
+                title="Restart journey">
+                ↺
+              </button>
+            )}
           </div>
         </div>
         <div className="max-w-2xl mx-auto px-4 flex border-t border-border/50">
@@ -3218,7 +3288,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
         {activeTab === "community" && (
           <motion.div key="community" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{track.name} Community</p>
-            <CommunityBoard slug={track.slug} />
+            <CommunityBoard slug={track.slug} userId={userId} />
           </motion.div>
         )}
 
@@ -3351,12 +3421,13 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 // TrackDetailPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation, userId }: {
+function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation, onRestart, userId }: {
   track: UserTrack;
   onBack: () => void;
   showCheckInHint?: boolean;
   onTrackCheckIn?: () => void;
   onVacation?: (trackId: string, until: string) => void;
+  onRestart?: (trackId: string) => void;
   userId?: string | null;
 }) {
   const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
@@ -3396,7 +3467,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
 
   const inner = !journey || days.length === 0
     ? <JourneyOnboarding track={track} onStarted={handleStarted} userId={userId} />
-    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} userId={userId} />;
+    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} onRestart={onRestart} userId={userId} />;
 
   return (
     <div className="relative min-h-screen">
@@ -4604,6 +4675,14 @@ export function ElevateApp() {
   const [showReEntry, setShowReEntry] = useState(false);
   const [reEntryGap, setReEntryGap] = useState(0);
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
+  const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  useEffect(() => {
+    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); setShowInstallBanner(true); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
@@ -4654,6 +4733,34 @@ export function ElevateApp() {
     });
   }, [supabaseId]);
 
+  const restartTrack = useCallback((trackId: string) => {
+    setTracks(prev => {
+      const ut = prev.find(t => t.id === trackId);
+      if (ut) {
+        lsSave(LS_JOURNEY(ut.slug), null);
+        lsSave(LS_DAYS(ut.slug), []);
+        lsSave(LS_CHAT(ut.slug), []);
+        lsSave(LS_COMMUNITY(ut.slug), []);
+        lsSave(`forge-completed-${trackId}`, false);
+        if (supabaseId) {
+          db.deleteJourneyForTrack(supabaseId, ut.slug).catch(() => {});
+          db.deleteLogsForTrack(supabaseId, trackId).catch(() => {});
+        }
+      }
+      const next = prev.map(t => t.id === trackId
+        ? { ...t, current_streak: 0, total_done: 0, last_log_date: null }
+        : t);
+      lsSave(LS_TRACKS, next);
+      if (supabaseId) db.saveTracks(supabaseId, next).catch(() => {});
+      return next;
+    });
+    setLogs(prev => {
+      const next = prev.filter(l => l.track_id !== trackId);
+      lsSave(LS_LOGS, next);
+      return next;
+    });
+  }, [supabaseId]);
+
   const MILESTONE_DAYS = new Set([1, 3, 7, 14, 30, 66, 100, 365]);
 
   const checkIn = useCallback((userTrackId: string) => {
@@ -4676,6 +4783,15 @@ export function ElevateApp() {
           setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak }), 250);
         } else {
           setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak }), 250);
+        }
+        // Detect track completion
+        const targetDays = ut.target_days || 30;
+        if (newTotal >= targetDays) {
+          const compKey = `forge-completed-${ut.id}`;
+          if (!lsLoad<boolean>(compKey, false)) {
+            lsSave(compKey, true);
+            setTimeout(() => setTrackCompletion({ trackName: ut.name }), 800);
+          }
         }
         return { ...ut, current_streak: newStreak, longest_streak: Math.max(ut.longest_streak || 0, newStreak), total_done: newTotal, last_log_date: t };
       });
@@ -4884,6 +5000,31 @@ export function ElevateApp() {
     />
   );
 
+  if (trackCompletion) return (
+    <AnimatePresence>
+      <motion.div key="completion" className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+        style={{ background: "oklch(0.08 0.02 260 / 0.97)" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div className="text-center px-8 space-y-6"
+          initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 90, damping: 14, delay: 0.1 }}>
+          <p className="text-6xl">🏆</p>
+          <p className="font-display text-4xl font-bold text-white tracking-tight leading-tight">
+            Journey<br />Complete
+          </p>
+          <p className="text-white/60 text-sm max-w-xs mx-auto leading-relaxed">
+            You finished <span className="text-white font-semibold">{trackCompletion.trackName}</span>.<br />
+            That is real. You showed up every day.
+          </p>
+          <button onClick={() => setTrackCompletion(null)}
+            className="btn-chunk rounded-full bg-white text-black px-8 py-3 text-sm font-bold">
+            Continue
+          </button>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+
   if (checkInCelebration) return (
     <AnimatePresence>
       <CheckInCelebration
@@ -4919,6 +5060,7 @@ export function ElevateApp() {
         showCheckInHint={pendingCheckIn}
         onTrackCheckIn={() => { checkIn(selectedTrack.id); setPendingCheckIn(false); }}
         onVacation={setVacation}
+        onRestart={restartTrack}
         userId={supabaseId}
       />
     );
@@ -4937,6 +5079,22 @@ export function ElevateApp() {
           <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
         )}
       </AnimatePresence>
+      {showInstallBanner && (
+        <motion.div className="fixed bottom-20 left-4 right-4 z-40 rounded-2xl bg-muted border border-border p-4 flex items-center gap-3 shadow-2xl"
+          initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}>
+          <div className="flex-1">
+            <p className="text-sm font-semibold">Add Forge to Home Screen</p>
+            <p className="text-xs text-muted-foreground">Install for the full experience — works offline too</p>
+          </div>
+          <button onClick={() => {
+            (installPrompt as BeforeInstallPromptEvent)?.prompt?.();
+            setShowInstallBanner(false);
+          }} className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-xs font-semibold">
+            Install
+          </button>
+          <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">×</button>
+        </motion.div>
+      )}
       <DashboardLayout currentPage={page} onNavigate={setPage}>
         {page === "home" && (
           <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />

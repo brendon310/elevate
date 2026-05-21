@@ -33,6 +33,17 @@ export interface DbJourney {
   started_at: string; generated_through: number;
 }
 
+export interface DbCommunityPost {
+  id: string; user_id?: string; track_slug: string;
+  content: string; day_number: number;
+  flame_count: number; created_at: string;
+}
+
+export interface DbCoachMessage {
+  id: string; user_id?: string; track_slug: string;
+  role: 'user' | 'assistant'; content: string; created_at: string;
+}
+
 // ─── App-level types accepted at call sites (camelCase) ───────────────────────
 
 export interface AppJourney {
@@ -51,36 +62,23 @@ export interface AppJourneyDay {
 // ─── Mappers ──────────────────────────────────────────────────────────────────
 
 function toDbJourney(j: AppJourney | DbJourney): DbJourney {
-  if ('track_slug' in j) return j as DbJourney; // already snake_case
+  if ('track_slug' in j) return j as DbJourney;
   const a = j as AppJourney;
   return {
-    id: a.id,
-    track_slug: a.trackSlug,
-    total_days: a.totalDays,
-    starting_point: a.startingPoint,
-    motivation: a.motivation,
-    obstacle: a.obstacle,
-    started_at: a.startedAt,
-    generated_through: a.generatedThrough,
+    id: a.id, track_slug: a.trackSlug, total_days: a.totalDays,
+    starting_point: a.startingPoint, motivation: a.motivation,
+    obstacle: a.obstacle, started_at: a.startedAt, generated_through: a.generatedThrough,
   };
 }
 
 function toDbJourneyDay(d: AppJourneyDay | DbJourneyDay, slug: string): DbJourneyDay {
-  if ('track_slug' in d) return d as DbJourneyDay; // already snake_case
+  if ('track_slug' in d) return d as DbJourneyDay;
   const a = d as AppJourneyDay;
   return {
-    id: a.id,
-    track_slug: slug,
-    journey_id: a.journeyId,
-    day_number: a.dayNumber,
-    title: a.title,
-    description: a.description,
-    task: a.task,
-    reflection: a.reflection,
-    science: a.science,
-    checkin_prompt: a.checkinPrompt,
-    completed_at: a.completedAt,
-    user_note: a.userNote,
+    id: a.id, track_slug: slug, journey_id: a.journeyId,
+    day_number: a.dayNumber, title: a.title, description: a.description,
+    task: a.task, reflection: a.reflection, science: a.science,
+    checkin_prompt: a.checkinPrompt, completed_at: a.completedAt, user_note: a.userNote,
   };
 }
 
@@ -112,12 +110,29 @@ export async function loadJourneyDays(userId: string, slug: string): Promise<DbJ
   return (data ?? []) as DbJourneyDay[];
 }
 
+export async function loadCommunityPosts(slug: string): Promise<DbCommunityPost[]> {
+  const { data } = await supabase
+    .from('community_posts').select('*')
+    .eq('track_slug', slug)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  return (data ?? []) as DbCommunityPost[];
+}
+
+export async function loadCoachMessages(userId: string, slug: string): Promise<DbCoachMessage[]> {
+  const { data } = await supabase
+    .from('coach_messages').select('*')
+    .eq('user_id', userId).eq('track_slug', slug)
+    .order('created_at', { ascending: true })
+    .limit(100);
+  return (data ?? []) as DbCoachMessage[];
+}
+
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
 export async function saveProfile(userId: string, name: string): Promise<void> {
   const { error } = await supabase.from('profiles').upsert(
-    { id: userId, name, updated_at: new Date().toISOString() },
-    { onConflict: 'id' }
+    { id: userId, name, updated_at: new Date().toISOString() }, { onConflict: 'id' }
   );
   if (error) console.warn('[db] saveProfile:', error.message);
 }
@@ -133,9 +148,21 @@ export async function deleteTrack(userId: string, trackId: string): Promise<void
   const { error } = await supabase.from('user_tracks')
     .delete().eq('id', trackId).eq('user_id', userId);
   if (error) console.warn('[db] deleteTrack:', error.message);
-  const { error: e2 } = await supabase.from('journey_days')
-    .delete().eq('user_id', userId);
-  if (e2) console.warn('[db] deleteJourneyDays:', e2.message);
+}
+
+export async function deleteJourneyForTrack(userId: string, slug: string): Promise<void> {
+  const [r1, r2] = await Promise.all([
+    supabase.from('journey_days').delete().eq('user_id', userId).eq('track_slug', slug),
+    supabase.from('journeys').delete().eq('user_id', userId).eq('track_slug', slug),
+  ]);
+  if (r1.error) console.warn('[db] deleteJourneyDays:', r1.error.message);
+  if (r2.error) console.warn('[db] deleteJourney:', r2.error.message);
+}
+
+export async function deleteLogsForTrack(userId: string, trackId: string): Promise<void> {
+  const { error } = await supabase.from('check_ins')
+    .delete().eq('user_id', userId).eq('track_id', trackId);
+  if (error) console.warn('[db] deleteLogsForTrack:', error.message);
 }
 
 export async function saveLog(userId: string, log: DbLog): Promise<void> {
@@ -152,14 +179,32 @@ export async function saveJourney(userId: string, journey: AppJourney | DbJourne
 }
 
 export async function saveJourneyDays(
-  userId: string,
-  slug: string,
-  days: (AppJourneyDay | DbJourneyDay)[]
+  userId: string, slug: string, days: (AppJourneyDay | DbJourneyDay)[]
 ): Promise<void> {
   if (!days.length) return;
   const rows = days.map(d => ({ ...toDbJourneyDay(d, slug), user_id: userId }));
   const { error } = await supabase.from('journey_days').upsert(rows, { onConflict: 'id' });
   if (error) console.warn('[db] saveJourneyDays:', error.message);
+}
+
+export async function saveCommunityPost(userId: string, post: DbCommunityPost): Promise<void> {
+  const { error } = await supabase.from('community_posts').insert(
+    { ...post, user_id: userId }
+  );
+  if (error) console.warn('[db] saveCommunityPost:', error.message);
+}
+
+export async function updateFlameCount(postId: string, newCount: number): Promise<void> {
+  const { error } = await supabase.from('community_posts')
+    .update({ flame_count: newCount }).eq('id', postId);
+  if (error) console.warn('[db] updateFlameCount:', error.message);
+}
+
+export async function saveCoachMessage(userId: string, msg: DbCoachMessage): Promise<void> {
+  const { error } = await supabase.from('coach_messages').insert(
+    { ...msg, user_id: userId }
+  );
+  if (error) console.warn('[db] saveCoachMessage:', error.message);
 }
 
 // ─── Migrate from localStorage ────────────────────────────────────────────────
