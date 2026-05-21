@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   for (const sub of subs) {
     // Skip users who already checked in today
     const { count } = await supabase
-      .from("checkins")
+      .from("check_ins")
       .select("*", { count: "exact", head: true })
       .eq("user_id", sub.user_id)
       .eq("date", today);
