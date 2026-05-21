@@ -170,6 +170,22 @@ const ALL_TRACKS = [
 ];
 
 
+const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
+  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
+  clinician: ["I'm struggling today.", "Why do I keep falling back?", "What does the science say about cravings?", "Help me understand my pattern."],
+  mentor:    ["What's the strategic move here?", "What am I not seeing?", "Help me build a system.", "Where do I go from here?"],
+  teacher:   ["Why does this habit work neurologically?", "Break it down simply.", "What should I focus on this week?", "Explain the psychology of my pattern."],
+  guide:     ["What does this journey mean?", "Help me find my why again.", "I need a different perspective.", "What ritual could help me today?"],
+};
+
+const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
+  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
+  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
+  mentor:    (d, t) => d <= 1 ? `Day 1, ${t}. Every system starts with an honest audit. What got you here, and what specifically has to change for this to be different?` : `Day ${d}. You're ${d - 1} days in. What's working, what isn't, and what would you tell yourself on Day 1 knowing what you know now?`,
+  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process — something you didn't know before?`,
+  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted — even if it's small — in how you see yourself?`,
+};
+
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
 interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
 
@@ -2295,6 +2311,17 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                             <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
                           ) : null; })()}
                           <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
+                          {(() => {
+                            const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
+                            const todayTask = jDays.find(d => d.completedAt === null) ?? jDays[jDays.length - 1];
+                            const taskTitle = todayTask?.title;
+                            const isGeneric = !taskTitle || taskTitle.startsWith("Day ");
+                            return !isGeneric ? (
+                              <p className="mt-1.5 text-[11px] text-white/70 leading-snug line-clamp-2 italic">
+                                "{taskTitle}"
+                              </p>
+                            ) : null;
+                          })()}
                           <div className="mt-2 flex items-center gap-2 flex-wrap">
                             {liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) === 0 ? (
                               <button onClick={() => onView(ut)}
@@ -2843,6 +2870,19 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => lsLoad<ChatMessage[]>(LS_CHAT(track.slug), []));
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [coachOpening, setCoachOpening] = useState(false);
+
+  // Auto-generate opening message on first coach tab visit
+  useEffect(() => {
+    if (activeTab !== "coach" || chatMessages.length > 0 || coachOpening) return;
+    setCoachOpening(true);
+    const opener = COACH_OPENERS[archetype.id]?.(completedCount + 1, track.name)
+      ?? `I'm here. What's on your mind today about your ${track.name} journey?`;
+    const openingMsg: ChatMessage = { id: nanoid(), role: "assistant", content: opener, createdAt: new Date().toISOString() };
+    const withOpening = [openingMsg];
+    setChatMessages(withOpening);
+    lsSave(LS_CHAT(track.slug), withOpening);
+  }, [activeTab, chatMessages.length, coachOpening]);
   const [milestoneDay, setMilestoneDay] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<JourneyDay | null>(null);
   const [checkInNote, setCheckInNote] = useState("");
@@ -3147,32 +3187,47 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 <p className="text-xs text-muted-foreground">Here for every day of this journey</p>
               </div>
             </div>
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="space-y-3 max-h-[420px] overflow-y-auto pb-1">
               {chatMessages.length === 0 && (
-                <div className="rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
-                  I'm here. What's on your mind today about your {track.name} journey?
+                <div className="rounded-xl bg-muted/50 p-4 flex gap-2">
+                  <div className="h-2 w-2 rounded-full bg-muted-foreground mt-1.5 animate-pulse shrink-0" />
+                  <p className="text-sm text-muted-foreground italic">Your coach is warming up…</p>
                 </div>
               )}
               {chatMessages.map(m => (
                 <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${m.role === "user" ? "bg-foreground text-background" : "bg-muted"}`}>
+                  <div className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === "user" ? "bg-foreground text-background" : "bg-muted"}`}>
                     {m.content}
                   </div>
                 </div>
               ))}
               {chatLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-muted rounded-2xl px-4 py-3 flex gap-1">
+                  <div className="bg-muted rounded-2xl px-4 py-3 flex gap-1.5 items-center">
                     {[0, 1, 2].map(i => <span key={i} className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />)}
                   </div>
                 </div>
               )}
             </div>
-            <div className="sticky bottom-0 bg-background pt-2">
+
+            {/* Suggested prompts — shown only when few messages */}
+            {chatMessages.length <= 2 && (
+              <div className="flex gap-2 flex-wrap">
+                {(COACH_SUGGESTED_PROMPTS[archetype.id] ?? COACH_SUGGESTED_PROMPTS.teacher).map(prompt => (
+                  <button key={prompt}
+                    onClick={() => { setChatInput(prompt); }}
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors text-left">
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="sticky bottom-0 bg-background pt-1">
               <div className="flex gap-2">
                 <input value={chatInput} onChange={e => setChatInput(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()}
-                  placeholder="Ask your coach anything…"
+                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
+                  placeholder="Reply to your coach…"
                   className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
                 <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
                   className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-sm font-semibold disabled:opacity-40">
