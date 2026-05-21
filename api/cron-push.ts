@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .from("check_ins")
       .select("*", { count: "exact", head: true })
       .eq("user_id", sub.user_id)
-      .eq("date", today);
+      .eq("log_date", today);
 
     if ((count ?? 0) > 0) { skipped++; continue; }
 
