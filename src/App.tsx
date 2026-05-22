@@ -977,16 +977,16 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 
 function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
   const STAGES = [
-    { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-01.jpg" },
-    { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-02.jpg" },
-    { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-03.jpg" },
-    { name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-04.jpg" },
-    { name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-05.jpg" },
-    { name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-06.jpg" },
-    { name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-07.jpg" },
-    { name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-08.jpg" },
-    { name: "The Ancient Forest", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-09.jpg" },
-    { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-10.jpg" },
+    { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
+    { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
+    { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-03.png" },
+    { name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-04.png" },
+    { name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-05.png" },
+    { name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-06.png" },
+    { name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-07.png" },
+    { name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-08.png" },
+    { name: "The Ancient Forest", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-09.png" },
+    { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
   ];
   const score = computeMomentum(tracks);
   const stageIndex = Math.min(Math.max(0, Math.floor(Number(score) / 10) || 0), 9);
@@ -998,7 +998,7 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
         src={img}
         alt={name}
         className="w-80 object-contain"
-        style={{height: '320px', mixBlendMode: 'screen'}}
+        style={{height: '320px'}}
         loading="eager"
       />
       <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-1">{name}</p>
