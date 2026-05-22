@@ -1053,9 +1053,11 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
           <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
           {stageIndex === 9 && (
+          <>
             <p className="text-sm font-semibold text-white/80 mt-3 text-center">You've reached the final stage.</p>
           <p className="text-xs text-white/50 mt-1 text-center mb-3">Congratulations! Want to receive your prize at home?</p>
           <button onClick={() => setShowClaim(true)} className="px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">€7.99 — Get my prize</button>
+          </>
           )}
         </div>
         {STAGES.slice(stageIndex + 1).map((s, i) => {
