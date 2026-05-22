@@ -975,7 +975,55 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 // LoginPage helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
+function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () => void }) {
+  const [name, setName] = useState(userName);
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  async function handleSubmit() {
+    if (!name.trim() || !email.trim() || !address.trim()) return;
+    setSubmitting(true);
+    try {
+      await supabase.from('prize_claims').insert({
+        name: name.trim(), email: email.trim(),
+        address: address.trim(), claimed_at: new Date().toISOString(),
+      });
+      setDone(true);
+    } catch (_) {
+      // ignore
+    } finally {
+      setSubmitting(false);
+    }
+  }
+  if (done) return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
+      <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
+        <p className="text-white text-lg font-semibold text-center mb-2">You're on the list!</p>
+        <p className="text-white/50 text-sm text-center mb-6">We'll send your personalised prize to the address you provided.</p>
+        <button onClick={onClose} className="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-medium">Close</button>
+      </div>
+    </div>
+  );
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
+      <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-white font-semibold">Claim your prize</p>
+          <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
+        </div>
+        <p className="text-white/50 text-sm mb-5">You've reached The Living World. Enter your details and we'll ship you a personalised prize.</p>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
+        <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
+          {submitting ? 'Sending…' : 'Send my address'}
+        </button>
+      </div>
+    </div>
+  );
+}
+function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: string } }) {
   const THRESHOLDS = [0, 5, 15, 30, 50, 75, 100, 150, 200, 300];
   const STAGES = [
     { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
@@ -989,43 +1037,47 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
     { name: "The Ancient Forest", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-09.png" },
     { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
   ];
-
   const total = tracks.reduce((s, t) => s + (t.total_done ?? 0), 0);
   let stageIndex = 0;
   for (let i = THRESHOLDS.length - 1; i >= 0; i--) {
     if (total >= THRESHOLDS[i]) { stageIndex = i; break; }
   }
+  const [showClaim, setShowClaim] = useState(false);
   const stage = STAGES[stageIndex] ?? STAGES[0];
   const { name, img } = stage;
-
   return (
-    <div className="w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
-      <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
-        <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
-        <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
-      </div>
-      {STAGES.slice(stageIndex + 1).map((s, i) => {
-        const needed = THRESHOLDS[stageIndex + 1 + i] - total;
-        return (
-          <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
-            <div className="relative">
-              <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
+    <>
+      {showClaim && <PrizeClaimModal userName={user?.name ?? ''} onClose={() => setShowClaim(false)} />}
+      <div className="w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
+        <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
+          <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
+          <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
+          {stageIndex === 9 && (
+            <button onClick={() => setShowClaim(true)} className="mt-3 px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">Claim your prize</button>
+          )}
+        </div>
+        {STAGES.slice(stageIndex + 1).map((s, i) => {
+          const needed = THRESHOLDS[stageIndex + 1 + i] - total;
+          return (
+            <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
+              <div className="relative">
+                <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
               </div>
+              <p className="text-sm text-white/20 tracking-widest uppercase mt-2">{s.name}</p>
+              <p className="text-xs text-white/35 mt-1">{needed} check-in{needed !== 1 ? 's' : ''} to unlock</p>
             </div>
-            <p className="text-sm text-white/20 tracking-widest uppercase mt-2">{s.name}</p>
-            <p className="text-xs text-white/35 mt-1">{needed} check-in{needed !== 1 ? 's' : ''} to unlock</p>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
-
 function Spinner({ light = false }: { light?: boolean }) {
   return (
     <svg className={`animate-spin h-4 w-4 ${light ? "text-white" : "text-foreground"}`} fill="none" viewBox="0 0 24 24">
@@ -2305,7 +2357,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
       </motion.header>
 
       {tracks.length > 0 && (
-        <ForestMomentum tracks={tracks} />
+        <ForestMomentum tracks={tracks} user={user} />
       )}
 
       <div className="flex items-end justify-between mb-4">
