@@ -975,6 +975,38 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 // LoginPage helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
+function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
+  const STAGES = [
+    { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-01.jpg" },
+    { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-02.jpg" },
+    { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-03.jpg" },
+    { name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-04.jpg" },
+    { name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-05.jpg" },
+    { name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-06.jpg" },
+    { name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-07.jpg" },
+    { name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-08.jpg" },
+    { name: "The Ancient Forest", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-09.jpg" },
+    { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-10.jpg" },
+  ];
+  const score = computeMomentum(tracks);
+  const stageIndex = Math.min(Math.floor(score / 10), 9);
+  const { name, img } = STAGES[stageIndex];
+  return (
+    <div className="flex flex-col items-center pt-6 pb-2 px-4">
+      <img
+        src={img}
+        alt={name}
+        className="w-64 h-64 rounded-2xl object-cover shadow-lg mb-4"
+        loading="eager"
+      />
+      <h1 className="text-2xl font-semibold text-white tracking-tight text-center">
+        {name}
+      </h1>
+    </div>
+  );
+}
+
+
 function Spinner({ light = false }: { light?: boolean }) {
   return (
     <svg className={`animate-spin h-4 w-4 ${light ? "text-white" : "text-foreground"}`} fill="none" viewBox="0 0 24 24">
@@ -2254,7 +2286,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
       </motion.header>
 
       {tracks.length > 0 && (
-        <MomentumHero tracks={tracks} user={user} onUpdateUser={onUpdateUser} onCheckIn={onCheckIn} onView={onViewForCheckIn} />
+        <ForestMomentum tracks={tracks} />
       )}
 
       <div className="flex items-end justify-between mb-4">
