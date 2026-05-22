@@ -1009,15 +1009,15 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
       <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-white font-semibold">Claim your prize</p>
+          <p className="text-white font-semibold">You made it!</p>
           <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
         </div>
-        <p className="text-white/50 text-sm mb-5">You've reached The Living World. Enter your details and we'll ship you a personalised prize.</p>
+        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.</p>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
         <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
-          {submitting ? 'Sending…' : 'Send my address'}
+          {submitting ? 'Sending…' : 'Send my address — €7.99'}
         </button>
       </div>
     </div>
@@ -1053,7 +1053,9 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
           <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
           {stageIndex === 9 && (
-            <button onClick={() => setShowClaim(true)} className="mt-3 px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">Claim your prize</button>
+            <p className="text-sm font-semibold text-white/80 mt-3 text-center">You've reached the final stage.</p>
+          <p className="text-xs text-white/50 mt-1 text-center mb-3">Congratulations! Want to receive your prize at home?</p>
+          <button onClick={() => setShowClaim(true)} className="px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">€7.99 — Get my prize</button>
           )}
         </div>
         {STAGES.slice(stageIndex + 1).map((s, i) => {
