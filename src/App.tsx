@@ -989,7 +989,7 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
     { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/stage-10.jpg" },
   ];
   const score = computeMomentum(tracks);
-  const stageIndex = Math.min(Math.floor(score / 10), 9);
+  const stageIndex = Math.min(Math.floor(Number(score) / 10), 9);
   const { name, img } = STAGES[stageIndex];
   return (
     <div className="flex flex-col items-center pt-6 pb-2 px-4">
