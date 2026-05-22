@@ -999,17 +999,17 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
         <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
       </div>
       {STAGES.slice(stageIndex + 1).map((s) => (
-        <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start', opacity: 0.38}}>
+        <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
           <div className="relative">
-            <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px'}} loading="lazy" />
+            <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.9))'}}>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
             </div>
           </div>
-          <p className="text-sm text-white/30 tracking-widest uppercase mt-2">{s.name}</p>
+          <p className="text-sm text-white/20 tracking-widest uppercase mt-2">{s.name}</p>
         </div>
       ))}
     </div>
