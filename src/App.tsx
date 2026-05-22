@@ -1024,7 +1024,7 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
   );
 }
 function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: string } }) {
-  const THRESHOLDS = [0, 5, 15, 30, 50, 75, 100, 150, 200, 300];
+  const THRESHOLDS = [0, 5, 12, 25, 50, 90, 150, 230, 330, 450];
   const STAGES = [
     { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
     { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
