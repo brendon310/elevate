@@ -993,27 +993,25 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
   const stage = STAGES[stageIndex] ?? STAGES[0];
   const { name, img } = stage;
   return (
-    <div className="w-full overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
-      <div className="flex">
-        <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{width: 'calc(100vw - 320px)', scrollSnapAlign: 'start'}}>
-          <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
-          <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
-        </div>
-        {STAGES.slice(stageIndex + 1).map((s) => (
-          <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{width: 'calc(100vw - 320px)', scrollSnapAlign: 'start', opacity: 0.38}}>
-            <div className="relative">
-              <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px'}} loading="lazy" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.9))'}}>
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-white/30 tracking-widest uppercase mt-2">{s.name}</p>
-          </div>
-        ))}
+    <div className="w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
+      <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
+        <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
+        <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
       </div>
+      {STAGES.slice(stageIndex + 1).map((s) => (
+        <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start', opacity: 0.38}}>
+          <div className="relative">
+            <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px'}} loading="lazy" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.9))'}}>
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm text-white/30 tracking-widest uppercase mt-2">{s.name}</p>
+        </div>
+      ))}
     </div>
   );
 }
