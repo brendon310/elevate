@@ -993,24 +993,24 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
   const stage = STAGES[stageIndex] ?? STAGES[0];
   const { name, img } = stage;
   return (
-    <div className="w-full overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-      <div className="flex items-end gap-4 pt-4 pb-3" style={{paddingLeft: '24px', paddingRight: '32px', width: 'max-content'}}>
-        <div className="flex flex-col items-center shrink-0">
+    <div className="w-full overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
+      <div className="flex">
+        <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{width: 'calc(100vw - 320px)', scrollSnapAlign: 'start'}}>
           <img src={img} alt={name} className="object-contain" style={{width: '300px', height: '300px'}} loading="eager" />
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
         </div>
         {STAGES.slice(stageIndex + 1).map((s) => (
-          <div key={s.name} className="flex flex-col items-center shrink-0" style={{opacity: 0.35}}>
+          <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{width: 'calc(100vw - 320px)', scrollSnapAlign: 'start', opacity: 0.38}}>
             <div className="relative">
-              <img src={s.img} alt={s.name} className="object-contain" style={{width: '150px', height: '150px'}} loading="lazy" />
+              <img src={s.img} alt={s.name} className="object-contain" style={{width: '300px', height: '300px'}} loading="lazy" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.9))'}}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.9))'}}>
                   <rect x="3" y="11" width="18" height="11" rx="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
               </div>
             </div>
-            <p className="text-xs text-white/30 tracking-widest uppercase mt-1 text-center" style={{width: '150px'}}>{s.name}</p>
+            <p className="text-sm text-white/30 tracking-widest uppercase mt-2">{s.name}</p>
           </div>
         ))}
       </div>
