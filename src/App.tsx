@@ -993,16 +993,15 @@ function ForestMomentum({ tracks }: { tracks: UserTrack[] }) {
   const stage = STAGES[stageIndex] ?? STAGES[0];
   const { name, img } = stage;
   return (
-    <div className="flex flex-col items-center pt-6 pb-2 px-4">
+    <div className="flex flex-col items-center pt-4 pb-2">
       <img
         src={img}
         alt={name}
-        className="w-64 h-64 rounded-2xl object-cover shadow-lg mb-4"
+        className="w-80 object-contain"
+        style={{height: '320px', mixBlendMode: 'screen'}}
         loading="eager"
       />
-      <h1 className="text-2xl font-semibold text-white tracking-tight text-center">
-        {name}
-      </h1>
+      <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-1">{name}</p>
     </div>
   );
 }
