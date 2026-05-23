@@ -1050,7 +1050,7 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
       {showClaim && <PrizeClaimModal userName={user?.name ?? ''} onClose={() => setShowClaim(false)} />}
       <div className="select-none w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
         <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
-          <img src={img} alt={name} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '240px', height: '240px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+          <img src={img} alt={name} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
           {stageIndex === 9 && (
           <>
@@ -1065,7 +1065,7 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
           return (
             <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
               <div className="relative">
-                <img src={s.img} alt={s.name} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '120px', height: '120px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+                <img src={s.img} alt={s.name} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '300px', height: '300px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2"/>
