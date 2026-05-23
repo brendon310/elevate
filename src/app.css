@@ -48,11 +48,11 @@
   /* Daylight Monochrome Energy — light gray base, white cards, black accents */
   --background: oklch(0 0 0 / 0);               /* transparent — gradient shows through */
   --foreground: oklch(0.97 0 0);
-  --card: oklch(0 0 0 / 0.30);
+  --card: oklch(1 0 0 / 0.12);
   --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0 0 0 / 0.45);
+  --popover: oklch(1 0 0 / 0.16);
   --popover-foreground: oklch(0.97 0 0);
-  --surface: oklch(0 0 0 / 0.25);
+  --surface: oklch(1 0 0 / 0.10);
 
   /* Primary = clear blue — CTAs hit hard against light bg */
   --primary: oklch(0.70 0.20 232);
@@ -67,9 +67,9 @@
   --highlight: oklch(0.875 0.185 95);
   --highlight-foreground: oklch(0.18 0 0);
 
-  --muted: oklch(0 0 0 / 0.20);
+  --muted: oklch(1 0 0 / 0.08);
   --muted-foreground: oklch(1 0 0 / 0.50);
-  --accent: oklch(0 0 0 / 0.25);
+  --accent: oklch(1 0 0 / 0.10);
   --accent-foreground: oklch(0.97 0 0);
 
   --destructive: oklch(0.645 0.245 25);
@@ -77,8 +77,8 @@
 
   --success: oklch(0.745 0.235 145);
 
-  --border: oklch(1 0 0 / 0.12);
-  --input: oklch(0 0 0 / 0.25);
+  --border: oklch(1 0 0 / 0.18);
+  --input: oklch(1 0 0 / 0.10);
   --ring: oklch(0.52 0.22 232);
 
   /* Hue tokens — monochrome with 3 sharp accents only */
@@ -213,14 +213,14 @@ html {
   }
 
   .glass {
-    background: oklch(0 0 0 / 0.35);
+    background: oklch(1 0 0 / 0.12);
     backdrop-filter: blur(28px) saturate(160%);
-    border: 1px solid oklch(1 0 0 / 0.12);
+    border: 1px solid oklch(1 0 0 / 0.20);
     box-shadow: 0 8px 32px oklch(0 0 0 / 0.50), inset 0 1px 0 oklch(1 0 0 / 0.08);
   }
   .warm-card, .depth-card {
-    background: oklch(0 0 0 / 0.35);
-    border: 1px solid oklch(1 0 0 / 0.10);
+    background: oklch(1 0 0 / 0.11);
+    border: 1px solid oklch(1 0 0 / 0.18);
     box-shadow: var(--shadow-card), 0 0 0 0.5px oklch(1 0 0 / 0.06);
     backdrop-filter: blur(24px) saturate(160%);
   }
