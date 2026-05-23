@@ -442,3 +442,15 @@ html {
   0%,100% { box-shadow: 0 0 0 0 var(--pulse-color, rgba(192,57,43,0.6)); }
   50%      { box-shadow: 0 0 0 7px transparent; }
 }
+
+@keyframes islandUnlock {
+  0%   { transform: scale(1);    filter: drop-shadow(0 0 0px transparent); }
+  10%  { transform: scale(1.09); filter: drop-shadow(0 0 28px oklch(0.70 0.20 232 / 0.85)) drop-shadow(0 0 60px oklch(0.70 0.20 232 / 0.40)); }
+  50%  { transform: scale(1.05); filter: drop-shadow(0 0 18px oklch(0.70 0.20 232 / 0.65)) drop-shadow(0 0 40px oklch(0.70 0.20 232 / 0.30)); }
+  90%  { transform: scale(1.09); filter: drop-shadow(0 0 28px oklch(0.70 0.20 232 / 0.85)) drop-shadow(0 0 60px oklch(0.70 0.20 232 / 0.40)); }
+  100% { transform: scale(1);    filter: drop-shadow(0 0 0px transparent); }
+}
+
+.island-unlock-anim {
+  animation: islandUnlock 2s ease-in-out 5;
+}
