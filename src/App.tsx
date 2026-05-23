@@ -1042,6 +1042,17 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
   for (let i = THRESHOLDS.length - 1; i >= 0; i--) {
     if (total >= THRESHOLDS[i]) { stageIndex = i; break; }
   }
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const prevStageRef = useRef<number>(stageIndex);
+  useEffect(() => {
+    if (stageIndex > prevStageRef.current) {
+      setJustUnlocked(true);
+      const t = setTimeout(() => setJustUnlocked(false), 10000);
+      prevStageRef.current = stageIndex;
+      return () => clearTimeout(t);
+    }
+    prevStageRef.current = stageIndex;
+  }, [stageIndex]);
   const [showClaim, setShowClaim] = useState(false);
   const stage = STAGES[stageIndex] ?? STAGES[0];
   const { name, img } = stage;
@@ -1050,7 +1061,7 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
       {showClaim && <PrizeClaimModal userName={user?.name ?? ''} onClose={() => setShowClaim(false)} />}
       <div className="select-none w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
         <div className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
-          <img src={img} alt={name} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+          <img src={img} alt={name} className={`object-contain${justUnlocked ? ' island-unlock-anim' : ''}`} style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
           {stageIndex === 9 && (
           <>
