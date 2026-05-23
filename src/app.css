@@ -46,16 +46,16 @@
   --radius: 1.5rem;
 
   /* Daylight Monochrome Energy — light gray base, white cards, black accents */
-  --background: oklch(0.965 0 0);               /* #F5F5F5 */
-  --foreground: oklch(0.18 0 0);                /* #1A1A1A */
-  --card: oklch(1 0 0);                         /* #FFFFFF */
-  --card-foreground: oklch(0.18 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0 0);
-  --surface: oklch(1 0 0);
+  --background: oklch(0 0 0 / 0);               /* transparent — gradient shows through */
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0 0 0 / 0.30);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0 0 0 / 0.45);
+  --popover-foreground: oklch(0.97 0 0);
+  --surface: oklch(0 0 0 / 0.25);
 
   /* Primary = clear blue — CTAs hit hard against light bg */
-  --primary: oklch(0.52 0.22 232);
+  --primary: oklch(0.70 0.20 232);
   --primary-foreground: oklch(1 0 0);
   /* Secondary = pure red #FF3B3B */
   --secondary: oklch(0.645 0.245 25);
@@ -67,25 +67,25 @@
   --highlight: oklch(0.875 0.185 95);
   --highlight-foreground: oklch(0.18 0 0);
 
-  --muted: oklch(0.93 0 0);                     /* light gray surface */
-  --muted-foreground: oklch(0.60 0 0);          /* #888888 */
-  --accent: oklch(0.93 0 0);
-  --accent-foreground: oklch(0.18 0 0);
+  --muted: oklch(0 0 0 / 0.20);
+  --muted-foreground: oklch(1 0 0 / 0.50);
+  --accent: oklch(0 0 0 / 0.25);
+  --accent-foreground: oklch(0.97 0 0);
 
   --destructive: oklch(0.645 0.245 25);
   --destructive-foreground: oklch(1 0 0);
 
   --success: oklch(0.745 0.235 145);
 
-  --border: oklch(0.89 0 0);                    /* soft gray hairline */
-  --input: oklch(0.93 0 0);
+  --border: oklch(1 0 0 / 0.12);
+  --input: oklch(0 0 0 / 0.25);
   --ring: oklch(0.52 0.22 232);
 
   /* Hue tokens — monochrome with 3 sharp accents only */
   --hue-red:    oklch(0.645 0.245 25);          /* #FF3B3B */
   --hue-green:  oklch(0.745 0.235 145);         /* #00C853 */
   --hue-yellow: oklch(0.875 0.185 95);          /* #FFD000 */
-  --hue-white:  oklch(0.18 0 0);                /* black accent in light theme */
+  --hue-white:  oklch(0.97 0 0);
   --hue-gray:   oklch(0.55 0 0);
   /* Back-compat aliases — everything chromatic collapses to neutrals or accents */
   --hue-violet: var(--hue-white);
@@ -103,7 +103,7 @@
   --fitness:      var(--hue-red);
   --mental:       var(--hue-green);
   --quit:         var(--hue-yellow);
-  --learning:     var(--hue-white);
+  --learning:     var(--hue-white);  /* white text on dark */
   --productivity: var(--hue-gray);
 
   /* Category "surfaces" — bold black/charcoal blocks reserved for hero / milestone moments */
@@ -118,7 +118,7 @@
   --grad-warm:        var(--grad-electric);
 
   /* Shadows — soft, lifted, daylight depth (not heavy) */
-  --shadow-card:   0 12px 32px -16px oklch(0 0 0 / 0.18), 0 2px 6px -2px oklch(0 0 0 / 0.08);
+  --shadow-card:   0 12px 32px -16px oklch(0 0 0 / 0.50), 0 2px 6px -2px oklch(0 0 0 / 0.25);
   --shadow-glow:   0 24px 60px -16px oklch(0 0 0 / 0.25);
   --shadow-red:    0 18px 40px -12px oklch(0.645 0.245 25 / 0.45), 0 4px 12px -4px oklch(0.645 0.245 25 / 0.30);
   --shadow-green:  0 18px 40px -12px oklch(0.745 0.235 145 / 0.40), 0 4px 12px -4px oklch(0.745 0.235 145 / 0.25);
@@ -213,16 +213,16 @@ html {
   }
 
   .glass {
-    background: oklch(1 0 0 / 0.10);
-    backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid oklch(1 0 0 / 0.20);
-    box-shadow: 0 8px 32px oklch(0 0 0 / 0.50), inset 0 1px 0 oklch(1 0 0 / 0.12);
+    background: oklch(0 0 0 / 0.35);
+    backdrop-filter: blur(28px) saturate(160%);
+    border: 1px solid oklch(1 0 0 / 0.12);
+    box-shadow: 0 8px 32px oklch(0 0 0 / 0.50), inset 0 1px 0 oklch(1 0 0 / 0.08);
   }
   .warm-card, .depth-card {
-    background: oklch(1 0 0 / 0.09);
-    border: 1px solid oklch(1 0 0 / 0.18);
-    box-shadow: var(--shadow-card), 0 0 0 0.5px oklch(1 0 0 / 0.08);
-    backdrop-filter: blur(24px) saturate(180%);
+    background: oklch(0 0 0 / 0.35);
+    border: 1px solid oklch(1 0 0 / 0.10);
+    box-shadow: var(--shadow-card), 0 0 0 0.5px oklch(1 0 0 / 0.06);
+    backdrop-filter: blur(24px) saturate(160%);
   }
   .depth-violet { box-shadow: var(--shadow-card),   inset 0 1px 0 oklch(1 0 0 / 0.06); }
   .depth-coral  { box-shadow: var(--shadow-red),    inset 0 1px 0 oklch(1 0 0 / 0.06); }
