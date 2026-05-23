@@ -2419,7 +2419,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   return (
                     <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
                       onClick={() => onView(ut)}
-                      style={{ background: grad, boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
+                      style={{ background: 'oklch(0 0 0 / 0.42)', backdropFilter: 'blur(28px) saturate(160%)', WebkitBackdropFilter: 'blur(28px) saturate(160%)', border: '1px solid oklch(1 0 0 / 0.14)', boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
                       {/* Normal card content — blurred when frozen */}
                       <div className={onVacCard ? "blur-[2px] pointer-events-none" : ""}>
                         <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
