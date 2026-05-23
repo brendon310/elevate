@@ -1933,7 +1933,7 @@ function VacationModal({ track, onSave, onClose }: {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-full max-w-sm rounded-3xl p-6" style={{background:'oklch(0.12 0.02 248 / 0.85)', backdropFilter:'blur(40px) saturate(180%)', WebkitBackdropFilter:'blur(40px) saturate(180%)', border:'1px solid oklch(1 0 0 / 0.18)', boxShadow:'0 24px 60px oklch(0 0 0 / 0.5)'}}
+        className="w-full max-w-sm rounded-3xl p-6" style={{background:'oklch(0.96 0 0 / 0.14)', backdropFilter:'blur(40px) saturate(200%)', WebkitBackdropFilter:'blur(40px) saturate(200%)', border:'1px solid oklch(1 0 0 / 0.25)', boxShadow:'0 24px 60px oklch(0 0 0 / 0.45)'}}
         onClick={e => e.stopPropagation()}>
         <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Vacation mode</p>
         <h3 className="font-display text-xl mb-1">Protect your streak</h3>
@@ -2418,7 +2418,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   return (
                     <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
                       onClick={() => onView(ut)}
-                      style={{ background: grad, boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
+                      style={{ background: "oklch(0.18 0.04 248 / 0.72)", backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)", border: "1px solid oklch(1 0 0 / 0.12)", boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.55), 0 4px 12px -4px oklch(0 0 0 / 0.3)" }}>
                       {/* Normal card content — blurred when frozen */}
                       <div className={onVacCard ? "blur-[2px] pointer-events-none" : ""}>
                         <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
