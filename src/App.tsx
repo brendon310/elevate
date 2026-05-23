@@ -1977,7 +1977,7 @@ function VacationModal({ track, onSave, onClose }: {
               {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">days</span>}
             </div>
             <p className="text-xs text-muted-foreground text-center mb-5 font-mono">
-              Streak protetta fino al <span className="text-foreground">{until}</span>
+              Streak protected until <span className="text-foreground">{until}</span>
             </p>
             <div className="flex gap-3">
               <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">Cancel</button>
@@ -2049,7 +2049,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
         ) : (
           <>
             <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Feedback</p>
-            <h3 className="font-display text-xl mb-1">Non hai potuto accedere?</h3>
+            <h3 className="font-display text-xl mb-1">Can't log in?</h3>
             <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
               Se hai avuto problemi ad aprire l'app, raccontaci cosa è successo. Ci aiuta a migliorare.
             </p>
@@ -2268,7 +2268,7 @@ const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: st
   1:   { emoji: "🌱", title: "Day 1. Done.", sub: "The journey begins now." },
   3:   { emoji: "🔥", title: "3 days straight.", sub: "You're building something real." },
   7:   { emoji: "⚡", title: "A full week.", sub: "7 days straight. That's not nothing." },
-  14:  { emoji: "💎", title: "Due settimane.", sub: "You're becoming this person." },
+  14:  { emoji: "💎", title: "Two weeks.", sub: "You're becoming this person." },
   30:  { emoji: "🏆", title: "30 days.", sub: "A month. A real habit." },
   66:  { emoji: "🧬", title: "66 days.", sub: "Science says it's now in your nature." },
   100: { emoji: "👑", title: "100 days.", sub: "Triple digits. Very few get here." },
@@ -2294,7 +2294,7 @@ function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackN
         </div>
         <button onClick={onDismiss}
           className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-8 py-3.5 text-sm font-bold shadow-[var(--shadow-violet)]">
-          Continua <ArrowRight className="h-4 w-4" />
+          Continue <ArrowRight className="h-4 w-4" />
         </button>
       </motion.div>
     </motion.div>
@@ -2419,7 +2419,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                   return (
                     <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
                       onClick={() => onView(ut)}
-                      style={{ background: 'oklch(0 0 0 / 0.42)', backdropFilter: 'blur(28px) saturate(160%)', WebkitBackdropFilter: 'blur(28px) saturate(160%)', border: '1px solid oklch(1 0 0 / 0.14)', boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
+                      style={{ background: 'oklch(0 0 0 / 0.68)', backdropFilter: 'blur(28px) saturate(160%)', WebkitBackdropFilter: 'blur(28px) saturate(160%)', border: '1px solid oklch(1 0 0 / 0.14)', boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.65), 0 4px 12px -4px oklch(0 0 0 / 0.4)" }}>
                       {/* Normal card content — blurred when frozen */}
                       <div className={onVacCard ? "blur-[2px] pointer-events-none" : ""}>
                         <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
@@ -2560,7 +2560,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                       </button>
                       <button onClick={() => toggleNote(ut.id)}
                         className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
-                        title="Nota rapida">
+                        title="Quick note">
                         <PenLine className="h-3.5 w-3.5" />
                       </button>
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)] px-3.5 py-2 text-xs font-semibold">
@@ -2584,7 +2584,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                       </button>
                       <button onClick={() => toggleNote(ut.id)}
                         className={`rounded-full border px-2 py-2 text-xs transition btn-chunk ${noteOpen[ut.id] ? "border-foreground/30 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
-                        title="Nota rapida">
+                        title="Quick note">
                         <PenLine className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={() => onViewForCheckIn(ut)}
@@ -3508,7 +3508,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 if (navigator.share) navigator.share({ text });
                 else navigator.clipboard?.writeText(text);
               }} className="btn-chunk w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition">
-                Condividi questo momento
+                Share this moment
               </button>
             </motion.div>
           </motion.div>
@@ -3587,7 +3587,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
               Freezed
             </p>
             <p className="text-white/60 text-sm font-mono tracking-widest uppercase">
-              Streak protetta · fino al {track.vacation_until}
+              Streak protected · until {track.vacation_until}
             </p>
             <button
               onClick={() => onVacation?.(track.id, "")}
