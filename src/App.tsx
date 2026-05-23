@@ -1090,7 +1090,7 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
   return (
     <>
       {showClaim && <PrizeClaimModal userName={user?.name ?? ''} onClose={() => setShowClaim(false)} />}
-      <div className="select-none w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory'}}>
+      <div className="select-none w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)', maskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)'}}>
         <div className="shrink-0 flex flex-col items-center pt-4 pb-3" style={{minWidth: '100%', scrollSnapAlign: 'start'}}>
           <img src={img} alt={name} className={`object-contain${justUnlocked ? ' island-unlock-anim' : ''}`} style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
