@@ -2456,7 +2456,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                           style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.5), transparent 60%)" }} />
                         <div aria-hidden className="absolute right-3 top-3 h-20 w-20 rounded-full opacity-70"
                           style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.35), transparent 70%)" }} />
-                        <div className="relative flex items-start justify-between">
+                        <div className="relative flex items-start justify-between pt-2">
                           <span className="text-[10px] uppercase tracking-[0.25em] text-white font-mono">{ut.category}</span>
                           <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
                         </div>
