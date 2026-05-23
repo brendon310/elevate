@@ -4314,29 +4314,6 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
         </div>
       </section>
 
-      {/* Appearance */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-            <Sun className="h-4 w-4" />
-          </span>
-          <h2 className="font-semibold">Appearance</h2>
-        </div>
-        <div className="flex items-center justify-between gap-3 py-3">
-          <p className="text-sm font-medium">Theme</p>
-          <div className="inline-flex rounded-xl border border-border bg-card p-1">
-            <button onClick={() => applyTheme("light")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              <Sun className="h-3.5 w-3.5" /> Light
-            </button>
-            <button onClick={() => applyTheme("dark")}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${theme === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              <Moon className="h-3.5 w-3.5" /> Dark
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Notifications */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="flex items-center gap-2 mb-4">
