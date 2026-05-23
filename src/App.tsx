@@ -2033,7 +2033,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 40, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-full max-w-sm rounded-3xl bg-card border border-border p-6"
+        className="w-full max-w-sm rounded-3xl p-6" style={{background:'oklch(0.12 0.02 248 / 0.85)', backdropFilter:'blur(40px) saturate(180%)', WebkitBackdropFilter:'blur(40px) saturate(180%)', border:'1px solid oklch(1 0 0 / 0.18)', boxShadow:'0 24px 60px oklch(0 0 0 / 0.5)'}}
       >
         {phase === "done" ? (
           <div className="text-center py-4">
