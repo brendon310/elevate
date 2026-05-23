@@ -141,6 +141,7 @@ html {
     oklch(0.22 0.12 300) 100%);
   background-attachment: fixed;
   overscroll-behavior: none;
+  background-color: oklch(0.23 0.13 248);
   min-height: 100vh;
 }
 
