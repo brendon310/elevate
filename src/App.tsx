@@ -1850,7 +1850,7 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
           <button onClick={onDismiss}
-            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-8 py-3 text-sm font-semibold">
+            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-8 py-3 text-sm font-semibold">
             Ricominciamo <ArrowRight className="h-4 w-4" />
           </button>
         </motion.div>
@@ -1949,7 +1949,7 @@ function VacationModal({ track, onSave, onClose }: {
             <div className="flex gap-2 mb-3">
               {[3, 7, 14].map(d => (
                 <button key={d} onClick={() => { setDays(d); setCustomDays(""); }}
-                  className={`flex-1 rounded-xl border py-3 text-sm font-semibold transition btn-chunk ${customDays === "" && days === d ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
+                  className={`flex-1 rounded-xl border py-3 text-sm font-semibold transition btn-chunk ${customDays === "" && days === d ? "bg-foreground text-neutral-900 border-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
                   {d}g
                 </button>
               ))}
@@ -1971,7 +1971,7 @@ function VacationModal({ track, onSave, onClose }: {
             <div className="flex gap-3">
               <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">Cancel</button>
               <button onClick={() => { onSave(until); onClose(); }}
-                className="flex-1 btn-chunk rounded-full bg-foreground text-background px-4 py-2.5 text-sm font-semibold">
+                className="flex-1 btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-2.5 text-sm font-semibold">
                 Pause streak
               </button>
             </div>
@@ -2031,7 +2031,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
             </div>
             <p className="font-display text-lg mb-1">Grazie.</p>
             <p className="text-sm text-muted-foreground">We'll take your feedback into account.</p>
-            <button onClick={onClose} className="mt-5 btn-chunk rounded-full bg-foreground text-background px-6 py-2.5 text-sm font-semibold">
+            <button onClick={onClose} className="mt-5 btn-chunk rounded-full bg-foreground text-neutral-900 px-6 py-2.5 text-sm font-semibold">
               Chiudi
             </button>
           </div>
@@ -2072,7 +2072,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
               <button
                 onClick={submit}
                 disabled={!message.trim() || phase === "sending"}
-                className="flex-1 btn-chunk rounded-full bg-foreground text-background px-4 py-2.5 text-sm font-semibold disabled:opacity-40 transition"
+                className="flex-1 btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-2.5 text-sm font-semibold disabled:opacity-40 transition"
               >
                 {phase === "sending" ? "Sending..." : "Send"}
               </button>
@@ -2236,7 +2236,7 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
             >
               <button
                 onClick={onDismiss}
-                className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-8 py-3 text-sm font-semibold"
+                className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-8 py-3 text-sm font-semibold"
               >
                 Begin today <ArrowRight className="h-4 w-4" />
               </button>
@@ -2386,7 +2386,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
             Pick your first track and your AI coach will build a personalized journey for you.
           </p>
           <button onClick={() => onNavigate("tracks")}
-            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-2.5 text-sm font-semibold"
+            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-6 py-2.5 text-sm font-semibold"
             style={{ boxShadow: "var(--shadow-violet)" }}>
             <Layers className="h-4 w-4" /> Browse 50 tracks
           </button>
@@ -2577,7 +2577,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                         <PenLine className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={() => onViewForCheckIn(ut)}
-                        className="btn-chunk rounded-full bg-foreground text-background px-3.5 py-2 text-xs font-semibold transition"
+                        className="btn-chunk rounded-full bg-foreground text-neutral-900 px-3.5 py-2 text-xs font-semibold transition"
                         aria-label={`Check in for ${ut.name}`}>
                         Check in
                       </button>
@@ -2678,7 +2678,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                                 setNoteSubmitted(prev => ({ ...prev, [ut.id]: true }));
                                 setNoteError(prev => ({ ...prev, [ut.id]: "" }));
                               }}
-                              className="btn-chunk rounded-full bg-foreground text-background px-4 py-1.5 text-xs font-semibold transition hover:opacity-80">
+                              className="btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-1.5 text-xs font-semibold transition hover:opacity-80">
                               Invia
                             </button>
                           </div>
@@ -2832,7 +2832,7 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
             placeholder="Share a win or struggle…"
             className={`flex-1 rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors ${modWarnKey > 0 ? "border-red-500" : "border-border"}`} />
           <button onClick={post} disabled={!draft.trim() || posting}
-            className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-sm font-semibold disabled:opacity-40">
+            className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
             Post
           </button>
         </div>
@@ -2955,13 +2955,13 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
             <div className="grid grid-cols-3 gap-2 mt-2">
               {JOURNEY_PRESETS.map(d => (
                 <button key={d} onClick={() => { setTotalDays(d); setIsCustomDays(false); }}
-                  className={`btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${!isCustomDays && totalDays === d ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+                  className={`btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${!isCustomDays && totalDays === d ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
                   {d === 365 ? "1 year" : `${d}d`}
                 </button>
               ))}
             </div>
             <button onClick={() => { setIsCustomDays(true); setCustomDaysInput(String(totalDays)); }}
-              className={`mt-2 w-full btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${isCustomDays ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+              className={`mt-2 w-full btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${isCustomDays ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
               Custom number of days
             </button>
             {isCustomDays && (
@@ -3000,7 +3000,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button onClick={handleStart} disabled={loading}
-            className="btn-chunk w-full rounded-2xl bg-foreground text-background py-3.5 font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2">
+            className="btn-chunk w-full rounded-2xl bg-foreground text-neutral-900 py-3.5 font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2">
             {loading ? (
               <><span className="h-4 w-4 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your journey…</>
             ) : (
@@ -3316,7 +3316,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 </div>
 
                 <button onClick={handleCheckIn}
-                  className="btn-chunk w-full rounded-xl bg-foreground text-background py-2.5 font-semibold text-sm flex items-center justify-center gap-1.5">
+                  className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-2.5 font-semibold text-sm flex items-center justify-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4" /> Mark day {todayDay.dayNumber} complete
                 </button>
               </div>
@@ -3350,7 +3350,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   }`}>
                   <div className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
                     isCompleted ? "bg-[color:var(--tertiary)]/20 text-[color:var(--tertiary)]"
-                    : isCurrent ? "bg-foreground text-background"
+                    : isCurrent ? "bg-foreground text-neutral-900"
                     : "bg-muted text-muted-foreground"
                   }`}>
                     {isCompleted ? <Check className="h-3.5 w-3.5" />
@@ -3402,7 +3402,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               )}
               {chatMessages.map(m => (
                 <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === "user" ? "bg-foreground text-background" : "bg-muted"}`}>
+                  <div className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === "user" ? "bg-foreground text-neutral-900" : "bg-muted"}`}>
                     {m.content}
                   </div>
                 </div>
@@ -3436,7 +3436,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   placeholder="Reply to your coach…"
                   className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
                 <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
-                  className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-sm font-semibold disabled:opacity-40">
+                  className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
                   Send
                 </button>
               </div>
@@ -3489,7 +3489,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               <h2 className="font-display text-2xl font-bold">Day {milestoneDay}!</h2>
               <p className="text-muted-foreground text-sm">You've hit a major milestone on your {track.name} journey. This is the moment most people quit — and you didn't.</p>
               <button onClick={() => setMilestoneDay(null)}
-                className="btn-chunk w-full rounded-xl bg-foreground text-background py-3 font-semibold">
+                className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-3 font-semibold">
                 Keep going
               </button>
               <button onClick={() => {
@@ -3634,13 +3634,13 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
           {DURATION_PRESETS.map(d => (
             <button key={d}
               onClick={() => { setSelected(d); setCustom(false); }}
-              className={`rounded-xl py-2.5 text-sm font-semibold border transition ${!custom && selected === d ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+              className={`rounded-xl py-2.5 text-sm font-semibold border transition ${!custom && selected === d ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
               {d === 365 ? "1 year" : `${d}d`}
             </button>
           ))}
         </div>
         <button onClick={() => { setCustom(true); setCustomVal(String(selected)); }}
-          className={`w-full rounded-xl py-2.5 text-sm font-semibold border transition ${custom ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+          className={`w-full rounded-xl py-2.5 text-sm font-semibold border transition ${custom ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
           Custom
         </button>
         {custom && (
@@ -3711,13 +3711,13 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
       <div className="mt-3 flex gap-2 flex-wrap">
         <button
           onClick={() => setCategoryFilter(null)}
-          className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${!categoryFilter ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+          className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${!categoryFilter ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
           All
         </button>
         {allCategories.map(cat => (
           <button key={cat}
             onClick={() => setCategoryFilter(cat === categoryFilter ? null : cat)}
-            className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${categoryFilter === cat ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+            className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${categoryFilter === cat ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
             {cat}
           </button>
         ))}
@@ -3750,7 +3750,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                           <Check className="h-3 w-3" />Active
                         </span>
                         <button onClick={() => onView(ut)}
-                          className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
+                          className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-neutral-900 transition">
                           View <ArrowRight className="h-3 w-3" />
                         </button>
                         <button onClick={() => { if (confirm(`Remove "${t.name}" from your paths?`)) onRemove(ut.id); }}
@@ -3761,7 +3761,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                       </div>
                     ) : (
                       <button onClick={() => setPendingAdd(t)}
-                        className="btn-chunk self-start inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-background transition">
+                        className="btn-chunk self-start inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-neutral-900 transition">
                         <Plus className="h-3 w-3" />Start
                       </button>
                     )}
@@ -3911,7 +3911,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
         <p className="text-muted-foreground mt-1">Your data, clear and honest.</p>
         <button onClick={generateLetter} disabled={letterLoading}
-          className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
+          className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
           {letterLoading ? (
             <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your letter…</>
           ) : (
@@ -4536,14 +4536,14 @@ function FirstDayReveal({ userName, track, onComplete }: {
               {([30, 60, 90, 120, 180, 365] as const).map(d => (
                 <button key={d}
                   onClick={() => { setTargetDays(d); setCustomDur(false); }}
-                  className={`rounded-xl py-3 text-sm font-semibold border transition ${!customDur && targetDays === d ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+                  className={`rounded-xl py-3 text-sm font-semibold border transition ${!customDur && targetDays === d ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
                   {d === 365 ? "1 year" : `${d}d`}
                 </button>
               ))}
             </div>
             <button
               onClick={() => { setCustomDur(true); setCustomDurVal(String(targetDays)); }}
-              className={`w-full max-w-xs rounded-xl py-3 text-sm font-semibold border transition ${customDur ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
+              className={`w-full max-w-xs rounded-xl py-3 text-sm font-semibold border transition ${customDur ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
               Custom
             </button>
             {customDur && (
@@ -5303,7 +5303,7 @@ export function ElevateApp() {
           <button onClick={() => {
             (installPrompt as BeforeInstallPromptEvent)?.prompt?.();
             setShowInstallBanner(false);
-          }} className="btn-chunk rounded-xl bg-foreground text-background px-4 py-2 text-xs font-semibold">
+          }} className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-xs font-semibold">
             Install
           </button>
           <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">×</button>
