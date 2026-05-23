@@ -132,7 +132,7 @@
 }
 
 .dark {
-  --background: oklch(0.12 0.06 245);
+  --background: oklch(0 0 0 / 0);         /* transparent — body gradient shows through */
   --foreground: oklch(0.97 0 0);
   --card: oklch(1 0 0 / 0.08);
   --card-foreground: oklch(0.97 0 0);
@@ -155,11 +155,13 @@
   --learning: var(--hue-white);
 }
 
-.dark body {
+.dark,
+.dark body,
+html.dark {
   background: linear-gradient(145deg,
-    oklch(0.16 0.08 242) 0%,
-    oklch(0.12 0.07 158) 50%,
-    oklch(0.15 0.07 298) 100%);
+    oklch(0.17 0.12 248) 0%,
+    oklch(0.11 0.10 162) 45%,
+    oklch(0.16 0.11 300) 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -208,13 +210,13 @@
   }
   .mesh-bg::before {
     width: 65vw; height: 65vw; left: -15vw; top: -25vw;
-    background: radial-gradient(circle, oklch(0.52 0.22 232 / 0.45), transparent 65%);
-    opacity: 0.8;
+    background: radial-gradient(circle, oklch(0.60 0.26 232 / 0.80), transparent 65%);
+    opacity: 1;
   }
   .mesh-bg::after {
     width: 60vw; height: 60vw; right: -20vw; bottom: -20vw;
-    background: radial-gradient(circle, oklch(0.62 0.20 155 / 0.35), transparent 65%);
-    opacity: 0.7;
+    background: radial-gradient(circle, oklch(0.68 0.24 155 / 0.70), transparent 65%);
+    opacity: 1;
     animation-delay: -11s;
   }
   .orb {
@@ -234,16 +236,16 @@
   }
 
   .glass {
-    background: oklch(1 0 0 / 0.08);
-    backdrop-filter: blur(24px) saturate(150%);
-    border: 1px solid oklch(1 0 0 / 0.15);
-    box-shadow: 0 8px 32px oklch(0 0 0 / 0.35), inset 0 1px 0 oklch(1 0 0 / 0.08);
+    background: oklch(1 0 0 / 0.10);
+    backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid oklch(1 0 0 / 0.20);
+    box-shadow: 0 8px 32px oklch(0 0 0 / 0.50), inset 0 1px 0 oklch(1 0 0 / 0.12);
   }
   .warm-card, .depth-card {
-    background: color-mix(in oklab, var(--card) 85%, transparent);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-card);
-    backdrop-filter: blur(20px) saturate(150%);
+    background: oklch(1 0 0 / 0.09);
+    border: 1px solid oklch(1 0 0 / 0.18);
+    box-shadow: var(--shadow-card), 0 0 0 0.5px oklch(1 0 0 / 0.08);
+    backdrop-filter: blur(24px) saturate(180%);
   }
   .depth-violet { box-shadow: var(--shadow-card),   inset 0 1px 0 oklch(1 0 0 / 0.06); }
   .depth-coral  { box-shadow: var(--shadow-red),    inset 0 1px 0 oklch(1 0 0 / 0.06); }
