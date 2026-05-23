@@ -661,6 +661,37 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   );
 }
 
+function SlotNumber({ value }: { value: number }) {
+  const [pair, setPair] = useState<[number, number]>([value, value]);
+  const [anim, setAnim] = useState(false);
+  const prev = useRef(value);
+  useEffect(() => {
+    if (value === prev.current) return;
+    const next = value;
+    setPair([prev.current, next]);
+    setAnim(false);
+    const r = requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        setAnim(true);
+        setTimeout(() => {
+          prev.current = next;
+          setPair([next, next]);
+          setAnim(false);
+        }, 430);
+      })
+    );
+    return () => cancelAnimationFrame(r);
+  }, [value]);
+  return (
+    <span style={{ display: "inline-block", overflow: "hidden", height: "0.85em", verticalAlign: "bottom" }}>
+      <span style={{ display: "flex", flexDirection: "column", transition: anim ? "transform 0.38s cubic-bezier(0.22,1,0.36,1)" : "none", transform: anim ? "translateY(-50%)" : "translateY(0)" }}>
+        <span style={{ height: "0.85em" }}>{pair[0]}</span>
+        <span style={{ height: "0.85em" }}>{pair[1]}</span>
+      </span>
+    </span>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PrizeRequestModal — shown at 100k milestone
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2431,7 +2462,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
                         </div>
                         <div className="relative mt-auto pt-12">
                           <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">{(ut.total_done ?? 0) >= (ut.target_days ?? 30) ? "Done" : "Day"}</p>
-                          <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white">{liveStreak(ut) === 0 && (ut.total_done ?? 0) === 0 ? 1 : liveStreak(ut)}</p>
+                          <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white"><SlotNumber value={liveStreak(ut) === 0 && (ut.total_done ?? 0) === 0 ? 1 : liveStreak(ut)} /></p>
                           {(ut.total_done ?? 0) >= (ut.target_days ?? 30) && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 px-2 py-0.5 text-[9px] font-bold text-yellow-300 uppercase tracking-widest mt-1">
                               ✓ Completed
