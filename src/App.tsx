@@ -1666,7 +1666,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   {/* Hero card */}
                   <div className="warm-card rounded-[2rem] p-8 mb-6 text-center relative overflow-hidden"
                     style={{ boxShadow: "0 0 40px 8px oklch(0.875 0.185 95 / 0.35)", border: "2px solid oklch(0.875 0.185 95 / 0.6)" }}>
-                    <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full opacity-30"
+                    <div aria-hidden className="pointer-events-none absolute top-4 -right-8 h-40 w-40 rounded-full opacity-30"
                       style={{ background: "radial-gradient(circle, oklch(0.875 0.185 95 / 0.5), transparent 70%)" }} />
                     <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3">{sug.category}</p>
                     <h3 className="font-display text-4xl font-bold mb-4">{sug.name}</h3>
