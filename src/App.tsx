@@ -604,7 +604,7 @@ function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: 
   const v = Math.max(0, Math.min(100, value));
   const strokeColor = color ?? (hueVar ? `var(${hueVar})` : "currentColor");
   return (
-    <svg width={size} height={size} className="-rotate-90">
+    <svg width={size} height={size} className="-rotate-90" overflow="visible">
       <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(1 0 0 / 0.15)" strokeWidth={stroke} fill="none" />
       <motion.circle
         cx={size / 2} cy={size / 2} r={r}
