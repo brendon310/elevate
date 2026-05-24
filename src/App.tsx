@@ -30,6 +30,7 @@ interface ElevateUser {
   peakReachedAt?: string | null;
   supabaseId?: string;
   subscriptionStatus?: string | null;
+  islandTheme?: string | null;
 }
 
 interface UserTrack {
@@ -5233,9 +5234,17 @@ export function ElevateApp() {
               name: profile.name,
               createdAt: profile.created_at,
               subscriptionStatus: (profile as any).subscription_status ?? null,
+              islandTheme: (profile as any).island_theme ?? null,
               supabaseId: uid,
             };
             lsSave(LS_USER, restoredUser);
+              const dbTheme = (profile as any).island_theme;
+              if (dbTheme) {
+                localStorage.setItem('forge_island_theme', dbTheme);
+              } else {
+                const lsTheme = localStorage.getItem('forge_island_theme') || 'garden';
+                supabase.from('profiles').update({ island_theme: lsTheme }).eq('id', uid);
+              }
             lsSave(LS_TRACKS, dbTracks);
             lsSave(LS_LOGS, dbLogs);
             setUser(restoredUser);
