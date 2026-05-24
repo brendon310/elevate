@@ -4351,7 +4351,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
 // SettingsPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void }) {
+function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme }: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void }) {
   const [displayName, setDisplayName] = useState(userName);
   const [nameSaved, setNameSaved] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "dark" }).theme);
@@ -4506,6 +4506,42 @@ function SettingsPage({ userName, onSignOut, onUpdateName }: { userName: string;
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
+      </section>
+      {/* Island Theme */}
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.1 11.5 7.4 11.8.3.2.9.2 1.2 0C12.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
+          </span>
+          <h2 className="font-semibold">Island Theme</h2>
+        </div>
+        {(() => {
+          const lastChanged = Number(localStorage.getItem('forge_island_theme_changed_at') || 0);
+          const msLeft = 14 * 24 * 60 * 60 * 1000 - (Date.now() - lastChanged);
+          const daysLeft = Math.ceil(msLeft / (24 * 60 * 60 * 1000));
+          const onCooldown = msLeft > 0;
+          return (
+            <>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                {[{ key: 'garden', label: 'Garden Island' }, { key: 'mountain', label: 'Mountain Peak' }].map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => { if (!onCooldown) onChangeTheme(key); }}
+                    disabled={onCooldown && islandTheme !== key}
+                    className={`rounded-xl border-2 p-3 text-sm font-medium transition-all ${islandTheme === key ? 'border-blue-500 bg-blue-500/10 text-blue-400' : onCooldown ? 'border-border bg-muted/30 text-muted-foreground opacity-40 cursor-not-allowed' : 'border-border bg-muted/30 text-muted-foreground hover:border-blue-500/50'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {onCooldown ? (
+                <p className="text-xs text-muted-foreground">Next change in {daysLeft} day{daysLeft !== 1 ? 's' : ''}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground">Change available once every 2 weeks</p>
+              )}
+            </>
+          );
+        })()}
       </section>
 
       {/* Data & Privacy */}
@@ -5211,6 +5247,14 @@ export function ElevateApp() {
     setUser(null); setTracks([]); setLogs([]); setSupabaseId(null);
     setScreen("landing");
   }, []);
+  const handleChangeTheme = useCallback(async (newTheme: string) => {
+    localStorage.setItem('forge_island_theme', newTheme);
+    localStorage.setItem('forge_island_theme_changed_at', String(Date.now()));
+    setUser(u => u ? { ...u, islandTheme: newTheme } : u);
+    if (supabaseId) {
+      await supabase.from('profiles').update({ island_theme: newTheme }).eq('id', supabaseId);
+    }
+  }, [supabaseId]);
 
   // Handle auth state changes.
   // SIGNED_IN: fires after OAuth code exchange completes (may race with useEffect).
@@ -5507,7 +5551,7 @@ export function ElevateApp() {
         )}
         {page === "tracks" && <TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} />}
         {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
-        {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })} />}
+        {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme}/>}
       </DashboardLayout>
     </>
   );
