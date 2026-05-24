@@ -92,6 +92,7 @@ export async function loadUserData(userId: string) {
   ]);
   return {
     profile: profileRes.data as { id: string; name: string; created_at: string; subscription_status?: string | null } | null,
+    island_theme?: string | null;
     tracks: (tracksRes.data ?? []) as DbTrack[],
     logs: (logsRes.data ?? []) as DbLog[],
   };
