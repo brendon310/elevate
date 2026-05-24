@@ -91,7 +91,7 @@ export async function loadUserData(userId: string) {
     supabase.from('check_ins').select('*').eq('user_id', userId),
   ]);
   return {
-    profile: profileRes.data as { id: string; name: string; created_at: string } | null,
+    profile: profileRes.data as { id: string; name: string; created_at: string; subscription_status?: string | null } | null,
     tracks: (tracksRes.data ?? []) as DbTrack[],
     logs: (logsRes.data ?? []) as DbLog[],
   };
