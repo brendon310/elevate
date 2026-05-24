@@ -1920,7 +1920,6 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             </div>
             <button
               onClick={() => { localStorage.setItem('forge_island_theme', islandThemePick); setStep('name'); }}
-              const isPaused = user?.subscriptionStatus === 'paused';
               className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]"
             >
               Continue <ArrowRight className="h-4 w-4" />
@@ -2551,6 +2550,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   const hour = new Date().getHours();
   const greeting = hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const islandTheme = (localStorage.getItem('forge_island_theme') ?? 'garden') as 'garden' | 'mountain';
+              const isPaused = user?.subscriptionStatus === 'paused';
   const firstName = user.name.split(" ")[0];
 
   return (
