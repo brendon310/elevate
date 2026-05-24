@@ -1135,14 +1135,14 @@ function ForestMomentum({ tracks, user, isPaused = false }: { tracks: UserTrack[
     ctx.fillText(String(total), 540, 1560);
     ctx.fillStyle = '#4a6a90'; ctx.font = '400 36px -apple-system,system-ui,sans-serif';
     ctx.fillText('DAYS ON STREAK', 540, 1620);
-    const trackTitle = tracks[0]?.title || 'Your Journey';
+    const trackTitle = tracks[0]?.name || 'Your Journey';
     ctx.font = '400 30px -apple-system,system-ui,sans-serif';
     const trackW = ctx.measureText(trackTitle).width + 80;
     pill(540 - trackW/2, 1650, trackW, 64, 32, 'rgba(20,45,80,0.8)', '#1e3a5c');
     ctx.fillStyle = '#7aaed4'; ctx.fillText(trackTitle, 540, 1691);
     ctx.strokeStyle = '#1a2840'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(80, 1750); ctx.lineTo(1000, 1750); ctx.stroke();
-    const done = tracks.length ? Math.round(tracks.reduce((s,t) => s + (t.total_done??0), 0) / Math.max(1, tracks.reduce((s,t) => s + (t.total_days??1), 0)) * 100) : 0;
+    const done = tracks.length ? Math.round(tracks.reduce((s,t) => s + (t.total_done??0), 0) / Math.max(1, tracks.reduce((s,t) => s + (t.target_days??1), 0)) * 100) : 0;
     ctx.fillStyle = '#c8daf5'; ctx.font = '600 64px -apple-system,system-ui,sans-serif';
     ctx.fillText(done + '%', 270, 1850);
     ctx.fillStyle = '#3a5575'; ctx.font = '400 26px -apple-system,system-ui,sans-serif';
