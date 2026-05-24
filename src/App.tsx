@@ -29,6 +29,7 @@ interface ElevateUser {
   createdAt: string;
   peakReachedAt?: string | null;
   supabaseId?: string;
+  subscriptionStatus?: string | null;
 }
 
 interface UserTrack {
@@ -1919,6 +1920,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             </div>
             <button
               onClick={() => { localStorage.setItem('forge_island_theme', islandThemePick); setStep('name'); }}
+              const isPaused = user?.subscriptionStatus === 'paused';
               className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]"
             >
               Continue <ArrowRight className="h-4 w-4" />
@@ -2564,7 +2566,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
       </motion.header>
 
       {tracks.length > 0 && (
-        <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} />
+        <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} isPaused={isPaused} />
       )}
 
       <div className="flex items-end justify-between mb-4">
@@ -5230,6 +5232,7 @@ export function ElevateApp() {
             const restoredUser: ElevateUser = {
               name: profile.name,
               createdAt: profile.created_at,
+              subscriptionStatus: (profile as any).subscription_status ?? null,
               supabaseId: uid,
             };
             lsSave(LS_USER, restoredUser);
