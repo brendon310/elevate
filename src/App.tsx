@@ -2468,6 +2468,114 @@ const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: st
   365: { emoji: "🌟", title: "A full year.", sub: "You're unrecognizable compared to who you were." },
 };
 
+function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
+  streak: number;
+  tracks: Array<{ total_done?: number | null }>;
+  islandTheme: string;
+  userName: string;
+  onDismiss: () => void;
+}) {
+  const total = tracks.reduce((s, t) => s + (t.total_done ?? 0), 0);
+  const CT = [0, 5, 12, 25, 50, 90, 150, 230, 330, 450];
+  let si = 0;
+  for (let i = CT.length - 1; i >= 0; i--) { if (total >= CT[i]) { si = i; break; } }
+  const stages = islandTheme === 'mountain' ? MOUNTAIN_STAGES : GARDEN_STAGES;
+  const stage = stages[Math.min(si, stages.length - 1)];
+  const [imgUrl, setImgUrl] = useState('');
+  const [sharing, setSharing] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080; canvas.height = 1080;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.fillStyle = '#060c18';
+      ctx.fillRect(0, 0, 1080, 1080);
+      const glow = ctx.createRadialGradient(540, 540, 0, 540, 540, 600);
+      glow.addColorStop(0, 'rgba(59,130,246,0.15)');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, 1080, 1080);
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(60, 60, 960, 5); ctx.fillRect(60, 1015, 960, 5);
+      ctx.fillRect(60, 60, 5, 960); ctx.fillRect(1015, 60, 5, 960);
+      const diamond = (cx: number, cy: number) => {
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.PI / 4);
+        ctx.fillStyle = '#d4af37'; ctx.fillRect(-7, -7, 14, 14); ctx.restore();
+      };
+      diamond(60, 60); diamond(1020, 60); diamond(60, 1020); diamond(1020, 1020);
+      try {
+        const img = new Image(); img.crossOrigin = 'anonymous';
+        await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = rej; img.src = stage.img; });
+        ctx.drawImage(img, 290, 195, 500, 500);
+      } catch {}
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.font = 'bold 26px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('❖  F O R G E  ❖', 540, 128);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '500 30px system-ui, sans-serif';
+      ctx.fillText('Certificate of Progress', 540, 175);
+      ctx.strokeStyle = 'rgba(212,175,55,0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(180, 730); ctx.lineTo(900, 730); ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 110px system-ui, sans-serif';
+      ctx.fillText(String(streak), 540, 840);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = 'bold 32px system-ui, sans-serif';
+      ctx.fillText('DAYS STRONG', 540, 888);
+      ctx.fillStyle = 'rgba(255,255,255,0.88)';
+      ctx.font = '500 36px system-ui, sans-serif';
+      ctx.fillText(userName, 540, 950);
+      ctx.fillStyle = 'rgba(212,175,55,0.8)';
+      ctx.font = '24px system-ui, sans-serif';
+      ctx.fillText(stage.name, 540, 995);
+      canvas.toBlob(blob => { if (blob) setImgUrl(URL.createObjectURL(blob)); }, 'image/png');
+    })();
+  }, []);
+  const handleShare = async () => {
+    if (!imgUrl) return; setSharing(true);
+    try {
+      const blob = await fetch(imgUrl).then(r => r.blob());
+      const file = new File([blob], 'forge-cert.png', { type: 'image/png' });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `${streak} Days on Forge`, text: `${streak} consecutive days — certified.` });
+      } else { const a = document.createElement('a'); a.href = imgUrl; a.download = 'forge-cert.png'; a.click(); }
+    } catch {}
+    setSharing(false);
+  };
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm"
+      onClick={onDismiss}>
+      <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: 'spring', damping: 22 }}
+        className="w-full max-w-sm mb-6 mx-4 rounded-3xl border border-yellow-500/30 bg-[#0d1526] p-5 shadow-2xl"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs font-medium text-yellow-400/70 uppercase tracking-widest">Certificate</p>
+          <button onClick={onDismiss} className="text-muted-foreground hover:text-white text-2xl leading-none">&times;</button>
+        </div>
+        {imgUrl ? (
+          <img src={imgUrl} alt="certificate" className="w-full rounded-2xl mb-4 border border-white/10" />
+        ) : (
+          <div className="w-full aspect-square rounded-2xl mb-4 bg-white/5 animate-pulse" />
+        )}
+        <p className="text-center text-lg font-semibold mb-1">{streak} Days Strong</p>
+        <p className="text-center text-sm text-muted-foreground mb-4">You showed up. That counts.</p>
+        <div className="flex gap-3">
+          <button onClick={handleShare} disabled={!imgUrl || sharing}
+            className="flex-1 rounded-xl bg-yellow-500 py-3 text-sm font-semibold text-black disabled:opacity-50 active:scale-95 transition-transform">
+            {sharing ? 'Sharing…' : 'Share'}
+          </button>
+          <button onClick={onDismiss} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground">
+            Close
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
   const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Keep it up." };
   return (
@@ -5041,6 +5149,7 @@ export function ElevateApp() {
   const [showReEntry, setShowReEntry] = useState(false);
   const [reEntryGap, setReEntryGap] = useState(0);
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
+  const [cert, setCert] = useState<number | null>(null);
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -5144,6 +5253,14 @@ export function ElevateApp() {
         if (MILESTONE_DAYS.has(newStreak) && !lsLoad<boolean>(milestoneKey, false)) {
           lsSave(milestoneKey, true);
           setTimeout(() => setMilestone({ days: newStreak, trackName: ut.name }), 600);
+        }
+        // Certificate every 10 consecutive days
+        if (newStreak % 10 === 0) {
+          const certKey = `forge-cert-${ut.id}-${newStreak}`;
+          if (!lsLoad<boolean>(certKey, false)) {
+            lsSave(certKey, true);
+            setTimeout(() => setCert(newStreak), 900);
+          }
         }
         // Trigger celebration for every check-in
         if (!MILESTONE_DAYS.has(newStreak)) {
@@ -5521,6 +5638,9 @@ export function ElevateApp() {
       <AnimatePresence>
         {milestone && (
           <MilestoneOverlay days={milestone.days} trackName={milestone.trackName} onDismiss={() => setMilestone(null)} />
+        )}
+        {cert !== null && (
+          <CertModal streak={cert} tracks={tracks} islandTheme={user?.islandTheme ?? 'garden'} userName={user?.name ?? 'Forger'} onDismiss={() => setCert(null)} />
         )}
         {!milestone && showReEntry && (
           <ReEntryOverlay gapDays={reEntryGap} onDismiss={handleReEntryDismiss} />
