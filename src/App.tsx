@@ -1087,6 +1087,88 @@ function ForestMomentum({ tracks, user, isPaused = false }: { tracks: UserTrack[
   const [showClaim, setShowClaim] = useState(false);
   const stage = STAGES[stageIndex] ?? STAGES[0];
   const { name, img } = stage;
+  const shareIsland = async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080; canvas.height = 1920;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#060c18';
+    ctx.fillRect(0, 0, 1080, 1920);
+    const glow = ctx.createRadialGradient(540, 1300, 0, 540, 1300, 900);
+    glow.addColorStop(0, 'rgba(10,34,64,0.9)');
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, 1080, 1920);
+    [[162,192],[810,153],[972,422],[378,346],[594,96],[86,672],[885,269],[648,538],[518,230],[240,450],[900,380]].forEach(([x,y]) => {
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.2 + Math.random() * 0.4) + ')';
+      ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
+    });
+    try {
+      const resp = await fetch(img, { mode: 'cors' });
+      const blob = await resp.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      await new Promise<void>((resolve) => {
+        const i = new Image();
+        i.onload = () => { ctx.drawImage(i, 540 - 380, 440, 760, 760); URL.revokeObjectURL(blobUrl); resolve(); };
+        i.onerror = () => { URL.revokeObjectURL(blobUrl); resolve(); };
+        i.src = blobUrl;
+      });
+    } catch { /* skip image on error */ }
+    const pill = (px: number, py: number, pw: number, ph: number, pr: number, fill: string, stroke: string) => {
+      ctx.beginPath();
+      ctx.moveTo(px+pr,py); ctx.lineTo(px+pw-pr,py); ctx.quadraticCurveTo(px+pw,py,px+pw,py+pr);
+      ctx.lineTo(px+pw,py+ph-pr); ctx.quadraticCurveTo(px+pw,py+ph,px+pw-pr,py+ph);
+      ctx.lineTo(px+pr,py+ph); ctx.quadraticCurveTo(px,py+ph,px,py+ph-pr);
+      ctx.lineTo(px,py+pr); ctx.quadraticCurveTo(px,py,px+pr,py); ctx.closePath();
+      ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 1.5; ctx.stroke();
+    };
+    pill(60, 80, 180, 54, 27, 'rgba(10,25,50,0.8)', '#1e3a5c');
+    ctx.fillStyle = '#4a7ab5'; ctx.font = '500 24px -apple-system,system-ui,sans-serif';
+    ctx.textAlign = 'left'; ctx.fillText('FORGE', 100, 117);
+    const stageText = name.toUpperCase();
+    ctx.font = '500 26px -apple-system,system-ui,sans-serif';
+    const stageW = ctx.measureText(stageText).width + 60;
+    pill(540 - stageW/2, 1220, stageW, 58, 29, 'rgba(10,40,20,0.8)', '#1a4a2a');
+    ctx.fillStyle = '#3a8060'; ctx.textAlign = 'center'; ctx.fillText(stageText, 540, 1257);
+    ctx.fillStyle = '#e8f0fe';
+    ctx.font = (total >= 100 ? '700 200px' : '700 240px') + ' -apple-system,system-ui,sans-serif';
+    ctx.fillText(String(total), 540, 1560);
+    ctx.fillStyle = '#4a6a90'; ctx.font = '400 36px -apple-system,system-ui,sans-serif';
+    ctx.fillText('DAYS ON STREAK', 540, 1620);
+    const trackTitle = tracks[0]?.title || 'Your Journey';
+    ctx.font = '400 30px -apple-system,system-ui,sans-serif';
+    const trackW = ctx.measureText(trackTitle).width + 80;
+    pill(540 - trackW/2, 1650, trackW, 64, 32, 'rgba(20,45,80,0.8)', '#1e3a5c');
+    ctx.fillStyle = '#7aaed4'; ctx.fillText(trackTitle, 540, 1691);
+    ctx.strokeStyle = '#1a2840'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(80, 1750); ctx.lineTo(1000, 1750); ctx.stroke();
+    const done = tracks.length ? Math.round(tracks.reduce((s,t) => s + (t.total_done??0), 0) / Math.max(1, tracks.reduce((s,t) => s + (t.total_days??1), 0)) * 100) : 0;
+    ctx.fillStyle = '#c8daf5'; ctx.font = '600 64px -apple-system,system-ui,sans-serif';
+    ctx.fillText(done + '%', 270, 1850);
+    ctx.fillStyle = '#3a5575'; ctx.font = '400 26px -apple-system,system-ui,sans-serif';
+    ctx.fillText('DONE', 270, 1895);
+    ctx.strokeStyle = '#1a2840'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(540, 1780); ctx.lineTo(540, 1910); ctx.stroke();
+    ctx.fillStyle = '#c8daf5'; ctx.font = '600 64px -apple-system,system-ui,sans-serif';
+    ctx.fillText('Stage ' + (stageIndex + 1), 810, 1850);
+    ctx.fillStyle = '#3a5575'; ctx.font = '400 26px -apple-system,system-ui,sans-serif';
+    ctx.fillText('ISLAND', 810, 1895);
+    ctx.fillStyle = '#2a3d55'; ctx.font = '400 22px -apple-system,system-ui,sans-serif';
+    ctx.textAlign = 'right'; ctx.fillText('FORGE-APP.COM', 1020, 1960);
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], 'forge-day-' + total + '.png', { type: 'image/png' });
+      if (navigator.share && (navigator as any).canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Day ' + total + ' on Forge' });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url;
+        a.download = 'forge-day-' + total + '.png'; a.click();
+        URL.revokeObjectURL(url);
+      }
+    }, 'image/png');
+  };
+
   return (
     <>
       {showClaim && <PrizeClaimModal userName={user?.name ?? ''} onClose={() => setShowClaim(false)} />}
@@ -1102,6 +1184,13 @@ function ForestMomentum({ tracks, user, isPaused = false }: { tracks: UserTrack[
             )}
           </div>
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
+          <button
+            onClick={shareIsland}
+            className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors mt-1 px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 active:scale-95"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share my island
+          </button>
           {isPaused && (
             <div className="flex flex-col items-center gap-2 mt-3 px-6">
               <p className="text-sm text-white/50 text-center">Your island is waiting at <span className="font-medium text-white/80">day {total}</span></p>
