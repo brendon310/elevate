@@ -1054,20 +1054,35 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
     </div>
   );
 }
-function ForestMomentum({ tracks, user, isPaused = false }: { tracks: UserTrack[]; user?: { name: string }; isPaused?: boolean }) {
+const GARDEN_STAGES = [
+  { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
+  { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
+  { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-03.png" },
+  { name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-04.png" },
+  { name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-05.png" },
+  { name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-06.png" },
+  { name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-07.png" },
+  { name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-08.png" },
+  { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-09.png" },
+  { name: "The Ancient Canopy", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
+];
+
+const MOUNTAIN_STAGES = [
+  { name: "The Barren Summit",      img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png" },
+  { name: "The First Pine",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount2.png" },
+  { name: "The Alpine Trail",       img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount3.png" },
+  { name: "The Mountain Stream",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount4.png" },
+  { name: "The Rising Peak",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount5.png" },
+  { name: "The Alpine Lake",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount6.png" },
+  { name: "The Summit Path",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount7.png" },
+  { name: "The Sacred Peak",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount8.png" },
+  { name: "The Enlightened Summit", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount9.png" },
+  { name: "The Celestial Peak",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount10.png" },
+];
+
+function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden' }: { tracks: UserTrack[]; user?: { name: string }; isPaused?: boolean; islandTheme?: 'garden' | 'mountain' }) {
   const THRESHOLDS = [0, 5, 12, 25, 50, 90, 150, 230, 330, 450];
-  const STAGES = [
-    { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
-    { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
-    { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-03.png" },
-    { name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-04.png" },
-    { name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-05.png" },
-    { name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-06.png" },
-    { name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-07.png" },
-    { name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-08.png" },
-    { name: "The Ancient Forest", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-09.png" },
-    { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
-  ];
+  const STAGES = islandTheme === 'mountain' ? MOUNTAIN_STAGES : GARDEN_STAGES;
   const total = tracks.reduce((s, t) => s + (t.total_done ?? 0), 0);
   let stageIndex = 0;
   for (let i = THRESHOLDS.length - 1; i >= 0; i--) {
@@ -1644,7 +1659,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 // OnboardingPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "name";
+type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "island" | "name";
 
 function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack; name?: string }) => void }) {
   const [step, setStep] = useState<OnboardingStep>("question");
@@ -1653,6 +1668,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   const [message, setMessage] = useState("");
   const [typedCount, setTypedCount] = useState(0);
   const [chosen, setChosen] = useState<OnboardingTrack | null>(null);
+  const [islandThemePick, setIslandThemePick] = useState<'garden' | 'mountain'>('garden');
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
   const [pendingTrackForName, setPendingTrackForName] = useState<OnboardingTrack | null>(null);
   const [onboardingName, setOnboardingName] = useState("");
@@ -1779,7 +1795,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                         <span className="text-yellow-400 font-medium">You're not alone in this.</span>
                       </p>
                     )}
-                    <button onClick={() => { setPendingTrackForName(sug); setStep("name"); }}
+                    <button onClick={() => { setPendingTrackForName(sug); setStep("island"); }}
                       className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]">
                       This is my path <ArrowRight className="h-4 w-4" />
                     </button>
@@ -1856,7 +1872,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                 </div>
                 {chosen && (
                   <div className="mt-10 text-center">
-                    <button onClick={() => { setPendingTrackForName(chosen!); setStep("name"); }}
+                    <button onClick={() => { setPendingTrackForName(chosen!); setStep("island"); }}
                       className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
                       This is my path <ArrowRight className="h-4 w-4" />
                     </button>
@@ -1865,6 +1881,48 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
               </motion.div>
             )}
 
+          </motion.div>
+        )}
+
+        {step === "island" && (
+          <motion.div key="island" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">Choose your island</p>
+            <h1 className="font-display text-[clamp(1.8rem,5vw,2.6rem)] leading-tight tracking-tight mb-2">
+              Your island reflects<br /><span className="text-electric">your journey</span>
+            </h1>
+            <p className="text-sm text-muted-foreground mb-10 max-w-xs mx-auto">Every check-in grows your world. Pick the landscape that speaks to you.</p>
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {([
+                { key: 'garden' as const, label: 'The Garden', desc: 'Forest & nature', img: 'https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png' },
+                { key: 'mountain' as const, label: 'The Mountain', desc: 'Peaks & summits', img: 'https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png' },
+              ] as { key: 'garden' | 'mountain'; label: string; desc: string; img: string }[]).map(({ key, label, desc, img }) => (
+                <button
+                  key={key}
+                  onClick={() => setIslandThemePick(key)}
+                  className={`relative flex flex-col items-center gap-3 rounded-2xl p-4 border-2 transition-all ${islandThemePick === key ? 'border-electric bg-electric/10' : 'border-white/10 bg-white/4 hover:border-white/25'}`}
+                >
+                  <div className="w-full aspect-square rounded-xl overflow-hidden bg-white/5 flex items-center justify-center">
+                    <img src={img} alt={label} className="w-full h-full object-contain" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm text-white">{label}</p>
+                    <p className="text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                  {islandThemePick === key && (
+                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-electric flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => { localStorage.setItem('forge_island_theme', islandThemePick); setStep('name'); }}
+              className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]"
+            >
+              Continue <ArrowRight className="h-4 w-4" />
+            </button>
           </motion.div>
         )}
 
@@ -2490,6 +2548,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
   const hour = new Date().getHours();
   const greeting = hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const islandTheme = (localStorage.getItem('forge_island_theme') ?? 'garden') as 'garden' | 'mountain';
   const firstName = user.name.split(" ")[0];
 
   return (
@@ -2505,7 +2564,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
       </motion.header>
 
       {tracks.length > 0 && (
-        <ForestMomentum tracks={tracks} user={user} />
+        <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} />
       )}
 
       <div className="flex items-end justify-between mb-4">
