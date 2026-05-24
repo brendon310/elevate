@@ -1054,7 +1054,7 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
     </div>
   );
 }
-function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: string } }) {
+function ForestMomentum({ tracks, user, isPaused = false }: { tracks: UserTrack[]; user?: { name: string }; isPaused?: boolean }) {
   const THRESHOLDS = [0, 5, 12, 25, 50, 90, 150, 230, 330, 450];
   const STAGES = [
     { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
@@ -1092,8 +1092,22 @@ function ForestMomentum({ tracks, user }: { tracks: UserTrack[]; user?: { name: 
       {showClaim && <PrizeClaimModal userName={user?.name ?? ''} onClose={() => setShowClaim(false)} />}
       <div className="select-none w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)', maskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)'}}>
         <div className="shrink-0 flex flex-col items-center pt-4 pb-3" style={{minWidth: '100%', scrollSnapAlign: 'start'}}>
-          <img src={img} alt={name} className={`object-contain${justUnlocked ? ' island-unlock-anim' : ''}`} style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+          <div className="relative" style={{width: '400px', height: '400px'}}>
+            <img src={img} alt={name} className={`object-contain${justUnlocked ? ' island-unlock-anim' : ''}`} style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+            {isPaused && (
+              <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+                <div className="absolute inset-0 fog-layer-1"/>
+                <div className="absolute inset-0 fog-layer-2"/>
+              </div>
+            )}
+          </div>
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
+          {isPaused && (
+            <div className="flex flex-col items-center gap-2 mt-3 px-6">
+              <p className="text-sm text-white/50 text-center">Your island is waiting at <span className="font-medium text-white/80">day {total}</span></p>
+              <button className="text-xs font-medium px-5 py-2 rounded-full border border-white/20 text-white/70 bg-white/5 active:bg-white/10 transition-colors">Reactivate your plan</button>
+            </div>
+          )}
           {stageIndex === 9 && (
           <>
             <p className="text-sm font-semibold text-white/80 mt-3 text-center">You've reached the final stage.</p>
