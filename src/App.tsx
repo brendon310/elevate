@@ -5189,6 +5189,16 @@ export function ElevateApp() {
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
 
   // Register push subscription when user logs in
+  const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
+  useEffect(() => {
+    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); setShowInstallBanner(true); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+  const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
   useEffect(() => {
     if (!user) return;
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
@@ -5207,23 +5217,13 @@ export function ElevateApp() {
         await fetch('/api/push-subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscription: sub.toJSON(), userId: user.id, reminderHour: 9 }),
+          body: JSON.stringify({ subscription: sub.toJSON(), userId: user.supabaseId, reminderHour: 9 }),
         });
       } catch (e) {
         console.warn('Push subscription failed:', e);
       }
     })();
-  }, [user?.id]);
-  const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
-  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-  const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
-  useEffect(() => {
-    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); setShowInstallBanner(true); };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
-  const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
+  }, [user?.supabaseId]);
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
   const [supabaseId, setSupabaseId] = useState<string | null>(() => lsLoad<ElevateUser | null>(LS_USER, null)?.supabaseId ?? null);
