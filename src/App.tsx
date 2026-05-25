@@ -455,6 +455,13 @@ function lsLoad<T>(key: string, fallback: T): T {
 function lsSave(key: string, val: unknown) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Utilities
@@ -5180,6 +5187,33 @@ export function ElevateApp() {
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
   const [cert, setCert] = useState<number | null>(null);
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
+
+  // Register push subscription when user logs in
+  useEffect(() => {
+    if (!user) return;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    (async () => {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        const existing = await reg.pushManager.getSubscription();
+        if (existing) return;
+        const resp = await fetch('/api/vapid-public-key');
+        const { key } = await resp.json();
+        if (!key) return;
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(key),
+        });
+        await fetch('/api/push-subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subscription: sub.toJSON(), userId: user.id, reminderHour: 9 }),
+        });
+      } catch (e) {
+        console.warn('Push subscription failed:', e);
+      }
+    })();
+  }, [user?.id]);
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
