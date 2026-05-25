@@ -31,6 +31,7 @@ interface ElevateUser {
   supabaseId?: string;
   subscriptionStatus?: string | null;
   islandTheme?: string | null;
+  shields?: number;
 }
 
 interface UserTrack {
@@ -4459,7 +4460,20 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
 // SettingsPage
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme }: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void }) {
+const FORGE_TITLES = [
+  { days: 0, title: 'Newcomer', color: 'text-muted-foreground' },
+  { days: 10, title: 'Apprentice', color: 'text-blue-400' },
+  { days: 25, title: 'Journeyman', color: 'text-purple-400' },
+  { days: 50, title: 'Forge Master', color: 'text-amber-400' },
+  { days: 100, title: 'Legend', color: 'text-yellow-300' },
+];
+function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
+  const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
+  let result = FORGE_TITLES[0];
+  for (const ft of FORGE_TITLES) { if (maxStreak >= ft.days) result = ft; }
+  return result;
+}
+function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme , shields, tracks}: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void ; shields: number; tracks: UserTrack[]}) {
   const [displayName, setDisplayName] = useState(userName);
   const [nameSaved, setNameSaved] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "dark" }).theme);
@@ -4614,6 +4628,21 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
+      </section>
+            {/* Rank & Shields */}
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6 space-y-3">
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Rank & Shields</h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">Your Title</p>
+            <p className={`text-base font-semibold ${getForgeTitle(tracks).color}`}>{getForgeTitle(tracks).title}</p>
+          </div>
+          <div className="flex items-center gap-2 bg-white/5 border border-border rounded-xl px-4 py-2">
+            <span className="text-lg" aria-hidden="true">🛡</span>
+            <span className="text-xl font-bold text-blue-400">{shields}</span>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">Earn a shield every 10 consecutive days. Auto-used if you miss a day.</p>
       </section>
       {/* Island Theme */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
@@ -5150,6 +5179,7 @@ export function ElevateApp() {
   const [reEntryGap, setReEntryGap] = useState(0);
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
   const [cert, setCert] = useState<number | null>(null);
+  const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
   const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -5246,7 +5276,17 @@ export function ElevateApp() {
     setTracks(prev => {
       const next = prev.map(ut => {
         if (ut.id !== userTrackId || ut.last_log_date === t) return ut;
-        const newStreak = ut.last_log_date === y ? (ut.current_streak || 0) + 1 : 1;
+        const rawStreak = ut.last_log_date === y ? (ut.current_streak || 0) + 1 : 1;
+        let newStreak = rawStreak;
+        if (rawStreak === 1 && (ut.current_streak || 0) > 1) {
+          const shieldCount = lsLoad<number>('forge-shields', 0);
+          if (shieldCount > 0) {
+            const used = shieldCount - 1;
+            lsSave('forge-shields', used);
+            newStreak = (ut.current_streak || 0) + 1;
+            setTimeout(() => setShields(used), 100);
+          }
+        }
         const newTotal = (ut.total_done || 0) + 1;
         // Check milestone after update
         const milestoneKey = `forge-milestone-${ut.id}-${newStreak}`;
@@ -5260,6 +5300,16 @@ export function ElevateApp() {
           if (!lsLoad<boolean>(certKey, false)) {
             lsSave(certKey, true);
             setTimeout(() => setCert(newStreak), 900);
+          }
+        }
+        // Earn a shield every 10 consecutive days
+        if (newStreak % 10 === 0) {
+          const sKey = `forge-shield-${ut.id}-${newStreak}`;
+          if (!lsLoad<boolean>(sKey, false)) {
+            lsSave(sKey, true);
+            const earned = lsLoad<number>('forge-shields', 0) + 1;
+            lsSave('forge-shields', earned);
+            setTimeout(() => setShields(earned), 300);
           }
         }
         // Trigger celebration for every check-in
@@ -5671,7 +5721,7 @@ export function ElevateApp() {
         )}
         {page === "tracks" && <TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} />}
         {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
-        {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme}/>}
+        {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks}/>}
       </DashboardLayout>
     </>
   );
