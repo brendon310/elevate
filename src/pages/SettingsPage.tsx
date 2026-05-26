@@ -18,6 +18,13 @@ function lsSave(key: string, val: unknown) {
 const FORGE_TITLES = [
   { days: 0, title: 'Newcomer', color: 'text-muted-foreground' },
 
+function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
+  const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
+  let result = FORGE_TITLES[0];
+  for (const ft of FORGE_TITLES) { if (maxStreak >= ft.days) result = ft; }
+  return result;
+}
+
 function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme , shields, tracks}: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void ; shields: number; tracks: UserTrack[]}) {
   const [displayName, setDisplayName] = useState(userName);
   const [nameSaved, setNameSaved] = useState(false);
