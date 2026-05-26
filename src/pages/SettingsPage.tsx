@@ -17,7 +17,11 @@ function lsSave(key: string, val: unknown) {
 
 const FORGE_TITLES = [
   { days: 0, title: 'Newcomer', color: 'text-muted-foreground' },
-
+  { days: 10, title: 'Apprentice', color: 'text-blue-400' },
+  { days: 25, title: 'Journeyman', color: 'text-purple-400' },
+  { days: 50, title: 'Forge Master', color: 'text-amber-400' },
+  { days: 100, title: 'Legend', color: 'text-yellow-300' },
+]
 function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
   const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
   let result = FORGE_TITLES[0];
