@@ -91,7 +91,7 @@ export async function loadUserData(userId: string) {
     supabase.from('check_ins').select('*').eq('user_id', userId),
   ]);
   return {
-    profile: profileRes.data as { id: string; name: string; created_at: string; subscription_status?: string | null ; island_theme?: string | null} | null,
+    profile: profileRes.data as { id: string; name: string; created_at: string } | null,
     tracks: (tracksRes.data ?? []) as DbTrack[],
     logs: (logsRes.data ?? []) as DbLog[],
   };
@@ -130,18 +130,20 @@ export async function loadCoachMessages(userId: string, slug: string): Promise<D
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
-export async function saveProfile(userId: string, name: string): Promise<void> {
+export async function saveProfile(userId: string, name: string): Promise<{ ok: boolean; error?: string }> {
   const { error } = await supabase.from('profiles').upsert(
     { id: userId, name, updated_at: new Date().toISOString() }, { onConflict: 'id' }
   );
-  if (error) console.warn('[db] saveProfile:', error.message);
+  if (error) { console.warn('[db] saveProfile:', error.message); return { ok: false, error: error.message }; }
+  return { ok: true };
 }
 
-export async function saveTracks(userId: string, tracks: DbTrack[]): Promise<void> {
-  if (!tracks.length) return;
+export async function saveTracks(userId: string, tracks: DbTrack[]): Promise<{ ok: boolean; error?: string }> {
+  if (!tracks.length) return { ok: true };
   const rows = tracks.map(t => ({ ...t, user_id: userId }));
   const { error } = await supabase.from('user_tracks').upsert(rows, { onConflict: 'id' });
-  if (error) console.warn('[db] saveTracks:', error.message);
+  if (error) { console.warn('[db] saveTracks:', error.message); return { ok: false, error: error.message }; }
+  return { ok: true };
 }
 
 export async function deleteTrack(userId: string, trackId: string): Promise<void> {
@@ -165,26 +167,29 @@ export async function deleteLogsForTrack(userId: string, trackId: string): Promi
   if (error) console.warn('[db] deleteLogsForTrack:', error.message);
 }
 
-export async function saveLog(userId: string, log: DbLog): Promise<void> {
+export async function saveLog(userId: string, log: DbLog): Promise<{ ok: boolean; error?: string }> {
   const { error } = await supabase.from('check_ins').upsert(
     { ...log, user_id: userId }, { onConflict: 'id' }
   );
-  if (error) console.warn('[db] saveLog:', error.message);
+  if (error) { console.warn('[db] saveLog:', error.message); return { ok: false, error: error.message }; }
+  return { ok: true };
 }
 
-export async function saveJourney(userId: string, journey: AppJourney | DbJourney): Promise<void> {
+export async function saveJourney(userId: string, journey: AppJourney | DbJourney): Promise<{ ok: boolean; error?: string }> {
   const row = { ...toDbJourney(journey), user_id: userId };
   const { error } = await supabase.from('journeys').upsert(row, { onConflict: 'id' });
-  if (error) console.warn('[db] saveJourney:', error.message);
+  if (error) { console.warn('[db] saveJourney:', error.message); return { ok: false, error: error.message }; }
+  return { ok: true };
 }
 
 export async function saveJourneyDays(
   userId: string, slug: string, days: (AppJourneyDay | DbJourneyDay)[]
-): Promise<void> {
-  if (!days.length) return;
+): Promise<{ ok: boolean; error?: string }> {
+  if (!days.length) return { ok: true };
   const rows = days.map(d => ({ ...toDbJourneyDay(d, slug), user_id: userId }));
   const { error } = await supabase.from('journey_days').upsert(rows, { onConflict: 'id' });
-  if (error) console.warn('[db] saveJourneyDays:', error.message);
+  if (error) { console.warn('[db] saveJourneyDays:', error.message); return { ok: false, error: error.message }; }
+  return { ok: true };
 }
 
 export async function saveCommunityPost(userId: string, post: DbCommunityPost): Promise<void> {
@@ -218,7 +223,7 @@ export async function migrateFromLocalStorage(
   lsGetJourney: (slug: string) => AppJourney | DbJourney | null,
 ): Promise<void> {
   console.log('[db] migrating localStorage → Supabase');
-  const ops: Promise<void>[] = [];
+  const ops: Promise<unknown>[] = [];
 
   if (lsUser) ops.push(saveProfile(userId, lsUser.name));
   if (lsTracks.length) ops.push(saveTracks(userId, lsTracks));
