@@ -205,6 +205,11 @@ function ghostDayFor(ut: UserTrack): number {
   const ms = Date.now() - new Date(ut.added_at).getTime();
   return Math.max(1, Math.floor(ms / 86_400_000) + 1);
 }
+const QUICK_NOTE_BANNED = [
+  "cazzo","vaffanculo","merda","stronzo","puttana","figa","coglione","minchia","porco dio",
+  "fuck","shit","bitch","asshole","bastard","cunt","dick","pussy","nigger","faggot",
+];
+
 function validateQuickNote(text: string): string | null {
   const t = text.trim();
   if (t.length < 10) return "Write at least a few words before sending.";
