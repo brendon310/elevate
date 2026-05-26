@@ -41,7 +41,7 @@ function SlotNumber({ value }: { value: number }) {
   );
 }
 
-const GARDEN_STAGES = [
+export const GARDEN_STAGES = [
   { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
   { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
   { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-03.png" },
@@ -54,7 +54,7 @@ const GARDEN_STAGES = [
   { name: "The Ancient Canopy", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
 ];
 
-const MOUNTAIN_STAGES = [
+export const MOUNTAIN_STAGES = [
   { name: "The Barren Summit",      img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png" },
   { name: "The First Pine",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount2.png" },
   { name: "The Alpine Trail",       img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount3.png" },
