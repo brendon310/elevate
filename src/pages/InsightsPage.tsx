@@ -12,6 +12,16 @@ function lsLoad<T>(key: string, fallback: T): T {
   } catch { return fallback; }
 }
 
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function yesterdayStr() { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10); }
+function liveStreak(ut: UserTrack): number {
+  const t = todayStr();
+  const y = yesterdayStr();
+  if (ut.vacation_until && ut.vacation_until >= t) return ut.current_streak || 0;
+  if (ut.last_log_date === t || ut.last_log_date === y) return ut.current_streak || 0;
+  return 0;
+}
+
 function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log[] }) {
   const [letterLoading, setLetterLoading] = useState(false);
   const [letter, setLetter] = useState<string | null>(null);
