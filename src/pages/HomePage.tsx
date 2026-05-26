@@ -41,6 +41,159 @@ function SlotNumber({ value }: { value: number }) {
   );
 }
 
+interface TrackSavings {
+  costPerUnit: number;   // euro
+  unitName: string;      // singolare
+  unitNamePlural: string;
+  emoji: string;
+}
+
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+function lsLoad<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch { return fallback; }
+}
+
+function lsSave(key: string, val: unknown) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+const MOTIVATIONS = [
+  "Today is a clean page. Write one good line.",
+  "Small reps. Big identity.",
+  "Show up. The rest follows.",
+  "You're closer than you were yesterday.",
+  "Repetition is how you become.",
+  "Make one move that future-you applauds.",
+  "Discipline is self-love in slow motion.",
+];
+
+function trackHueVar(category?: string) {
+  const map: Record<string, string> = {
+    "Fitness & Body": "--fitness",
+    "Mental Health": "--mental",
+    "Quit Bad Habits": "--quit",
+    "Mind & Learning": "--learning",
+    "Productivity & Life": "--productivity",
+    "Addiction & Recovery": "--quit",
+    "Financial Health": "--productivity",
+    "Psychology & Self": "--mental",
+  };
+  return category && map[category] ? map[category] : "--foreground";
+}
+
+function trackHueGradient(slug: string) {
+  const shades = [
+    ["oklch(0.22 0 0)", "oklch(0.10 0 0)"],
+    ["oklch(0.20 0 0)", "oklch(0.09 0 0)"],
+    ["oklch(0.24 0 0)", "oklch(0.12 0 0)"],
+    ["oklch(0.18 0 0)", "oklch(0.08 0 0)"],
+    ["oklch(0.26 0 0)", "oklch(0.13 0 0)"],
+    ["oklch(0.21 0 0)", "oklch(0.11 0 0)"],
+  ];
+  const [a, b] = shades[hashStr(slug) % shades.length];
+  return `linear-gradient(160deg, ${a}, ${b})`;
+}
+
+function liveStreak(ut: UserTrack): number {
+  const t = todayStr();
+  const y = yesterdayStr();
+  if (ut.vacation_until && ut.vacation_until >= t) return ut.current_streak || 0;
+  if (ut.last_log_date === t || ut.last_log_date === y) return ut.current_streak || 0;
+  return 0;
+}
+
+function useCountUp(target: number, duration = 900) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    const start = performance.now();
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setV(Math.round(target * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return v;
+}
+
+function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: string; color?: string; size?: number }) {
+  const stroke = 8;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const v = Math.max(0, Math.min(100, value));
+  const strokeColor = color ?? (hueVar ? `var(${hueVar})` : "currentColor");
+  return (
+    <svg width={size} height={size} className="-rotate-90" overflow="visible">
+      <circle cx={size / 2} cy={size / 2} r={r} stroke="oklch(1 0 0 / 0.15)" strokeWidth={stroke} fill="none" />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r}
+        stroke={strokeColor} strokeWidth={stroke} strokeLinecap="round" fill="none"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c - (c * v) / 100 }}
+        transition={{ type: "spring", stiffness: 60, damping: 16 }}
+        style={{ filter: `drop-shadow(0 0 6px ${strokeColor})` }}
+      />
+    </svg>
+  );
+}
+
+function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () => void }) {
+  const [name, setName] = useState(userName);
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  async function handleSubmit() {
+    if (!name.trim() || !email.trim() || !address.trim()) return;
+    setSubmitting(true);
+    try {
+      await supabase.from('prize_claims').insert({
+        name: name.trim(), email: email.trim(),
+        address: address.trim(), claimed_at: new Date().toISOString(),
+      });
+      setDone(true);
+    } catch (_) {
+      // ignore
+    } finally {
+      setSubmitting(false);
+    }
+  }
+  if (done) return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
+      <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
+        <p className="text-white text-lg font-semibold text-center mb-2">You're on the list!</p>
+        <p className="text-white/50 text-sm text-center mb-6">We'll send your personalised prize to the address you provided.</p>
+        <button onClick={onClose} className="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-medium">Close</button>
+      </div>
+    </div>
+  );
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
+      <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-white font-semibold">You made it!</p>
+          <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
+        </div>
+        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just â¬7.99.</p>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
+        <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
+          {submitting ? 'Sendingâ¦' : 'Send my address â â¬7.99'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export const GARDEN_STAGES = [
   { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
   { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
