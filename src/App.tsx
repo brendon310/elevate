@@ -2566,22 +2566,7 @@ const TRACK_SAVINGS: Record<string, TrackSavings> = {
   },
 };
 
-function useCountUp(target: number, duration = 1400): number {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (target === 0) return;
-    let start: number | null = null;
-    const step = (ts: number) => {
-      if (!start) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    const raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [target, duration]);
-  return value;
+
 }
 
 function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
