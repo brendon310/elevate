@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Sun } from 'lucide-react';
 import type { UserTrack, Journey, JourneyDay } from '../types';
 import * as db from '../db';
+import { JourneyOnboarding, JourneyView } from './JourneyPage';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
@@ -18,6 +19,8 @@ function lsSave(key: string, val: unknown) {
 }
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
 
 function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?: number }) {
   const [flakes, setFlakes] = useState<SnowflakeData[]>([]);
