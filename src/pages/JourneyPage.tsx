@@ -117,6 +117,11 @@ function isCommunityBlocked(text: string): boolean {
   return COMMUNITY_BLOCKLIST.some(w => lower.includes(w));
 }
 
+interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
+const COMMUNITY_BLOCKLIST = [
+  "jerk","masturbat","porn","sex ","fap","orgasm","naked","nude","dick","cock","pussy","ass ","fuck","shit ","bitch","whore","slut","cum ","jizz","rape","abuse","kill myself","kms","kys","nigger","faggot",
+];
+
 function lsLoad<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
