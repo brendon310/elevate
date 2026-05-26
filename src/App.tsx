@@ -3,10 +3,10 @@
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings,
+  ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings, Shield,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
   Zap, AlertTriangle, Crown, Mail, Phone, ChevronLeft, Search,
-  Database, Download, Bell, Target, Lock, PenLine, X, BarChart2} from "lucide-react";
+  Database, Download, Bell, Target, Lock, PenLine, X, BarChart2} from 'lucide-react';
 import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
 
