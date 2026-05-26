@@ -3,10 +3,49 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import type { UserTrack, JourneyDay, Journey } from '../types';
 
-interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
+type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
+interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
+const ARCHETYPES: Record<ArchetypeId, Archetype> = {
+  trainer: { id: "trainer", name: "Trainer", tagline: "Your direct trainer", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Teacher", tagline: "Your calm teacher", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Clinician", tagline: "Your warm clinician", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Mentor", tagline: "Your sharp mentor", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Guide", tagline: "Your creative guide", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+};
+const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
+  // Fitness & Body
+  "strength-training": "trainer", "morning-run": "trainer", "cold-exposure": "trainer",
+  "sedentary-lifestyle": "trainer",
+  // Quit Bad Habits
+  "no-social-media": "trainer", "quit-smoking": "trainer", "no-sugar": "trainer", // Addiction & Recovery
+  "quit-alcohol": "trainer", "video-game-addiction": "trainer",
+  "compulsive-shopping": "mentor", "quit-pornography": "clinician", "quit-drugs": "clinician",
+  "quit-gambling": "mentor", "binge-eating": "clinician",
+  // Mental Health
+  "meditation": "clinician", "anxiety-relief": "clinician", "journaling": "clinician",
+  "sleep-routine": "clinician", "breathwork": "clinician",
+  "stop-overthinking": "clinician", "social-anxiety": "clinician",
+  "anger-management": "clinician", "chronic-stress": "clinician",
+  "social-isolation": "guide", "negative-mindset": "guide",
+  // Productivity & Life
+  "deep-work": "mentor", "beat-procrastination": "trainer",
+  "build-discipline": "trainer", // Psychology & Self
+  "low-self-esteem": "clinician", "need-for-approval": "clinician",
+  "fear-of-failure": "mentor", "fear-of-judgment": "clinician",
+  "emotional-dependency": "clinician", "toxic-relationships": "mentor",
+  "control-issues": "mentor", "stop-self-sabotage": "guide",
+  "toxic-perfectionism": "clinician",
+  "jealousy": "clinician", // Financial Health
+  "money-management": "mentor",
+  // Mind & Learning
+  "reading": "teacher", "language": "teacher",
+  "gratitude": "guide",
+};
 function archetypeForSlug(slug: string): Archetype {
   const id = TRACK_ARCHETYPE[slug] ?? "teacher";
+  return ARCHETYPES[id];
+}
 const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
   trainer: [
     "Yesterday you chose to show up. Today is the test of whether that was a fluke or a pattern. It wasn't a fluke.",
@@ -29,10 +68,17 @@ const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
     "Every day you return, you deepen the groove of the person you're becoming. Today, go a little deeper.",
   ],
 };
-  return bestSlug ?? FALLBACK_SLUGS[hashStr(text) % FALLBACK_SLUGS.length];
-}
 function lsLoad<T>(key: string, fallback: T): T {
   try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch { return fallback; }
+}
+function hashStr(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 function yesterdayStr() { return new Date(Date.now() - 86_400_000).toISOString().slice(0, 10); }
 
