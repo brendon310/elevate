@@ -1,5 +1,4 @@
-// Complete self-contained Forge app — loca
-import { JourneyView } from './pages/JourneyPage';lStorage persistence, no backend.
+// Complete self-contained Forge app — localStorage persistence, no backend.
 
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,6 +15,7 @@ import { HomePage, GARDEN_STAGES, MOUNTAIN_STAGES } from './pages/HomePage';
 import * as db from "./db";
 import { Plan, shouldShowPaywall } from './plans';
 import { PaywallModal } from './components/PaywallModal';
+import { JourneyView } from './pages/JourneyPage';
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
