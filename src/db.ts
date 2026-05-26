@@ -271,3 +271,39 @@ export async function saveJourneyTemplate(slug: string, fromDay: number, count: 
   );
   if (error) console.warn('[db] saveJourneyTemplate:', error.message);
 }
+
+// ─── Subscription / Plan ─────────────────────────────────────────────────────
+
+export interface DbSubscription {
+  plan: string;
+  trial_ends_at: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  subscription_status: string | null;
+}
+
+/**
+ * Load the user's subscription/plan from profiles.
+ * Returns null if the columns don't exist yet (pre-migration).
+ */
+export async function loadSubscription(userId: string): Promise<DbSubscription | null> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('plan, trial_ends_at, stripe_customer_id, stripe_subscription_id, subscription_status')
+    .eq('id', userId)
+    .single();
+  return data as DbSubscription | null;
+}
+
+/**
+ * Persist a plan change locally (called after Stripe webhook confirms upgrade).
+ */
+export async function saveSubscriptionPlan(
+  userId: string, plan: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await supabase.from('profiles')
+    .update({ plan })
+    .eq('id', userId);
+  if (error) { console.warn('[db] saveSubscriptionPlan:', error.message); return { ok: false, error: error.message }; }
+  return { ok: true };
+}
