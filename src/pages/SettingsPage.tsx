@@ -3,6 +3,10 @@ import { User as UserIcon, Database, Download, Bell } from 'lucide-react';
 import type { UserTrack } from '../types';
 
 const LS_LOGS = "forge-logs";
+const LS_USER = "forge-user";
+const LS_TRACKS = "forge-tracks";
+const LS_PREFS = "forge-prefs";
+const LS_AUTH = "forge-auth";
 
 function lsLoad<T>(key: string, fallback: T): T {
   try {
