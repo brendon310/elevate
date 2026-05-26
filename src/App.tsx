@@ -1,4 +1,4 @@
-// Complete self-contained Forge app — localStorage persistence, no backend.
+// Complete self-contained Forge app â localStorage persistence, no backend.
 
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,9 +17,13 @@ import { Plan, shouldShowPaywall } from './plans';
 import { PaywallModal } from './components/PaywallModal';
 import { JourneyView, JourneyOnboarding } from './pages/JourneyPage';
 import { MorningCoachOverlay } from './pages/CoachPage';
-// ─────────────────────────────────────────────────────────────────────────────
+import { TrackDetailPage } from './pages/TrackDetailPage';
+import { TracksPage } from './pages/TracksPage';
+import { InsightsPage } from './pages/InsightsPage';
+import { SettingsPage } from './pages/SettingsPage';
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Constants
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const LS_USER = "forge-user";
 const LS_TRACKS = "forge-tracks";
@@ -32,7 +36,7 @@ const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
 const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
 
 const ALL_TRACKS = [
-  // ── Fitness & Body ──────────────────────────────────────────────────────────
+  // ââ Fitness & Body ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "1",  slug: "meditation",          name: "Meditation",           category: "Mental Health",       short_description: "Train your mind to find stillness." },
   { id: "2",  slug: "morning-run",         name: "Morning Run",          category: "Fitness & Body",      short_description: "Build your aerobic base." },
   { id: "3",  slug: "strength-training",   name: "Strength Training",    category: "Fitness & Body",      short_description: "Progressive overload for strength." },
@@ -44,7 +48,7 @@ const ALL_TRACKS = [
   { id: "9",  slug: "journaling",          name: "Journaling",           category: "Mind & Learning",     short_description: "Reflective writing practice." },
   { id: "10", slug: "cold-exposure",       name: "Cold Exposure",        category: "Fitness & Body",      short_description: "Hormetic stress protocol." },
   { id: "11", slug: "no-social-media",     name: "No Social Media",      category: "Quit Bad Habits",     short_description: "Digital detox protocol." },
-  // ── Addiction & Recovery ────────────────────────────────────────────────────
+  // ââ Addiction & Recovery ââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "12", slug: "quit-alcohol",        name: "Quit Alcohol",         category: "Addiction & Recovery",short_description: "Break free from alcohol dependency." },
   { id: "13", slug: "quit-pornography",    name: "Quit Pornography",     category: "Addiction & Recovery",short_description: "Rewire your brain, reclaim your life." },
   { id: "14", slug: "quit-drugs",          name: "Quit Drugs",           category: "Addiction & Recovery",short_description: "Structured sobriety roadmap." },
@@ -52,12 +56,12 @@ const ALL_TRACKS = [
   { id: "16", slug: "binge-eating",        name: "Stop Binge Eating",    category: "Addiction & Recovery",short_description: "Heal your relationship with food." },
   { id: "17", slug: "video-game-addiction",name: "Video Game Addiction", category: "Addiction & Recovery",short_description: "Regain control over gaming." },
   { id: "18", slug: "compulsive-shopping", name: "Compulsive Shopping",  category: "Addiction & Recovery",short_description: "Break the buy-to-feel-good loop." },
-  // ── Quit Bad Habits ─────────────────────────────────────────────────────────
+  // ââ Quit Bad Habits âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "20", slug: "no-sugar",            name: "No Sugar",             category: "Quit Bad Habits",     short_description: "End sugar dependency for good." },
-  // ── Productivity & Life ─────────────────────────────────────────────────────
+  // ââ Productivity & Life âââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "22", slug: "beat-procrastination",name: "Beat Procrastination", category: "Productivity & Life", short_description: "Act before the voice says 'later'." },
   { id: "23", slug: "build-discipline",    name: "Build Discipline",     category: "Productivity & Life", short_description: "The daily reps that form an identity." },
-  // ── Mental Health ────────────────────────────────────────────────────────────
+  // ââ Mental Health ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "26", slug: "stop-overthinking",   name: "Stop Overthinking",    category: "Mental Health",       short_description: "Silence the mental noise loop." },
   { id: "27", slug: "social-anxiety",      name: "Social Anxiety",       category: "Mental Health",       short_description: "Show up without the inner terror." },
   { id: "28", slug: "anger-management",    name: "Anger Management",     category: "Mental Health",       short_description: "Transform rage into responsive power." },
@@ -65,7 +69,7 @@ const ALL_TRACKS = [
   { id: "30", slug: "social-isolation",    name: "Social Isolation",     category: "Mental Health",       short_description: "Bridge back to human connection." },
   { id: "31", slug: "negative-mindset",    name: "Negative Mindset",     category: "Mental Health",       short_description: "Rewire pessimistic thought patterns." },
   { id: "32", slug: "breathwork",          name: "Breathwork",           category: "Mental Health",       short_description: "Use breath to shift state instantly." },
-  // ── Psychology & Self ────────────────────────────────────────────────────────
+  // ââ Psychology & Self ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "33", slug: "low-self-esteem",     name: "Low Self-Esteem",      category: "Psychology & Self",   short_description: "Build unshakeable self-worth." },
   { id: "34", slug: "need-for-approval",   name: "Need for Approval",    category: "Psychology & Self",   short_description: "Stop outsourcing your self-worth." },
   { id: "35", slug: "fear-of-failure",     name: "Fear of Failure",      category: "Psychology & Self",   short_description: "Act despite the outcome." },
@@ -76,15 +80,15 @@ const ALL_TRACKS = [
   { id: "42", slug: "stop-self-sabotage",  name: "Stop Self-Sabotage",   category: "Psychology & Self",   short_description: "Interrupt the patterns that hold you back." },
   { id: "44", slug: "toxic-perfectionism", name: "Toxic Perfectionism",  category: "Psychology & Self",   short_description: "Done beats perfect, every single time." },
   { id: "45", slug: "jealousy",            name: "Jealousy",             category: "Psychology & Self",   short_description: "Transform jealousy into self-awareness." },
-  // ── Financial Health ─────────────────────────────────────────────────────────
+  // ââ Financial Health âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "47", slug: "money-management",    name: "Money Management",     category: "Financial Health",    short_description: "Build financial clarity and control." },
-  // ── Mind & Learning ──────────────────────────────────────────────────────────
+  // ââ Mind & Learning ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   { id: "49", slug: "sedentary-lifestyle", name: "Sedentary Lifestyle",  category: "Fitness & Body",      short_description: "Move a little every day, forever." },
   { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
 
 const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
-  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
+  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up â what now?", "Call me out on something."],
   clinician: ["I'm struggling today.", "Why do I keep falling back?", "What does the science say about cravings?", "Help me understand my pattern."],
   mentor:    ["What's the strategic move here?", "What am I not seeing?", "Help me build a system.", "Where do I go from here?"],
   teacher:   ["Why does this habit work neurologically?", "Break it down simply.", "What should I focus on this week?", "Explain the psychology of my pattern."],
@@ -92,11 +96,11 @@ const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
 };
 
 const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
-  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
-  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
+  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start â what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report â are you going through the motions or actually changing?`,
+  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now â not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
   mentor:    (d, t) => d <= 1 ? `Day 1, ${t}. Every system starts with an honest audit. What got you here, and what specifically has to change for this to be different?` : `Day ${d}. You're ${d - 1} days in. What's working, what isn't, and what would you tell yourself on Day 1 knowing what you know now?`,
-  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process — something you didn't know before?`,
-  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted — even if it's small — in how you see yourself?`,
+  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process â something you didn't know before?`,
+  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently â how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted â even if it's small â in how you see yourself?`,
 };
 
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
@@ -144,9 +148,9 @@ function archetypeForSlug(slug: string): Archetype {
   return ARCHETYPES[id];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Ghost + Morning Coach constants
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 /** The day number the user would be on if they had checked in every single day. */
 function ghostDayFor(ut: UserTrack): number {
@@ -165,7 +169,7 @@ const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
   ],
   clinician: [
     "Coming back again takes more courage than you may realize. I'm glad you're here. Let's make today gentle and intentional.",
-    "Progress isn't always visible in a day — but it lives in the choice to return. You returned. That matters deeply.",
+    "Progress isn't always visible in a day â but it lives in the choice to return. You returned. That matters deeply.",
   ],
   mentor: [
     "The gap between who you are and who you're becoming closes one check-in at a time. Today is one of those times.",
@@ -218,7 +222,7 @@ const CHECKIN_WARNINGS = [
   "The only bad answer is no answer. Go.",
 ];
 
-// Community content moderation — stems catch conjugations and variants
+// Community content moderation â stems catch conjugations and variants
 const COMMUNITY_BLOCKLIST = [
   "jerk","masturbat","porn","sex ","fap","orgasm","naked","nude","dick","cock","pussy","ass ","fuck","shit ","bitch","whore","slut","cum ","jizz","rape","abuse","kill myself","kms","kys","nigger","faggot",
 ];
@@ -236,9 +240,9 @@ const COMMUNITY_MODERATION_MESSAGES = [
 ];
 
 const COACH_RESPONSES = [
-  "What you've written holds more courage than you may realize. The desire to change isn't weakness—it's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
-  "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compass—we don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
-  "The fact that you named it—clearly, honestly—already sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
+  "What you've written holds more courage than you may realize. The desire to change isn't weaknessâit's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
+  "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compassâwe don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
+  "The fact that you named itâclearly, honestlyâalready sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
   "There's a version of you that has already made this change, and they made one decision that you're making right now: to begin. Not when ready. Not when perfect. Just now. That desire you feel is valid, real, and more than enough. I'll be with you every step of the way.",
 ];
 
@@ -253,7 +257,7 @@ const TRACK_GLOBAL_STATS: Record<string, string> = {
   "sleep-routine":        "45% of adults worldwide report poor sleep quality",
   "anxiety-relief":       "28% of people experience anxiety disorders in their lifetime",
   "journaling":           "67% of people want to reflect more but never start",
-  "cold-exposure":        "Growing wellness practice — millions are discovering this",
+  "cold-exposure":        "Growing wellness practice â millions are discovering this",
   "no-social-media":      "40% of people report problematic social media use",
   "quit-alcohol":         "14% of people worldwide struggle with alcohol use",
   "quit-pornography":     "12% of people report problematic pornography use",
@@ -265,7 +269,7 @@ const TRACK_GLOBAL_STATS: Record<string, string> = {
   "no-sugar":             "50% of people struggle to reduce sugar consumption",
   "beat-procrastination": "20% of adults are chronic procrastinators",
   "build-discipline":     "41% say lack of discipline is their #1 challenge",
-  "stop-overthinking":    "73% of adults between 25–35 report chronic overthinking",
+  "stop-overthinking":    "73% of adults between 25â35 report chronic overthinking",
   "social-anxiety":       "12% of people experience social anxiety disorder",
   "anger-management":     "7% of adults report uncontrolled anger issues",
   "chronic-stress":       "77% of adults regularly experience physical stress symptoms",
@@ -293,7 +297,7 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "quit-alcohol",        keywords: ["alcohol","alcol","alcool","drinking","bere","wine","vino","beer","birra","drink","ubriaco","drunk","liquor","whisky","vodka"] },
   { slug: "quit-pornography",    keywords: ["porn","pornograph","pornografi","porno","xxx","adult content","masturbat","masturbazione","video adult"] },
   { slug: "quit-drugs",          keywords: ["drug","droga","cocaine","cocaina","marijuana","cannabis","heroin","eroina","substance","sostanza","addict","dipendente da"] },
-  { slug: "quit-gambling",       keywords: ["gambl","gambling","gioco d'azzardo","scommesse","bet","betting","casino","casinò","poker","slot","lottery","lotteria"] },
+  { slug: "quit-gambling",       keywords: ["gambl","gambling","gioco d'azzardo","scommesse","bet","betting","casino","casinÃ²","poker","slot","lottery","lotteria"] },
   { slug: "no-social-media",     keywords: ["social media","instagram","facebook","tiktok","twitter","social","scrolling","scorrere","like","reels","post"] },
   { slug: "no-sugar",            keywords: ["sugar","zucchero","dolci","sweets","candy","caramel","cioccolato","chocolate","junk food","dessert","zuccheri"] },
   { slug: "binge-eating",        keywords: ["binge","overeating","abbuffate","compulsive eat","mangio troppo","cibo","food compuls","eating disorder"] },
@@ -318,7 +322,7 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "toxic-perfectionism", keywords: ["perfect","perfetto","perfectionism","perfezionismo","perfectionist","perfezionista","never good enough","mai abbastanza"] },
   { slug: "social-isolation",    keywords: ["lonely","solo","solitudine","loneliness","isolated","isolato","connection","connessione","no friends","senza amici","withdraw"] },
   { slug: "video-game-addiction",keywords: ["video game","videogiochi","gaming","giochi","gamer","game addict","gioco troppo","console","twitch","esport","online game"] },
-  { slug: "negative-mindset",    keywords: ["negative","negativo","pessimist","pessimista","mindset","mentalità","always negative","sempre negativo","dark thoughts"] },
+  { slug: "negative-mindset",    keywords: ["negative","negativo","pessimist","pessimista","mindset","mentalitÃ ","always negative","sempre negativo","dark thoughts"] },
   { slug: "sedentary-lifestyle", keywords: ["sedentary","sedentario","inactive","inattivo","sit all day","never move","non mi muovo","couch","divano","exercise"] },
   { slug: "jealousy",            keywords: ["jealous","geloso","jealousy","gelosia","partner jealous","relazione","possessive","possessivo","gelosia partner"] },
   { slug: "morning-run",         keywords: ["run","corsa","running","jogging","cardio","cardio exercise","correre"] },
@@ -332,7 +336,7 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "gratitude",           keywords: ["gratitude","gratitudine","grateful","grato","thankful","positive","positivo","appreciate","apprezzare"] },
 ];
 
-// Always returns a slug — either the best keyword match, or a smart fallback based on text hash.
+// Always returns a slug â either the best keyword match, or a smart fallback based on text hash.
 // This ensures the onboarding "Suggested path" hero card always appears.
 const FALLBACK_SLUGS = [
   "build-discipline", "stop-self-sabotage", "beat-procrastination",
@@ -354,9 +358,9 @@ function suggestTrackFromText(text: string): string {
   return bestSlug ?? FALLBACK_SLUGS[hashStr(text) % FALLBACK_SLUGS.length];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // LocalStorage helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function lsLoad<T>(key: string, fallback: T): T {
   try {
@@ -376,9 +380,9 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Utilities
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function nanoid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
 function todayStr() { return new Date().toISOString().slice(0, 10); }
@@ -421,11 +425,11 @@ function trackHueGradient(slug: string) {
   return `linear-gradient(160deg, ${a}, ${b})`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Momentum (mirrors momentum.ts, pure client-side)
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-/** Returns 0 if the user hasn't checked in today or yesterday — streak visually resets in real time */
+/** Returns 0 if the user hasn't checked in today or yesterday â streak visually resets in real time */
 function liveStreak(ut: UserTrack): number {
   const t = todayStr();
   const y = yesterdayStr();
@@ -442,10 +446,10 @@ const QUICK_NOTE_BANNED = [
 function validateQuickNote(text: string): string | null {
   const t = text.trim();
   if (t.length < 10) return "Write at least a few words before sending.";
-  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
+  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando â scrivi davvero!";
   if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
-  if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
-    return "Scrivi una risposta vera — anche due parole bastano.";
+  if (t.length > 6 && !/[aeiouÃ Ã¨Ã©Ã¬Ã²Ã¹AEIOUÃÃÃÃÃÃ]/u.test(t))
+    return "Scrivi una risposta vera â anche due parole bastano.";
   if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
     return "Choose better words for your check-in.";
   return null;
@@ -479,7 +483,7 @@ function computeMomentum(tracks: UserTrack[]) {
   const totalLongest = tracks.reduce((s, x) => s + (x.longest_streak || 0), 0);
   const totalDone = tracks.reduce((s, x) => s + (x.total_done || 0), 0);
   const breadth = tracks.filter(x => (x.total_done || 0) > 0).length;
-  // No caps — momentum grows forever with real effort
+  // No caps â momentum grows forever with real effort
   const consistency = totalStreak * 100;          // 100/day per active path
   const longevity   = totalLongest * 50;           // personal record bonus
   const breadthScore = breadth * 300;              // +300 first check-in on any path
@@ -516,9 +520,9 @@ function maxStreak(tracks: UserTrack[]) {
   return tracks.reduce((m, x) => Math.max(m, x.current_streak || 0, x.longest_streak || 0), 0);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // ArcRing
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: string; color?: string; size?: number }) {
   const stroke = 8;
@@ -542,9 +546,9 @@ function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: 
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // useCountUp
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function useCountUp(target: number, duration = 900) {
   const [v, setV] = useState(0);
@@ -563,9 +567,9 @@ function useCountUp(target: number, duration = 900) {
   return v;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Meter
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   const pct = Math.min(100, (v / max) * 100);
@@ -584,9 +588,9 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PrizeRequestModal — shown at 100k milestone
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// PrizeRequestModal â shown at 100k milestone
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function Spinner({ light = false }: { light?: boolean }) {
   return (
@@ -633,20 +637,20 @@ function CheckInRichModal({ onConfirm, onSkip }: {
             <span>Umore</span><span className="text-white font-semibold">{mood}/10</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-lg">ð</span>
+            <span className="text-lg">Ã°ÂÂÂ</span>
             <input type="range" min={1} max={10} value={mood}
               onChange={e => setMood(Number(e.target.value))}
               className="flex-1 accent-emerald-400 h-2" />
-            <span className="text-lg">ð</span>
+            <span className="text-lg">Ã°ÂÂÂ</span>
           </div>
         </div>
         <div className="space-y-2">
           <p className="text-xs text-white/50">Hai sentito l'impulso oggi?</p>
           <div className="flex gap-2">
-            {["SÃ¬","No"].map(opt => (
-              <button key={opt} onClick={() => setHadUrge(opt === "SÃ¬")}
+            {["SÃÂ¬","No"].map(opt => (
+              <button key={opt} onClick={() => setHadUrge(opt === "SÃÂ¬")}
                 className={"flex-1 py-2 rounded-xl text-sm font-medium border transition-all " + (
-                  (opt === "SÃ¬" ? hadUrge === true : hadUrge === false)
+                  (opt === "SÃÂ¬" ? hadUrge === true : hadUrge === false)
                     ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
                     : "border-white/10 text-white/50")}>
                 {opt}
@@ -657,7 +661,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
         {hadUrge === true && (<>
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-white/50">
-              <span>IntensitÃ  impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
+              <span>IntensitÃÂ  impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
             </div>
             <input type="range" min={1} max={10} value={urgeIntensity}
               onChange={e => setUrgeIntensity(Number(e.target.value))}
@@ -731,9 +735,9 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
 
           {status === "done" ? (
             <div className="text-center py-8">
-              <div className="text-5xl mb-4">🏆</div>
+              <div className="text-5xl mb-4">ð</div>
               <h2 className="font-display text-2xl mb-2">Request submitted!</h2>
-              <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7–10 business days. You're a legend.</p>
+              <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7â10 business days. You're a legend.</p>
               <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Chiudi</button>
             </div>
           ) : (
@@ -761,7 +765,7 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Città</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">CittÃ </label>
                   <input required value={form.city} onChange={f("city")} placeholder="Milano"
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
@@ -796,9 +800,9 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // MomentumHero
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   tracks: UserTrack[];
@@ -814,7 +818,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   const atRisk = atRiskTracks(tracks);
   const animated = useCountUp(m.score);
 
-  // Peak momentum — persists forever, drives milestone badges
+  // Peak momentum â persists forever, drives milestone badges
   const [peakScore, setPeakScore] = useState<number>(() => lsLoad<number>("forge-peak-momentum", 0));
   const [showPrizeModal, setShowPrizeModal] = useState(false);
   useEffect(() => {
@@ -905,8 +909,8 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
                     style={{ cursor: is100k ? "pointer" : "default", ...badgeStyle }}
                     title={is100k ? "Click to claim your prize" : `${ms.label} reached`}>
-                    {is100k ? "★" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
-                    {is100k ? " 100k ★" : ms.label}
+                    {is100k ? "â" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
+                    {is100k ? " 100k â" : ms.label}
                   </span>
                 );
               })}
@@ -922,7 +926,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                 : "Today is day one."}
             </h2>
 
-            {/* 50k → 100k teaser */}
+            {/* 50k â 100k teaser */}
             {effectivePeak >= 50_000 && effectivePeak < 100_000 && (
               <p className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5"
                 style={{ background: "#FCEBEB", color: "#791F1F" }}>
@@ -934,7 +938,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               <button onClick={() => setShowPrizeModal(true)}
                 className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5 font-semibold"
                 style={{ background: "#E24B4A", color: "#fff" }}>
-                <Crown className="h-3 w-3 shrink-0" /> Claim your physical prize →
+                <Crown className="h-3 w-3 shrink-0" /> Claim your physical prize â
               </button>
             )}
 
@@ -989,13 +993,13 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // LandingPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // LoginPage helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () => void }) {
   const [name, setName] = useState(userName);
@@ -1034,20 +1038,20 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
           <p className="text-white font-semibold">You made it!</p>
           <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
         </div>
-        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.</p>
+        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just â¬7.99.</p>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
         <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
-          {submitting ? 'Sending…' : 'Send my address — €7.99'}
+          {submitting ? 'Sendingâ¦' : 'Send my address â â¬7.99'}
         </button>
       </div>
     </div>
   );
 }
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // LoginPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 type LoginMode = "options" | "phone" | "otp" | "name";
 
@@ -1059,7 +1063,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
   const [phoneError, setPhoneError] = useState("");
   const [enteredName, setEnteredName] = useState<string>(() => lsLoad<string | null>("forge-pending-name", null) ?? "");
 
-  // ── Real Supabase auth ──────────────────────────────────────────────────────
+  // ââ Real Supabase auth ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   // On mount: if we already have a Supabase session (e.g. returning from
   // Google OAuth redirect), jump straight to the name step.
@@ -1079,7 +1083,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
       options: { redirectTo: window.location.origin },
     });
     if (error) { setAuthError(error.message); setLoading(null); }
-    // on success the browser will redirect — no further action needed here
+    // on success the browser will redirect â no further action needed here
   };
 
   const handlePhoneContinue = async () => {
@@ -1194,7 +1198,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     {phoneError && <p className="text-xs text-red-400 mt-1.5">{phoneError}</p>}
                   </div>
                   <button onClick={handlePhoneContinue} disabled={!!loading} className={btnPrimary}>
-                    {loading === "phone-send" ? <Spinner light /> : "Send code →"}
+                    {loading === "phone-send" ? <Spinner light /> : "Send code â"}
                   </button>
                 </div>
               </motion.div>
@@ -1221,7 +1225,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     ))}
                   </div>
                   <button onClick={handleOtpVerify} disabled={otp.join("").length < 6 || !!loading} className={btnPrimary}>
-                    {loading === "phone" ? <Spinner light /> : "Verify →"}
+                    {loading === "phone" ? <Spinner light /> : "Verify â"}
                   </button>
                   <p className="text-xs text-center text-muted-foreground">
                     Didn't receive it?{" "}
@@ -1237,7 +1241,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
               <motion.div key="name" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
                 <div className="text-center mb-8">
                   <div className="mx-auto mb-5 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
-                    <span className="font-display text-white text-2xl font-bold">👋</span>
+                    <span className="font-display text-white text-2xl font-bold">ð</span>
                   </div>
                   <h1 className="font-display text-2xl font-bold tracking-tight">What's your name?</h1>
                   <p className="text-sm text-muted-foreground mt-1">Your coach will use this every day.</p>
@@ -1254,7 +1258,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     onClick={() => enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
                     disabled={enteredName.trim().length === 0}
                     className={btnPrimary}>
-                    Start Day 1 →
+                    Start Day 1 â
                   </button>
                 </div>
               </motion.div>
@@ -1274,9 +1278,9 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // LandingPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function LandingPage({ onBegin }: { onBegin: () => void }) {
   const [phase, setPhase] = useState<"typing" | "question" | "input">("typing");
@@ -1347,7 +1351,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
                 disabled={!answer.trim()}
                 className={"w-11 h-11 rounded-xl flex items-center justify-center transition-all text-lg " + (answer.trim() ? "bg-emerald-500 text-white" : "bg-white/[0.05] text-white/20")}
               >
-                ↑
+                â
               </button>
             </div>
             <button onClick={() => { localStorage.removeItem("forge_init_slug"); onBegin(); }}
@@ -1440,7 +1444,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
         {step === "thinking" && (
           <motion.div key="t" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
             <div className="mx-auto h-28 w-28 rounded-full grad-electric breathe" style={{ boxShadow: "var(--shadow-violet)" }} />
-            <p className="mt-10 font-display text-xl text-muted-foreground">Your coach is reading this…</p>
+            <p className="mt-10 font-display text-xl text-muted-foreground">Your coach is reading thisâ¦</p>
           </motion.div>
         )}
 
@@ -1475,13 +1479,13 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
               <p className="mt-4 text-muted-foreground">You can add more later. For now, one commitment is enough.</p>
             </div>
 
-            {/* ── Hero-card-only view when a suggestion exists ── */}
+            {/* ââ Hero-card-only view when a suggestion exists ââ */}
             {suggestedSlug && !showAllPaths && (() => {
               const sug = ONBOARDING_TRACKS.find(t => t.slug === suggestedSlug);
               if (!sug) return null;
               return (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-xl mx-auto">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">✦ Your path, based on what you wrote</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">â¦ Your path, based on what you wrote</p>
 
                   {/* Hero card */}
                   <div className="warm-card rounded-[2rem] p-8 mb-6 text-center relative overflow-hidden"
@@ -1505,13 +1509,13 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   {/* Toggle to see all paths */}
                   <button onClick={() => setShowAllPaths(true)}
                     className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2 underline underline-offset-4">
-                    That's not quite right — show me all 50 paths ↓
+                    That's not quite right â show me all 50 paths â
                   </button>
                 </motion.div>
               );
             })()}
 
-            {/* ── Full grid view ── */}
+            {/* ââ Full grid view ââ */}
             {(showAllPaths || !suggestedSlug) && (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 
@@ -1522,7 +1526,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   const isChosen = chosen?.slug === sug.slug;
                   return (
                     <div className="mb-8">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">✦ Suggested for you</p>
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">â¦ Suggested for you</p>
                       <button onClick={() => setChosen(sug)}
                         className={`w-full text-left warm-card rounded-2xl p-5 transition btn-chunk relative ${isChosen ? "ring-2 ring-yellow-400" : "ring-2 ring-yellow-400/60"}`}
                         style={{ boxShadow: "0 0 28px 4px oklch(0.875 0.185 95 / 0.38)" }}>
@@ -1670,9 +1674,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // DashboardLayout
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function DashboardLayout({ currentPage, onNavigate, children }: {
   currentPage: AppPage;
@@ -1719,16 +1723,16 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // HomePage
-// ─────────────────────────────────────────────────────────────────────────────
-// ReEntryOverlay — shown when user returns after 3+ days away
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ReEntryOverlay â shown when user returns after 3+ days away
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const REENTRY_MESSAGES = [
   "You're back. That's all that matters.",
   "The gap doesn't define the path. You're here now.",
-  "I migliori non si arrendono — si ripartono. Ricominciamo.",
+  "I migliori non si arrendono â si ripartono. Ricominciamo.",
   "Every great story has a chapter where the main character comes back. This is yours.",
 ];
 
@@ -1746,7 +1750,7 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
       <div className="relative max-w-sm w-full text-center">
         <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6">
-          Welcome back — {gapDays} days later
+          Welcome back â {gapDays} days later
         </motion.p>
         <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           className="font-display text-[2rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-10">
@@ -1763,11 +1767,11 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // SnowfallBackground
-// ─────────────────────────────────────────────────────────────────────────────
-// StreakRecoveryOverlay — shown when a streak breaks with no shield left
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// StreakRecoveryOverlay â shown when a streak breaks with no shield left
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function StreakRecoveryOverlay({
   brokenStreak,
@@ -1832,7 +1836,7 @@ function StreakRecoveryOverlay({
           transition={{ delay: 0.55 }}
           className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-[264px] mx-auto"
         >
-          {"Streaks measure consistency — not worth. Missing one day doesn't erase what you built."}
+          {"Streaks measure consistency â not worth. Missing one day doesn't erase what you built."}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 6 }}
@@ -1845,7 +1849,7 @@ function StreakRecoveryOverlay({
             <div>
               <p className="text-xs font-semibold text-foreground mb-1">Shields protect your streak</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {"Forge gives you 1 Shield every 14 days of consistent use — automatically spent when you miss a day. Keep going to earn the next one."}
+                {"Forge gives you 1 Shield every 14 days of consistent use â automatically spent when you miss a day. Keep going to earn the next one."}
               </p>
             </div>
           </div>
@@ -1870,50 +1874,50 @@ function StreakRecoveryOverlay({
 
 const SOS_ALTERNATIVES: Record<string, string[]> = {
   "quit-alcohol": [
-    "Call someone you trust right now — even just to talk",
+    "Call someone you trust right now â even just to talk",
     "Drink a large glass of cold water slowly",
     "Walk outside for 5 minutes, no destination",
     "Write down exactly what triggered this urge",
     "Do 15 push-ups or jumping jacks right now",
   ],
   "quit-pornography": [
-    "Go to a public space immediately — a café, a street, anywhere",
+    "Go to a public space immediately â a cafÃ©, a street, anywhere",
     "Do 20 push-ups right now, then 20 more",
-    "Call or mext a friend — say anything",
+    "Call or mext a friend â say anything",
     "Take a cold shower for 30 seconds",
     "Write down 3 things you want your life to look like in 1 year",
   ],
   "quit-drugs": [
-    "Call your support person right now — this is what they are there for",
+    "Call your support person right now â this is what they are there for",
     "Go somewhere safe and public immediately",
-    "Drink water and eat something — your body needs it",
+    "Drink water and eat something â your body needs it",
     "Do intense physical activity for 10 minutes",
     "Write down exactly what triggered this moment",
   ],
   "quit-gambling": [
     "Put your devices in another room right now",
-    "Call someone immediately — tell them where you are",
+    "Call someone immediately â tell them where you are",
     "Go for a walk outside with no wallet",
     "Write down what you would do with the money you have saved",
-    "Think about the last time gambling hurt you — write it down",
+    "Think about the last time gambling hurt you â write it down",
   ],
   "binge-eating": [
     "Drink 500ml of water slowly before anything else",
     "Go for a 10-minute walk right now",
     "Call or text someone to talk through what you are feeling",
     "Write down what emotion is underneath this urge",
-    "Step outside for fresh air — change your environment",
+    "Step outside for fresh air â change your environment",
   ],
   "video-game-addiction": [
     "Stand up, stretch, and walk to a different room",
-    "Go outside for fresh air — even 5 minutes helps",
+    "Go outside for fresh air â even 5 minutes helps",
     "Call or message a friend to do something together",
     "Do 10 minutes of physical movement",
     "Make yourself a healthy meal or snack",
   ],
   "compulsive-shopping": [
     "Close all browser tabs and apps immediately",
-    "The urge will peak and pass — wait 20 minutes",
+    "The urge will peak and pass â wait 20 minutes",
     "Write down what you were feeling before the urge hit",
     "Go for a walk without your phone or wallet",
     "Calculate what you have saved this week by not buying",
@@ -1921,14 +1925,14 @@ const SOS_ALTERNATIVES: Record<string, string[]> = {
   "social-media-addiction": [
     "Put your phone in another room right now",
     "Go outside and observe your surroundings for 5 minutes",
-    "Do something with your hands — cook, draw, clean",
+    "Do something with your hands â cook, draw, clean",
     "Call someone instead of scrolling",
-    "Write one page in a journal — about anything",
+    "Write one page in a journal â about anything",
   ],
 };
 
 const SOS_GENERIC = [
-  "Take a slow, deep breath right now — 4 counts in, 8 out",
+  "Take a slow, deep breath right now â 4 counts in, 8 out",
   "Go to a different room or step outside",
   "Call or text someone you trust",
   "Write down exactly how you are feeling",
@@ -1994,7 +1998,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-8 px-6"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos — breathing
+              sos â breathing
             </p>
 
             {/* Breathing circle */}
@@ -2034,7 +2038,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             </div>
 
             <p className="text-center text-sm text-white/30 max-w-xs">
-              2 full cycles — then we ground you
+              2 full cycles â then we ground you
             </p>
 
             <button
@@ -2055,7 +2059,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-8 px-8 max-w-sm text-center"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos — grounding
+              sos â grounding
             </p>
 
             <div className="space-y-4">
@@ -2073,7 +2077,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             >
               <p className="text-sm font-medium text-white/60">What's happening in your brain</p>
               <p className="text-sm text-white/40 leading-relaxed">
-                Urges peak at 15–20 minutes, then naturally subside. Your prefrontal cortex — the part that makes decisions — is temporarily overwhelmed. It will come back online.
+                Urges peak at 15â20 minutes, then naturally subside. Your prefrontal cortex â the part that makes decisions â is temporarily overwhelmed. It will come back online.
               </p>
             </div>
 
@@ -2099,7 +2103,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-6 px-8 max-w-sm w-full"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos — act now
+              sos â act now
             </p>
 
             <p className="text-center text-white/70 text-sm">
@@ -2197,7 +2201,7 @@ function SOSButton({ onClick }: { onClick: () => void }) {
 }
 
 
-// ── SAVINGS CALCULATOR ──────────────────────────────────────────────────────
+// ââ SAVINGS CALCULATOR ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 interface TrackSavings {
   costPerUnit: number;   // euro
@@ -2207,67 +2211,34 @@ interface TrackSavings {
 }
 interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
 
-function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?: number }) {
-  const [flakes, setFlakes] = useState<SnowflakeData[]>([]);
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    setFlakes(Array.from({ length: count }, (_, i) => ({
-      id: i, size: Math.random() * 14 + 7,
-      left: Math.random() * 100,
-      dur: (Math.random() * 5 + 4) / speed,
-      opacity: Math.random() * 0.65 + 0.25,
-    })));
-    setReady(true);
-  }, [count, speed]);
-  useEffect(() => {
-    if (!ready || flakes.length === 0) return;
-    const style = document.createElement("style");
-    style.innerHTML = flakes.map(f => {
-      const wx = Math.random() * 80 - 40;
-      return `@keyframes sf${f.id}{0%{transform:translateY(-8vh) translateX(0) rotate(0deg)}100%{transform:translateY(108vh) translateX(${wx}px) rotate(360deg)}}`;
-    }).join("");
-    document.head.appendChild(style);
-    return () => { document.head.removeChild(style); };
-  }, [flakes, ready]);
-  if (!ready) return null;
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {flakes.map(f => (
-        <div key={f.id} className="absolute select-none"
-          style={{ left: `${f.left}%`, top: 0, fontSize: `${f.size}px`, opacity: f.opacity,
-            color: "#b8e0ff", animation: `sf${f.id} ${f.dur}s linear infinite`,
-            textShadow: "0 0 6px rgba(180,220,255,0.95)" }}>❄</div>
-      ))}
-    </div>
-  );
-}
+// SnowfallBackground (used in TrackDetailPage) → src/pages/TrackDetailPage.tsx
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // VacationModal
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // MorningCoachOverlay
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 // MorningCoachOverlay extracted to src/pages/CoachPage.tsx
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // MilestoneOverlay
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
-  1:   { emoji: "🌱", title: "Day 1. Done.", sub: "The journey begins now." },
-  3:   { emoji: "🔥", title: "3 days straight.", sub: "You're building something real." },
-  7:   { emoji: "⚡", title: "A full week.", sub: "7 days straight. That's not nothing." },
-  14:  { emoji: "💎", title: "Two weeks.", sub: "You're becoming this person." },
-  30:  { emoji: "🏆", title: "30 days.", sub: "A month. A real habit." },
-  66:  { emoji: "🧬", title: "66 days.", sub: "Science says it's now in your nature." },
-  100: { emoji: "👑", title: "100 days.", sub: "Triple digits. Very few get here." },
-  365: { emoji: "🌟", title: "A full year.", sub: "You're unrecognizable compared to who you were." },
+  1:   { emoji: "ð±", title: "Day 1. Done.", sub: "The journey begins now." },
+  3:   { emoji: "ð¥", title: "3 days straight.", sub: "You're building something real." },
+  7:   { emoji: "â¡", title: "A full week.", sub: "7 days straight. That's not nothing." },
+  14:  { emoji: "ð", title: "Two weeks.", sub: "You're becoming this person." },
+  30:  { emoji: "ð", title: "30 days.", sub: "A month. A real habit." },
+  66:  { emoji: "ð§¬", title: "66 days.", sub: "Science says it's now in your nature." },
+  100: { emoji: "ð", title: "100 days.", sub: "Triple digits. Very few get here." },
+  365: { emoji: "ð", title: "A full year.", sub: "You're unrecognizable compared to who you were." },
 };
 
 function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
@@ -2313,7 +2284,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
       ctx.font = 'bold 26px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('❖  F O R G E  ❖', 540, 128);
+      ctx.fillText('â  F O R G E  â', 540, 128);
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '500 30px system-ui, sans-serif';
       ctx.fillText('Certificate of Progress', 540, 175);
@@ -2341,7 +2312,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       const blob = await fetch(imgUrl).then(r => r.blob());
       const file = new File([blob], 'forge-cert.png', { type: 'image/png' });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `${streak} Days on Forge`, text: `${streak} consecutive days — certified.` });
+        await navigator.share({ files: [file], title: `${streak} Days on Forge`, text: `${streak} consecutive days â certified.` });
       } else { const a = document.createElement('a'); a.href = imgUrl; a.download = 'forge-cert.png'; a.click(); }
     } catch {}
     setSharing(false);
@@ -2367,7 +2338,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
         <div className="flex gap-3">
           <button onClick={handleShare} disabled={!imgUrl || sharing}
             className="flex-1 rounded-xl bg-yellow-500 py-3 text-sm font-semibold text-black disabled:opacity-50 active:scale-95 transition-transform">
-            {sharing ? 'Sharing…' : 'Share'}
+            {sharing ? 'Sharingâ¦' : 'Share'}
           </button>
           <button onClick={onDismiss} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground">
             Close
@@ -2379,7 +2350,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
 }
 
 function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
-  const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Keep it up." };
+  const m = MILESTONE_MESSAGES[days] ?? { emoji: "ð¥", title: `Day ${days}!`, sub: "Keep it up." };
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
@@ -2404,926 +2375,44 @@ function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackN
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // DayPanel
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // TrackDetailPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation, onRestart, userId }: {
-  track: UserTrack;
-  onBack: () => void;
-  showCheckInHint?: boolean;
-  onTrackCheckIn?: () => void;
-  onVacation?: (trackId: string, until: string) => void;
-  onRestart?: (trackId: string) => void;
-  userId?: string | null;
-}) {
-  const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
-  const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
+// TrackDetailPage → src/pages/TrackDetailPage.tsx
 
-  // Load journey days from Supabase if localStorage is empty (cross-device / cleared cache)
-  useEffect(() => {
-    if (!userId || days.length > 0) return;
-    db.loadJourneyDays(userId, track.slug).then(dbDays => {
-      if (dbDays.length === 0) return;
-      const mapped = dbDays.map(d => ({
-        id: d.id, journeyId: d.journey_id ?? "", dayNumber: d.day_number,
-        title: d.title ?? "", description: d.description ?? "",
-        task: d.task ?? "", reflection: d.reflection ?? "",
-        science: d.science ?? "", checkinPrompt: d.checkin_prompt ?? "",
-        completedAt: d.completed_at ?? null, userNote: d.user_note ?? null,
-      })) as JourneyDay[];
-      lsSave(LS_DAYS(track.slug), mapped);
-      setDays(mapped);
-    }).catch(() => {});
-    db.loadJourneys(userId).then(dbJourneys => {
-      const j = dbJourneys.find(j => j.track_slug === track.slug);
-      if (!j || journey) return;
-      const mapped: Journey = {
-        id: j.id, trackSlug: j.track_slug, totalDays: j.total_days,
-        startingPoint: j.starting_point ?? "", motivation: j.motivation ?? "",
-        obstacle: j.obstacle ?? "", startedAt: j.started_at ?? "",
-        generatedThrough: j.generated_through ?? 0,
-      };
-      lsSave(LS_JOURNEY(track.slug), mapped);
-      setJourney(mapped);
-    }).catch(() => {});
-  }, [userId, track.slug]);
-
-  const handleStarted = (j: Journey, d: JourneyDay[]) => { setJourney(j); setDays(d); };
-  const onVac = track.vacation_until && track.vacation_until >= todayStr();
-
-  const inner = !journey || days.length === 0
-    ? <JourneyOnboarding track={track} onStarted={handleStarted} userId={userId} />
-    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} onRestart={onRestart} userId={userId} />;
-
-  return (
-    <div className="relative min-h-screen">
-      {/* Main content — blurred when on vacation */}
-      <div className={onVac ? "blur-sm pointer-events-none select-none" : ""}>
-        {inner}
-      </div>
-      {/* Vacation overlay */}
-      {onVac && (
-        <div className="fixed inset-0 z-30 flex flex-col items-center justify-center"
-          style={{ background: "oklch(0.14 0.07 220 / 0.88)" }}>
-          <SnowfallBackground count={55} speed={0.8} />
-          <div className="relative z-10 text-center space-y-4 px-8">
-            <p className="font-display text-6xl font-bold text-white tracking-tight"
-              style={{ textShadow: "0 0 40px rgba(160,210,255,0.6)" }}>
-              Freezed
-            </p>
-            <p className="text-white/60 text-sm font-mono tracking-widest uppercase">
-              Streak protected · until {track.vacation_until}
-            </p>
-            <button
-              onClick={() => onVacation?.(track.id, "")}
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-2.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition">
-              <Sun className="h-4 w-4" />
-              End Vacation
-            </button>
-            <button onClick={onBack}
-              className="block text-xs text-white/40 hover:text-white/70 transition font-mono mx-auto pt-2">
-              ← Torna indietro
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // TracksPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // DurationPickerModal
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-const DURATION_PRESETS = [30, 60, 90, 120, 180, 365] as const;
+// TracksPage (+ DurationPickerModal) → src/pages/TracksPage.tsx
 
-function DurationPickerModal({ trackName, onConfirm, onCancel }: {
-  trackName: string;
-  onConfirm: (days: number) => void;
-  onCancel: () => void;
-}) {
-  const [selected, setSelected] = useState(30);
-  const [custom, setCustom] = useState(false);
-  const [customVal, setCustomVal] = useState("");
-
-  const days = custom ? (parseInt(customVal) || 0) : selected;
-  const valid = days >= 7 && days <= 999;
-
-  return (
-    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0"
-      style={{ background: "oklch(0 0 0 / 0.65)" }}
-      onClick={e => { if (e.target === e.currentTarget) onCancel(); }}>
-      <motion.div
-        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 40 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="w-full max-w-sm rounded-3xl p-6 space-y-5"
-        style={{ background: "oklch(0.12 0.02 240)", border: "1px solid oklch(1 0 0 / 0.08)" }}>
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">Journey length</p>
-          <h2 className="font-display text-xl tracking-tight">{trackName}</h2>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {DURATION_PRESETS.map(d => (
-            <button key={d}
-              onClick={() => { setSelected(d); setCustom(false); }}
-              className={`rounded-xl py-2.5 text-sm font-semibold border transition ${!custom && selected === d ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-              {d === 365 ? "1 year" : `${d}d`}
-            </button>
-          ))}
-        </div>
-        <button onClick={() => { setCustom(true); setCustomVal(String(selected)); }}
-          className={`w-full rounded-xl py-2.5 text-sm font-semibold border transition ${custom ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-          Custom
-        </button>
-        {custom && (
-          <input type="number" autoFocus value={customVal}
-            onChange={e => setCustomVal(e.target.value)}
-            min={7} max={999} placeholder="Days (7–999)"
-            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
-        )}
-        <div className="flex gap-3 pt-1">
-          <button onClick={onCancel}
-            className="flex-1 rounded-2xl py-3 text-sm font-semibold border border-border text-muted-foreground hover:text-foreground transition">
-            Cancel
-          </button>
-          <button onClick={() => valid && onConfirm(days)} disabled={!valid}
-            className="flex-2 flex-1 rounded-2xl py-3 text-sm font-semibold transition disabled:opacity-40"
-            style={{ background: valid ? "oklch(0.6 0.22 250)" : undefined, color: valid ? "#fff" : undefined,
-              ...(valid ? {} : { background: "oklch(0.2 0.02 240)", color: "oklch(0.5 0 0)" }) }}>
-            Start {days >= 7 && days <= 999 ? `${days === 365 ? "1-year" : days + "-day"}` : ""} journey
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-function TracksPage({ userTracks, onAdd, onView, onRemove }: {
-  userTracks: UserTrack[];
-  onAdd: (t: typeof ALL_TRACKS[0], days: number) => void;
-  onView: (t: UserTrack) => void;
-  onRemove: (id: string) => void;
-}) {
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [pendingAdd, setPendingAdd] = useState<typeof ALL_TRACKS[0] | null>(null);
-  const activeMap = new Map(userTracks.map(u => [u.track_id, u]));
-  const allCategories = useMemo(() => Array.from(new Set(ALL_TRACKS.map(t => t.category))), []);
-  const q = search.toLowerCase().trim();
-  const filtered = ALL_TRACKS.filter(t => {
-    const matchesSearch = !q || t.name.toLowerCase().includes(q) || t.short_description.toLowerCase().includes(q) || t.category.toLowerCase().includes(q);
-    const matchesCat = !categoryFilter || t.category === categoryFilter;
-    return matchesSearch && matchesCat;
-  });
-  const grouped = filtered.reduce<Record<string, typeof ALL_TRACKS>>((acc, t) => {
-    (acc[t.category] ??= []).push(t); return acc;
-  }, {});
-
-  return (
-    <>
-    <div className="max-w-5xl mx-auto px-5 py-8 pb-24">
-      <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">Library</p>
-      <h1 className="mt-2 font-display text-4xl tracking-tight">Fifty <span className="text-yellow-400">specialists</span>.</h1>
-      <p className="mt-2 text-foreground">Pick the one that calls you today.</p>
-      <div className="mt-6 relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <input
-          value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search tracks, categories…"
-          className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition"
-        />
-        {search && (
-          <button onClick={() => setSearch("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-base leading-none">
-            ✕
-          </button>
-        )}
-      </div>
-      {/* Category filter chips */}
-      <div className="mt-3 flex gap-2 flex-wrap">
-        <button
-          onClick={() => setCategoryFilter(null)}
-          className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${!categoryFilter ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-          All
-        </button>
-        {allCategories.map(cat => (
-          <button key={cat}
-            onClick={() => setCategoryFilter(cat === categoryFilter ? null : cat)}
-            className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${categoryFilter === cat ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-            {cat}
-          </button>
-        ))}
-      </div>
-      {Object.keys(grouped).length === 0 && (
-        <div className="mt-12 text-center text-muted-foreground text-sm">
-          No tracks match "<span className="text-foreground">{search}</span>".
-        </div>
-      )}
-      <div className="mt-8 space-y-10">
-        {Object.entries(grouped).map(([cat, tracks]) => (
-          <section key={cat}>
-            <h2 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-4">{cat}</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              {tracks.map((t, i) => {
-                const ut = activeMap.get(t.id);
-                const on = !!ut;
-                return (
-                  <motion.div key={t.id} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-                    className="warm-card rounded-2xl p-5 flex flex-col gap-3">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{t.category}</p>
-                      <h3 className="mt-1 font-semibold text-[15px]">{t.name}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{t.short_description}</p>
-                    </div>
-                    {on && ut ? (
-                      <div className="flex gap-1.5 flex-wrap">
-                        <span className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)]">
-                          <Check className="h-3 w-3" />Active
-                        </span>
-                        <button onClick={() => onView(ut)}
-                          className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-neutral-900 transition">
-                          View <ArrowRight className="h-3 w-3" />
-                        </button>
-                        <button onClick={() => { if (confirm(`Remove "${t.name}" from your paths?`)) onRemove(ut.id); }}
-                          className="btn-chunk inline-flex items-center rounded-full px-2.5 py-1.5 text-xs border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] hover:bg-[color:var(--secondary)]/10 transition"
-                          title="Rimuovi track">
-                          ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <button onClick={() => setPendingAdd(t)}
-                        className="btn-chunk self-start inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-neutral-900 transition">
-                        <Plus className="h-3 w-3" />Start
-                      </button>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
-      </div>
-    </div>
-    <AnimatePresence>
-      {pendingAdd && (
-        <DurationPickerModal
-          trackName={pendingAdd.name}
-          onConfirm={days => { onAdd(pendingAdd, days); setPendingAdd(null); }}
-          onCancel={() => setPendingAdd(null)}
-        />
-      )}
-    </AnimatePresence>
-    </>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // InsightsPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log[] }) {
-  const [letterLoading, setLetterLoading] = useState(false);
-  const [letter, setLetter] = useState<string | null>(null);
-  const [showLetter, setShowLetter] = useState(false);
+// InsightsPage → src/pages/InsightsPage.tsx
 
-  const generateLetter = async () => {
-    setLetterLoading(true);
-    try {
-      const journeyData = userTracks.map(t => {
-        const days = lsLoad<JourneyDay[]>(LS_DAYS(t.slug), []);
-        const completedDays = days.filter(d => d.completedAt !== null);
-        const recentNotes = completedDays
-          .filter(d => d.userNote)
-          .slice(-7)
-          .map(d => `Day ${d.dayNumber}: ${d.userNote}`);
-        return { trackName: t.name, category: t.category, streak: t.current_streak || 0, totalDone: t.total_done || 0, recentNotes };
-      });
-
-      const hasNotes = journeyData.some(d => d.recentNotes.length > 0);
-      const prompt = `You are a warm, personal growth coach writing a weekly recap letter for someone using the Forge app. Based on their journey data below, write a heartfelt letter (3-4 paragraphs, 150-200 words total) that:
-- Acknowledges their specific progress with genuine warmth
-${hasNotes ? "- Reflects back meaningful moments from their own notes/reflections — use their actual words where possible" : "- Encourages them to start writing notes after check-ins so you can reflect their journey back to them"}
-- Feels deeply personal, never generic or motivational-poster-ish
-- Ends with one concrete, specific thing to focus on this week
-
-Their journey data:
-${journeyData.map(d => `
-${d.trackName} (${d.category})
-Streak: ${d.streak} days | Total completed: ${d.totalDone} days
-${d.recentNotes.length > 0 ? `Recent reflections:\n${d.recentNotes.join("\n")}` : "No notes yet — they are just getting started"}`).join("\n---\n")}
-
-Start with "This week," and sign it "— Your Coach". Write like you actually know and care about them.`;
-
-      const res = await fetch("/api/coach", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: "weekly-letter",
-          archetype: "mentor",
-          messages: [{ role: "user", content: prompt }],
-          userContext: { totalTracks: userTracks.length, totalCheckins: logs.length },
-        }),
-      });
-      const data = await res.json() as { message: string };
-      setLetter(data.message);
-      setShowLetter(true);
-    } catch {
-      setLetter("Something went wrong generating your letter. Check your connection and try again in a moment.");
-      setShowLetter(true);
-    } finally {
-      setLetterLoading(false);
-    }
-  };
-
-  const heatmap = useMemo(() => {
-    const byDay = new Map<string, number>();
-    logs.forEach(l => byDay.set(l.log_date, (byDay.get(l.log_date) || 0) + 1));
-    const result: { date: string; count: number }[] = [];
-    for (let i = 89; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10);
-      result.push({ date: d, count: byDay.get(d) || 0 });
-    }
-    return result;
-  }, [logs]);
-
-  const weeks = useMemo(() => {
-    const cols: typeof heatmap[] = [];
-    for (let i = 0; i < heatmap.length; i += 7) cols.push(heatmap.slice(i, i + 7));
-    return cols;
-  }, [heatmap]);
-
-  const monthLabels = useMemo(() => weeks.map((w, i) => {
-    if (i === 0) return new Date(w[0].date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' });
-    const prev = new Date(weeks[i - 1][0].date + 'T12:00:00');
-    const cur  = new Date(w[0].date + 'T12:00:00');
-    return prev.getMonth() !== cur.getMonth()
-      ? cur.toLocaleDateString('en-US', { month: 'short' })
-      : "";
-  }), [weeks]);
-
-  const tone = (count: number) => {
-    if (count <= 0) return "bg-muted";
-    if (count === 1) return "bg-[color:var(--tertiary)]/30";
-    if (count === 2) return "bg-[color:var(--tertiary)]/60";
-    return "bg-[color:var(--tertiary)]";
-  };
-
-  const totalCheckins = logs.length;
-  const activeDays = heatmap.filter(d => d.count > 0).length;
-
-  // Weekly comparison
-  const todayTs = Date.now();
-  const thisWeekStart = todayTs - 7 * 86_400_000;
-  const lastWeekStart = todayTs - 14 * 86_400_000;
-  const thisWeekCount = logs.filter(l => new Date(l.log_date).getTime() >= thisWeekStart).length;
-  const lastWeekCount = logs.filter(l => {
-    const t = new Date(l.log_date).getTime();
-    return t >= lastWeekStart && t < thisWeekStart;
-  }).length;
-  const weekDelta = thisWeekCount - lastWeekCount;
-
-  // 28-day bar chart data
-  const last28 = useMemo(() => {
-    const byDay = new Map<string, number>();
-    logs.forEach(l => byDay.set(l.log_date, (byDay.get(l.log_date) || 0) + 1));
-    return Array.from({ length: 28 }, (_, i) => {
-      const d = new Date(Date.now() - (27 - i) * 86_400_000).toISOString().slice(0, 10);
-      return { date: d, count: byDay.get(d) || 0, isToday: i === 27 };
-    });
-  }, [logs]);
-  const maxBar = Math.max(1, ...last28.map(d => d.count));
-
-  // Best streak across all tracks
-  const bestStreak = userTracks.reduce((best, t) => Math.max(best, t.longest_streak || 0), 0);
-
-  return (
-    <div className="container mx-auto px-6 py-8 max-w-4xl space-y-8">
-      <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
-        <p className="text-muted-foreground mt-1">Your data, clear and honest.</p>
-        <button onClick={generateLetter} disabled={letterLoading}
-          className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
-          {letterLoading ? (
-            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your letter…</>
-          ) : (
-            <><Mail className="h-3.5 w-3.5" />Weekly recap letter</>
-          )}
-        </button>
-      </header>
-
-      {/* Empty state */}
-      {totalCheckins === 0 && (
-        <div className="rounded-2xl border border-border bg-card p-10 text-center space-y-3">
-          <BarChart2 className="h-10 w-10 mx-auto text-muted-foreground/50" />
-          <h3 className="font-display text-xl font-semibold">No data yet</h3>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            Complete your first check-in to see your progress here.
-          </p>
-        </div>
-      )}
-
-      {/* Summary row */}
-      {totalCheckins > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: "Total check-ins", value: totalCheckins },
-            { label: "Active days (90d)", value: activeDays },
-            { label: "Best streak", value: bestStreak, unit: "d" },
-            { label: "Active paths", value: userTracks.length },
-          ].map(s => (
-            <div key={s.label} className="rounded-2xl border border-border bg-card p-4 text-center">
-              <p className="font-bold text-2xl font-display">{s.value}{s.unit ?? ""}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mt-0.5">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Weekly comparison */}
-      {totalCheckins > 0 && (
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">This week vs last week</h2>
-          <div className="flex items-end gap-6">
-            {/* Last week bar */}
-            <div className="flex flex-col items-center gap-2 flex-1">
-              <p className="text-xl font-bold font-display text-muted-foreground">{lastWeekCount}</p>
-              <div className="w-full rounded-t-lg bg-muted/60 transition-all" style={{ height: `${Math.round((lastWeekCount / Math.max(1, thisWeekCount, lastWeekCount)) * 80) + 8}px` }} />
-              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Last week</p>
-            </div>
-            {/* Delta */}
-            <div className="flex flex-col items-center gap-1 pb-6 shrink-0">
-              <span className={`text-sm font-bold ${weekDelta > 0 ? "text-emerald-400" : weekDelta < 0 ? "text-red-400" : "text-muted-foreground"}`}>
-                {weekDelta > 0 ? `+${weekDelta}` : weekDelta === 0 ? "=" : weekDelta}
-              </span>
-              <span className="text-[10px] text-muted-foreground font-mono">vs</span>
-            </div>
-            {/* This week bar */}
-            <div className="flex flex-col items-center gap-2 flex-1">
-              <p className="text-xl font-bold font-display" style={{ color: "var(--tertiary)" }}>{thisWeekCount}</p>
-              <div className="w-full rounded-t-lg transition-all" style={{ height: `${Math.round((thisWeekCount / Math.max(1, thisWeekCount, lastWeekCount)) * 80) + 8}px`, background: "var(--tertiary)", opacity: 0.8 }} />
-              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">This week</p>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 28-day activity bar chart */}
-      {totalCheckins > 0 && (
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Daily activity — last 28 days</h2>
-          <div className="flex items-end gap-[3px] h-16">
-            {last28.map(d => (
-              <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full" title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}>
-                <div
-                  className={`w-full rounded-t-sm transition-all ${d.isToday ? "opacity-100" : "opacity-70"}`}
-                  style={{
-                    height: d.count > 0 ? `${Math.max(8, Math.round((d.count / maxBar) * 52))}px` : "3px",
-                    background: d.count > 0 ? "var(--tertiary)" : "oklch(1 0 0 / 0.08)",
-                    borderRadius: "3px 3px 1px 1px",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-2">
-            <p className="text-[9px] text-muted-foreground font-mono">{last28[0]?.date.slice(5)}</p>
-            <p className="text-[9px] text-muted-foreground font-mono">today</p>
-          </div>
-        </section>
-      )}
-
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">90-day activity</h2>
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-            <span>less</span>
-            {[0,1,2,3].map(v => <div key={v} className={`h-2.5 w-2.5 rounded-sm ${tone(v)}`} />)}
-            <span>more</span>
-          </div>
-        </div>
-        {totalCheckins === 0 ? (
-          <div className="py-6 text-center text-sm text-muted-foreground">
-            Complete your first check-in to see activity here.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            {/* Month labels */}
-            <div className="flex gap-1 mb-1">
-              {weeks.map((_, i) => (
-                <div key={i} className="w-3 shrink-0 text-[8px] text-muted-foreground font-mono leading-none">
-                  {monthLabels[i]}
-                </div>
-              ))}
-            </div>
-            {/* Day squares */}
-            <div className="flex gap-1">
-              {weeks.map((w, i) => (
-                <div key={i} className="flex flex-col gap-1">
-                  {w.map(d => (
-                    <div key={d.date} title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}
-                      className={`h-3 w-3 rounded-sm transition-colors ${tone(d.count)}`} />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
-
-      {userTracks.length > 0 && (
-        <section>
-          <h2 className="font-semibold mb-3">Per path</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {userTracks.map(t => {
-              const streak = liveStreak(t);
-              const best = t.longest_streak || 0;
-              const done = t.total_done || 0;
-              const target = t.target_days || 30;
-              const progressPct = Math.min(1, done / target);
-              const streakPct = best > 0 ? Math.min(1, streak / best) : 0;
-              return (
-                <div key={t.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3 className="font-semibold text-[15px] leading-tight">{t.name}</h3>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">{t.category}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-bold text-lg font-display leading-none" style={{ color: streak > 0 ? "var(--tertiary)" : undefined }}>{streak}d</p>
-                      <p className="text-[9px] text-muted-foreground font-mono mt-0.5">streak</p>
-                    </div>
-                  </div>
-
-                  {/* Journey progress bar */}
-                  <div>
-                    <div className="flex justify-between text-[10px] text-muted-foreground font-mono mb-1">
-                      <span>Journey progress</span>
-                      <span>{done}/{target} days</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${progressPct * 100}%`, background: "var(--tertiary)" }} />
-                    </div>
-                  </div>
-
-                  {/* Streak vs best */}
-                  {best > 0 && (
-                    <div>
-                      <div className="flex justify-between text-[10px] text-muted-foreground font-mono mb-1">
-                        <span>Streak vs best</span>
-                        <span>{streak} / {best}d</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: `${streakPct * 100}%`, background: streak >= best && best > 0 ? "#f59e0b" : "oklch(0.6 0.22 250)" }} />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2 pt-1">
-                    <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
-                      <p className="font-bold text-sm">{best}d</p>
-                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Best</p>
-                    </div>
-                    <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
-                      <p className="font-bold text-sm">{done}</p>
-                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Done</p>
-                    </div>
-                    <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
-                      <p className="font-bold text-sm">{target - done > 0 ? target - done : "✓"}</p>
-                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{target - done > 0 ? "Left" : "Complete"}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Weekly Letter Modal */}
-      <AnimatePresence>
-        {showLetter && letter && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowLetter(false)}>
-            <motion.div initial={{ scale: 0.92, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 220, damping: 24 }}
-              className="bg-background rounded-3xl p-6 max-w-lg w-full max-h-[82vh] overflow-y-auto shadow-2xl"
-              onClick={e => e.stopPropagation()}>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="h-10 w-10 rounded-full grad-electric flex items-center justify-center shrink-0">
-                  <Sparkles className="h-4 w-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-display font-semibold text-base">Weekly Letter</p>
-                  <p className="text-[11px] text-muted-foreground font-mono">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
-                </div>
-                <button onClick={() => setShowLetter(false)}
-                  className="text-muted-foreground hover:text-foreground text-xl leading-none shrink-0">✕</button>
-              </div>
-              <div className="rounded-2xl bg-card border border-border p-5">
-                <p className="text-sm leading-[1.75] whitespace-pre-line text-foreground">{letter}</p>
-              </div>
-              <p className="mt-3 text-center text-[10px] text-muted-foreground font-mono">Generated privately for you alone</p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // SettingsPage
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-const FORGE_TITLES = [
-  { days: 0, title: 'Newcomer', color: 'text-muted-foreground' },
-  { days: 10, title: 'Apprentice', color: 'text-blue-400' },
-  { days: 25, title: 'Journeyman', color: 'text-purple-400' },
-  { days: 50, title: 'Forge Master', color: 'text-amber-400' },
-  { days: 100, title: 'Legend', color: 'text-yellow-300' },
-];
-function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
-  const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
-  let result = FORGE_TITLES[0];
-  for (const ft of FORGE_TITLES) { if (maxStreak >= ft.days) result = ft; }
-  return result;
-}
-function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme , shields, tracks}: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void ; shields: number; tracks: UserTrack[]}) {
-  const [displayName, setDisplayName] = useState(userName);
-  const [nameSaved, setNameSaved] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "dark" }).theme);
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [notifEnabled, setNotifEnabled] = useState(() => lsLoad<boolean>("forge-notif", false));
-  const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
-  const [reminderTime, setReminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
-  const [pushLoading, setPushLoading] = useState(false);
-  const [pushError, setPushError] = useState<string | null>(null);
+// SettingsPage → src/pages/SettingsPage.tsx
 
-  const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BLsx3Fhbc_Z2gD4jDBRaIUgwd8A2jAo2aBeTeZ800-y2y4yrbTDCJJoYnfaZk83VNdwKiFN6LciifgkZj5q4US4";
-
-  const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = "=".repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-    const rawData = window.atob(base64);
-    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
-  };
-
-  const toggleReminder = async () => {
-    setPushError(null);
-    if (reminderOn) {
-      // Unsubscribe
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      if (reg) {
-        const sub = await reg.pushManager.getSubscription().catch(() => null);
-        if (sub) await sub.unsubscribe().catch(() => {});
-      }
-      const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
-      if (userId) fetch("/api/push-unsubscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) }).catch(() => {});
-      setReminderOn(false);
-      lsSave("forge-reminder-on", false);
-      return;
-    }
-    // Subscribe
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      setPushError("Push notifications are not supported in this browser.");
-      return;
-    }
-    setPushLoading(true);
-    try {
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") { setPushError("Permission denied. Enable notifications in browser settings."); return; }
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
-      const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
-      const hour = parseInt(reminderTime.split(":")[0], 10);
-      if (userId) {
-        await fetch("/api/push-subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, subscription: sub, reminderHour: hour }) });
-      }
-      setReminderOn(true);
-      lsSave("forge-reminder-on", true);
-    } catch (e) {
-      setPushError("Could not enable notifications. Try again.");
-    } finally {
-      setPushLoading(false);
-    }
-  };
-
-  const applyTheme = (t: "light" | "dark") => {
-    setTheme(t);
-    lsSave(LS_PREFS, { theme: t });
-    document.documentElement.classList.toggle("dark", t === "dark");
-  };
-
-  const handleSaveName = () => {
-    if (!displayName.trim()) return;
-    onUpdateName(displayName.trim());
-    setNameSaved(true);
-    setTimeout(() => setNameSaved(false), 2000);
-  };
-
-  const handleExport = () => {
-    const data = {
-      exported: new Date().toISOString(),
-      user: lsLoad(LS_USER, null),
-      tracks: lsLoad(LS_TRACKS, []),
-      logs: lsLoad(LS_LOGS, []),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "forge-data.json"; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleClearData = () => {
-    [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
-    onSignOut();
-  };
-
-  return (
-    <div className="container mx-auto px-6 py-8 max-w-2xl space-y-6">
-      <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Settings</h1>
-        <p className="text-muted-foreground mt-1">Account and preferences.</p>
-      </header>
-
-      {/* Account */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-            <UserIcon className="h-4 w-4" />
-          </span>
-          <h2 className="font-semibold">Account</h2>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Your name</label>
-            <div className="flex gap-2 mt-1.5">
-              <input value={displayName} onChange={e => { setDisplayName(e.target.value); setNameSaved(false); }}
-                onKeyDown={e => e.key === "Enter" && handleSaveName()}
-                placeholder="What's your name?"
-                className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-              <button onClick={handleSaveName}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
-                {nameSaved ? "Saved ✓" : "Save"}
-              </button>
-            </div>
-          </div>
-          <button onClick={onSignOut}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
-            Sign out
-          </button>
-        </div>
-      </section>
-
-      {/* Notifications */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-            <Bell className="h-4 w-4" />
-          </span>
-          <h2 className="font-semibold">Notifications</h2>
-        </div>
-        <div className="flex items-center justify-between py-2">
-          <div>
-            <p className="text-sm font-medium">Daily reminder</p>
-            <p className="text-xs text-muted-foreground">Get a nudge when you haven't checked in yet.</p>
-          </div>
-          <button
-            onClick={toggleReminder}
-            disabled={pushLoading}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${reminderOn ? "bg-primary" : "bg-muted"} ${pushLoading ? "opacity-50 cursor-wait" : "cursor-pointer"}`}
-          >
-            <span className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${reminderOn ? "translate-x-6" : "translate-x-1"}`} />
-          </button>
-        </div>
-        {reminderOn && (
-                    <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
-            <p className="text-xs text-muted-foreground">{"You'll get a daily nudge each morning if you haven't checked in."}</p>
-          </div>
-        )}
-        {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
-      </section>
-            {/* Rank & Shields */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6 space-y-3">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Rank & Shields</h3>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Your Title</p>
-            <p className={`text-base font-semibold ${getForgeTitle(tracks).color}`}>{getForgeTitle(tracks).title}</p>
-          </div>
-          <div className="flex items-center gap-2 bg-white/5 border border-border rounded-xl px-4 py-2">
-            <span className="text-lg" aria-hidden="true">🛡</span>
-            <span className="text-xl font-bold text-blue-400">{shields}</span>
-          </div>
-        </div>
-        <p className="text-xs text-muted-foreground">Earn a shield every 10 consecutive days. Auto-used if you miss a day.</p>
-      </section>
-      {/* Island Theme */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.1 11.5 7.4 11.8.3.2.9.2 1.2 0C12.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
-          </span>
-          <h2 className="font-semibold">Island Theme</h2>
-        </div>
-        {(() => {
-          const lastChanged = Number(localStorage.getItem('forge_island_theme_changed_at') || 0);
-          const msLeft = 14 * 24 * 60 * 60 * 1000 - (Date.now() - lastChanged);
-          const daysLeft = Math.ceil(msLeft / (24 * 60 * 60 * 1000));
-          const onCooldown = msLeft > 0;
-          return (
-            <>
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                {[{ key: 'garden', label: 'Garden Island' }, { key: 'mountain', label: 'Mountain Peak' }].map(({ key, label }) => (
-                  <button
-                    key={key}
-                    onClick={() => { if (!onCooldown) onChangeTheme(key); }}
-                    disabled={onCooldown && islandTheme !== key}
-                    className={`rounded-xl border-2 p-3 text-sm font-medium transition-all ${islandTheme === key ? 'border-blue-500 bg-blue-500/10 text-blue-400' : onCooldown ? 'border-border bg-muted/30 text-muted-foreground opacity-40 cursor-not-allowed' : 'border-border bg-muted/30 text-muted-foreground hover:border-blue-500/50'}`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {onCooldown ? (
-                <p className="text-xs text-muted-foreground">Next change in {daysLeft} day{daysLeft !== 1 ? 's' : ''}</p>
-              ) : (
-                <p className="text-xs text-muted-foreground">Change available once every 2 weeks</p>
-              )}
-            </>
-          );
-        })()}
-      </section>
-
-      {/* Data & Privacy */}
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
-            <Database className="h-4 w-4" />
-          </span>
-          <h2 className="font-semibold">Data & Privacy</h2>
-        </div>
-        <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-          Your progress is saved locally and backed up to your account. Sign out to switch accounts.
-        </div>
-        <div className="space-y-1">
-          <div className="flex items-center justify-between py-3 border-b border-border/50">
-            <div>
-              <p className="text-sm font-medium">Export data</p>
-              <p className="text-xs text-muted-foreground">Download all your paths and logs as JSON</p>
-            </div>
-            <button onClick={handleExport}
-              className="btn-chunk inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-              <Download className="h-3.5 w-3.5" /> Export
-            </button>
-          </div>
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear all data</p>
-              <p className="text-xs text-muted-foreground">Permanently delete all your paths, logs, and progress</p>
-            </div>
-            {showClearConfirm ? (
-              <div className="flex gap-2">
-                <button onClick={() => setShowClearConfirm(false)}
-                  className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-                  Cancel
-                </button>
-                <button onClick={handleClearData}
-                  className="rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition">
-                  Confirm
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => setShowClearConfirm(true)}
-                className="btn-chunk rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FirstDayReveal — cinematic first-login experience
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// FirstDayReveal â cinematic first-login experience
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 function FirstDayReveal({ userName, track, onComplete }: {
   userName: string;
@@ -3337,7 +2426,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
   const [customDur, setCustomDur] = useState(false);
   const [customDurVal, setCustomDurVal] = useState("");
 
-  // Phase auto-progression (welcome → track only; duration waits for user)
+  // Phase auto-progression (welcome â track only; duration waits for user)
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("track"), 1400);
     const t2 = setTimeout(() => setPhase("duration"), 2800);
@@ -3357,12 +2446,12 @@ function FirstDayReveal({ userName, track, onComplete }: {
       };
       const makeFallback = (): JourneyDay[] => Array.from({ length: 7 }, (_, i) => ({
         id: nanoid(), journeyId: j.id, dayNumber: i + 1,
-        title: `Day ${i + 1} — ${track.name}`,
+        title: `Day ${i + 1} â ${track.name}`,
         description: `Your ${track.name} journey begins. Every day forward counts.`,
         task: `Spend at least 15 minutes on ${track.name} today. Notice how it feels.`,
         reflection: "What surprised you about today's experience?",
         science: "Repetition within 24 hours strengthens neural pathways by up to 40%.",
-        checkinPrompt: "How are you feeling right now, 1–10?",
+        checkinPrompt: "How are you feeling right now, 1â10?",
         completedAt: null, userNote: null,
       }));
       try {
@@ -3422,7 +2511,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* PHASE 1 — Welcome */}
+        {/* PHASE 1 â Welcome */}
         {phase === "welcome" && (
           <motion.div key="welcome"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -3440,7 +2529,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 2 — Track name */}
+        {/* PHASE 2 â Track name */}
         {phase === "track" && (
           <motion.div key="track"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -3466,7 +2555,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 3 — Duration picker */}
+        {/* PHASE 3 â Duration picker */}
         {phase === "duration" && (
           <motion.div key="duration"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -3494,7 +2583,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
             {customDur && (
               <input type="number" autoFocus value={customDurVal}
                 onChange={e => { setCustomDurVal(e.target.value); const n = parseInt(e.target.value); if (n >= 7 && n <= 999) setTargetDays(n); }}
-                min={7} max={999} placeholder="Days (7–999)"
+                min={7} max={999} placeholder="Days (7â999)"
                 className="w-full max-w-xs rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring text-center" />
             )}
             <button
@@ -3507,7 +2596,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 4 — Generating */}
+        {/* PHASE 4 â Generating */}
         {phase === "generating" && (
           <motion.div key="generating"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -3522,11 +2611,11 @@ function FirstDayReveal({ userName, track, onComplete }: {
                   transition={{ duration: 1.3, repeat: Infinity, delay: i * 0.22 }} />
               ))}
             </div>
-            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">Building your Day 1…</p>
+            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">Building your Day 1â¦</p>
           </motion.div>
         )}
 
-        {/* PHASE 5 — Day 1 Reveal */}
+        {/* PHASE 5 â Day 1 Reveal */}
         {phase === "reveal" && day1 && (
           <motion.div key="reveal"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
@@ -3539,7 +2628,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
               className="pt-14 pb-6 px-6 text-center flex-shrink-0">
               <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">Day 1</p>
               <h1 className="font-display text-3xl text-foreground tracking-tight leading-tight">
-                {day1.title.replace(/^Day\s+\d+\s*[—\-–]\s*/i, "")}
+                {day1.title.replace(/^Day\s+\d+\s*[â\-â]\s*/i, "")}
               </h1>
             </motion.div>
 
@@ -3602,7 +2691,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 <ArrowRight className="h-5 w-5" />
               </button>
               <p className="text-center text-[11px] text-muted-foreground mt-3 font-mono">
-                30-day journey · {track.name}
+                30-day journey Â· {track.name}
               </p>
             </motion.div>
           </motion.div>
@@ -3612,9 +2701,9 @@ function FirstDayReveal({ userName, track, onComplete }: {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // CheckInCelebration overlay
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const CELEBRATION_PHRASES = [
   "The version of you who quit is getting further away.",
@@ -3623,18 +2712,18 @@ const CELEBRATION_PHRASES = [
   "Another rep. Another brick. Another day.",
   "The streak doesn't care how you feel. It cares that you came.",
   "Most people talked about it. You did it.",
-  "One day you'll look back — this is when it started.",
+  "One day you'll look back â this is when it started.",
   "Your future self just exhaled.",
   "Identity is built in moments like this one.",
   "The hard days count double.",
   "You're not building a habit. You're building a person.",
   "Small reps. Big identity.",
   "Every check-in is a vote for who you're becoming.",
-  "Consistency isn't glamorous. Neither is greatness — until it is.",
+  "Consistency isn't glamorous. Neither is greatness â until it is.",
   "This is what the comeback looks like.",
   "No one can take today away from you.",
   "The gap between who you are and who you want to be just got smaller.",
-  "Showing up when you don't want to — that's the real flex.",
+  "Showing up when you don't want to â that's the real flex.",
   "You didn't need motivation. You used discipline. That's stronger.",
   "Day by day. That's how empires are built.",
 ];
@@ -3743,9 +2832,9 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ElevateApp — root component
-// ─────────────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ElevateApp â root component
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 export function ElevateApp() {
   const [screen, setScreen] = useState<Screen>(() => {
@@ -3753,7 +2842,7 @@ export function ElevateApp() {
     const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);
     const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
     if (user) return "dashboard";
-    // Auth done but no user yet → finish setting up
+    // Auth done but no user yet â finish setting up
     if (auth && !pendingTrack) return "onboarding";
     if (auth && pendingTrack) return "dashboard"; // should not happen, but safe fallback
     return "landing";
@@ -3978,14 +3067,14 @@ export function ElevateApp() {
     setPendingCheckIn(false);
   }, []);
 
-  // Called after user picks their track — save it and go to login
+  // Called after user picks their track â save it and go to login
   const handleOnboardingComplete = useCallback(({ track, name }: { track: OnboardingTrack; name?: string }) => {
     lsSave("forge-pending-track", track);
     if (name) lsSave("forge-pending-name", name);
     setScreen("login");
   }, []);
 
-  // Called after successful login — create user from entered name + pending track, then open Day 1
+  // Called after successful login â create user from entered name + pending track, then open Day 1
   const handleLoginSuccess = useCallback((enteredName: string) => {
     const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
     const savedName = lsLoad<string | null>("forge-pending-name", null);
@@ -4021,7 +3110,7 @@ export function ElevateApp() {
           db.saveTracks(uid, [ut]).catch(() => {});
         }
       } else if (uid) {
-        // No pending track — save profile only
+        // No pending track â save profile only
         db.saveProfile(uid, displayName).catch(() => {});
       }
     });
@@ -4045,7 +3134,7 @@ export function ElevateApp() {
 
   // Handle auth state changes.
   // SIGNED_IN: fires after OAuth code exchange completes (may race with useEffect).
-  // INITIAL_SESSION: fires immediately when listener is registered — catches the case
+  // INITIAL_SESSION: fires immediately when listener is registered â catches the case
   //   where Supabase already processed the OAuth code before useEffect ran.
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -4063,7 +3152,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           const localLogs = lsLoad<Log[]>(LS_LOGS, []);
 
           if (profile && dbTracks.length > 0) {
-            // ── Supabase has data: use it as source of truth ──
+            // ââ Supabase has data: use it as source of truth ââ
             const restoredUser: ElevateUser = {
               name: profile.name,
               createdAt: profile.created_at,
@@ -4086,7 +3175,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             setLogs(dbLogs as Log[]);
             setScreen("dashboard");
           } else if (localUser) {
-            // ── No Supabase data but have localStorage: migrate up ──
+            // ââ No Supabase data but have localStorage: migrate up ââ
             db.migrateFromLocalStorage(
               uid, localUser, localTracks, localLogs,
               (slug) => lsLoad<JourneyDay[]>(LS_DAYS(slug), []),
@@ -4100,7 +3189,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             setUser(merged);
             setScreen("dashboard");
           } else {
-            // ── Brand new user ──
+            // ââ Brand new user ââ
             setScreen("login");
           }
         }).catch(() => {
@@ -4144,7 +3233,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     setShowReEntry(false);
   }, []);
 
-  // Detect broken streaks — show StreakRecoveryOverlay once per break event
+  // Detect broken streaks â show StreakRecoveryOverlay once per break event
   useEffect(() => {
     if (screen !== "dashboard" || tracks.length === 0) return;
     const y = yesterdayStr();
@@ -4162,7 +3251,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     }
   }, [screen, tracks]);
 
-  // Re-engagement check — show overlay if user was active but missed 3+ days
+  // Re-engagement check â show overlay if user was active but missed 3+ days
   useEffect(() => {
     if (tracks.length === 0) return;
     const today = new Date().toISOString().slice(0, 10);
@@ -4180,7 +3269,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     setTimeout(() => setReengagement({ daysMissed, trackName: dormant.name }), 1200);
   }, [tracks]);
 
-  // Notification reminder check — every minute
+  // Notification reminder check â every minute
   useEffect(() => {
     if (!("Notification" in window)) return;
     const interval = setInterval(() => {
@@ -4219,7 +3308,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         <motion.div className="text-center max-w-sm space-y-5 w-full"
           initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 80, damping: 14, delay: 0.1 }}>
-          <div className="text-5xl">👋</div>
+          <div className="text-5xl">ð</div>
           <div>
             <p className="font-display text-3xl font-bold text-white tracking-tight leading-tight mb-2">
               Welcome back.
@@ -4235,7 +3324,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-white/30">What helps</p>
             <p className="text-white/70 text-sm leading-relaxed">
               {reengagement.daysMissed >= 7
-                ? "Start with one minute. Seriously — open your journey, read today's task, and just begin. That's the whole job."
+                ? "Start with one minute. Seriously â open your journey, read today's task, and just begin. That's the whole job."
                 : reengagement.daysMissed >= 3
                 ? "Three days off doesn't erase what you built. Your identity is still there. One check-in and you're back."
                 : "Missing a day happens to everyone. The only mistake is letting one miss become two."}
@@ -4245,7 +3334,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             <button
               onClick={() => { setReengagement(null); setPage("home"); }}
               className="w-full btn-chunk rounded-full bg-white text-black px-8 py-3 text-sm font-bold">
-              Let's go →
+              Let's go â
             </button>
             <button
               onClick={() => setReengagement(null)}
@@ -4266,7 +3355,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         <motion.div className="text-center px-8 space-y-6"
           initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 90, damping: 14, delay: 0.1 }}>
-          <p className="text-6xl">🏆</p>
+          <p className="text-6xl">ð</p>
           <p className="font-display text-4xl font-bold text-white tracking-tight leading-tight">
             Journey<br />Complete
           </p>
@@ -4354,7 +3443,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}>
           <div className="flex-1">
             <p className="text-sm font-semibold">Add Forge to Home Screen</p>
-            <p className="text-xs text-muted-foreground">Install for the full experience — works offline too</p>
+            <p className="text-xs text-muted-foreground">Install for the full experience â works offline too</p>
           </div>
           <button onClick={() => {
             (installPrompt as BeforeInstallPromptEvent)?.prompt?.();
@@ -4362,7 +3451,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           }} className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-xs font-semibold">
             Install
           </button>
-          <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">×</button>
+          <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">Ã</button>
         </motion.div>
       )}
       <DashboardLayout currentPage={page} onNavigate={setPage}>
