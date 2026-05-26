@@ -47,6 +47,76 @@ const JOURNEY_PRESETS = [30, 60, 90, 120, 180, 365] as const;
 
 const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia","Tristezza","Abitudine"];
 
+type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
+const TRACK_HUE: Record<string, string> = {
+  "Fitness & Body": "oklch(0.65 0.22 25)",
+  "Mental Health": "oklch(0.65 0.22 260)",
+  "Quit Bad Habits": "oklch(0.65 0.22 140)",
+  "Mind & Learning": "oklch(0.65 0.22 200)",
+  "Productivity & Life": "oklch(0.65 0.22 60)",
+  "Addiction & Recovery": "oklch(0.65 0.22 350)",
+  "Financial Health": "oklch(0.65 0.22 145)",
+  "Psychology & Self": "oklch(0.65 0.22 300)",
+};
+const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
+  // Fitness & Body
+  "strength-training": "trainer", "morning-run": "trainer", "cold-exposure": "trainer",
+  "sedentary-lifestyle": "trainer",
+  // Quit Bad Habits
+  "no-social-media": "trainer", "quit-smoking": "trainer", "no-sugar": "trainer", // Addiction & Recovery
+  "quit-alcohol": "trainer", "video-game-addiction": "trainer",
+  "compulsive-shopping": "mentor", "quit-pornography": "clinician", "quit-drugs": "clinician",
+  "quit-gambling": "mentor", "binge-eating": "clinician",
+  // Mental Health
+  "meditation": "clinician", "anxiety-relief": "clinician", "journaling": "clinician",
+  "sleep-routine": "clinician", "breathwork": "clinician",
+  "stop-overthinking": "clinician", "social-anxiety": "clinician",
+  "anger-management": "clinician", "chronic-stress": "clinician",
+  "social-isolation": "guide", "negative-mindset": "guide",
+  // Productivity & Life
+  "deep-work": "mentor", "beat-procrastination": "trainer",
+  "build-discipline": "trainer", // Psychology & Self
+  "low-self-esteem": "clinician", "need-for-approval": "clinician",
+  "fear-of-failure": "mentor", "fear-of-judgment": "clinician",
+  "emotional-dependency": "clinician", "toxic-relationships": "mentor",
+  "control-issues": "mentor", "stop-self-sabotage": "guide",
+  "toxic-perfectionism": "clinician",
+  "jealousy": "clinician", // Financial Health
+  "money-management": "mentor",
+  // Mind & Learning
+  "reading": "teacher", "language": "teacher",
+  "gratitude": "guide",
+};
+const ARCHETYPES: Record<ArchetypeId, Archetype> = {
+  trainer: { id: "trainer", name: "Trainer", tagline: "Your direct trainer", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Teacher", tagline: "Your calm teacher", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Clinician", tagline: "Your warm clinician", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Mentor", tagline: "Your sharp mentor", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Guide", tagline: "Your creative guide", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+};
+const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
+const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
+  { content: "Finished day 7. Never thought I'd make it this far â the habit is starting to feel natural.", dayNumber: 7, flameCount: 14, userHasFlamed: false, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
+  { content: "Hit my first milestone today ð The science note about neuroplasticity blew my mind.", dayNumber: 21, flameCount: 8, userHasFlamed: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
+  { content: "Day 3 was brutal but I checked in anyway. Small win counts.", dayNumber: 3, flameCount: 22, userHasFlamed: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
+];
+const COMMUNITY_MODERATION_MESSAGES = [
+  "Keep it real, not raw. This is a community of people doing hard work.",
+  "The coach is watching. So is everyone else. Let's keep it respectful.",
+  "Your words matter here. Try something you'd be proud to read back.",
+  "This community runs on honesty, not shock value. Say it differently.",
+  "Strong language, stronger filter. Rewrite it with intention.",
+];
+function hashStr(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function isCommunityBlocked(text: string): boolean {
+  const lower = text.toLowerCase();
+  return COMMUNITY_BLOCKLIST.some(w => lower.includes(w));
+}
+
 function lsLoad<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
