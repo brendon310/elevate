@@ -2075,6 +2075,108 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
 // ─────────────────────────────────────────────────────────────────────────────
 // SnowfallBackground
 // ─────────────────────────────────────────────────────────────────────────────
+// StreakRecoveryOverlay — shown when a streak breaks with no shield left
+// ─────────────────────────────────────────────────────────────────────────────
+
+function StreakRecoveryOverlay({
+  brokenStreak,
+  trackName,
+  onDismiss,
+}: {
+  brokenStreak: number;
+  trackName: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <motion.div
+      key="streak-recovery"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center px-7"
+      style={{ background: "oklch(0.06 0.01 250 / 0.97)" }}
+    >
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(55% 45% at 50% 55%, oklch(0.55 0.2 45 / 0.10), transparent 70%)",
+        }}
+      />
+      <div className="relative max-w-sm w-full text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.88 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 180, damping: 22 }}
+          className="mb-0"
+        >
+          <span
+            className="font-display tracking-[-0.06em] leading-none text-foreground/10 select-none"
+            style={{ fontSize: "clamp(5.5rem, 30vw, 10rem)" }}
+          >
+            {brokenStreak}
+          </span>
+        </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-5"
+        >
+          days on {trackName}
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="font-display text-[1.75rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-3"
+        >
+          {"That's still "}{brokenStreak}{" days"}<br />{"you showed up."}
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+          className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-[264px] mx-auto"
+        >
+          {"Streaks measure consistency — not worth. Missing one day doesn't erase what you built."}
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mb-8 rounded-2xl border border-border/40 bg-foreground/[0.04] px-5 py-4 text-left"
+        >
+          <div className="flex items-start gap-3">
+            <Shield className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/60" />
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1">Shields protect your streak</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {"Forge gives you 1 Shield every 14 days of consistent use — automatically spent when you miss a day. Keep going to earn the next one."}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85 }}
+        >
+          <button
+            onClick={onDismiss}
+            className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-8 py-3 text-sm font-semibold"
+          >
+            Start fresh <ArrowRight className="h-4 w-4" />
+          </button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
 
@@ -5185,6 +5287,7 @@ export function ElevateApp() {
   const [showReEntry, setShowReEntry] = useState(false);
   const [reEntryGap, setReEntryGap] = useState(0);
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
+  const [streakRecovery, setStreakRecovery] = useState<{ brokenStreak: number; trackName: string } | null>(null);
   const [cert, setCert] = useState<number | null>(null);
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
 
@@ -5555,6 +5658,24 @@ export function ElevateApp() {
     setShowReEntry(false);
   }, []);
 
+  // Detect broken streaks — show StreakRecoveryOverlay once per break event
+  useEffect(() => {
+    if (screen !== "dashboard" || tracks.length === 0) return;
+    const y = yesterdayStr();
+    const t = todayStr();
+    for (const tr of tracks) {
+      if (!tr.last_log_date) continue;
+      if (tr.last_log_date === t || tr.last_log_date === y) continue;
+      const streak = tr.current_streak || 0;
+      if (streak < 2) continue;
+      const key = `forge-streak-recovery-${tr.id}-${tr.last_log_date}`;
+      if (lsLoad<boolean>(key, false)) continue;
+      lsSave(key, true);
+      setStreakRecovery({ brokenStreak: streak, trackName: tr.name });
+      break;
+    }
+  }, [screen, tracks]);
+
   // Re-engagement check — show overlay if user was active but missed 3+ days
   useEffect(() => {
     if (tracks.length === 0) return;
@@ -5731,6 +5852,13 @@ export function ElevateApp() {
         )}
         {!milestone && showMorningCoach && (
           <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
+        )}
+        {!milestone && !showReEntry && !showMorningCoach && streakRecovery && (
+          <StreakRecoveryOverlay
+            brokenStreak={streakRecovery.brokenStreak}
+            trackName={streakRecovery.trackName}
+            onDismiss={() => setStreakRecovery(null)}
+          />
         )}
       </AnimatePresence>
       {showInstallBanner && (
