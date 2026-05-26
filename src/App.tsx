@@ -2505,6 +2505,162 @@ function SOSButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+
+// ── SAVINGS CALCULATOR ──────────────────────────────────────────────────────
+
+interface TrackSavings {
+  costPerUnit: number;   // euro
+  unitName: string;      // singolare
+  unitNamePlural: string;
+  emoji: string;
+}
+
+const TRACK_SAVINGS: Record<string, TrackSavings> = {
+  "quit-alcohol": {
+    costPerUnit: 7,
+    unitName: "drink",
+    unitNamePlural: "drink",
+    emoji: "🍺",
+  },
+  "quit-pornography": {
+    costPerUnit: 0,
+    unitName: "sessione",
+    unitNamePlural: "sessioni",
+    emoji: "🧠",
+  },
+  "quit-drugs": {
+    costPerUnit: 20,
+    unitName: "dose",
+    unitNamePlural: "dosi",
+    emoji: "💊",
+  },
+  "quit-gambling": {
+    costPerUnit: 30,
+    unitName: "sessione",
+    unitNamePlural: "sessioni",
+    emoji: "🎲",
+  },
+  "binge-eating": {
+    costPerUnit: 12,
+    unitName: "binge",
+    unitNamePlural: "binge",
+    emoji: "🍕",
+  },
+  "video-game-addiction": {
+    costPerUnit: 0,
+    unitName: "sessione",
+    unitNamePlural: "sessioni",
+    emoji: "🎮",
+  },
+  "compulsive-shopping": {
+    costPerUnit: 45,
+    unitName: "acquisto",
+    unitNamePlural: "acquisti",
+    emoji: "🛍️",
+  },
+  "social-media-addiction": {
+    costPerUnit: 0,
+    unitName: "ora",
+    unitNamePlural: "ore",
+    emoji: "📵",
+  },
+};
+
+function useCountUp(target: number, duration = 1400): number {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start: number | null = null;
+    const step = (ts: number) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    const raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
+}
+
+function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
+  const primaryTrack = tracks[0];
+  if (!primaryTrack) return null;
+
+  const savings = TRACK_SAVINGS[primaryTrack.slug];
+  if (!savings) return null;
+
+  const totalDays = primaryTrack.total_done ?? 0;
+  const totalMoney = savings.costPerUnit > 0 ? totalDays * savings.costPerUnit : 0;
+  const totalUnits = totalDays;
+
+  const animMoney = useCountUp(totalMoney);
+  const animUnits = useCountUp(totalUnits);
+
+  if (totalDays < 1) return null;
+
+  const showMoney = savings.costPerUnit > 0;
+
+  return (
+    <div
+      className="mx-4 mb-4 rounded-2xl p-4 flex gap-3"
+      style={{
+        background: "oklch(0.14 0.04 145 / 0.5)",
+        border: "1px solid oklch(0.35 0.12 145 / 0.3)",
+      }}
+    >
+      {showMoney && (
+        <div className="flex-1 flex flex-col items-center gap-0.5">
+          <span
+            className="text-2xl font-bold tabular-nums"
+            style={{ color: "oklch(0.82 0.18 145)" }}
+          >
+            €{animMoney}
+          </span>
+          <span className="text-xs text-white/40">risparmiati</span>
+        </div>
+      )}
+
+      {showMoney && (
+        <div
+          className="w-px self-stretch"
+          style={{ background: "oklch(0.35 0.08 145 / 0.3)" }}
+        />
+      )}
+
+      <div className="flex-1 flex flex-col items-center gap-0.5">
+        <span
+          className="text-2xl font-bold tabular-nums"
+          style={{ color: "oklch(0.82 0.18 145)" }}
+        >
+          {animUnits}
+        </span>
+        <span className="text-xs text-white/40">
+          {totalUnits === 1 ? savings.unitName : savings.unitNamePlural} {savings.costPerUnit === 0 ? "evitate" : "saltate"}
+        </span>
+      </div>
+
+      <div
+        className="w-px self-stretch"
+        style={{ background: "oklch(0.35 0.08 145 / 0.3)" }}
+      />
+
+      <div className="flex-1 flex flex-col items-center gap-0.5">
+        <span
+          className="text-2xl font-bold tabular-nums"
+          style={{ color: "oklch(0.82 0.18 145)" }}
+        >
+          {totalDays}
+        </span>
+        <span className="text-xs text-white/40">
+          {totalDays === 1 ? "giorno" : "giorni"} puliti
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
@@ -3115,6 +3271,7 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
 
       {tracks.length > 0 && (
         <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} isPaused={isPaused} />
+        <SavingsCard tracks={tracks} />
       )}
 
       <div className="flex items-end justify-between mb-4">
