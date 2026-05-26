@@ -1,0 +1,64 @@
+{
+  "app": { "name": "Forge" },
+  "nav": {
+    "home": "Home",
+    "library": "Library",
+    "stats": "Stats",
+    "settings": "Settings"
+  },
+  "home": {
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
+    "checkin_cta": "Check in today",
+    "streak_label": "day streak",
+    "no_track": "No active track",
+    "start_journey": "Start a journey"
+  },
+  "journey": {
+    "today": "Today",
+    "map": "Map",
+    "community": "Community",
+    "day": "Day",
+    "checkin_done": "Done for today",
+    "checkin_prompt": "Log today check-in"
+  },
+  "checkin": {
+    "mood_label": "How are you feeling?",
+    "urge_label": "Urge intensity",
+    "trigger_label": "What triggered it?",
+    "submit": "Log check-in",
+    "cancel": "Cancel"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "timezone": "Timezone",
+    "reminder_time": "Daily reminder",
+    "notifications": "Push notifications",
+    "export_data": "Export my data",
+    "delete_account": "Delete account",
+    "plan": "Plan",
+    "logout": "Log out"
+  },
+  "gdpr": {
+    "export_title": "Export your data",
+    "export_desc": "Download all data we hold about you as a JSON file.",
+    "export_btn": "Download data",
+    "delete_title": "Delete your account",
+    "delete_desc": "This permanently deletes your account and all associated data. This action cannot be undone.",
+    "delete_confirm": "Type DELETE to confirm",
+    "delete_btn": "Delete account",
+    "delete_confirm_word": "DELETE"
+  },
+  "email": {
+    "welcome_subject": "Welcome to Forge your journey starts now",
+    "milestone_subject": "You just hit a milestone",
+    "reengagement_subject": "We miss you come back to Forge",
+    "digest_subject": "Your weekly Forge progress"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Check your connection."
+  }
+}
