@@ -16,6 +16,8 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 import * as db from "./db";
+import { Plan, shouldShowPaywall } from './plans';
+import { PaywallModal } from './components/PaywallModal';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -5801,6 +5803,7 @@ export function ElevateApp() {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
   const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
+  const [plan, setPlan] = useState<Plan>('free');
   useEffect(() => {
     if (!user) return;
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
@@ -6071,7 +6074,10 @@ export function ElevateApp() {
         setSupabaseId(uid);
 
         // Try to load from Supabase first
-        db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
+                db.loadSubscription(uid).then(sub => {
+          if (sub?.plan) setPlan(sub.plan as Plan);
+        });
+db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           const localUser = lsLoad<ElevateUser | null>(LS_USER, null);
           const localTracks = lsLoad<UserTrack[]>(LS_TRACKS, []);
           const localLogs = lsLoad<Log[]>(LS_LOGS, []);
@@ -6386,7 +6392,14 @@ export function ElevateApp() {
         {page === "tracks" && <TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} />}
         {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
         {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks}/>}
-      </DashboardLayout>
+            {user && shouldShowPaywall(plan, user.createdAt) && (
+        <PaywallModal
+          currentPlan={plan}
+          accountCreatedAt={user.createdAt}
+          onPlanChange={(p) => setPlan(p)}
+        />
+      )}
+</DashboardLayout>
     </>
   );
 }
