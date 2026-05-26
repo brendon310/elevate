@@ -2,8 +2,106 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, ArrowRight } from 'lucide-react';
 import type { UserTrack } from '../types';
+import { GARDEN_STAGES, MOUNTAIN_STAGES } from '../pages/HomePage';
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+function hashStr(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+const REENTRY_MESSAGES = [
+  "You're back. That's all that matters.",
+  "The gap doesn't define the path. You're here now.",
+  "I migliori non si arrendono â si ripartono. Ricominciamo.",
+  "Every great story has a chapter where the main character comes back. This is yours.",
+];
+
+const SOS_ALTERNATIVES: Record<string, string[]> = {
+  "quit-alcohol": [
+    "Call someone you trust right now — even just to talk",
+    "Drink a large glass of cold water slowly",
+    "Walk outside for 5 minutes, no destination",
+    "Write down exactly what triggered this urge",
+    "Do 20 push-ups or jumping jacks right now",
+    "Text or call a sober support person",
+    "Watch a funny video for 10 minutes",
+  ],
+  "quit-smoking": [
+    "Do 10 slow, deep breaths — 4 in, 8 out",
+    "Drink a large glass of cold water",
+    "Chew gum or eat a healthy snack",
+    "Walk outside for 5 minutes",
+    "Call or text someone",
+    "Do 20 jumping jacks",
+    "Write down why you quit",
+  ],
+  "quit-gambling": [
+    "Call someone you trust right now — even just to talk",
+    "Leave the area immediately — go somewhere public",
+    "Call a helpline: 1-800-522-4700",
+    "Write down what you would do with the money you have saved",
+    "Think about the last time gambling hurt you — write it down",
+    "Do 10 minutes of physical movement",
+    "No wallet — no access to cash or cards",
+  ],
+  "quit-porn": [
+    "Close all devices and go somewhere public",
+    "Call or text a trusted person",
+    "Do 20 push-ups or a physical activity",
+    "Write down what triggered this urge",
+    "Drink cold water and take 10 deep breaths",
+    "Pray, meditate, or read something meaningful",
+    "Change your environment immediately",
+  ],
+  "quit-weed": [
+    "Call someone you trust right now",
+    "Drink a large glass of cold water slowly",
+    "Go for a 10-minute walk outside",
+    "Write down exactly what you are feeling",
+    "Do 20 jumping jacks or push-ups",
+    "Watch or read something engaging",
+    "Remind yourself: this craving passes in 15-20 minutes",
+  ],
+  "binge-eating": [
+    "Drink 500ml of water slowly before anything else",
+    "Go for a 10-minute walk right now",
+    "Call or text someone",
+    "Write down what you would do with the money you have saved",
+    "Think about the last time gambling hurt you — write it down",
+    "Do 10 minutes of physical movement",
+  ],
+};
+
+const SOS_GENERIC = [
+  "Take a slow, deep breath right now — 4 counts in, 8 out",
+  "Go to a different room or step outside",
+  "Call or text someone you trust",
+  "Write down exactly how you are feeling",
+  "Do 10 minutes of physical movement",
+];
+
+const BREATHE_PHASES = [
+  { label: "Breathe in", sub: "through your nose", duration: 4000, targetScale: 1.45 },
+  { label: "Hold", sub: "keep it steady", duration: 7000, targetScale: 1.45 },
+  { label: "Breathe out", sub: "slowly through your mouth", duration: 8000, targetScale: 0.85 },
+  { label: "Hold", sub: "ready for the next breath", duration: 4000, targetScale: 0.85 },
+];
+
+const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
+  1:   { emoji: "🌱", title: "Day 1. Done.", sub: "The journey begins now." },
+  3:   { emoji: "🔥", title: "3 days straight.", sub: "You're building something real." },
+  7:   { emoji: "⚡", title: "One full week.", sub: "Most people quit before this." },
+  14:  { emoji: "🏅", title: "Two weeks in.", sub: "Your brain is already changing." },
+  21:  { emoji: "💎", title: "21 days.", sub: "A new habit is taking root." },
+  30:  { emoji: "🌟", title: "30 days.", sub: "One month. Extraordinary." },
+  60:  { emoji: "🚀", title: "60 days.", sub: "Two months of discipline." },
+  90:  { emoji: "👑", title: "90 days.", sub: "Three months. You are the proof." },
+  180: { emoji: "🏆", title: "180 days.", sub: "Half a year. Legendary." },
+  365: { emoji: "🎯", title: "One full year.", sub: "365 days. You changed your life." },
+};
 
 function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: () => void }) {
   const msg = REENTRY_MESSAGES[hashStr(todayStr()) % REENTRY_MESSAGES.length];
@@ -300,7 +398,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             </p>
 
             <div className="space-y-3 w-full">
-              {alternatives.map((alt, i) => (
+              {alternatives.map((alt: string, i: number) => (
                 <div
                   key={i}
                   className="flex gap-3 items-start rounded-xl p-4"
