@@ -2566,9 +2566,6 @@ const TRACK_SAVINGS: Record<string, TrackSavings> = {
   },
 };
 
-
-}
-
 function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
   const primaryTrack = tracks[0];
   if (!primaryTrack) return null;
