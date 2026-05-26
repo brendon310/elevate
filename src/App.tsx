@@ -3810,9 +3810,10 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       if (cached1) {
         rawDays = cached1 as JourneyDay[];
       } else {
+        const { data: { session: _gds } } = await supabase.auth.getSession();
         const res = await fetch("/api/generate-days", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" , "Authorization": `Bearer ${_gds?.access_token ?? ""}` },
           body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint, motivation, obstacle, fromDay: 1, count: 7 }),
         });
         if (!res.ok) throw new Error("API error");
@@ -5971,7 +5972,8 @@ export function ElevateApp() {
       const newLog = { id: nanoid(), track_id: userTrackId, log_date: todayStr(), created_at: new Date().toISOString() };
       const next = [...prev, newLog];
       lsSave(LS_LOGS, next);
-      if (supabaseId) db.saveLog(supabaseId, newLog).catch(() => {});
+      if (supabaseId) db.saveLog(supabaseId, newLog).then(r => { if (!r.ok) console.error('[forge] syncError:', r.error); });
+
       return next;
     });
     // Also persist updated track stats
