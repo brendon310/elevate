@@ -2176,6 +2176,335 @@ function StreakRecoveryOverlay({
   );
 }
 
+
+const SOS_ALTERNATIVES: Record<string, string[]> = {
+  "quit-alcohol": [
+    "Call someone you trust right now — even just to talk",
+    "Drink a large glass of cold water slowly",
+    "Walk outside for 5 minutes, no destination",
+    "Write down exactly what triggered this urge",
+    "Do 15 push-ups or jumping jacks right now",
+  ],
+  "quit-pornography": [
+    "Go to a public space immediately — a café, a street, anywhere",
+    "Do 20 push-ups right now, then 20 more",
+    "Call or mext a friend — say anything",
+    "Take a cold shower for 30 seconds",
+    "Write down 3 things you want your life to look like in 1 year",
+  ],
+  "quit-drugs": [
+    "Call your support person right now — this is what they are there for",
+    "Go somewhere safe and public immediately",
+    "Drink water and eat something — your body needs it",
+    "Do intense physical activity for 10 minutes",
+    "Write down exactly what triggered this moment",
+  ],
+  "quit-gambling": [
+    "Put your devices in another room right now",
+    "Call someone immediately — tell them where you are",
+    "Go for a walk outside with no wallet",
+    "Write down what you would do with the money you have saved",
+    "Think about the last time gambling hurt you — write it down",
+  ],
+  "binge-eating": [
+    "Drink 500ml of water slowly before anything else",
+    "Go for a 10-minute walk right now",
+    "Call or text someone to talk through what you are feeling",
+    "Write down what emotion is underneath this urge",
+    "Step outside for fresh air — change your environment",
+  ],
+  "video-game-addiction": [
+    "Stand up, stretch, and walk to a different room",
+    "Go outside for fresh air — even 5 minutes helps",
+    "Call or message a friend to do something together",
+    "Do 10 minutes of physical movement",
+    "Make yourself a healthy meal or snack",
+  ],
+  "compulsive-shopping": [
+    "Close all browser tabs and apps immediately",
+    "The urge will peak and pass — wait 20 minutes",
+    "Write down what you were feeling before the urge hit",
+    "Go for a walk without your phone or wallet",
+    "Calculate what you have saved this week by not buying",
+  ],
+  "social-media-addiction": [
+    "Put your phone in another room right now",
+    "Go outside and observe your surroundings for 5 minutes",
+    "Do something with your hands — cook, draw, clean",
+    "Call someone instead of scrolling",
+    "Write one page in a journal — about anything",
+  ],
+};
+
+const SOS_GENERIC = [
+  "Take a slow, deep breath right now — 4 counts in, 8 out",
+  "Go to a different room or step outside",
+  "Call or text someone you trust",
+  "Write down exactly how you are feeling",
+  "Do 10 minutes of physical movement",
+];
+
+const BREATHE_PHASES = [
+  { label: "Breathe in", sub: "through your nose", duration: 4000, targetScale: 1.45 },
+  { label: "Hold", sub: "keep it steady", duration: 7000, targetScale: 1.45 },
+  { label: "Breathe out", sub: "slowly through your mouth", duration: 8000, targetScale: 0.85 },
+] as const;
+
+function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () => void }) {
+  const [sosPhase, setSosPhase] = useState<"breathe" | "ground" | "act">("breathe");
+  const [breatheIdx, setBreatheIdx] = useState(0);
+  const [breatheCycles, setBreatheCycles] = useState(0);
+  const [breatheScale, setBreatheScale] = useState(0.85);
+
+  useEffect(() => {
+    if (sosPhase !== "breathe") return;
+    const { duration, targetScale } = BREATHE_PHASES[breatheIdx];
+    setBreatheScale(targetScale);
+    const t = window.setTimeout(() => {
+      const next = (breatheIdx + 1) % 3;
+      setBreatheIdx(next);
+      if (next === 0) setBreatheCycles(c => c + 1);
+    }, duration);
+    return () => clearTimeout(t);
+  }, [breatheIdx, sosPhase]);
+
+  useEffect(() => {
+    if (breatheCycles >= 2 && sosPhase === "breathe") setSosPhase("ground");
+  }, [breatheCycles, sosPhase]);
+
+  const primarySlug = tracks[0]?.slug ?? "";
+  const alternatives = SOS_ALTERNATIVES[primarySlug] ?? SOS_GENERIC;
+  const { label: breatheLabel, sub: breatheSub, duration: breatheDur } = BREATHE_PHASES[breatheIdx];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{ background: "oklch(0.05 0.02 230 / 0.98)" }}
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
+    >
+      {/* ambient glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, oklch(0.35 0.15 230 / 0.12) 0%, transparent 70%)",
+        }}
+      />
+
+      <AnimatePresence mode="wait">
+        {sosPhase === "breathe" && (
+          <motion.div
+            key="breathe"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="relative flex flex-col items-center gap-8 px-6"
+          >
+            <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
+              sos — breathing
+            </p>
+
+            {/* Breathing circle */}
+            <div className="relative flex items-center justify-center">
+              <motion.div
+                animate={{ scale: breatheScale }}
+                transition={{ duration: breatheDur / 1000, ease: "easeInOut" }}
+                className="rounded-full"
+                style={{
+                  width: 180,
+                  height: 180,
+                  background:
+                    "radial-gradient(circle, oklch(0.55 0.18 230 / 0.6) 0%, oklch(0.35 0.15 230 / 0.2) 70%, transparent 100%)",
+                  boxShadow: "0 0 60px oklch(0.55 0.18 230 / 0.3)",
+                }}
+              />
+              <div className="absolute flex flex-col items-center gap-1">
+                <span className="text-xl font-semibold text-white/90">{breatheLabel}</span>
+                <span className="text-xs text-white/40">{breatheSub}</span>
+              </div>
+            </div>
+
+            {/* Cycle dots */}
+            <div className="flex gap-2">
+              {[0, 1].map(i => (
+                <div
+                  key={i}
+                  className="h-1.5 w-1.5 rounded-full transition-all duration-500"
+                  style={{
+                    background:
+                      i < breatheCycles
+                        ? "oklch(0.75 0.15 230)"
+                        : "oklch(0.4 0.05 230 / 0.4)",
+                  }}
+                />
+              ))}
+            </div>
+
+            <p className="text-center text-sm text-white/30 max-w-xs">
+              2 full cycles — then we ground you
+            </p>
+
+            <button
+              onClick={() => setSosPhase("ground")}
+              className="mt-2 text-xs text-white/20 underline underline-offset-4 hover:text-white/40 transition-colors"
+            >
+              skip
+            </button>
+          </motion.div>
+        )}
+
+        {sosPhase === "ground" && (
+          <motion.div
+            key="ground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="relative flex flex-col items-center gap-8 px-8 max-w-sm text-center"
+          >
+            <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
+              sos — grounding
+            </p>
+
+            <div className="space-y-4">
+              <p className="text-2xl font-semibold text-white/90 leading-snug">
+                This urge will pass.
+              </p>
+              <p className="text-2xl font-semibold text-white/90 leading-snug">
+                It always does.
+              </p>
+            </div>
+
+            <div
+              className="rounded-2xl p-5 space-y-3 text-left"
+              style={{ background: "oklch(0.12 0.03 230 / 0.8)", border: "1px solid oklch(0.3 0.08 230 / 0.3)" }}
+            >
+              <p className="text-sm font-medium text-white/60">What's happening in your brain</p>
+              <p className="text-sm text-white/40 leading-relaxed">
+                Urges peak at 15–20 minutes, then naturally subside. Your prefrontal cortex — the part that makes decisions — is temporarily overwhelmed. It will come back online.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setSosPhase("act")}
+              className="mt-2 rounded-2xl px-8 py-3.5 font-semibold text-white transition-all active:scale-95"
+              style={{
+                background: "oklch(0.45 0.18 230)",
+                boxShadow: "0 0 20px oklch(0.45 0.18 230 / 0.4)",
+              }}
+            >
+              Show me what to do
+            </button>
+          </motion.div>
+        )}
+
+        {sosPhase === "act" && (
+          <motion.div
+            key="act"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="relative flex flex-col items-center gap-6 px-8 max-w-sm w-full"
+          >
+            <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
+              sos — act now
+            </p>
+
+            <p className="text-center text-white/70 text-sm">
+              Do <strong className="text-white/90">one</strong> of these right now:
+            </p>
+
+            <div className="space-y-3 w-full">
+              {alternatives.map((alt, i) => (
+                <div
+                  key={i}
+                  className="flex gap-3 items-start rounded-xl p-4"
+                  style={{ background: "oklch(0.12 0.03 230 / 0.7)", border: "1px solid oklch(0.25 0.06 230 / 0.3)" }}
+                >
+                  <span
+                    className="shrink-0 text-xs font-mono font-bold mt-0.5"
+                    style={{ color: "oklch(0.65 0.15 230)" }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="text-sm text-white/80 leading-relaxed">{alt}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={onDismiss}
+              className="mt-2 rounded-2xl px-8 py-3.5 font-semibold text-white transition-all active:scale-95"
+              style={{
+                background: "oklch(0.35 0.08 230)",
+              }}
+            >
+              I'm okay now
+            </button>
+
+            <button
+              onClick={() => { setBreatheIdx(0); setBreatheCycles(0); setBreatheScale(0.85); setSosPhase("breathe"); }}
+              className="text-xs text-white/20 underline underline-offset-4 hover:text-white/40 transition-colors"
+            >
+              Breathe again
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function SOSButton({ onClick }: { onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
+      whileTap={{ scale: 0.94 }}
+      className="fixed z-40 flex items-center gap-2 rounded-full shadow-lg transition-all duration-300"
+      style={{
+        bottom: "5.5rem",
+        right: "1rem",
+        background: "oklch(0.18 0.05 230 / 0.92)",
+        border: "1px solid oklch(0.35 0.1 230 / 0.5)",
+        backdropFilter: "blur(12px)",
+        padding: hovered ? "0.6rem 1.1rem" : "0.6rem",
+        boxShadow: "0 0 20px oklch(0.45 0.18 230 / 0.25)",
+      }}
+    >
+      {/* pulsing dot */}
+      <div className="relative shrink-0 h-2.5 w-2.5">
+        <div
+          className="absolute inset-0 rounded-full animate-ping"
+          style={{ background: "oklch(0.65 0.2 15 / 0.6)" }}
+        />
+        <div
+          className="relative rounded-full h-2.5 w-2.5"
+          style={{ background: "oklch(0.65 0.2 15)" }}
+        />
+      </div>
+      <AnimatePresence>
+        {hovered && (
+          <motion.span
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto" }}
+            exit={{ opacity: 0, width: 0 }}
+            className="overflow-hidden whitespace-nowrap text-xs font-medium text-white/80"
+          >
+            I'm struggling
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
@@ -5287,6 +5616,7 @@ export function ElevateApp() {
   const [showReEntry, setShowReEntry] = useState(false);
   const [reEntryGap, setReEntryGap] = useState(0);
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
+  const [showSOS, setShowSOS] = useState(false);
   const [streakRecovery, setStreakRecovery] = useState<{ brokenStreak: number; trackName: string } | null>(null);
   const [cert, setCert] = useState<number | null>(null);
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
@@ -5850,7 +6180,9 @@ export function ElevateApp() {
         {!milestone && showReEntry && (
           <ReEntryOverlay gapDays={reEntryGap} onDismiss={handleReEntryDismiss} />
         )}
-        {!milestone && showMorningCoach && (
+                      {showSOS && <SOSOverlay tracks={tracks} onDismiss={() => setShowSOS(false)} />}
+              <SOSButton onClick={() => setShowSOS(true)} />
+              {!milestone && showMorningCoach && (
           <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
         )}
         {!milestone && !showReEntry && !showMorningCoach && streakRecovery && (
