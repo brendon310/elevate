@@ -12,6 +12,9 @@ import { supabase } from "./supabase";
 
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from './types';
 import { HomePage, GARDEN_STAGES, MOUNTAIN_STAGES } from './pages/HomePage';
+import * as db from "./db";
+import { Plan, shouldShowPaywall } from './plans';
+import { PaywallModal } from './components/PaywallModal';
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
@@ -582,6 +585,103 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // PrizeRequestModal — shown at 100k milestone
 // ─────────────────────────────────────────────────────────────────────────────
+
+function Spinner({ light = false }: { light?: boolean }) {
+  return (
+    <svg className={`animate-spin h-4 w-4 ${light ? "text-white" : "text-foreground"}`} fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+  );
+}
+
+function CheckInRichModal({ onConfirm, onSkip }: {
+  onConfirm: (data: { mood: number; hadUrge: boolean; urgeIntensity: number; trigger: string }) => void;
+  onSkip: () => void;
+}) {
+  const [mood, setMood] = useState(7);
+  const [hadUrge, setHadUrge] = useState<boolean | null>(null);
+  const [urgeIntensity, setUrgeIntensity] = useState(5);
+  const [trigger, setTrigger] = useState("");
+  const canConfirm = hadUrge !== null;
+  return (
+    <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/60 backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onSkip()}>
+      <div className="w-full max-w-md rounded-t-3xl p-6 pb-10 space-y-5"
+        style={{ background: "oklch(0.12 0.02 145)" }}>
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-white">Come stai oggi?</h2>
+          <button onClick={onSkip} className="text-white/40 text-sm">salta</button>
+        </div>
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs text-white/50">
+            <span>Umore</span><span className="text-white font-semibold">{mood}/10</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-lg">ð</span>
+            <input type="range" min={1} max={10} value={mood}
+              onChange={e => setMood(Number(e.target.value))}
+              className="flex-1 accent-emerald-400 h-2" />
+            <span className="text-lg">ð</span>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-xs text-white/50">Hai sentito l'impulso oggi?</p>
+          <div className="flex gap-2">
+            {["SÃ¬","No"].map(opt => (
+              <button key={opt} onClick={() => setHadUrge(opt === "SÃ¬")}
+                className={"flex-1 py-2 rounded-xl text-sm font-medium border transition-all " + (
+                  (opt === "SÃ¬" ? hadUrge === true : hadUrge === false)
+                    ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                    : "border-white/10 text-white/50")}>
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+        {hadUrge === true && (<>
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs text-white/50">
+              <span>IntensitÃ  impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
+            </div>
+            <input type="range" min={1} max={10} value={urgeIntensity}
+              onChange={e => setUrgeIntensity(Number(e.target.value))}
+              className="w-full accent-amber-400 h-2" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs text-white/50">Cosa l'ha scatenato?</p>
+            <div className="flex flex-wrap gap-2">
+              {CI_TRIGGERS.map(t => (
+                <button key={t} onClick={() => setTrigger(trigger === t ? "" : t)}
+                  className={"px-3 py-1 rounded-full text-xs font-medium border transition-all " + (
+                    trigger === t ? "bg-amber-500/20 border-amber-500/50 text-amber-400" : "border-white/10 text-white/40")}>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>)}
+        <button disabled={!canConfirm}
+          onClick={() => onConfirm({ mood, hadUrge: hadUrge!, urgeIntensity: hadUrge ? urgeIntensity : 0, trigger: hadUrge ? trigger : "" })}
+          className={"w-full py-3 rounded-xl font-semibold text-sm transition-all " + (canConfirm ? "bg-emerald-500 text-white" : "bg-white/5 text-white/20 cursor-not-allowed")}>
+          Salva il check-in
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function PrizeRequestModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ name: "", address: "", city: "", zip: "", country: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
