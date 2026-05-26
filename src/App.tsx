@@ -1597,7 +1597,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 }
 
 function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack; name?: string }) => void }) {
-  type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "name";
+  type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "name" | "island";
   const [step, setStep] = useState<OnboardingStep>("question");
   const [showAllPaths, setShowAllPaths] = useState(false);
   const [answer, setAnswer] = useState("");
