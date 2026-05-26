@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import * as db from "../db";
 import type { UserTrack, Journey, JourneyDay, ChatMessage, CommunityPost } from "../types";
+import confetti from 'canvas-confetti';
+import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock } from 'lucide-react';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
@@ -982,4 +984,4 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     </div>
   );
 }
-export { JourneyView };
+export { JourneyView, JourneyOnboarding };
