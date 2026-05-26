@@ -1514,162 +1514,87 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 // ─────────────────────────────────────────────────────────────────────────────
 
 function LandingPage({ onBegin }: { onBegin: () => void }) {
+  const [phase, setPhase] = useState<"typing" | "question" | "input">("typing");
+  const [answer, setAnswer] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase("question"), 1400);
+    const t2 = setTimeout(() => setPhase("input"), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  useEffect(() => {
+    if (phase === "input") inputRef.current?.focus();
+  }, [phase]);
+
+  const handleSubmit = () => {
+    const lower = answer.toLowerCase();
+    let best: string | null = null;
+    let bestScore = 0;
+    for (const tk of TRACK_KEYWORDS) {
+      let score = 0;
+      for (const kw of tk.keywords) { if (lower.includes(kw)) score += 2; }
+      if (score > bestScore) { bestScore = score; best = tk.slug; }
+    }
+    if (best) localStorage.setItem("forge_init_slug", best);
+    else localStorage.removeItem("forge_init_slug");
+    onBegin();
+  };
+
   return (
-    <div className="relative min-h-screen overflow-x-hidden text-foreground">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[900px]"
-        style={{ background: "radial-gradient(70% 60% at 50% -10%,oklch(0.52 0.22 232 / 0.50),transparent 70%),radial-gradient(40% 50% at 85% 10%,oklch(0.55 0.20 255 / 0.30),transparent 60%),radial-gradient(40% 40% at 15% 30%,oklch(0.62 0.18 210 / 0.18),transparent 70%)" }} />
-
-      <header className="container mx-auto flex items-center justify-between px-6 py-7">
-        <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
-            <span className="font-display text-white text-lg leading-none font-bold">F</span>
+    <div className="min-h-screen flex flex-col items-center justify-center px-6"
+      style={{ background: "oklch(0.08 0.015 145)" }}>
+      <div className="w-full max-w-sm space-y-5">
+        <div className="flex items-end gap-3">
+          <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 mb-1">
+            <span className="text-emerald-400 text-xs font-semibold">F</span>
           </div>
-          <span className="font-display text-[18px] tracking-tight font-semibold">Forge</span>
+          <div className="flex-1 min-h-[48px] flex items-end">
+            {phase === "typing" && (
+              <div className="bg-white/[0.07] rounded-2xl rounded-bl-sm px-4 py-3 inline-flex gap-1.5 items-center">
+                <span className="w-2 h-2 rounded-full bg-white/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 rounded-full bg-white/40 animate-bounce" style={{ animationDelay: "160ms" }} />
+                <span className="w-2 h-2 rounded-full bg-white/40 animate-bounce" style={{ animationDelay: "320ms" }} />
+              </div>
+            )}
+            {phase !== "typing" && (
+              <div className="bg-white/[0.07] rounded-2xl rounded-bl-sm px-4 py-3.5">
+                <p className="text-white/90 text-[15px] leading-snug">What's a habit you want to quit?</p>
+              </div>
+            )}
+          </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-mono">
-          <Eye className="h-3 w-3" /> Public demo
-        </span>
-      </header>
-
-      <main className="container mx-auto px-6 relative">
-        {/* ── Hero ─────────────────────────────────────────────────────────── */}
-        <section className="pt-16 pb-16 max-w-4xl">
-          <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono">
-            A transformation engine · est. 2026
-          </motion.p>
-
-          {/* New headline */}
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.1 }}
-            className="mt-6 font-display text-[clamp(2.6rem,8vw,6.8rem)] leading-[0.93] tracking-[-0.05em] font-bold">
-            The app built<br />
-            for the battle<br />
-            <span className="text-[color:var(--secondary)] italic">only you know</span><br />
-            you're fighting.
-          </motion.h1>
-
-          {/* Sub-headline */}
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 text-xl text-muted-foreground max-w-md leading-relaxed">
-            No judgment. No performance.<br />Just the work.
-          </motion.p>
-
-          {/* Live counter */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-7 inline-flex items-center gap-3 rounded-full bg-card/80 border border-border px-5 py-2.5 backdrop-blur-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" style={{ boxShadow: "0 0 6px 2px oklch(0.75 0.19 155 / 0.6)" }} />
-            <span className="text-sm text-muted-foreground">Today, <strong className="text-foreground">847 people</strong> are on day 1. You're not alone.</span>
-          </motion.div>
-
-          {/* Privacy line */}
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.55 }}
-            className="mt-3 text-[12px] text-emerald-500/80 font-mono flex items-center gap-1.5">
-            Everything you write here is yours alone. We don't read it.
-          </motion.p>
-
-          {/* CTA */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-8 flex flex-wrap items-center gap-4">
-            <button onClick={onBegin}
-              className="btn-chunk group inline-flex items-center gap-2 rounded-full grad-electric px-9 py-4 text-sm font-bold text-white shadow-[var(--shadow-violet)]">
-              Begin <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition" />
+        {phase === "input" && (
+          <div className="space-y-3 pl-12">
+            <div className="flex gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={answer}
+                onChange={e => setAnswer(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && answer.trim() && handleSubmit()}
+                placeholder="e.g. smoking, scrolling, drinking..."
+                className="flex-1 bg-white/[0.07] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/25 outline-none focus:border-emerald-500/40 transition-colors"
+              />
+              <button
+                onClick={handleSubmit}
+                disabled={!answer.trim()}
+                className={"w-11 h-11 rounded-xl flex items-center justify-center transition-all text-lg " + (answer.trim() ? "bg-emerald-500 text-white" : "bg-white/[0.05] text-white/20")}
+              >
+                ↑
+              </button>
+            </div>
+            <button onClick={() => { localStorage.removeItem("forge_init_slug"); onBegin(); }}
+              className="w-full text-center text-white/25 text-xs py-1">
+              skip
             </button>
-          </motion.div>
-        </section>
-
-        {/* ── Testimonials ──────────────────────────────────────────────────── */}
-        <section className="pb-16 max-w-3xl">
-          <div className="grid md:grid-cols-2 gap-4">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
-              className="warm-card rounded-[1.5rem] p-6 relative">
-              <div className="absolute top-4 left-5 text-3xl leading-none text-foreground/15 font-display font-bold select-none">"</div>
-              <p className="text-sm leading-relaxed text-foreground pt-4">
-                Day 47. I deleted the app on day 12. Came back. It waited for me.
-              </p>
-              <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-mono">Day 47 · Quit Pornography</p>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="warm-card rounded-[1.5rem] p-6 relative">
-              <div className="absolute top-4 left-5 text-3xl leading-none text-foreground/15 font-display font-bold select-none">"</div>
-              <p className="text-sm leading-relaxed text-foreground pt-4">
-                I've tried 6 apps. This is the first one that felt like it actually knew what I was going through.
-              </p>
-              <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-mono">Day 23 · Social Anxiety</p>
-            </motion.div>
           </div>
-        </section>
-
-        {/* ── Feature cards ─────────────────────────────────────────────────── */}
-        <section className="relative pb-32 max-w-5xl">
-          <div className="grid md:grid-cols-12 gap-6">
-            <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="md:col-span-7 warm-card rounded-[2rem] p-8 md:p-10 relative ambient-warm">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">01 — Specialist coaches</p>
-              <h3 className="mt-4 font-display text-3xl md:text-4xl leading-tight">
-                Each habit, its own <span className="italic">world-class mind</span>.
-              </h3>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-md">
-                CBT for anxiety. Allen Carr for nicotine. Progressive overload for strength.
-                Every coach is trained in the actual framework behind the change.
-              </p>
-            </motion.article>
-
-            <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-              className="md:col-span-5 md:mt-12 warm-card rounded-[2rem] p-8">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">02 — Streaks that breathe</p>
-              <h3 className="mt-4 font-display text-3xl leading-tight italic">Shielded, not shamed.</h3>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                Life happens. Earn Shields. Spend them. Your story keeps its shape.
-              </p>
-            </motion.article>
-
-            <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
-              className="md:col-span-5 md:-mt-6 warm-card rounded-[2rem] p-8">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">03 — Identity, not points</p>
-              <h3 className="mt-4 font-display text-3xl leading-tight">
-                <span className="italic">You are becoming</span> someone.
-              </h3>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                Day 21: you are a person who meditates. We track who, not what.
-              </p>
-            </motion.article>
-
-            <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-              className="md:col-span-7 warm-card rounded-[2rem] p-8 md:p-10">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">04 — A coach that knows you</p>
-              <h3 className="mt-4 font-display text-3xl md:text-4xl leading-tight">
-                Not a dashboard. <span className="italic">A companion.</span>
-              </h3>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-md">
-                Your coach remembers what you've said, what you've done, and what you're working towards.
-                Every day builds on the last.
-              </p>
-            </motion.article>
-          </div>
-        </section>
-
-        <section className="pb-24 max-w-3xl">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Five worlds. Fifty paths.</p>
-          <div className="mt-6 flex flex-wrap gap-2 text-xs">
-            {["Fitness & Body", "Mental Health", "Quit Bad Habits", "Mind & Learning", "Productivity & Life"].map(c => (
-              <span key={c} className="rounded-full border border-border bg-card px-4 py-2 text-foreground font-mono uppercase tracking-widest text-[10px]">{c}</span>
-            ))}
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-border/60 py-10 text-center">
-        <p className="font-display italic text-sm text-muted-foreground">Forge · {new Date().getFullYear()}</p>
-      </footer>
+        )}
+      </div>
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// OnboardingPage
-// ─────────────────────────────────────────────────────────────────────────────
-
-type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "island" | "name";
 
 function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack; name?: string }) => void }) {
   const [step, setStep] = useState<OnboardingStep>("question");
@@ -1679,7 +1604,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   const [typedCount, setTypedCount] = useState(0);
   const [chosen, setChosen] = useState<OnboardingTrack | null>(null);
   const [islandThemePick, setIslandThemePick] = useState<'garden' | 'mountain'>('garden');
-  const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
+  const [suggestedSlug, setSuggestedSlug] = useState<string | null>(() => localStorage.getItem("forge_init_slug"));
   const [pendingTrackForName, setPendingTrackForName] = useState<OnboardingTrack | null>(null);
   const [onboardingName, setOnboardingName] = useState("");
 
