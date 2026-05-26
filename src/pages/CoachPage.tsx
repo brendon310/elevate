@@ -1,7 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import type { UserTrack, JourneyDay, Journey } from '../types';
+
+const LS_DAYS = (slug: string) => `forge-days-${slug}`;
+
+function archetypeForSlug(slug: string): Archetype {
+
+const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
+
+function hashStr(s: string) {
+
+function lsLoad<T>(key: string, fallback: T): T {
+
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+function yesterdayStr() { return new Date(Date.now() - 86_400_000).toISOString().slice(0, 10); }
+
 
 function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () => void }) {
   const [phase, setPhase] = useState<"typing" | "message">("typing");
