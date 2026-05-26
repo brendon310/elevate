@@ -194,6 +194,28 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
   );
 }
 
+const LS_DAYS = (slug: string) => `forge-days-${slug}`;
+function hashStr(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function yesterdayStr() { return new Date(Date.now() - 86_400_000).toISOString().slice(0, 10); }
+function ghostDayFor(ut: UserTrack): number {
+  const ms = Date.now() - new Date(ut.added_at).getTime();
+  return Math.max(1, Math.floor(ms / 86_400_000) + 1);
+}
+function validateQuickNote(text: string): string | null {
+  const t = text.trim();
+  if (t.length < 10) return "Write at least a few words before sending.";
+  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando â scrivi davvero!";
+  if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
+  if (t.length > 6 && !/[aeiouÃ Ã¨Ã©Ã¬Ã²Ã¹AEIOUÃÃÃÃÃÃ]/u.test(t))
+    return "Scrivi una risposta vera â anche due parole bastano.";
+  if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
+    return "Choose better words for your check-in.";
+  return null;
+}
 export const GARDEN_STAGES = [
   { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
   { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
