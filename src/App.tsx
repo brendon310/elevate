@@ -3270,8 +3270,10 @@ function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, o
       </motion.header>
 
       {tracks.length > 0 && (
+        <>
         <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} isPaused={isPaused} />
         <SavingsCard tracks={tracks} />
+        </>
       )}
 
       <div className="flex items-end justify-between mb-4">
