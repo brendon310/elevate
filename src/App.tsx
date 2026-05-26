@@ -606,6 +606,8 @@ function GoogleIcon() {
   );
 }
 
+const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia","Tristezza","Abitudine"];
+
 function CheckInRichModal({ onConfirm, onSkip }: {
   onConfirm: (data: { mood: number; hadUrge: boolean; urgeIntensity: number; trigger: string }) => void;
   onSkip: () => void;
