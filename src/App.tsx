@@ -15,7 +15,7 @@ import { HomePage, GARDEN_STAGES, MOUNTAIN_STAGES } from './pages/HomePage';
 import * as db from "./db";
 import { Plan, shouldShowPaywall } from './plans';
 import { PaywallModal } from './components/PaywallModal';
-import { JourneyView } from './pages/JourneyPage';
+import { JourneyView, JourneyOnboarding } from './pages/JourneyPage';
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
