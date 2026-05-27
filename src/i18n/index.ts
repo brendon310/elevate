@@ -14,7 +14,7 @@ const savedLang = localStorage.getItem('forge_lang') ||
    navigator.language.startsWith('pt') ? 'pt' :
    navigator.language.startsWith('de') ? 'de' : 'en');
 
-i18n.use(initReactI14Nest).init({
+i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
     it: { translation: it },
