@@ -2198,6 +2198,13 @@ export function ElevateApp() {
       lsSave(LS_USER, next);
       if (supabaseId && patch.name !== undefined) {
         db.saveProfile(supabaseId, next.name, Intl.DateTimeFormat().resolvedOptions().timeZone, i18n.language).catch(() => {});
+      // Welcome email (fires once per device)
+      supabase.auth.getUser().then(({ data: { user: au } }) => {
+        if (au?.email && !localStorage.getItem('forge_welcome_sent')) {
+          localStorage.setItem('forge_welcome_sent', '1');
+          fetch('/api/emails/welcome', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email: au.email, name: au.user_metadata?.full_name }) }).catch(() => {});
+        }
+      });
       }
       return next;
     });
@@ -2291,6 +2298,12 @@ export function ElevateApp() {
         if (MILESTONE_DAYS.has(newStreak) && !lsLoad<boolean>(milestoneKey, false)) {
           lsSave(milestoneKey, true);
           setTimeout(() => setMilestone({ days: newStreak, trackName: ut.name }), 600);
+          // Milestone email
+          supabase.auth.getUser().then(({ data: { user: au } }) => {
+            if (au?.email) {
+              fetch('/api/emails/milestone', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email: au.email, name: ut.name, milestone: newStreak }) }).catch(() => {});
+            }
+          });
         }
         // Certificate every 10 consecutive days
         if (newStreak % 10 === 0) {
