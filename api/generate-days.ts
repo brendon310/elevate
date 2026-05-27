@@ -53,7 +53,6 @@ const TRACK_TASK_HINTS: Record<string, string> = {
   "sedentary-lifestyle": "Stand up from your desk every 30 minutes. Take a 10-minute walk after lunch. Set a reminder. Movement is medicine.",
   "gratitude": "Write 3 specific things you're grateful for — not generic ('health'), but specific ('the quiet hour I had this morning'). Name why each one matters.",
   "lack-of-self-control": "Pick one area of weakness today (food, phone, spending). Set one rule and tell someone. Accountability doubles your follow-through.",
-  "victim-mentality": "Write one situation where you felt like a victim. Rewrite it from the angle: what was MY role? What could I have done differently?",
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
