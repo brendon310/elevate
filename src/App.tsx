@@ -23,6 +23,7 @@ import { InsightsPage } from './pages/InsightsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ReEntryOverlay, StreakRecoveryOverlay, SOSOverlay, SOSButton, CertModal, MilestoneOverlay } from './components/Overlays';
 import { CheckInRichModal } from './components/CheckInModal';
+import i18n from './i18n';
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Constants
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -2196,7 +2197,7 @@ export function ElevateApp() {
       const next = { ...prev!, ...patch };
       lsSave(LS_USER, next);
       if (supabaseId && patch.name !== undefined) {
-        db.saveProfile(supabaseId, next.name).catch(() => {});
+        db.saveProfile(supabaseId, next.name, Intl.DateTimeFormat().resolvedOptions().timeZone, i18n.language).catch(() => {});
       }
       return next;
     });
@@ -2395,12 +2396,12 @@ export function ElevateApp() {
 
         // Save to Supabase
         if (uid) {
-          db.saveProfile(uid, displayName).catch(() => {});
+          db.saveProfile(uid, displayName, Intl.DateTimeFormat().resolvedOptions().timeZone, i18n.language).catch(() => {});
           db.saveTracks(uid, [ut]).catch(() => {});
         }
       } else if (uid) {
         // No pending track â save profile only
-        db.saveProfile(uid, displayName).catch(() => {});
+        db.saveProfile(uid, displayName, Intl.DateTimeFormat().resolvedOptions().timeZone, i18n.language).catch(() => {});
       }
     });
     setScreen("dashboard");
