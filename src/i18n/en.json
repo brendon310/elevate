@@ -1,40 +1,9 @@
 {
-  "app": {
-    "name": "Forge"
-  },
-  "common": {
-    "next": "Next",
-    "back": "Back",
-    "yes": "Yes",
-    "no": "No",
-    "close": "Close",
-    "save": "Save",
-    "cancel": "Cancel",
-    "confirm": "Confirm"
-  },
-  "nav": {
-    "home": "Home",
-    "library": "Library",
-    "stats": "Stats",
-    "settings": "Settings"
-  },
-  "home": {
-    "greeting_morning": "Good morning",
-    "greeting_afternoon": "Good afternoon",
-    "greeting_evening": "Good evening",
-    "checkin_cta": "Check in today",
-    "streak_label": "day streak",
-    "no_track": "No active track",
-    "start_journey": "Start a journey"
-  },
-  "journey": {
-    "today": "Today",
-    "map": "Map",
-    "community": "Community",
-    "day": "Day",
-    "checkin_done": "Done for today",
-    "checkin_prompt": "Log today check-in"
-  },
+  "app": { "name": "Forge" },
+  "common": { "next": "Next", "back": "Back", "yes": "Yes", "no": "No", "close": "Close", "save": "Save", "cancel": "Cancel", "confirm": "Confirm" },
+  "nav": { "home": "Home", "library": "Library", "stats": "Stats", "settings": "Settings" },
+  "home": { "greeting_morning": "Good morning", "greeting_afternoon": "Good afternoon", "greeting_evening": "Good evening", "checkin_cta": "Check in today", "streak_label": "day streak", "no_track": "No active track", "start_journey": "Start a journey" },
+  "journey": { "today": "Today", "map": "Map", "community": "Community", "day": "Day", "checkin_done": "Done for today", "checkin_prompt": "Log today check-in" },
   "checkin": {
     "title": "Day {{day}} check-in",
     "mood_label": "How are you feeling?",
@@ -49,14 +18,9 @@
     "submit": "Log check-in",
     "cancel": "Cancel",
     "triggers": {
-      "stress": "Stress",
-      "boredom": "Boredom",
-      "social": "Social",
-      "loneliness": "Loneliness",
-      "fatigue": "Fatigue",
-      "anger": "Anger",
-      "sadness": "Sadness",
-      "habit": "Habit"
+      "stress": "Stress", "boredom": "Boredom", "social": "Social",
+      "loneliness": "Loneliness", "fatigue": "Fatigue",
+      "anger": "Anger", "sadness": "Sadness", "habit": "Habit"
     }
   },
   "insights": {
@@ -69,128 +33,32 @@
     "coach_insight": "Coach Insight"
   },
   "coach": {
-    "nudge_inactivity": "You’ve been away for a few days. Every step counts — even a small one.",
+    "nudge_inactivity": "You've been away for a few days. Every step counts — even a small one.",
     "nudge_high_urge": "Tough day with urges. That awareness itself is strength.",
-    "nudge_low_mood": "Your mood has been lower lately. You don’t have to feel great to make progress.",
-    "nudge_streak_broken": "Streaks break. What matters is that you’re still here.",
-    "cta_checkin": "Check in now",
-    "cta_sos": "Use SOS tools",
-    "cta_journey": "Open your journey",
-    "dismiss": "Got it"
+    "nudge_low_mood": "Your mood has been lower lately. You don't have to feel great to make progress.",
+    "nudge_streak_broken": "Streaks break. What matters is that you're still here.",
+    "cta_checkin": "Check in now", "cta_sos": "Use SOS tools", "cta_journey": "Open your journey", "dismiss": "Got it"
   },
   "milestones": {
-    "10_days": "You’ve built a real habit. 10 days of choosing yourself.",
+    "10_days": "You've built a real habit. 10 days of choosing yourself.",
     "30_days": "One month in. This is who you are now.",
     "100_days": "100 days. You changed your life.",
-    "days_label": "Days",
-    "by_user": "— {{name}}",
+    "days_label": "Days", "by_user": "— {{name}}",
     "share_title": "{{days}} days milestone",
-    "share_text": "I’ve reached {{days}} days on my {{track}} journey with Forge!",
-    "download": "Save image",
-    "share": "Share",
+    "share_text": "I've reached {{days}} days on my {{track}} journey with Forge!",
+    "download": "Save image", "share": "Share",
     "congrats_title": "Milestone reached!",
-    "congrats_body": "You’ve hit {{days}} days. Want to share this moment?"
+    "congrats_body": "You've hit {{days}} days. Want to share this moment?"
   },
   "accountability": {
     "title": "Accountability Partner",
     "invite_label": "Invite a friend",
     "email_placeholder": "friend@example.com",
-    "share_streak": "Share my streak",
-    "share_mood": "Share mood trend",
-    "send_invite": "Send invite",
-    "pending": "Invite pending",
-    "accepted": "Connected",
+    "share_streak": "Share my streak", "share_mood": "Share mood trend",
+    "send_invite": "Send invite", "pending": "Invite pending", "accepted": "Connected",
     "privacy_note": "Your partner only sees what you choose to share."
   },
-  "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "timezone": "Timezone",
-    "reminder_time": "Daily reminder",
-    "notifications": "Push notifications",
-    "export_data": "Export my data",
-    "delete_account": "Delete account",
-    "plan": "Plan",
-    "logout": "Log out"
-  },
-  "gdpr": {
-    "export_title": "Export your data",
-    "export_desc": "Download all data we hold about you as a JSON file.",
-    "export_btn": "Download data",
-    "delete_title": "Delete your account",
-    "delete_desc": "This permanently deletes your account and all associated data. This action cannot be undone.",
-    "delete_confirm": "Type DELETE to confirm",
-    "delete_btn": "Delete account",
-    "delete_confirm_word": "DELETE"
-  },
-  "email": {
-    "welcome_subject": "Welcome to Forge — your journey starts now",
-    "milestone_subject": "You just hit a milestone",
-    "reengagement_subject": "We miss you — come back to Forge",
-    "digest_subject": "Your weekly Forge progress"
-  }
-}
-{
-  "app": { "name": "Forge" },
-  "nav": {
-    "home": "Home",
-    "library": "Library",
-    "stats": "Stats",
-    "settings": "Settings"
-  },
-  "home": {
-    "greeting_morning": "Good morning",
-    "greeting_afternoon": "Good afternoon",
-    "greeting_evening": "Good evening",
-    "checkin_cta": "Check in today",
-    "streak_label": "day streak",
-    "no_track": "No active track",
-    "start_journey": "Start a journey"
-  },
-  "journey": {
-    "today": "Today",
-    "map": "Map",
-    "community": "Community",
-    "day": "Day",
-    "checkin_done": "Done for today",
-    "checkin_prompt": "Log today check-in"
-  },
-  "checkin": {
-    "mood_label": "How are you feeling?",
-    "urge_label": "Urge intensity",
-    "trigger_label": "What triggered it?",
-    "submit": "Log check-in",
-    "cancel": "Cancel"
-  },
-  "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "timezone": "Timezone",
-    "reminder_time": "Daily reminder",
-    "notifications": "Push notifications",
-    "export_data": "Export my data",
-    "delete_account": "Delete account",
-    "plan": "Plan",
-    "logout": "Log out"
-  },
-  "gdpr": {
-    "export_title": "Export your data",
-    "export_desc": "Download all data we hold about you as a JSON file.",
-    "export_btn": "Download data",
-    "delete_title": "Delete your account",
-    "delete_desc": "This permanently deletes your account and all associated data. This action cannot be undone.",
-    "delete_confirm": "Type DELETE to confirm",
-    "delete_btn": "Delete account",
-    "delete_confirm_word": "DELETE"
-  },
-  "email": {
-    "welcome_subject": "Welcome to Forge your journey starts now",
-    "milestone_subject": "You just hit a milestone",
-    "reengagement_subject": "We miss you come back to Forge",
-    "digest_subject": "Your weekly Forge progress"
-  },
-  "errors": {
-    "generic": "Something went wrong. Please try again.",
-    "network": "Network error. Check your connection."
-  }
+  "settings": { "title": "Settings", "language": "Language", "timezone": "Timezone", "reminder_time": "Daily reminder", "notifications": "Push notifications", "export_data": "Export my data", "delete_account": "Delete account", "plan": "Plan", "logout": "Log out" },
+  "gdpr": { "export_title": "Export your data", "export_desc": "Download all data we hold about you as a JSON file.", "export_btn": "Download data", "delete_title": "Delete your account", "delete_desc": "This permanently deletes your account and all associated data. This action cannot be undone.", "delete_confirm": "Type DELETE to confirm", "delete_btn": "Delete account", "delete_confirm_word": "DELETE" },
+  "email": { "welcome_subject": "Welcome to Forge — your journey starts now", "milestone_subject": "You just hit a milestone", "reengagement_subject": "We miss you — come back to Forge", "digest_subject": "Your weekly Forge progress" }
 }
