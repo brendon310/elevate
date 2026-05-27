@@ -19,7 +19,7 @@ import { JourneyView, JourneyOnboarding } from './pages/JourneyPage';
 import { MorningCoachOverlay } from './pages/CoachPage';
 import { TrackDetailPage } from './pages/TrackDetailPage';
 import { TracksPage } from './pages/TracksPage';
-import { InsightsPage } from './pages/InsightsPage';
+import InsightsPage from './pages/InsightsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ReEntryOverlay, StreakRecoveryOverlay, SOSOverlay, SOSButton, CertModal, MilestoneOverlay } from './components/Overlays';
 import { CheckInRichModal } from './components/CheckInModal';
@@ -2157,6 +2157,8 @@ export function ElevateApp() {
   const [user, setUser] = useState<ElevateUser | null>(lsLoad(LS_USER, null));
   const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
   useEffect(() => {
     if (!user) return;
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
@@ -2756,7 +2758,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
         )}
         {page === "tracks" && <TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} />}
-        {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} />}
+        {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} />}
         {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks}/>}
             {user && shouldShowPaywall(plan, user.createdAt) && (
         <PaywallModal
