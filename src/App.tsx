@@ -2154,6 +2154,9 @@ export function ElevateApp() {
   const [cert, setCert] = useState<number | null>(null);
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
   const [plan, setPlan] = useState<Plan>('free');
+  const [user, setUser] = useState<ElevateUser | null>(lsLoad(LS_USER, null));
+  const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
+  const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
   useEffect(() => {
     if (!user) return;
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
