@@ -130,9 +130,9 @@ export async function loadCoachMessages(userId: string, slug: string): Promise<D
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
-export async function saveProfile(userId: string, name: string): Promise<{ ok: boolean; error?: string }> {
+export async function saveProfile(userId: string, name: string, timezone?: string, language?: string): Promise<{ ok: boolean; error?: string }> {
   const { error } = await supabase.from('profiles').upsert(
-    { id: userId, name, updated_at: new Date().toISOString() }, { onConflict: 'id' }
+    { id: userId, name, updated_at: new Date().toISOString() , timezone, language}, { onConflict: 'id' }
   );
   if (error) { console.warn('[db] saveProfile:', error.message); return { ok: false, error: error.message }; }
   return { ok: true };
