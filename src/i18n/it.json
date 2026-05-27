@@ -1,0 +1,59 @@
+{
+  "app": { "name": "Forge" },
+  "nav": { "home": "Home", "library": "Libreria", "stats": "Statistiche", "settings": "Impostazioni" },
+  "home": {
+    "greeting_morning": "Buongiorno",
+    "greeting_afternoon": "Buon pomeriggio",
+    "greeting_evening": "Buonasera",
+    "checkin_cta": "Check-in di oggi",
+    "streak_label": "giorni consecutivi",
+    "no_track": "Nessun percorso attivo",
+    "start_journey": "Inizia un percorso"
+  },
+  "journey": {
+    "today": "Oggi",
+    "map": "Mappa",
+    "community": "Comunità",
+    "day": "Giorno",
+    "checkin_done": "Fatto per oggi",
+    "checkin_prompt": "Registra il check-in di oggi"
+  },
+  "checkin": {
+    "mood_label": "Come ti senti?",
+    "urge_label": "Intensità dell'impulso",
+    "trigger_label": "Cos'ha scatenato questo?",
+    "submit": "Registra check-in",
+    "cancel": "Annulla"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "timezone": "Fuso orario",
+    "reminder_time": "Promemoria giornaliero",
+    "notifications": "Notifiche push",
+    "export_data": "Esporta i miei dati",
+    "delete_account": "Elimina account",
+    "plan": "Piano",
+    "logout": "Esci"
+  },
+  "gdpr": {
+    "export_title": "Esporta i tuoi dati",
+    "export_desc": "Scarica tutti i dati che conserviamo su di te in un file JSON.",
+    "export_btn": "Scarica dati",
+    "delete_title": "Elimina il tuo account",
+    "delete_desc": "Questo elimina definitivamente il tuo account e tutti i dati associati. Questa azione non può essere annullata.",
+    "delete_confirm": "Digita ELIMINA per confermare",
+    "delete_btn": "Elimina account",
+    "delete_confirm_word": "ELIMINA"
+  },
+  "email": {
+    "welcome_subject": "Benvenuto su Forge — il tuo percorso inizia ora",
+    "milestone_subject": "Hai appena raggiunto un traguardo 🏆",
+    "reengagement_subject": "Ci manchi — torna su Forge",
+    "digest_subject": "Il tuo progresso settimanale su Forge"
+  },
+  "errors": {
+    "generic": "Qualcosa è andato storto. Riprova.",
+    "network": "Errore di rete. Controlla la connessione."
+  }
+}
