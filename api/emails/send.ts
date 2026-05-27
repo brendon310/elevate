@@ -10,3 +10,7 @@ export async function sendEmail(to: string, subject: string, html: string) {
     console.error("[sendEmail] failed:", err);
   }
 }
+
+export default async function handler(_req: any, res: any) {
+  return res.status(404).json({ error: "Not a public endpoint" });
+}
