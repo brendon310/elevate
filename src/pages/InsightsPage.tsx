@@ -400,4 +400,4 @@ Start with "This week," and sign it "â Your Coach". Write like you actually
     </div>
   );
 }
-
+export default InsightsPage;
