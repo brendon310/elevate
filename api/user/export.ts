@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
-import jwt from "jsonwebtoken";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
