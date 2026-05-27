@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User as UserIcon, Database, Download, Bell } from 'lucide-react';
 import type { UserTrack } from '../types';
 import i18n, { STORAGE_KEY } from '../i18n';
+import { supabase } from '../supabase';
 
 const LS_LOGS = "forge-logs";
 const LS_USER = "forge-user";
@@ -44,6 +45,9 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
   const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
   const [reminderTime, setReminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
   const [pushLoading, setPushLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
   const [pushError, setPushError] = useState<string | null>(null);
 
   const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BLsx3Fhbc_Z2gD4jDBRaIUgwd8A2jAo2aBeTeZ800-y2y4yrbTDCJJoYnfaZk83VNdwKiFN6LciifgkZj5q4US4";
@@ -144,6 +148,38 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
     [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
     onSignOut();
   };
+  const handleExport = async () => {
+    setExportLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) return;
+      const res = await fetch('/api/user/export', { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'forge-data-export.json'; a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) { console.error('[export]', err); }
+    finally { setExportLoading(false); }
+  };
+
+  const handleDelete = async () => {
+    if (deleteConfirm !== 'DELETE') return;
+    setDeleteLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) return;
+      const res = await fetch('/api/user/delete', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error('Delete failed');
+      localStorage.clear();
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    } catch (err) { console.error('[delete]', err); setDeleteLoading(false); }
+  };
+
 
   return (
     <div className="container mx-auto px-6 py-8 max-w-2xl space-y-6">
@@ -308,7 +344,42 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
           </div>
         </div>
       </section>
-    </div>
+
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Database className="w-5 h-5 text-muted-foreground" />
+          <h2 className="font-semibold">Your Data</h2>
+        </div>
+        <div className="mb-6">
+          <p className="text-sm text-muted-foreground mb-3">Download a copy of all your data — check-ins, journeys, posts.</p>
+          <button
+            onClick={handleExport}
+            disabled={exportLoading}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-sm font-medium transition hover:opacity-80 disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            {exportLoading ? 'Preparing...' : 'Export my data'}
+          </button>
+        </div>
+        <div className="border-t border-border pt-5">
+          <p className="text-sm font-medium text-red-400 mb-1">Delete account</p>
+          <p className="text-xs text-muted-foreground mb-3">Permanently deletes your account and all data. This cannot be undone.</p>
+          <input
+            type="text"
+            placeholder="Type DELETE to confirm"
+            value={deleteConfirm}
+            onChange={e => setDeleteConfirm(e.target.value)}
+            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm mb-3 focus:outline-none"
+          />
+          <button
+            onClick={handleDelete}
+            disabled={deleteLoading || deleteConfirm !== 'DELETE'}
+            className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-medium transition hover:opacity-80 disabled:opacity-50"
+          >
+            {deleteLoading ? 'Deleting...' : 'Delete my account'}
+          </button>
+        </div>
+      </section>    </div>
   );
 }
 
