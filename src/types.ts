@@ -11,18 +11,24 @@ export interface Track {
 
 export interface Log {
   id: string;
-  user_id: string;
+  user_id?: string;
   track_id: string;
   log_date: string;
   created_at: string;
 }
 
 export interface JourneyDay {
-  day: number;
+  id: string;
+  journeyId: string;
+  dayNumber: number;
   title: string;
   description: string;
-  tasks: string[];
-  reflection?: string;
+  task: string;
+  reflection: string;
+  science: string;
+  checkinPrompt: string;
+  completedAt: string | null;
+  userNote: string | null;
 }
 
 export interface UserProfile {
