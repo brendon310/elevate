@@ -1,3 +1,96 @@
+// ─── Existing types (unchanged) ────────────────────────────────────────────
+export interface Track {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+}
+
+export interface Log {
+  id: string;
+  user_id: string;
+  track_id: string;
+  log_date: string;
+  created_at: string;
+}
+
+export interface JourneyDay {
+  day: number;
+  title: string;
+  description: string;
+  tasks: string[];
+  reflection?: string;
+}
+
+export interface UserProfile {
+  id: string;
+  display_name?: string;
+  avatar_url?: string;
+  streak?: number;
+  onboarding_ctx?: OnboardingCtx;
+  created_at: string;
+}
+
+// ─── Phase 5 — new types ───────────────────────────────────────────────────
+
+export interface OnboardingCtx {
+  triggers?: string[];
+  motivation?: string;
+  obstacles?: string[];
+  goal_days?: number;
+}
+
+export type NudgeType = 'inactivity' | 'high_urge' | 'low_mood' | 'streak_broken';
+
+export interface CoachNudge {
+  id: string;
+  user_id: string;
+  nudge_type: NudgeType;
+  message: string;
+  cta_label?: string;
+  cta_route?: string;
+  dismissed_at?: string | null;
+  created_at: string;
+}
+
+export interface AccountabilityPair {
+  id: string;
+  requester_id: string;
+  partner_email: string;
+  partner_id?: string | null;
+  status: 'pending' | 'accepted' | 'declined';
+  share_streak: boolean;
+  share_mood: boolean;
+  created_at: string;
+}
+
+export interface MilestoneReached {
+  id: string;
+  user_id: string;
+  track_id: string;
+  milestone_days: 10 | 30 | 100;
+  reached_at: string;
+  card_downloaded: boolean;
+}
+
+export interface EnrichedLog extends Log {
+  mood?: number | null;
+  had_urge?: boolean | null;
+  urge_intensity?: number | null;
+  trigger_label?: string | null;
+  hour_of_day?: number | null;
+}
+
+export interface PatternData {
+  recentLogs: EnrichedLog[];
+  topTriggers: { label: string; count: number }[];
+  avgMoodByDay: { date: string; avg: number }[];
+  riskyHours: number[];
+  coachInsight?: string;
+}
 // src/types.ts
 // Shared TypeScript types — exported for use across pages and components.
 
