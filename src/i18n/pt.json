@@ -1,0 +1,59 @@
+{
+  "app": { "name": "Forge" },
+  "nav": { "home": "Início", "library": "Biblioteca", "stats": "Estatísticas", "settings": "Configurações" },
+  "home": {
+    "greeting_morning": "Bom dia",
+    "greeting_afternoon": "Boa tarde",
+    "greeting_evening": "Boa noite",
+    "checkin_cta": "Check-in de hoje",
+    "streak_label": "dias seguidos",
+    "no_track": "Nenhum caminho ativo",
+    "start_journey": "Começar um caminho"
+  },
+  "journey": {
+    "today": "Hoje",
+    "map": "Mapa",
+    "community": "Comunidade",
+    "day": "Dia",
+    "checkin_done": "Feito por hoje",
+    "checkin_prompt": "Registra o check-in de hoje"
+  },
+  "checkin": {
+    "mood_label": "Como você está se sentindo?",
+    "urge_label": "Intensidade do impulso",
+    "trigger_label": "O que desencadeou isso?",
+    "submit": "Registrar check-in",
+    "cancel": "Cancelar"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "timezone": "Fuso horário",
+    "reminder_time": "Lembrete diário",
+    "notifications": "Notificações push",
+    "export_data": "Exportar meus dados",
+    "delete_account": "Excluir conta",
+    "plan": "Plano",
+    "logout": "Sair"
+  },
+  "gdpr": {
+    "export_title": "Exporte seus dados",
+    "export_desc": "Baixe todos os seus dados como arquivo JSON.",
+    "export_btn": "Baixar dados",
+    "delete_title": "Excluir sua conta",
+    "delete_desc": "Isso exclui permanentemente sua conta e todos os dados associados. Esta ação não pode ser desfeita.",
+    "delete_confirm": "Digite EXCLUIR para confirmar",
+    "delete_btn": "Excluir conta",
+    "delete_confirm_word": "EXCLUIR"
+  },
+  "email": {
+    "welcome_subject": "Bem-vindo ao Forge — sua jornada começa agora",
+    "milestone_subject": "Você acabou de alcançar uma conquista",
+    "reengagement_subject": "Sentimos sua falta — volte ao Forge",
+    "digest_subject": "Seu progresso semanal no Forge"
+  },
+  "errors": {
+    "generic": "Algo deu errado. Tente novamente.",
+    "network": "Erro de rede. Verifique sua conexão."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "app": { "name": "Forge" },
+  "nav": { "home": "Accueil", "library": "Bibliothèque", "stats": "Statistiques", "settings": "Paramètres" },
+  "home": {
+    "greeting_morning": "Bonjour",
+    "greeting_afternoon": "Bon après-midi",
+    "greeting_evening": "Bonsoir",
+    "checkin_cta": "Check-in du jour",
+    "streak_label": "jours consécutifs",
+    "no_track": "Aucun parcours actif",
+    "start_journey": "Commencer un parcours"
+  },
+  "journey": {
+    "today": "Aujourd'hui",
+    "map": "Carte",
+    "community": "Communauté",
+    "day": "Jour",
+    "checkin_done": "Terminé pour aujourd'hui",
+    "checkin_prompt": "Enregistre ton check-in du jour"
+  },
+  "checkin": {
+    "mood_label": "Comment tu te sens ?",
+    "urge_label": "Intensité de l'envie",
+    "trigger_label": "Qu'est-ce qui l'a déclenché ?",
+    "submit": "Enregistrer le check-in",
+    "cancel": "Annuler"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "timezone": "Fuseau horaire",
+    "reminder_time": "Rappel quotidien",
+    "notifications": "Notifications push",
+    "export_data": "Exporter mes données",
+    "delete_account": "Supprimer le compte",
+    "plan": "Abonnement",
+    "logout": "Se déconnecter"
+  },
+  "gdpr": {
+    "export_title": "Exporte tes données",
+    "export_desc": "Télécharge toutes tes données sous forme de fichier JSON.",
+    "export_btn": "Télécharger les données",
+    "delete_title": "Supprimer ton compte",
+    "delete_desc": "Cela supprime définitivement ton compte et toutes les données associées. Cette action est irréversible.",
+    "delete_confirm": "Tape SUPPRIMER pour confirmer",
+    "delete_btn": "Supprimer le compte",
+    "delete_confirm_word": "SUPPRIMER"
+  },
+  "email": {
+    "welcome_subject": "Bienvenue sur Forge — ton parcours commence maintenant",
+    "milestone_subject": "Tu viens d'atteindre un objectif",
+    "reengagement_subject": "Tu nous manques — reviens sur Forge",
+    "digest_subject": "Ta progression hebdomadaire sur Forge"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite. Réessaie.",
+    "network": "Erreur réseau. Vérifie ta connexion."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "app": { "name": "Forge" },
+  "nav": { "home": "Inicio", "library": "Biblioteca", "stats": "Estadísticas", "settings": "Ajustes" },
+  "home": {
+    "greeting_morning": "Buenos días",
+    "greeting_afternoon": "Buenas tardes",
+    "greeting_evening": "Buenas noches",
+    "checkin_cta": "Check-in de hoy",
+    "streak_label": "días seguidos",
+    "no_track": "Sin camino activo",
+    "start_journey": "Empieza un camino"
+  },
+  "journey": {
+    "today": "Hoy",
+    "map": "Mapa",
+    "community": "Comunidad",
+    "day": "Día",
+    "checkin_done": "Hecho por hoy",
+    "checkin_prompt": "Registra el check-in de hoy"
+  },
+  "checkin": {
+    "mood_label": "¿Cómo te sientes?",
+    "urge_label": "Intensidad del impulso",
+    "trigger_label": "¿Qué lo desencadenó?",
+    "submit": "Registrar check-in",
+    "cancel": "Cancelar"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "timezone": "Zona horaria",
+    "reminder_time": "Recordatorio diario",
+    "notifications": "Notificaciones push",
+    "export_data": "Exportar mis datos",
+    "delete_account": "Eliminar cuenta",
+    "plan": "Plan",
+    "logout": "Cerrar sesión"
+  },
+  "gdpr": {
+    "export_title": "Exporta tus datos",
+    "export_desc": "Descarga todos tus datos como archivo JSON.",
+    "export_btn": "Descargar datos",
+    "delete_title": "Eliminar tu cuenta",
+    "delete_desc": "Esto elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+    "delete_confirm": "Escribe ELIMINAR para confirmar",
+    "delete_btn": "Eliminar cuenta",
+    "delete_confirm_word": "ELIMINAR"
+  },
+  "email": {
+    "welcome_subject": "Bienvenido a Forge — tu camino empieza ahora",
+    "milestone_subject": "Acabas de alcanzar un hito",
+    "reengagement_subject": "Te echamos de menos — vuelve a Forge",
+    "digest_subject": "Tu progreso semanal en Forge"
+  },
+  "errors": {
+    "generic": "Algo salió mal. Inténtalo de nuevo.",
+    "network": "Error de red. Comprueba tu conexión."
+  }
+}
