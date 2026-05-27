@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Mail, BarChart2 } from 'lucide-react';
 import type { UserTrack, Log, JourneyDay } from '../types';
@@ -26,7 +26,7 @@ function liveStreak(ut: UserTrack): number {
   return 0;
 }
 
-function InsightsPage({ userTracks, logs }: { userTracks: UserTrack[]; logs: Log[] }) {
+function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; logs: Log[]; userId?: string }) {
   const [letterLoading, setLetterLoading] = useState(false);
   const [letter, setLetter] = useState<string | null>(null);
   const [showLetter, setShowLetter] = useState(false);
