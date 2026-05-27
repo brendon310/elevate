@@ -65,7 +65,7 @@ export function MilestoneShareCard({ days, trackName, userName, onClose }: Miles
         width: 390,
         height: 693,
       });
-      canvas.toBlob(async (blob) => {
+      canvas.toBlob(async (blob: Blob | null) => {
         if (!blob) return;
         const file = new File([blob], `elevate-${days}-days.png`, { type: 'image/png' });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
