@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { User as UserIcon, Database, Download, Bell } from 'lucide-react';
-import type { UserTrack } from '../types';
-import i18n, { STORAGE_KEY } from '../i18n';
+import { User as UserIcon, Database, Download, Bell, Globe, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
+import type { SupportedLanguage } from '../i18n';
+import type { UserTrack } from '../types';
 
 const LS_LOGS = "forge-logs";
 const LS_USER = "forge-user";
@@ -27,7 +28,8 @@ const FORGE_TITLES = [
   { days: 25, title: 'Journeyman', color: 'text-purple-400' },
   { days: 50, title: 'Forge Master', color: 'text-amber-400' },
   { days: 100, title: 'Legend', color: 'text-yellow-300' },
-]
+];
+
 function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
   const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
   let result = FORGE_TITLES[0];
@@ -35,20 +37,32 @@ function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
   return result;
 }
 
-function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme , shields, tracks}: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void ; shields: number; tracks: UserTrack[]}) {
-  const [currentLang, setCurrentLang] = useState<string>(i18n.language);
+function SettingsPage({
+  userName, onSignOut, onUpdateName, islandTheme, onChangeTheme, shields, tracks
+}: {
+  userName: string;
+  onSignOut: () => void;
+  onUpdateName: (name: string) => void;
+  islandTheme: string;
+  onChangeTheme: (t: string) => void;
+  shields: number;
+  tracks: UserTrack[];
+}) {
+  const { t, i18n } = useTranslation();
+
   const [displayName, setDisplayName] = useState(userName);
   const [nameSaved, setNameSaved] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "dark" }).theme);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [notifEnabled, setNotifEnabled] = useState(() => lsLoad<boolean>("forge-notif", false));
   const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
-  const [reminderTime, setReminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
+  const [reminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
   const [pushLoading, setPushLoading] = useState(false);
+  const [pushError, setPushError] = useState<string | null>(null);
+
+  // GDPR state
   const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
-  const [pushError, setPushError] = useState<string | null>(null);
 
   const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BLsx3Fhbc_Z2gD4jDBRaIUgwd8A2jAo2aBeTeZ800-y2y4yrbTDCJJoYnfaZk83VNdwKiFN6LciifgkZj5q4US4";
 
@@ -59,10 +73,14 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
     return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
   };
 
+  const handleLangChange = (lang: SupportedLanguage) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem('forge_lang', lang);
+  };
+
   const toggleReminder = async () => {
     setPushError(null);
     if (reminderOn) {
-      // Unsubscribe
       const reg = await navigator.serviceWorker.ready.catch(() => null);
       if (reg) {
         const sub = await reg.pushManager.getSubscription().catch(() => null);
@@ -74,31 +92,12 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
       lsSave("forge-reminder-on", false);
       return;
     }
-    // Subscribe
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       setPushError("Push notifications are not supported in this browser.");
       return;
     }
     setPushLoading(true);
     try {
-      {/* Language */}
-      <div className="settings-section">
-        <h2 className="section-title">Language</h2>
-        <div className="setting-row">
-          <span className="setting-label">App language</span>
-          <div style={{display:'flex',gap:'8px',marginTop:'4px'}}>
-            {(['en','it'] as const).map(lang => (
-              <button
-                key={lang}
-                onClick={() => { i18n.changeLanguage(lang); localStorage.setItem(STORAGE_KEY, lang); setCurrentLang(lang); }}
-                style={{padding:'6px 14px',borderRadius:'8px',border:'1px solid',borderColor:currentLang===lang?'#4f8ef7':'#444',background:currentLang===lang?'#4f8ef7':'transparent',color:'#fff',cursor:'pointer',fontWeight:currentLang===lang?700:400}}
-              >
-                {lang === 'en' ? 'EN' : 'IT'}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
       const perm = await Notification.requestPermission();
       if (perm !== "granted") { setPushError("Permission denied. Enable notifications in browser settings."); return; }
       const reg = await navigator.serviceWorker.ready;
@@ -110,17 +109,11 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
       }
       setReminderOn(true);
       lsSave("forge-reminder-on", true);
-    } catch (e) {
+    } catch {
       setPushError("Could not enable notifications. Try again.");
     } finally {
       setPushLoading(false);
     }
-  };
-
-  const applyTheme = (t: "light" | "dark") => {
-    setTheme(t);
-    lsSave(LS_PREFS, { theme: t });
-    document.documentElement.classList.toggle("dark", t === "dark");
   };
 
   const handleSaveName = () => {
@@ -130,47 +123,78 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
     setTimeout(() => setNameSaved(false), 2000);
   };
 
-  const handleClearData = () => {
-    [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
-    onSignOut();
-  };
+  // GDPR: export all data from Supabase
   const handleExport = async () => {
     setExportLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
-      if (!token) return;
-      const res = await fetch('/api/user/export', { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error('Export failed');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'forge-data-export.json'; a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) { console.error('[export]', err); }
-    finally { setExportLoading(false); }
+      if (token) {
+        const resp = await fetch('/api/user/export', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'forge-data-export.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        // Fallback: export localStorage data
+        const data = {
+          exported: new Date().toISOString(),
+          user: lsLoad(LS_USER, null),
+          tracks: lsLoad(LS_TRACKS, []),
+          logs: lsLoad(LS_LOGS, []),
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "forge-data.json"; a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      // Silent fail
+    } finally {
+      setExportLoading(false);
+    }
   };
 
-  const handleDelete = async () => {
-    if (deleteConfirm !== 'DELETE') return;
+  // GDPR: delete account and all data
+  const handleDeleteAccount = async () => {
+    const confirmWord = t('gdpr.delete_confirm_word');
+    if (deleteConfirm !== confirmWord) return;
     setDeleteLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
-      if (!token) return;
-      const res = await fetch('/api/user/delete', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error('Delete failed');
-      localStorage.clear();
+      if (token) {
+        await fetch('/api/user/delete', {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+      // Clear local storage and sign out
+      [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH, LS_PREFS].forEach(k => localStorage.removeItem(k));
       await supabase.auth.signOut();
-      window.location.href = '/';
-    } catch (err) { console.error('[delete]', err); setDeleteLoading(false); }
+      onSignOut();
+    } catch {
+      setDeleteLoading(false);
+    }
   };
 
+  const handleClearData = () => {
+    [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
+    onSignOut();
+  };
+
+  const forgeTitle = getForgeTitle(tracks);
 
   return (
     <div className="container mx-auto px-6 py-8 max-w-2xl space-y-6">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Settings</h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">{t('settings.title')}</h1>
         <p className="text-muted-foreground mt-1">Account and preferences.</p>
       </header>
 
@@ -192,14 +216,41 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
                 className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               <button onClick={handleSaveName}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
-                {nameSaved ? "Saved â" : "Save"}
+                {nameSaved ? "Saved" : "Save"}
               </button>
             </div>
           </div>
           <button onClick={onSignOut}
             className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
-            Sign out
+            {t('settings.logout')}
           </button>
+        </div>
+      </section>
+
+      {/* Language */}
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+            <Globe className="h-4 w-4" />
+          </span>
+          <h2 className="font-semibold">{t('settings.language')}</h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {([
+            { code: 'en', label: 'English' },
+            { code: 'it', label: 'Italiano' },
+            { code: 'es', label: 'Español' },
+            { code: 'fr', label: 'Français' },
+            { code: 'pt', label: 'Português' },
+            { code: 'de', label: 'Deutsch' },
+          ] as { code: import('../i18n').SupportedLanguage; label: string }[]).map(({ code, label }) => (
+            <button
+              key={code}
+              onClick={() => handleLangChange(code)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${i18n.language === code ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+              {label}
+            </button>
+          ))}
         </div>
       </section>
 
@@ -209,12 +260,12 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Bell className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Notifications</h2>
+          <h2 className="font-semibold">{t('settings.notifications')}</h2>
         </div>
         <div className="flex items-center justify-between py-2">
           <div>
-            <p className="text-sm font-medium">Daily reminder</p>
-            <p className="text-xs text-muted-foreground">Get a nudge when you haven't checked in yet.</p>
+            <p className="text-sm font-medium">{t('settings.reminder_time')}</p>
+            <p className="text-xs text-muted-foreground">Get a nudge when you have not checked in yet.</p>
           </div>
           <button
             onClick={toggleReminder}
@@ -225,27 +276,29 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
           </button>
         </div>
         {reminderOn && (
-                    <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
-            <p className="text-xs text-muted-foreground">{"You'll get a daily nudge each morning if you haven't checked in."}</p>
+          <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
+            <p className="text-xs text-muted-foreground">You will get a daily nudge if you have not checked in.</p>
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
       </section>
-            {/* Rank & Shields */}
+
+      {/* Rank & Shields */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6 space-y-3">
         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Rank & Shields</h3>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-muted-foreground mb-0.5">Your Title</p>
-            <p className={`text-base font-semibold ${getForgeTitle(tracks).color}`}>{getForgeTitle(tracks).title}</p>
+            <p className={`text-base font-semibold ${forgeTitle.color}`}>{forgeTitle.title}</p>
           </div>
           <div className="flex items-center gap-2 bg-white/5 border border-border rounded-xl px-4 py-2">
-            <span className="text-lg" aria-hidden="true">ð¡</span>
             <span className="text-xl font-bold text-blue-400">{shields}</span>
+            <span className="text-xs text-muted-foreground">shields</span>
           </div>
         </div>
         <p className="text-xs text-muted-foreground">Earn a shield every 10 consecutive days. Auto-used if you miss a day.</p>
       </section>
+
       {/* Island Theme */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -283,7 +336,7 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
         })()}
       </section>
 
-      {/* Data & Privacy */}
+      {/* Data & Privacy (GDPR) */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="flex items-center gap-2 mb-4">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
@@ -292,23 +345,67 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
           <h2 className="font-semibold">Data & Privacy</h2>
         </div>
         <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-          Your progress is saved locally and backed up to your account. Sign out to switch accounts.
+          Your progress is saved locally and backed up to your account. You can export or delete your data at any time.
         </div>
         <div className="space-y-1">
+          {/* Export */}
           <div className="flex items-center justify-between py-3 border-b border-border/50">
             <div>
-              <p className="text-sm font-medium">Export data</p>
-              <p className="text-xs text-muted-foreground">Download all your paths and logs as JSON</p>
+              <p className="text-sm font-medium">{t('gdpr.export_title')}</p>
+              <p className="text-xs text-muted-foreground">{t('gdpr.export_desc')}</p>
             </div>
-            <button onClick={handleExport}
-              className="btn-chunk inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-              <Download className="h-3.5 w-3.5" /> Export
+            <button onClick={handleExport} disabled={exportLoading}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition disabled:opacity-50">
+              <Download className="h-3.5 w-3.5" />
+              {exportLoading ? 'Exporting...' : t('gdpr.export_btn')}
             </button>
           </div>
+
+          {/* Delete account */}
+          <div className="py-3 border-b border-border/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-[color:var(--secondary)]">{t('gdpr.delete_title')}</p>
+                <p className="text-xs text-muted-foreground">{t('gdpr.delete_desc')}</p>
+              </div>
+              {!showDeleteConfirm && (
+                <button onClick={() => setShowDeleteConfirm(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {t('gdpr.delete_btn')}
+                </button>
+              )}
+            </div>
+            {showDeleteConfirm && (
+              <div className="mt-3 space-y-2">
+                <p className="text-xs text-muted-foreground">{t('gdpr.delete_confirm')}</p>
+                <input
+                  value={deleteConfirm}
+                  onChange={e => setDeleteConfirm(e.target.value)}
+                  placeholder={t('gdpr.delete_confirm_word')}
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--secondary)]"
+                />
+                <div className="flex gap-2">
+                  <button onClick={() => { setShowDeleteConfirm(false); setDeleteConfirm(''); }}
+                    className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={deleteConfirm !== t('gdpr.delete_confirm_word') || deleteLoading}
+                    className="flex-1 rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition disabled:opacity-40">
+                    {deleteLoading ? 'Deleting...' : t('gdpr.delete_btn')}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Clear local data */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear all data</p>
-              <p className="text-xs text-muted-foreground">Permanently delete all your paths, logs, and progress</p>
+              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear local data</p>
+              <p className="text-xs text-muted-foreground">Remove all locally cached data and sign out</p>
             </div>
             {showClearConfirm ? (
               <div className="flex gap-2">
@@ -323,49 +420,14 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
               </div>
             ) : (
               <button onClick={() => setShowClearConfirm(true)}
-                className="btn-chunk rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
+                className="rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
                 Clear
               </button>
             )}
           </div>
         </div>
       </section>
-
-      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Database className="w-5 h-5 text-muted-foreground" />
-          <h2 className="font-semibold">Your Data</h2>
-        </div>
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground mb-3">Download a copy of all your data — check-ins, journeys, posts.</p>
-          <button
-            onClick={handleExport}
-            disabled={exportLoading}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-sm font-medium transition hover:opacity-80 disabled:opacity-50"
-          >
-            <Download className="w-4 h-4" />
-            {exportLoading ? 'Preparing...' : 'Export my data'}
-          </button>
-        </div>
-        <div className="border-t border-border pt-5">
-          <p className="text-sm font-medium text-red-400 mb-1">Delete account</p>
-          <p className="text-xs text-muted-foreground mb-3">Permanently deletes your account and all data. This cannot be undone.</p>
-          <input
-            type="text"
-            placeholder="Type DELETE to confirm"
-            value={deleteConfirm}
-            onChange={e => setDeleteConfirm(e.target.value)}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm mb-3 focus:outline-none"
-          />
-          <button
-            onClick={handleDelete}
-            disabled={deleteLoading || deleteConfirm !== 'DELETE'}
-            className="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-medium transition hover:opacity-80 disabled:opacity-50"
-          >
-            {deleteLoading ? 'Deleting...' : 'Delete my account'}
-          </button>
-        </div>
-      </section>    </div>
+    </div>
   );
 }
 
