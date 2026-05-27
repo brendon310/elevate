@@ -1,5 +1,30 @@
 {
   "app": { "name": "Forge" },
+  "common": { "next": "Próximo", "back": "Voltar", "yes": "Sim", "no": "Não", "close": "Fechar", "save": "Guardar", "cancel": "Cancelar", "confirm": "Confirmar" },
+  "nav": { "home": "Início", "library": "Biblioteca", "stats": "Estatísticas", "settings": "Definições" },
+  "home": { "greeting_morning": "Bom dia", "greeting_afternoon": "Boa tarde", "greeting_evening": "Boa noite", "checkin_cta": "Registar hoje", "streak_label": "dias seguidos", "no_track": "Sem percurso ativo", "start_journey": "Iniciar uma jornada" },
+  "journey": { "today": "Hoje", "map": "Mapa", "community": "Comunidade", "day": "Dia", "checkin_done": "Concluído por hoje", "checkin_prompt": "Registar check-in de hoje" },
+  "checkin": {
+    "title": "Check-in Dia {{day}}",
+    "mood_label": "Como você está hoje?",
+    "mood_low": "Com dificuldades", "mood_high": "Ótimo",
+    "urge_label": "Intensidade do desejo",
+    "urge_question": "Você teve vontade de ceder hoje?",
+    "urge_intensity_label": "Qual foi a intensidade?",
+    "trigger_label": "O que desencadeou?",
+    "note_label": "Alguma nota? (opcional)", "note_placeholder": "O que aconteceu hoje...",
+    "submit": "Registar check-in", "cancel": "Cancelar",
+    "triggers": { "stress": "Estresse", "boredom": "Tédio", "social": "Social", "loneliness": "Solidão", "fatigue": "Cansaço", "anger": "Raiva", "sadness": "Tristeza", "habit": "Hábito" }
+  },
+  "insights": { "patterns_title": "Seus Padrões", "patterns_subtitle": "Com base nos últimos 30 dias", "top_triggers": "Principais Gatilhos", "risky_hours": "Horas de Risco", "mood_trend": "Tendência do Humor", "no_data": "Faça check-in diário para descobrir seus padrões.", "coach_insight": "Análise do Coach" },
+  "coach": { "nudge_inactivity": "Passaram alguns dias. Cada passo conta.", "nudge_high_urge": "Dia difícil com vontades. Essa consciência já é força.", "nudge_low_mood": "Seu humor tem estado baixo. Você não precisa se sentir bem para progredir.", "nudge_streak_broken": "As sequências se quebram. O importante é que você ainda está aqui.", "cta_checkin": "Fazer check-in", "cta_sos": "Usar ferramentas SOS", "cta_journey": "Abrir minha jornada", "dismiss": "Entendido" },
+  "milestones": { "10_days": "Você criou um hábito real. 10 dias escolhendo a si mesmo.", "30_days": "Um mês. Isso é quem você é agora.", "100_days": "100 dias. Você mudou sua vida.", "days_label": "Dias", "by_user": "— {{name}}", "share_title": "{{days}} dias de conquista", "share_text": "Atingi {{days}} dias na minha jornada {{track}} com o Forge!", "download": "Salvar imagem", "share": "Compartilhar", "congrats_title": "Marco alcançado!", "congrats_body": "Você atingiu {{days}} dias. Quer compartilhar este momento?" },
+  "accountability": { "title": "Parceiro de Responsabilidade", "invite_label": "Convidar um amigo", "email_placeholder": "amigo@exemplo.com", "share_streak": "Partilhar minha sequência", "share_mood": "Partilhar humor", "send_invite": "Enviar convite", "pending": "Convite pendente", "accepted": "Conectado", "privacy_note": "Seu parceiro só vê o que você escolher partilhar." },
+  "settings": { "title": "Definições", "language": "Idioma", "timezone": "Fuso horário", "reminder_time": "Lembrete diário", "notifications": "Notificações push", "export_data": "Exportar os meus dados", "delete_account": "Eliminar conta", "plan": "Plano", "logout": "Terminar sessão" },
+  "gdpr": { "export_title": "Exportar os seus dados", "export_desc": "Transfira todos os dados que temos sobre si num ficheiro JSON.", "export_btn": "Transferir dados", "delete_title": "Eliminar a sua conta", "delete_desc": "Isto elimina permanentemente a sua conta e todos os dados associados.", "delete_confirm": "Escreva ELIMINAR para confirmar", "delete_btn": "Eliminar conta", "delete_confirm_word": "ELIMINAR" },
+  "email": { "welcome_subject": "Bem-vindo ao Forge — a sua jornada começa agora", "milestone_subject": "Acabou de atingir um marco", "reengagement_subject": "Temos saudades — volte ao Forge", "digest_subject": "O seu progresso semanal no Forge" }
+}{
+  "app": { "name": "Forge" },
   "nav": { "home": "Início", "library": "Biblioteca", "stats": "Estatísticas", "settings": "Configurações" },
   "home": {
     "greeting_morning": "Bom dia",
