@@ -130,7 +130,6 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
     setTimeout(() => setNameSaved(false), 2000);
   };
 
-  cons
   const handleClearData = () => {
     [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
     onSignOut();
