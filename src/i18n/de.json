@@ -1,5 +1,30 @@
 {
   "app": { "name": "Forge" },
+  "common": { "next": "Weiter", "back": "Zurück", "yes": "Ja", "no": "Nein", "close": "Schließen", "save": "Speichern", "cancel": "Abbrechen", "confirm": "Bestätigen" },
+  "nav": { "home": "Startseite", "library": "Bibliothek", "stats": "Statistiken", "settings": "Einstellungen" },
+  "home": { "greeting_morning": "Guten Morgen", "greeting_afternoon": "Guten Nachmittag", "greeting_evening": "Guten Abend", "checkin_cta": "Heute einchecken", "streak_label": "Tage in Folge", "no_track": "Kein aktiver Pfad", "start_journey": "Reise starten" },
+  "journey": { "today": "Heute", "map": "Karte", "community": "Community", "day": "Tag", "checkin_done": "Für heute erledigt", "checkin_prompt": "Heutigen Check-in erfassen" },
+  "checkin": {
+    "title": "Tag {{day}} Check-in",
+    "mood_label": "Wie geht es dir heute?",
+    "mood_low": "Kämpfe", "mood_high": "Großartig",
+    "urge_label": "Intensität des Verlangens",
+    "urge_question": "Hattest du heute Verlangen?",
+    "urge_intensity_label": "Wie stark war das Verlangen?",
+    "trigger_label": "Was hat es ausgelöst?",
+    "note_label": "Notizen? (optional)", "note_placeholder": "Was ist heute passiert...",
+    "submit": "Check-in speichern", "cancel": "Abbrechen",
+    "triggers": { "stress": "Stress", "boredom": "Langeweile", "social": "Sozial", "loneliness": "Einsamkeit", "fatigue": "Erschöpfung", "anger": "Ärger", "sadness": "Traurigkeit", "habit": "Gewohnheit" }
+  },
+  "insights": { "patterns_title": "Deine Muster", "patterns_subtitle": "Basierend auf deinen letzten 30 Tagen", "top_triggers": "Häufigste Auslöser", "risky_hours": "Risikozeiten", "mood_trend": "Stimmungstrend", "no_data": "Täglich einchecken, um deine Muster zu entdecken.", "coach_insight": "Coach-Einblick" },
+  "coach": { "nudge_inactivity": "Ein paar Tage sind vergangen. Jeder Schritt zählt.", "nudge_high_urge": "Schwieriger Tag mit Verlangen. Dieses Bewusstsein ist Stärke.", "nudge_low_mood": "Deine Stimmung war zuletzt niedrig. Du musst dich nicht gut fühlen, um Fortschritte zu machen.", "nudge_streak_broken": "Streaks brechen ab. Wichtig ist, dass du noch hier bist.", "cta_checkin": "Jetzt einchecken", "cta_sos": "SOS-Tools nutzen", "cta_journey": "Meine Reise öffnen", "dismiss": "Verstanden" },
+  "milestones": { "10_days": "Du hast eine echte Gewohnheit aufgebaut. 10 Tage für dich selbst.", "30_days": "Ein Monat. Das ist jetzt, wer du bist.", "100_days": "100 Tage. Du hast dein Leben verändert.", "days_label": "Tage", "by_user": "— {{name}}", "share_title": "{{days}} Tage Meilenstein", "share_text": "Ich habe {{days}} Tage auf meiner {{track}} Reise mit Forge erreicht!", "download": "Bild speichern", "share": "Teilen", "congrats_title": "Meilenstein erreicht!", "congrats_body": "Du hast {{days}} Tage erreicht. Möchtest du diesen Moment teilen?" },
+  "accountability": { "title": "Verantwortungspartner", "invite_label": "Freund einladen", "email_placeholder": "freund@beispiel.com", "share_streak": "Streak teilen", "share_mood": "Stimmung teilen", "send_invite": "Einladung senden", "pending": "Einladung ausstehend", "accepted": "Verbunden", "privacy_note": "Dein Partner sieht nur, was du teilen möchtest." },
+  "settings": { "title": "Einstellungen", "language": "Sprache", "timezone": "Zeitzone", "reminder_time": "Tägliche Erinnerung", "notifications": "Push-Benachrichtigungen", "export_data": "Meine Daten exportieren", "delete_account": "Konto löschen", "plan": "Plan", "logout": "Abmelden" },
+  "gdpr": { "export_title": "Deine Daten exportieren", "export_desc": "Lade alle Daten, die wir über dich haben, als JSON-Datei herunter.", "export_btn": "Daten herunterladen", "delete_title": "Dein Konto löschen", "delete_desc": "Dies löscht dauerhaft dein Konto und alle zugehörigen Daten.", "delete_confirm": "Tippe LÖSCHEN zum Bestätigen", "delete_btn": "Konto löschen", "delete_confirm_word": "LÖSCHEN" },
+  "email": { "welcome_subject": "Willkommen bei Forge — deine Reise beginnt jetzt", "milestone_subject": "Du hast gerade einen Meilenstein erreicht", "reengagement_subject": "Wir vermissen dich — komm zurück zu Forge", "digest_subject": "Dein wöchentlicher Fortschritt bei Forge" }
+}{
+  "app": { "name": "Forge" },
   "nav": { "home": "Startseite", "library": "Bibliothek", "stats": "Statistiken", "settings": "Einstellungen" },
   "home": {
     "greeting_morning": "Guten Morgen",
