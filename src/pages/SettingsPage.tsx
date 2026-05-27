@@ -130,20 +130,7 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
     setTimeout(() => setNameSaved(false), 2000);
   };
 
-  const handleExport = () => {
-    const data = {
-      exported: new Date().toISOString(),
-      user: lsLoad(LS_USER, null),
-      tracks: lsLoad(LS_TRACKS, []),
-      logs: lsLoad(LS_LOGS, []),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "forge-data.json"; a.click();
-    URL.revokeObjectURL(url);
-  };
-
+  cons
   const handleClearData = () => {
     [LS_USER, LS_TRACKS, LS_LOGS, LS_AUTH].forEach(k => localStorage.removeItem(k));
     onSignOut();
