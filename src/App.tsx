@@ -26,7 +26,6 @@ import { CheckInRichModal } from './components/CheckInModal';
 import i18n from './i18n';
 import { CoachNudge, useCoachNudge } from './components/CoachNudge';
 import { MilestoneShareCard } from './components/MilestoneShareCard';
-import { loadMilestonesReached, dismissNudge } from './db.phase5';
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Constants
 // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -1991,21 +1990,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
         )}
       </AnimatePresence>
       {/* Phase 5 — Coach Nudge banner */}
-      {nudge && (
-        <CoachNudge nudge={nudge}
-          onDismiss={async () => { await dismissNudge(nudge.id); clearNudge(); }}
-          onCta={(route: string) => { clearNudge(); setScreen(route as any); }}
-        />
-      )}
-      {/* Phase 5 — Milestone share card */}
-      {showMilestoneCard != null && (
-        <MilestoneShareCard
-          days={showMilestoneCard}
-          trackName={selectedTrack?.name ?? ""}
-          onClose={() => setShowMilestoneCard(null)}
-        />
-      )}
-    </div>
+          </div>
   );
 }
 
@@ -2168,21 +2153,6 @@ export function ElevateApp() {
   const [streakRecovery, setStreakRecovery] = useState<{ brokenStreak: number; trackName: string } | null>(null);
   const [cert, setCert] = useState<number | null>(null);
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
-  const [milestonesReached, setMilestonesReached] = useState<number[]>([]);
-  const [showMilestoneCard, setShowMilestoneCard] = useState<10|30|100|null>(null);
-
-  // Register push subscription when user logs in
-  const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
-  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-  const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
-  useEffect(() => {
-    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); setShowInstallBanner(true); };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
-  const [user, setUser] = useState<ElevateUser | null>(() => lsLoad(LS_USER, null));
-  const { nudge, clearNudge } = useCoachNudge(user?.id ?? null, session?.access_token ?? null);
   const [plan, setPlan] = useState<Plan>('free');
   useEffect(() => {
     if (!user) return;
