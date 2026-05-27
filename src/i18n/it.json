@@ -1,40 +1,9 @@
 {
-  "app": {
-    "name": "Forge"
-  },
-  "common": {
-    "next": "Avanti",
-    "back": "Indietro",
-    "yes": "Sì",
-    "no": "No",
-    "close": "Chiudi",
-    "save": "Salva",
-    "cancel": "Annulla",
-    "confirm": "Conferma"
-  },
-  "nav": {
-    "home": "Home",
-    "library": "Libreria",
-    "stats": "Statistiche",
-    "settings": "Impostazioni"
-  },
-  "home": {
-    "greeting_morning": "Buongiorno",
-    "greeting_afternoon": "Buon pomeriggio",
-    "greeting_evening": "Buona sera",
-    "checkin_cta": "Registra oggi",
-    "streak_label": "giorni di fila",
-    "no_track": "Nessun percorso attivo",
-    "start_journey": "Inizia un percorso"
-  },
-  "journey": {
-    "today": "Oggi",
-    "map": "Mappa",
-    "community": "Community",
-    "day": "Giorno",
-    "checkin_done": "Completato per oggi",
-    "checkin_prompt": "Registra il check-in di oggi"
-  },
+  "app": { "name": "Forge" },
+  "common": { "next": "Avanti", "back": "Indietro", "yes": "Sì", "no": "No", "close": "Chiudi", "save": "Salva", "cancel": "Annulla", "confirm": "Conferma" },
+  "nav": { "home": "Home", "library": "Libreria", "stats": "Statistiche", "settings": "Impostazioni" },
+  "home": { "greeting_morning": "Buongiorno", "greeting_afternoon": "Buon pomeriggio", "greeting_evening": "Buona sera", "checkin_cta": "Registra oggi", "streak_label": "giorni di fila", "no_track": "Nessun percorso attivo", "start_journey": "Inizia un percorso" },
+  "journey": { "today": "Oggi", "map": "Mappa", "community": "Community", "day": "Giorno", "checkin_done": "Completato per oggi", "checkin_prompt": "Registra il check-in di oggi" },
   "checkin": {
     "title": "Check-in Giorno {{day}}",
     "mood_label": "Come ti senti oggi?",
@@ -49,14 +18,9 @@
     "submit": "Registra",
     "cancel": "Annulla",
     "triggers": {
-      "stress": "Stress",
-      "boredom": "Noia",
-      "social": "Sociale",
-      "loneliness": "Solitudine",
-      "fatigue": "Stanchezza",
-      "anger": "Rabbia",
-      "sadness": "Tristezza",
-      "habit": "Abitudine"
+      "stress": "Stress", "boredom": "Noia", "social": "Sociale",
+      "loneliness": "Solitudine", "fatigue": "Stanchezza",
+      "anger": "Rabbia", "sadness": "Tristezza", "habit": "Abitudine"
     }
   },
   "insights": {
@@ -73,21 +37,16 @@
     "nudge_high_urge": "Giornata difficile con le voglie. Essere consapevole è già forza.",
     "nudge_low_mood": "Il tuo umore è stato basso ultimamente. Non devi sentirti bene per fare progressi.",
     "nudge_streak_broken": "Le streak si interrompono. L'importante è che sei ancora qui.",
-    "cta_checkin": "Fai il check-in",
-    "cta_sos": "Usa gli strumenti SOS",
-    "cta_journey": "Apri il percorso",
-    "dismiss": "Capito"
+    "cta_checkin": "Fai il check-in", "cta_sos": "Usa gli strumenti SOS", "cta_journey": "Apri il percorso", "dismiss": "Capito"
   },
   "milestones": {
     "10_days": "Hai creato una vera abitudine. 10 giorni a scegliere te stesso.",
     "30_days": "Un mese. Questa è la persona che sei ora.",
     "100_days": "100 giorni. Hai cambiato la tua vita.",
-    "days_label": "Giorni",
-    "by_user": "— {{name}}",
+    "days_label": "Giorni", "by_user": "— {{name}}",
     "share_title": "Traguardo di {{days}} giorni",
     "share_text": "Ho raggiunto {{days}} giorni nel percorso {{track}} con Forge!",
-    "download": "Salva immagine",
-    "share": "Condividi",
+    "download": "Salva immagine", "share": "Condividi",
     "congrats_title": "Traguardo raggiunto!",
     "congrats_body": "Hai raggiunto {{days}} giorni. Vuoi condividere questo momento?"
   },
@@ -95,97 +54,11 @@
     "title": "Partner di Responsabilità",
     "invite_label": "Invita un amico",
     "email_placeholder": "amico@esempio.com",
-    "share_streak": "Condividi la mia streak",
-    "share_mood": "Condividi l'umore",
-    "send_invite": "Invia invito",
-    "pending": "Invito in attesa",
-    "accepted": "Connesso",
+    "share_streak": "Condividi la mia streak", "share_mood": "Condividi l'umore",
+    "send_invite": "Invia invito", "pending": "Invito in attesa", "accepted": "Connesso",
     "privacy_note": "Il tuo partner vede solo ciò che scegli di condividere."
   },
-  "settings": {
-    "title": "Impostazioni",
-    "language": "Lingua",
-    "timezone": "Fuso orario",
-    "reminder_time": "Promemoria giornaliero",
-    "notifications": "Notifiche push",
-    "export_data": "Esporta i miei dati",
-    "delete_account": "Elimina account",
-    "plan": "Piano",
-    "logout": "Esci"
-  },
-  "gdpr": {
-    "export_title": "Esporta i tuoi dati",
-    "export_desc": "Scarica tutti i dati che conserviamo su di te come file JSON.",
-    "export_btn": "Scarica dati",
-    "delete_title": "Elimina il tuo account",
-    "delete_desc": "Questo elimina definitivamente il tuo account e tutti i dati associati. Questa azione non può essere annullata.",
-    "delete_confirm": "Digita ELIMINA per confermare",
-    "delete_btn": "Elimina account",
-    "delete_confirm_word": "ELIMINA"
-  },
-  "email": {
-    "welcome_subject": "Benvenuto su Forge — il tuo percorso inizia ora",
-    "milestone_subject": "Hai appena raggiunto un traguardo",
-    "reengagement_subject": "Ci manchi — torna su Forge",
-    "digest_subject": "Il tuo progresso settimanale su Forge"
-  }
-}
-{
-  "app": { "name": "Forge" },
-  "nav": { "home": "Home", "library": "Libreria", "stats": "Statistiche", "settings": "Impostazioni" },
-  "home": {
-    "greeting_morning": "Buongiorno",
-    "greeting_afternoon": "Buon pomeriggio",
-    "greeting_evening": "Buonasera",
-    "checkin_cta": "Check-in di oggi",
-    "streak_label": "giorni consecutivi",
-    "no_track": "Nessun percorso attivo",
-    "start_journey": "Inizia un percorso"
-  },
-  "journey": {
-    "today": "Oggi",
-    "map": "Mappa",
-    "community": "Comunità",
-    "day": "Giorno",
-    "checkin_done": "Fatto per oggi",
-    "checkin_prompt": "Registra il check-in di oggi"
-  },
-  "checkin": {
-    "mood_label": "Come ti senti?",
-    "urge_label": "Intensità dell'impulso",
-    "trigger_label": "Cos'ha scatenato questo?",
-    "submit": "Registra check-in",
-    "cancel": "Annulla"
-  },
-  "settings": {
-    "title": "Impostazioni",
-    "language": "Lingua",
-    "timezone": "Fuso orario",
-    "reminder_time": "Promemoria giornaliero",
-    "notifications": "Notifiche push",
-    "export_data": "Esporta i miei dati",
-    "delete_account": "Elimina account",
-    "plan": "Piano",
-    "logout": "Esci"
-  },
-  "gdpr": {
-    "export_title": "Esporta i tuoi dati",
-    "export_desc": "Scarica tutti i dati che conserviamo su di te in un file JSON.",
-    "export_btn": "Scarica dati",
-    "delete_title": "Elimina il tuo account",
-    "delete_desc": "Questo elimina definitivamente il tuo account e tutti i dati associati. Questa azione non può essere annullata.",
-    "delete_confirm": "Digita ELIMINA per confermare",
-    "delete_btn": "Elimina account",
-    "delete_confirm_word": "ELIMINA"
-  },
-  "email": {
-    "welcome_subject": "Benvenuto su Forge — il tuo percorso inizia ora",
-    "milestone_subject": "Hai appena raggiunto un traguardo 🏆",
-    "reengagement_subject": "Ci manchi — torna su Forge",
-    "digest_subject": "Il tuo progresso settimanale su Forge"
-  },
-  "errors": {
-    "generic": "Qualcosa è andato storto. Riprova.",
-    "network": "Errore di rete. Controlla la connessione."
-  }
+  "settings": { "title": "Impostazioni", "language": "Lingua", "timezone": "Fuso orario", "reminder_time": "Promemoria giornaliero", "notifications": "Notifiche push", "export_data": "Esporta i miei dati", "delete_account": "Elimina account", "plan": "Piano", "logout": "Esci" },
+  "gdpr": { "export_title": "Esporta i tuoi dati", "export_desc": "Scarica tutti i dati che conserviamo su di te come file JSON.", "export_btn": "Scarica dati", "delete_title": "Elimina il tuo account", "delete_desc": "Questo elimina definitivamente il tuo account e tutti i dati associati. Questa azione non può essere annullata.", "delete_confirm": "Digita ELIMINA per confermare", "delete_btn": "Elimina account", "delete_confirm_word": "ELIMINA" },
+  "email": { "welcome_subject": "Benvenuto su Forge — il tuo percorso inizia ora", "milestone_subject": "Hai appena raggiunto un traguardo", "reengagement_subject": "Ci manchi — torna su Forge", "digest_subject": "Il tuo progresso settimanale su Forge" }
 }
