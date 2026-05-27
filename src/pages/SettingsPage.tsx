@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User as UserIcon, Database, Download, Bell } from 'lucide-react';
 import type { UserTrack } from '../types';
+import i18n, { STORAGE_KEY } from '../i18n';
 
 const LS_LOGS = "forge-logs";
 const LS_USER = "forge-user";
@@ -34,6 +35,7 @@ function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
 }
 
 function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChangeTheme , shields, tracks}: { userName: string; onSignOut: () => void; onUpdateName: (name: string) => void; islandTheme: string; onChangeTheme: (t: string) => void ; shields: number; tracks: UserTrack[]}) {
+  const [currentLang, setCurrentLang] = useState<string>(i18n.language);
   const [displayName, setDisplayName] = useState(userName);
   const [nameSaved, setNameSaved] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(() => lsLoad<{ theme: "light" | "dark" }>(LS_PREFS, { theme: "dark" }).theme);
@@ -75,6 +77,24 @@ function SettingsPage({ userName, onSignOut, onUpdateName, islandTheme, onChange
     }
     setPushLoading(true);
     try {
+      {/* Language */}
+      <div className="settings-section">
+        <h2 className="section-title">Language</h2>
+        <div className="setting-row">
+          <span className="setting-label">App language</span>
+          <div style={{display:'flex',gap:'8px',marginTop:'4px'}}>
+            {(['en','it'] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => { i18n.changeLanguage(lang); localStorage.setItem(STORAGE_KEY, lang); setCurrentLang(lang); }}
+                style={{padding:'6px 14px',borderRadius:'8px',border:'1px solid',borderColor:currentLang===lang?'#4f8ef7':'#444',background:currentLang===lang?'#4f8ef7':'transparent',color:'#fff',cursor:'pointer',fontWeight:currentLang===lang?700:400}}
+              >
+                {lang === 'en' ? 'EN' : 'IT'}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
       const perm = await Notification.requestPermission();
       if (perm !== "granted") { setPushError("Permission denied. Enable notifications in browser settings."); return; }
       const reg = await navigator.serviceWorker.ready;
