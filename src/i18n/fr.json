@@ -1,5 +1,30 @@
 {
   "app": { "name": "Forge" },
+  "common": { "next": "Suivant", "back": "Retour", "yes": "Oui", "no": "Non", "close": "Fermer", "save": "Sauvegarder", "cancel": "Annuler", "confirm": "Confirmer" },
+  "nav": { "home": "Accueil", "library": "Bibliothèque", "stats": "Statistiques", "settings": "Paramètres" },
+  "home": { "greeting_morning": "Bonjour", "greeting_afternoon": "Bon après-midi", "greeting_evening": "Bonsoir", "checkin_cta": "Check-in aujourd'hui", "streak_label": "jours consécutifs", "no_track": "Aucun parcours actif", "start_journey": "Commencer un parcours" },
+  "journey": { "today": "Aujourd'hui", "map": "Carte", "community": "Communauté", "day": "Jour", "checkin_done": "Terminé pour aujourd'hui", "checkin_prompt": "Enregistrer le bilan du jour" },
+  "checkin": {
+    "title": "Bilan Jour {{day}}",
+    "mood_label": "Comment vous sentez-vous aujourd'hui ?",
+    "mood_low": "En difficulté", "mood_high": "Au top",
+    "urge_label": "Intensité de l'envie",
+    "urge_question": "Avez-vous eu des envies aujourd'hui ?",
+    "urge_intensity_label": "Quelle était leur intensité ?",
+    "trigger_label": "Qu'est-ce qui l'a déclenché ?",
+    "note_label": "Des notes ? (optionnel)", "note_placeholder": "Ce qui s'est passé aujourd'hui...",
+    "submit": "Enregistrer", "cancel": "Annuler",
+    "triggers": { "stress": "Stress", "boredom": "Ennui", "social": "Social", "loneliness": "Solitude", "fatigue": "Fatigue", "anger": "Colère", "sadness": "Tristesse", "habit": "Habitude" }
+  },
+  "insights": { "patterns_title": "Vos Patterns", "patterns_subtitle": "Basé sur vos 30 derniers jours", "top_triggers": "Principaux Déclencheurs", "risky_hours": "Heures à Risque", "mood_trend": "Tendance de l'Humeur", "no_data": "Faites votre bilan quotidien pour découvrir vos patterns.", "coach_insight": "Analyse du Coach" },
+  "coach": { "nudge_inactivity": "Quelques jours se sont écoulés. Chaque pas compte.", "nudge_high_urge": "Journée difficile avec les envies. Cette prise de conscience est une force.", "nudge_low_mood": "Votre humeur est basse en ce moment. Vous n'avez pas besoin de vous sentir bien pour progresser.", "nudge_streak_broken": "Les séries se brisent. L'important est que vous êtes encore là.", "cta_checkin": "Faire le bilan", "cta_sos": "Utiliser les outils SOS", "cta_journey": "Ouvrir mon parcours", "dismiss": "Compris" },
+  "milestones": { "10_days": "Vous avez créé une vraie habitude. 10 jours à vous choisir.", "30_days": "Un mois. C'est qui vous êtes maintenant.", "100_days": "100 jours. Vous avez changé votre vie.", "days_label": "Jours", "by_user": "— {{name}}", "share_title": "{{days}} jours de réussite", "share_text": "J'ai atteint {{days}} jours dans mon parcours {{track}} avec Forge !", "download": "Sauvegarder l'image", "share": "Partager", "congrats_title": "Étape atteinte !", "congrats_body": "Vous avez atteint {{days}} jours. Voulez-vous partager ce moment ?" },
+  "accountability": { "title": "Partenaire de Responsabilité", "invite_label": "Inviter un ami", "email_placeholder": "ami@exemple.com", "share_streak": "Partager ma série", "share_mood": "Partager l'humeur", "send_invite": "Envoyer l'invitation", "pending": "Invitation en attente", "accepted": "Connecté", "privacy_note": "Votre partenaire ne voit que ce que vous choisissez de partager." },
+  "settings": { "title": "Paramètres", "language": "Langue", "timezone": "Fuseau horaire", "reminder_time": "Rappel quotidien", "notifications": "Notifications push", "export_data": "Exporter mes données", "delete_account": "Supprimer le compte", "plan": "Plan", "logout": "Se déconnecter" },
+  "gdpr": { "export_title": "Exporter vos données", "export_desc": "Téléchargez toutes les données que nous détenons sur vous au format JSON.", "export_btn": "Télécharger les données", "delete_title": "Supprimer votre compte", "delete_desc": "Cela supprime définitivement votre compte et toutes les données associées.", "delete_confirm": "Tapez SUPPRIMER pour confirmer", "delete_btn": "Supprimer le compte", "delete_confirm_word": "SUPPRIMER" },
+  "email": { "welcome_subject": "Bienvenue sur Forge — votre parcours commence maintenant", "milestone_subject": "Vous venez d'atteindre un jalon", "reengagement_subject": "Vous nous manquez — revenez sur Forge", "digest_subject": "Votre progression hebdomadaire sur Forge" }
+}{
+  "app": { "name": "Forge" },
   "nav": { "home": "Accueil", "library": "Bibliothèque", "stats": "Statistiques", "settings": "Paramètres" },
   "home": {
     "greeting_morning": "Bonjour",
