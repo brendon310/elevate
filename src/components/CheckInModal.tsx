@@ -127,3 +127,5 @@ export function CheckInModal({ trackName, dayNumber, onSubmit, onCancel }: Check
     </AnimatePresence>
   );
 }
+
+export { CheckInModal as CheckInRichModal };
