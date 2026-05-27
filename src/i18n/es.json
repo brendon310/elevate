@@ -1,5 +1,30 @@
 {
   "app": { "name": "Forge" },
+  "common": { "next": "Siguiente", "back": "Atrás", "yes": "Sí", "no": "No", "close": "Cerrar", "save": "Guardar", "cancel": "Cancelar", "confirm": "Confirmar" },
+  "nav": { "home": "Inicio", "library": "Biblioteca", "stats": "Estadísticas", "settings": "Ajustes" },
+  "home": { "greeting_morning": "Buenos días", "greeting_afternoon": "Buenas tardes", "greeting_evening": "Buenas noches", "checkin_cta": "Registrar hoy", "streak_label": "días seguidos", "no_track": "Sin camino activo", "start_journey": "Iniciar un camino" },
+  "journey": { "today": "Hoy", "map": "Mapa", "community": "Comunidad", "day": "Día", "checkin_done": "Completado por hoy", "checkin_prompt": "Registrar check-in de hoy" },
+  "checkin": {
+    "title": "Registro Día {{day}}",
+    "mood_label": "¿Cómo te sientes hoy?",
+    "mood_low": "Con dificultades", "mood_high": "Excelente",
+    "urge_label": "Intensidad del impulso",
+    "urge_question": "¿Tuviste ganas de ceder hoy?",
+    "urge_intensity_label": "¿Cuán fuerte fue el impulso?",
+    "trigger_label": "¿Qué lo desencadenó?",
+    "note_label": "¿Alguna nota? (opcional)", "note_placeholder": "Lo que surgió hoy...",
+    "submit": "Registrar check-in", "cancel": "Cancelar",
+    "triggers": { "stress": "Estrés", "boredom": "Aburrimiento", "social": "Social", "loneliness": "Soledad", "fatigue": "Cansancio", "anger": "Enojo", "sadness": "Tristeza", "habit": "Hábito" }
+  },
+  "insights": { "patterns_title": "Tus Patrones", "patterns_subtitle": "Basado en los últimos 30 días", "top_triggers": "Principales Desencadenantes", "risky_hours": "Horas de Riesgo", "mood_trend": "Tendencia del Ánimo", "no_data": "Haz check-in diario para descubrir tus patrones.", "coach_insight": "Perspectiva del Coach" },
+  "coach": { "nudge_inactivity": "Han pasado algunos días. Cada paso cuenta.", "nudge_high_urge": "Día difícil con impulsos. Esa conciencia es fortaleza.", "nudge_low_mood": "Tu ánimo ha estado bajo. No necesitas sentirte bien para progresar.", "nudge_streak_broken": "Las rachas se rompen. Lo importante es que sigues aquí.", "cta_checkin": "Hacer check-in", "cta_sos": "Usar herramientas SOS", "cta_journey": "Abrir mi camino", "dismiss": "Entendido" },
+  "milestones": { "10_days": "Has creado un hábito real. 10 días eligiéndote.", "30_days": "Un mes. Esta es quien eres ahora.", "100_days": "100 días. Cambiaste tu vida.", "days_label": "Días", "by_user": "— {{name}}", "share_title": "{{days}} días de logro", "share_text": "¡He alcanzado {{days}} días en mi camino {{track}} con Forge!", "download": "Guardar imagen", "share": "Compartir", "congrats_title": "¡Hito alcanzado!", "congrats_body": "Alcanzaste {{days}} días. ¿Quieres compartir este momento?" },
+  "accountability": { "title": "Compañero de Responsabilidad", "invite_label": "Invitar a un amigo", "email_placeholder": "amigo@ejemplo.com", "share_streak": "Compartir mi racha", "share_mood": "Compartir estado de ánimo", "send_invite": "Enviar invitación", "pending": "Invitación pendiente", "accepted": "Conectado", "privacy_note": "Tu compañero solo ve lo que eliges compartir." },
+  "settings": { "title": "Ajustes", "language": "Idioma", "timezone": "Zona horaria", "reminder_time": "Recordatorio diario", "notifications": "Notificaciones push", "export_data": "Exportar mis datos", "delete_account": "Eliminar cuenta", "plan": "Plan", "logout": "Cerrar sesión" },
+  "gdpr": { "export_title": "Exportar tus datos", "export_desc": "Descarga todos los datos que tenemos sobre ti en formato JSON.", "export_btn": "Descargar datos", "delete_title": "Eliminar tu cuenta", "delete_desc": "Esto elimina permanentemente tu cuenta y todos los datos asociados.", "delete_confirm": "Escribe ELIMINAR para confirmar", "delete_btn": "Eliminar cuenta", "delete_confirm_word": "ELIMINAR" },
+  "email": { "welcome_subject": "Bienvenido a Forge — tu camino comienza ahora", "milestone_subject": "Acabas de alcanzar un hito", "reengagement_subject": "Te echamos de menos — vuelve a Forge", "digest_subject": "Tu progreso semanal en Forge" }
+}{
+  "app": { "name": "Forge" },
   "nav": { "home": "Inicio", "library": "Biblioteca", "stats": "Estadísticas", "settings": "Ajustes" },
   "home": {
     "greeting_morning": "Buenos días",
