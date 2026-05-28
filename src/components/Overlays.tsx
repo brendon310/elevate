@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, ArrowRight } from 'lucide-react';
 import type { UserTrack } from '../types';
@@ -104,6 +105,7 @@ const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: st
 };
 
 function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: () => void }) {
+  const { t } = useTranslation();
   const msg = REENTRY_MESSAGES[hashStr(todayStr()) % REENTRY_MESSAGES.length];
   return (
     <motion.div
@@ -117,7 +119,7 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
       <div className="relative max-w-sm w-full text-center">
         <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6">
-          Welcome back — {gapDays} days later
+          {t("overlays.welcome_back_days", { n: gapDays })}
         </motion.p>
         <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           className="font-display text-[2rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-10">
@@ -126,7 +128,7 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
           <button onClick={onDismiss}
             className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-8 py-3 text-sm font-semibold">
-            Ricominciamo <ArrowRight className="h-4 w-4" />
+            {t("overlays.lets_go")} <ArrowRight className="h-4 w-4" />
           </button>
         </motion.div>
       </div>
@@ -143,6 +145,7 @@ function StreakRecoveryOverlay({
   trackName: string;
   onDismiss: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <motion.div
       key="streak-recovery"
@@ -181,7 +184,7 @@ function StreakRecoveryOverlay({
           transition={{ delay: 0.25 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-5"
         >
-          days on {trackName}
+          {t("overlays.days_on_track", { name: trackName })}
         </motion.p>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -189,7 +192,7 @@ function StreakRecoveryOverlay({
           transition={{ delay: 0.4 }}
           className="font-display text-[1.75rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-3"
         >
-          {"That's still "}{brokenStreak}{" days"}<br />{"you showed up."}
+{t("overlays.still_n_days", { n: brokenStreak })}
         </motion.p>
         <motion.p
           initial={{ opacity: 0, y: 8 }}
@@ -197,7 +200,7 @@ function StreakRecoveryOverlay({
           transition={{ delay: 0.55 }}
           className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-[264px] mx-auto"
         >
-          {"Streaks measure consistency — not worth. Missing one day doesn't erase what you built."}
+{t("overlays.streak_not_worth")}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 6 }}
@@ -208,9 +211,9 @@ function StreakRecoveryOverlay({
           <div className="flex items-start gap-3">
             <Shield className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/60" />
             <div>
-              <p className="text-xs font-semibold text-foreground mb-1">Shields protect your streak</p>
+              <p className="text-xs font-semibold text-foreground mb-1">{t("overlays.shields_protect")}</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {"Forge gives you 1 Shield every 14 days of consistent use — automatically spent when you miss a day. Keep going to earn the next one."}
+{t("overlays.shields_desc")}
               </p>
             </div>
           </div>
@@ -224,7 +227,7 @@ function StreakRecoveryOverlay({
             onClick={onDismiss}
             className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-background px-8 py-3 text-sm font-semibold"
           >
-            Start fresh <ArrowRight className="h-4 w-4" />
+{t("overlays.start_fresh")} <ArrowRight className="h-4 w-4" />
           </button>
         </motion.div>
       </div>
@@ -233,6 +236,7 @@ function StreakRecoveryOverlay({
 }
 
 function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () => void }) {
+  const { t } = useTranslation();
   const [sosPhase, setSosPhase] = useState<"breathe" | "ground" | "act">("breathe");
   const [breatheIdx, setBreatheIdx] = useState(0);
   const [breatheCycles, setBreatheCycles] = useState(0);
@@ -285,7 +289,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-8 px-6"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos — breathing
+{t("sos.breathing_label")}
             </p>
 
             {/* Breathing circle */}
@@ -325,14 +329,14 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             </div>
 
             <p className="text-center text-sm text-white/30 max-w-xs">
-              2 full cycles — then we ground you
+              {t("sos.two_cycles")}
             </p>
 
             <button
               onClick={() => setSosPhase("ground")}
               className="mt-2 text-xs text-white/20 underline underline-offset-4 hover:text-white/40 transition-colors"
             >
-              skip
+              {t("common.skip")}
             </button>
           </motion.div>
         )}
@@ -346,15 +350,15 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-8 px-8 max-w-sm text-center"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos — grounding
+{t("sos.grounding_label")}
             </p>
 
             <div className="space-y-4">
               <p className="text-2xl font-semibold text-white/90 leading-snug">
-                This urge will pass.
+                {t("sos.urge_will_pass")}
               </p>
               <p className="text-2xl font-semibold text-white/90 leading-snug">
-                It always does.
+                {t("sos.it_always_does")}
               </p>
             </div>
 
@@ -362,9 +366,9 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
               className="rounded-2xl p-5 space-y-3 text-left"
               style={{ background: "oklch(0.12 0.03 230 / 0.8)", border: "1px solid oklch(0.3 0.08 230 / 0.3)" }}
             >
-              <p className="text-sm font-medium text-white/60">What's happening in your brain</p>
+              <p className="text-sm font-medium text-white/60">{t("sos.whats_happening")}</p>
               <p className="text-sm text-white/40 leading-relaxed">
-                Urges peak at 15–20 minutes, then naturally subside. Your prefrontal cortex — the part that makes decisions — is temporarily overwhelmed. It will come back online.
+                {t("sos.brain_science")}
               </p>
             </div>
 
@@ -376,7 +380,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
                 boxShadow: "0 0 20px oklch(0.45 0.18 230 / 0.4)",
               }}
             >
-              Show me what to do
+{t("sos.show_what_to_do")}
             </button>
           </motion.div>
         )}
@@ -390,11 +394,11 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-6 px-8 max-w-sm w-full"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos — act now
+{t("sos.act_label")}
             </p>
 
             <p className="text-center text-white/70 text-sm">
-              Do <strong className="text-white/90">one</strong> of these right now:
+              {t("sos.do_one_now")}
             </p>
 
             <div className="space-y-3 w-full">
@@ -422,14 +426,14 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
                 background: "oklch(0.35 0.08 230)",
               }}
             >
-              I'm okay now
+{t("sos.im_okay_now")}
             </button>
 
             <button
               onClick={() => { setBreatheIdx(0); setBreatheCycles(0); setBreatheScale(0.85); setSosPhase("breathe"); }}
               className="text-xs text-white/20 underline underline-offset-4 hover:text-white/40 transition-colors"
             >
-              Breathe again
+{t("sos.breathe_again")}
             </button>
           </motion.div>
         )}
@@ -439,6 +443,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
 }
 
 function SOSButton({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -479,7 +484,7 @@ function SOSButton({ onClick }: { onClick: () => void }) {
             exit={{ opacity: 0, width: 0 }}
             className="overflow-hidden whitespace-nowrap text-xs font-medium text-white/80"
           >
-            I'm struggling
+{t('sos.im_struggling')}
           </motion.span>
         )}
       </AnimatePresence>
@@ -494,6 +499,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
   userName: string;
   onDismiss: () => void;
 }) {
+  const { t } = useTranslation();
   const total = tracks.reduce((s, t) => s + (t.total_done ?? 0), 0);
   const CT = [0, 5, 12, 25, 50, 90, 150, 230, 330, 450];
   let si = 0;
@@ -571,7 +577,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
         className="w-full max-w-sm mb-6 mx-4 rounded-3xl border border-yellow-500/30 bg-[#0d1526] p-5 shadow-2xl"
         onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <p className="text-xs font-medium text-yellow-400/70 uppercase tracking-widest">Certificate</p>
+          <p className="text-xs font-medium text-yellow-400/70 uppercase tracking-widest">{t("overlays.certificate")}</p>
           <button onClick={onDismiss} className="text-muted-foreground hover:text-white text-2xl leading-none">&times;</button>
         </div>
         {imgUrl ? (
@@ -579,15 +585,15 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
         ) : (
           <div className="w-full aspect-square rounded-2xl mb-4 bg-white/5 animate-pulse" />
         )}
-        <p className="text-center text-lg font-semibold mb-1">{streak} Days Strong</p>
-        <p className="text-center text-sm text-muted-foreground mb-4">You showed up. That counts.</p>
+        <p className="text-center text-lg font-semibold mb-1">{t("overlays.days_strong", { n: streak })}</p>
+        <p className="text-center text-sm text-muted-foreground mb-4">{t("overlays.you_showed_up")}</p>
         <div className="flex gap-3">
           <button onClick={handleShare} disabled={!imgUrl || sharing}
             className="flex-1 rounded-xl bg-yellow-500 py-3 text-sm font-semibold text-black disabled:opacity-50 active:scale-95 transition-transform">
-            {sharing ? 'Sharing…' : 'Share'}
+{sharing ? t('common.sharing') : t('common.share')}
           </button>
           <button onClick={onDismiss} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground">
-            Close
+            {t("common.close")}
           </button>
         </div>
       </motion.div>
@@ -596,6 +602,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
 }
 
 function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
+  const { t } = useTranslation();
   const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Keep it up." };
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -614,7 +621,7 @@ function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackN
         </div>
         <button onClick={onDismiss}
           className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-8 py-3.5 text-sm font-bold shadow-[var(--shadow-violet)]">
-          Continue <ArrowRight className="h-4 w-4" />
+{t("common.continue")} <ArrowRight className="h-4 w-4" />
         </button>
       </motion.div>
     </motion.div>

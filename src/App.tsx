@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight, Eye, Check, Plus, Home, Layers, BarChart3, Settings, Shield,
   Sparkles, Flame, Sun, Moon, User as UserIcon, Trophy, CheckCircle2,
@@ -668,7 +669,7 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
               <div className="text-5xl mb-4">🏆</div>
               <h2 className="font-display text-2xl mb-2">Request submitted!</h2>
               <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7–10 business days. You're a legend.</p>
-              <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Chiudi</button>
+              <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Close</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -684,18 +685,18 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Nome e cognome</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Full name</label>
                 <input required value={form.name} onChange={f("name")} placeholder="Brendon Hoxha"
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Indirizzo</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Address</label>
                 <input required value={form.address} onChange={f("address")} placeholder="Via Roma 12, Appartamento 3"
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Città</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">City</label>
                   <input required value={form.city} onChange={f("city")} placeholder="Milano"
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
@@ -1671,11 +1672,12 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
   onNavigate: (page: AppPage) => void;
   children: ReactNode;
 }) {
+  const { t } = useTranslation();
   const navItems: { id: AppPage; icon: typeof Home; label: string }[] = [
-    { id: "home",     icon: Home,     label: "Home" },
-    { id: "tracks",   icon: Layers,   label: "Library" },
-    { id: "insights", icon: BarChart3,label: "Stats" },
-    { id: "settings", icon: Settings, label: "Settings" },
+    { id: "home",     icon: Home,     label: t("nav.home") },
+    { id: "tracks",   icon: Layers,   label: t("nav.library") },
+    { id: "insights", icon: BarChart3,label: t("nav.stats") },
+    { id: "settings", icon: Settings, label: t("nav.settings") },
   ];
 
   return (
@@ -2193,6 +2195,7 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function ElevateApp() {
+  const { t } = useTranslation();
   const [screen, setScreen] = useState<Screen>(() => {
     const user = lsLoad<ElevateUser | null>(LS_USER, null);
     const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);
@@ -2815,14 +2818,14 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         <motion.div className="fixed bottom-20 left-4 right-4 z-40 rounded-2xl bg-muted border border-border p-4 flex items-center gap-3 shadow-2xl"
           initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}>
           <div className="flex-1">
-            <p className="text-sm font-semibold">Add Forge to Home Screen</p>
-            <p className="text-xs text-muted-foreground">Install for the full experience — works offline too</p>
+            <p className="text-sm font-semibold">{t("common.add_to_home")}</p>
+            <p className="text-xs text-muted-foreground">{t("common.install_desc")}</p>
           </div>
           <button onClick={() => {
             (installPrompt as BeforeInstallPromptEvent)?.prompt?.();
             setShowInstallBanner(false);
           }} className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-xs font-semibold">
-            Install
+            {t("common.install")}
           </button>
           <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">×</button>
         </motion.div>

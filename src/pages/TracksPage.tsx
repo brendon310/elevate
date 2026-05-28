@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, Plus, Search } from 'lucide-react';
 import type { UserTrack } from '../types';
@@ -63,6 +64,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
   onConfirm: (days: number) => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState(30);
   const [custom, setCustom] = useState(false);
   const [customVal, setCustomVal] = useState("");
@@ -80,7 +82,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
         className="w-full max-w-sm rounded-3xl p-6 space-y-5"
         style={{ background: "oklch(0.12 0.02 240)", border: "1px solid oklch(1 0 0 / 0.08)" }}>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">Journey length</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">{t("journey.journey_length")}</p>
           <h2 className="font-display text-xl tracking-tight">{trackName}</h2>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -88,30 +90,30 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
             <button key={d}
               onClick={() => { setSelected(d); setCustom(false); }}
               className={`rounded-xl py-2.5 text-sm font-semibold border transition ${!custom && selected === d ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-              {d === 365 ? "1 year" : `${d}d`}
+              {d === 365 ? t("tracks.one_year_label") : `${d}d`}
             </button>
           ))}
         </div>
         <button onClick={() => { setCustom(true); setCustomVal(String(selected)); }}
           className={`w-full rounded-xl py-2.5 text-sm font-semibold border transition ${custom ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-          Custom
+          {t("journey.custom")}
         </button>
         {custom && (
           <input type="number" autoFocus value={customVal}
             onChange={e => setCustomVal(e.target.value)}
-            min={7} max={999} placeholder="Days (7–999)"
+            min={7} max={999} placeholder={t("journey.days_placeholder")}
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
         )}
         <div className="flex gap-3 pt-1">
           <button onClick={onCancel}
             className="flex-1 rounded-2xl py-3 text-sm font-semibold border border-border text-muted-foreground hover:text-foreground transition">
-            Cancel
+            {t("common.cancel")}
           </button>
           <button onClick={() => valid && onConfirm(days)} disabled={!valid}
             className="flex-2 flex-1 rounded-2xl py-3 text-sm font-semibold transition disabled:opacity-40"
             style={{ background: valid ? "oklch(0.6 0.22 250)" : undefined, color: valid ? "#fff" : undefined,
               ...(valid ? {} : { background: "oklch(0.2 0.02 240)", color: "oklch(0.5 0 0)" }) }}>
-            Start {days >= 7 && days <= 999 ? `${days === 365 ? "1-year" : days + "-day"}` : ""} journey
+            {valid ? t("journey.start_n_day_journey", { n: days === 365 ? "1-year" : days }) : t("journey.start_journey")}
           </button>
         </div>
       </motion.div>
@@ -125,6 +127,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   onView: (t: UserTrack) => void;
   onRemove: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [pendingAdd, setPendingAdd] = useState<typeof ALL_TRACKS[0] | null>(null);
@@ -143,14 +146,14 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   return (
     <>
     <div className="max-w-5xl mx-auto px-5 py-8 pb-24">
-      <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">Library</p>
-      <h1 className="mt-2 font-display text-4xl tracking-tight">Fifty <span className="text-yellow-400">specialists</span>.</h1>
-      <p className="mt-2 text-foreground">Pick the one that calls you today.</p>
+      <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground font-mono">{t("tracks.library")}</p>
+      <h1 className="mt-2 font-display text-4xl tracking-tight">{t("tracks.headline")}</h1>
+      <p className="mt-2 text-foreground">{t("tracks.subheadline")}</p>
       <div className="mt-6 relative">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <input
           value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search tracks, categories…"
+          placeholder={t("tracks.search_placeholder")}
           className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition"
         />
         {search && (
@@ -165,7 +168,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
         <button
           onClick={() => setCategoryFilter(null)}
           className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${!categoryFilter ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-          All
+          {t("tracks.all")}
         </button>
         {allCategories.map(cat => (
           <button key={cat}
@@ -177,7 +180,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
       </div>
       {Object.keys(grouped).length === 0 && (
         <div className="mt-12 text-center text-muted-foreground text-sm">
-          No tracks match "<span className="text-foreground">{search}</span>".
+          {t("tracks.no_match", { q: search })}
         </div>
       )}
       <div className="mt-8 space-y-10">
@@ -185,37 +188,37 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
           <section key={cat}>
             <h2 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-4">{cat}</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-              {tracks.map((t, i) => {
-                const ut = activeMap.get(t.id);
+              {tracks.map((track, i) => {
+                const ut = activeMap.get(track.id);
                 const on = !!ut;
                 return (
-                  <motion.div key={t.id} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                  <motion.div key={track.id} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                     className="warm-card rounded-2xl p-5 flex flex-col gap-3">
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{t.category}</p>
-                      <h3 className="mt-1 font-semibold text-[15px]">{t.name}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{t.short_description}</p>
+                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{track.category}</p>
+                      <h3 className="mt-1 font-semibold text-[15px]">{track.name}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{track.short_description}</p>
                     </div>
                     {on && ut ? (
                       <div className="flex gap-1.5 flex-wrap">
                         <span className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)]">
-                          <Check className="h-3 w-3" />Active
+                          <Check className="h-3 w-3" />{t("tracks.active")}
                         </span>
                         <button onClick={() => onView(ut)}
                           className="btn-chunk inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-neutral-900 transition">
-                          View <ArrowRight className="h-3 w-3" />
+                          {t("tracks.view")} <ArrowRight className="h-3 w-3" />
                         </button>
-                        <button onClick={() => { if (confirm(`Remove "${t.name}" from your paths?`)) onRemove(ut.id); }}
+                        <button onClick={() => { if (confirm(t("tracks.remove_confirm", { name: track.name }))) onRemove(ut.id); }}
                           className="btn-chunk inline-flex items-center rounded-full px-2.5 py-1.5 text-xs border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] hover:bg-[color:var(--secondary)]/10 transition"
-                          title="Rimuovi track">
+                          title="Remove track">
                           ✕
                         </button>
                       </div>
                     ) : (
-                      <button onClick={() => setPendingAdd(t)}
+                      <button onClick={() => setPendingAdd(track)}
                         className="btn-chunk self-start inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-semibold bg-foreground text-neutral-900 transition">
-                        <Plus className="h-3 w-3" />Start
+                        <Plus className="h-3 w-3" />{t("tracks.start")}
                       </button>
                     )}
                   </motion.div>

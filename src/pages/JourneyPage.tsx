@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import * as db from "../db";
@@ -6,15 +7,9 @@ import type { UserTrack, Journey, JourneyDay, ChatMessage, CommunityPost } from 
 import confetti from 'canvas-confetti';
 import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock, RefreshCw } from 'lucide-react';
 
-const ADAPT_REASONS = [
-  { id: "busy", label: "Life got busy" },
-  { id: "motivation", label: "Lost motivation" },
-  { id: "overwhelmed", label: "Felt overwhelmed" },
-  { id: "sick", label: "Got sick or injured" },
-  { id: "travel", label: "Travelling / disrupted routine" },
-  { id: "other", label: "Something else" },
-] as const;
-type AdaptReasonId = typeof ADAPT_REASONS[number]["id"];
+const ADAPT_REASON_IDS = ["busy", "motivation", "overwhelmed", "sick", "travel", "other"] as const;
+const ADAPT_REASONS = ADAPT_REASON_IDS.map(id => ({ id }));
+type AdaptReasonId = typeof ADAPT_REASON_IDS[number];
 
 // Post check-in micro-reactions per archetype (no API call — instant dopamine)
 const COACH_FLASH: Record<string, string[]> = {
@@ -194,6 +189,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
   onConfirm: (data: { mood: number; hadUrge: boolean; urgeIntensity: number; trigger: string }) => void;
   onSkip: () => void;
 }) {
+  const { t } = useTranslation();
   const [mood, setMood] = useState(7);
   const [hadUrge, setHadUrge] = useState<boolean | null>(null);
   const [urgeIntensity, setUrgeIntensity] = useState(5);
@@ -205,12 +201,12 @@ function CheckInRichModal({ onConfirm, onSkip }: {
       <div className="w-full max-w-md rounded-t-3xl p-6 pb-10 space-y-5"
         style={{ background: "oklch(0.12 0.02 145)" }}>
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-white">Come stai oggi?</h2>
-          <button onClick={onSkip} className="text-white/40 text-sm">salta</button>
+          <h2 className="text-base font-semibold text-white">{t("journey.how_are_you_today")}</h2>
+          <button onClick={onSkip} className="text-white/40 text-sm">{t("common.skip")}</button>
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-white/50">
-            <span>Umore</span><span className="text-white font-semibold">{mood}/10</span>
+            <span>{t("journey.mood")}</span><span className="text-white font-semibold">{mood}/10</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-lg">😔</span>
@@ -221,15 +217,15 @@ function CheckInRichModal({ onConfirm, onSkip }: {
           </div>
         </div>
         <div className="space-y-2">
-          <p className="text-xs text-white/50">Hai sentito l'impulso oggi?</p>
+          <p className="text-xs text-white/50">{t("journey.felt_urge_today")}</p>
           <div className="flex gap-2">
-            {["Sì","No"].map(opt => (
-              <button key={opt} onClick={() => setHadUrge(opt === "Sì")}
+            {[{ key: "yes", label: t("common.yes") }, { key: "no", label: t("common.no") }].map(opt => (
+              <button key={opt.key} onClick={() => setHadUrge(opt.key === "yes")}
                 className={"flex-1 py-2 rounded-xl text-sm font-medium border transition-all " + (
-                  (opt === "Sì" ? hadUrge === true : hadUrge === false)
+                  (opt.key === "yes" ? hadUrge === true : hadUrge === false)
                     ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
                     : "border-white/10 text-white/50")}>
-                {opt}
+                {opt.label}
               </button>
             ))}
           </div>
@@ -237,14 +233,14 @@ function CheckInRichModal({ onConfirm, onSkip }: {
         {hadUrge === true && (<>
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-white/50">
-              <span>Intensità impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
+              <span>{t("journey.urge_intensity")}</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
             </div>
             <input type="range" min={1} max={10} value={urgeIntensity}
               onChange={e => setUrgeIntensity(Number(e.target.value))}
               className="w-full accent-amber-400 h-2" />
           </div>
           <div className="space-y-2">
-            <p className="text-xs text-white/50">Cosa l'ha scatenato?</p>
+            <p className="text-xs text-white/50">{t("journey.what_triggered_it")}</p>
             <div className="flex flex-wrap gap-2">
               {CI_TRIGGERS.map(t => (
                 <button key={t} onClick={() => setTrigger(trigger === t ? "" : t)}
@@ -259,7 +255,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
         <button disabled={!canConfirm}
           onClick={() => onConfirm({ mood, hadUrge: hadUrge!, urgeIntensity: hadUrge ? urgeIntensity : 0, trigger: hadUrge ? trigger : "" })}
           className={"w-full py-3 rounded-xl font-semibold text-sm transition-all " + (canConfirm ? "bg-emerald-500 text-white" : "bg-white/5 text-white/20 cursor-not-allowed")}>
-          Salva il check-in
+          {t("journey.save_checkin")}
         </button>
       </div>
     </div>
@@ -267,6 +263,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
 }
 
 function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null }) {
+  const { t } = useTranslation();
   const [posts, setPosts] = useState<CommunityPost[]>(() => {
     const saved = lsLoad<CommunityPost[]>(LS_COMMUNITY(slug), []);
     if (saved.length > 0) return saved;
@@ -346,11 +343,11 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
         <div className="flex gap-2">
           <input value={draft} onChange={e => { setDraft(e.target.value); if (modWarnKey > 0) setModWarnKey(0); }}
             onKeyDown={e => e.key === "Enter" && !e.shiftKey && post()}
-            placeholder="Share a win or struggle…"
+            placeholder={t("journey.community_placeholder")}
             className={`flex-1 rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors ${modWarnKey > 0 ? "border-red-500" : "border-border"}`} />
           <button onClick={post} disabled={!draft.trim() || posting}
             className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
-            Post
+            {t("journey.post")}
           </button>
         </div>
         <AnimatePresence mode="wait">
@@ -371,7 +368,7 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
           <div key={p.id} className="rounded-xl bg-muted/50 border border-border/50 p-3 flex gap-3">
             <div className="flex-1">
               <p className="text-sm">{p.content}</p>
-              {p.dayNumber > 0 && <p className="mt-1 text-[10px] text-muted-foreground font-mono uppercase">Day {p.dayNumber}</p>}
+              {p.dayNumber > 0 && <p className="mt-1 text-[10px] text-muted-foreground font-mono uppercase">{t("journey.day_n", { n: p.dayNumber })}</p>}
             </div>
             <button onClick={() => flame(p.id)}
               className={`shrink-0 flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition ${p.userHasFlamed ? "text-orange-400" : "text-muted-foreground hover:text-orange-400"}`}>
@@ -396,6 +393,7 @@ function DayPanel({ label, children, accentColor }: { label: string; children: R
 }
 
 function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onStarted: (j: Journey, days: JourneyDay[]) => void; userId?: string | null }) {
+  const { t } = useTranslation();
   const archetype = archetypeForSlug(track.slug);
   const [totalDays, setTotalDays] = useState(30);
   const [isCustomDays, setIsCustomDays] = useState(false);
@@ -408,7 +406,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
 
   const handleStart = async () => {
     if (!startingPoint.trim() || !motivation.trim() || !obstacle.trim()) {
-      setError("Please fill in all fields.");
+      setError(t("journey.fill_all_fields"));
       return;
     }
     setError(null);
@@ -470,11 +468,11 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{track.category}</p>
           <h1 className="mt-2 font-display text-3xl tracking-tight">{track.name}</h1>
-          <p className="mt-2 text-muted-foreground text-sm">Meet <strong>{archetypeForSlug(track.slug).name}</strong> — here for every day of this journey.</p>
+          <p className="mt-2 text-muted-foreground text-sm">{t("journey.meet_coach", { name: archetypeForSlug(track.slug).name })}</p>
         </div>
         <div className="space-y-5">
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Journey length</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.journey_length")}</label>
             <div className="grid grid-cols-3 gap-2 mt-2">
               {JOURNEY_PRESETS.map(d => (
                 <button key={d} onClick={() => { setTotalDays(d); setIsCustomDays(false); }}
@@ -485,7 +483,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
             </div>
             <button onClick={() => { setIsCustomDays(true); setCustomDaysInput(String(totalDays)); }}
               className={`mt-2 w-full btn-chunk rounded-xl py-2.5 text-sm font-semibold border transition ${isCustomDays ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-              Custom number of days
+              {t("journey.custom_days")}
             </button>
             {isCustomDays && (
               <input
@@ -495,28 +493,28 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
                   const n = parseInt(e.target.value);
                   if (n >= 7 && n <= 999) setTotalDays(n);
                 }}
-                min={7} max={999} placeholder="Enter days (7–999)"
+                min={7} max={999} placeholder={t("journey.enter_days")}
                 className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
               />
             )}
             {isCustomDays && totalDays >= 7 && (
-              <p className="mt-1 text-xs text-muted-foreground text-right">{totalDays} days selected</p>
+              <p className="mt-1 text-xs text-muted-foreground text-right">{t("journey.days_selected", { n: totalDays })}</p>
             )}
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Where are you starting from?</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.where_starting")}</label>
             <textarea value={startingPoint} onChange={e => setStartingPoint(e.target.value)}
               placeholder={`e.g. "Complete beginner, never tried ${track.name} before"`}
               rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">What drives you?</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.what_drives_you")}</label>
             <textarea value={motivation} onChange={e => setMotivation(e.target.value)}
               placeholder={`e.g. "I want to feel calmer and less reactive in daily life"`}
               rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
           </div>
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Biggest obstacle</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.biggest_obstacle")}</label>
             <textarea value={obstacle} onChange={e => setObstacle(e.target.value)}
               placeholder={`e.g. "I always quit after a few days when things get hard"`}
               rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
@@ -525,9 +523,9 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
           <button onClick={handleStart} disabled={loading}
             className="btn-chunk w-full rounded-2xl bg-foreground text-neutral-900 py-3.5 font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2">
             {loading ? (
-              <><span className="h-4 w-4 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your journey…</>
+              <><span className="h-4 w-4 rounded-full border-2 border-background/30 border-t-background animate-spin" />{t("journey.generating_journey")}</>
             ) : (
-              <><Sparkles className="h-4 w-4" />Begin my journey</>
+              <><Sparkles className="h-4 w-4" />{t("journey.begin_my_journey")}</>
             )}
           </button>
         </div>
@@ -541,6 +539,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
   onConfirm: (days: number) => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState(30);
   const [custom, setCustom] = useState(false);
   const [customVal, setCustomVal] = useState("");
@@ -558,7 +557,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
         className="w-full max-w-sm rounded-3xl p-6 space-y-5"
         style={{ background: "oklch(0.12 0.02 240)", border: "1px solid oklch(1 0 0 / 0.08)" }}>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">Journey length</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">{t("journey.journey_length")}</p>
           <h2 className="font-display text-xl tracking-tight">{trackName}</h2>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -572,24 +571,24 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
         </div>
         <button onClick={() => { setCustom(true); setCustomVal(String(selected)); }}
           className={`w-full rounded-xl py-2.5 text-sm font-semibold border transition ${custom ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-          Custom
+          {t("journey.custom")}
         </button>
         {custom && (
           <input type="number" autoFocus value={customVal}
             onChange={e => setCustomVal(e.target.value)}
-            min={7} max={999} placeholder="Days (7–999)"
+            min={7} max={999} placeholder={t("journey.days_placeholder")}
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
         )}
         <div className="flex gap-3 pt-1">
           <button onClick={onCancel}
             className="flex-1 rounded-2xl py-3 text-sm font-semibold border border-border text-muted-foreground hover:text-foreground transition">
-            Cancel
+            {t("common.cancel")}
           </button>
           <button onClick={() => valid && onConfirm(days)} disabled={!valid}
             className="flex-2 flex-1 rounded-2xl py-3 text-sm font-semibold transition disabled:opacity-40"
             style={{ background: valid ? "oklch(0.6 0.22 250)" : undefined, color: valid ? "#fff" : undefined,
               ...(valid ? {} : { background: "oklch(0.2 0.02 240)", color: "oklch(0.5 0 0)" }) }}>
-            Start {days >= 7 && days <= 999 ? `${days === 365 ? "1-year" : days + "-day"}` : ""} journey
+            {valid ? t("journey.start_n_day_journey", { n: days === 365 ? "1-year" : days }) : t("journey.start_journey")}
           </button>
         </div>
       </motion.div>
@@ -606,6 +605,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   onRestart?: (trackId: string) => void;
   userId?: string | null;
 }) {
+  const { t } = useTranslation();
   const [journey, setJourney] = useState(initJourney);
   const [days, setDays] = useState(initDays);
   const [activeTab, setActiveTab] = useState<"today" | "map" | "community" | "coach">("today");
@@ -739,7 +739,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     });
 
     const missedDays = adaptModal?.missedDays ?? 1;
-    const reasonLabel = ADAPT_REASONS.find(r => r.id === adaptReason)?.label ?? adaptReason;
+    const reasonLabel = adaptReason;
     const fromDay = completedCount + 1;
     const count = Math.min(7, journey.totalDays - completedCount);
     if (count <= 0) { setAdapting(false); setAdaptModal(null); return; }
@@ -892,9 +892,9 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   };
 
   const tabs: { key: typeof activeTab; label: string }[] = [
-    { key: "today", label: "Today" },
-    { key: "map", label: "Journey" },
-    { key: "community", label: "Community" },
+    { key: "today", label: t("journey.tab_today") },
+    { key: "map", label: t("journey.tab_journey") },
+    { key: "community", label: t("journey.tab_community") },
     { key: "coach", label: archetype.name },
   ];
 
@@ -918,9 +918,9 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             </div>
             {onRestart && (
               <button
-                onClick={() => { if (confirm("Restart this journey? Your streak and progress will be reset.")) { onRestart(track.id); onBack(); } }}
+                onClick={() => { if (confirm(t("journey.restart_confirm"))) { onRestart(track.id); onBack(); } }}
                 className="text-[10px] text-muted-foreground hover:text-foreground border border-border rounded-lg px-2 py-1 transition"
-                title="Restart journey">
+                title={t("journey.restart_journey")}>
                 ↺
               </button>
             )}
@@ -949,8 +949,8 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   className="rounded-2xl border-2 border-[color:var(--secondary)]/40 bg-[color:var(--secondary)]/8 p-4 flex items-start gap-3">
                   <svg className="h-5 w-5 mt-0.5 shrink-0 text-[color:var(--secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                   <div className="flex-1 min-w-0">
-                    <p className="font-display font-semibold text-sm text-[color:var(--secondary)]">Fill this in first!</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Write down what you did and your reflection — then you're ready to check in.</p>
+                    <p className="font-display font-semibold text-sm text-[color:var(--secondary)]">{t("journey.fill_first")}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t("journey.fill_first_sub")}</p>
                   </div>
                   <button onClick={() => setFillFirstBanner(false)}
                     className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0 mt-0.5">✕</button>
@@ -967,7 +967,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               <div className="px-5 py-3 border-b border-border/60 flex items-center gap-2"
                 style={{ borderLeft: "3px solid oklch(0.65 0.22 240)" }}>
                 <Zap className="h-3.5 w-3.5" style={{ color: "oklch(0.65 0.22 240)" }} fill="currentColor" />
-                <p className="text-[10px] uppercase tracking-[0.25em] font-mono font-bold" style={{ color: "oklch(0.65 0.22 240)" }}>Your Mission Today</p>
+                <p className="text-[10px] uppercase tracking-[0.25em] font-mono font-bold" style={{ color: "oklch(0.65 0.22 240)" }}>{t("journey.your_mission")}</p>
               </div>
               <div className="px-5 py-4">
                 <p className="text-base leading-relaxed font-medium whitespace-pre-line">{todayDay.task}</p>
@@ -975,21 +975,21 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             </div>
 
             {/* Reflection (yellow) */}
-            <DayPanel label="Reflection prompt" accentColor="oklch(0.875 0.185 95)"><p className="text-sm text-muted-foreground italic">{todayDay.reflection}</p></DayPanel>
+            <DayPanel label={t("journey.reflection_prompt")} accentColor="oklch(0.875 0.185 95)"><p className="text-sm text-muted-foreground italic">{todayDay.reflection}</p></DayPanel>
             {/* Science (green) */}
-            <DayPanel label="The science" accentColor="oklch(0.65 0.22 145)"><p className="text-sm text-muted-foreground">{todayDay.science}</p></DayPanel>
+            <DayPanel label={t("journey.the_science")} accentColor="oklch(0.65 0.22 145)"><p className="text-sm text-muted-foreground">{todayDay.science}</p></DayPanel>
             {todayDay.completedAt === null ? (
               <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Check-in</p>
+                  <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{t("journey.checkin_label")}</p>
                   <p className="text-sm text-muted-foreground mt-1">{todayDay.checkinPrompt}</p>
                 </div>
 
                 {/* Task field */}
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-foreground">Did you do the task? How did it go?</p>
+                  <p className="text-xs font-semibold text-foreground">{t("journey.did_you_do_task")}</p>
                   <textarea value={checkInTask} onChange={e => { setCheckInTask(e.target.value); if (e.target.value) setFillFirstBanner(false); }}
-                    placeholder="Describe what you actually did today…" rows={2}
+                    placeholder={t("journey.describe_task_placeholder")} rows={2}
                     className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnTaskKey > 0 && !checkInTask.trim() ? "border-red-500" : "border-border"}`} />
                   <AnimatePresence mode="wait">
                     {warnTaskKey > 0 && !checkInTask.trim() && (
@@ -1007,9 +1007,9 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
                 {/* Reflection field */}
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold text-foreground">Your reflection</p>
+                  <p className="text-xs font-semibold text-foreground">{t("journey.your_reflection")}</p>
                   <textarea value={checkInReflect} onChange={e => { setCheckInReflect(e.target.value); if (e.target.value) setFillFirstBanner(false); }}
-                    placeholder="What did you notice about yourself today?" rows={2}
+                    placeholder={t("journey.reflection_placeholder")} rows={2}
                     className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnReflectKey > 0 && !checkInReflect.trim() ? "border-red-500" : "border-border"}`} />
                   <AnimatePresence mode="wait">
                     {warnReflectKey > 0 && !checkInReflect.trim() && (
@@ -1027,14 +1027,14 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
                 <button onClick={handleCheckIn}
                   className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-2.5 font-semibold text-sm flex items-center justify-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4" /> Mark day {todayDay.dayNumber} complete
+                  <CheckCircle2 className="h-4 w-4" /> {t("journey.mark_complete", { n: todayDay.dayNumber })}
                 </button>
               </div>
             ) : (
               <div className="rounded-2xl bg-[color:var(--tertiary)]/10 border border-[color:var(--tertiary)]/20 p-4 flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-[color:var(--tertiary)] shrink-0" />
                 <div>
-                  <p className="font-semibold text-sm">Day {todayDay.dayNumber} complete!</p>
+                  <p className="font-semibold text-sm">{t("journey.day_complete", { n: todayDay.dayNumber })}</p>
                   {todayDay.userNote && <p className="text-xs text-muted-foreground mt-0.5">{todayDay.userNote}</p>}
                 </div>
               </div>
@@ -1044,7 +1044,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
         {activeTab === "map" && (
           <motion.div key="map" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">Journey Map — {journey.totalDays} days</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{t("journey.map_label", { n: journey.totalDays })}</p>
             {days.map(d => {
               const isCompleted = d.completedAt !== null;
               const isCurrent = d.id === todayDay?.id;
@@ -1068,15 +1068,15 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                      : d.dayNumber}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{locked ? `Day ${d.dayNumber}` : d.title}</p>
+                    <p className="font-semibold text-sm truncate">{locked ? t("journey.day_n", { n: d.dayNumber }) : d.title}</p>
                     <p className="text-[11px] text-muted-foreground truncate">
-                      {locked ? "Complete today's check-in to unlock" : `${d.description.slice(0, 60)}…`}
+                      {locked ? t("journey.locked_hint") : `${d.description.slice(0, 60)}…`}
                     </p>
                   </div>
                   {JOURNEY_MILESTONES.includes(d.dayNumber) && !locked && <Trophy className="shrink-0 h-3.5 w-3.5 text-yellow-400" />}
                   {adaptedDayNumbers.has(d.dayNumber) && !locked && (
                     <span className="shrink-0 flex items-center gap-1 rounded-full bg-[color:var(--secondary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--secondary)]">
-                      <Sparkles className="h-2.5 w-2.5" />adapted
+                      <Sparkles className="h-2.5 w-2.5" />{t("journey.adapted")}
                     </span>
                   )}
                 </button>
@@ -1084,7 +1084,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             })}
             {journey.generatedThrough < journey.totalDays && (
               <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
-                Days {journey.generatedThrough + 1}–{journey.totalDays} will be generated as you progress.
+                {t("journey.days_will_generate", { from: journey.generatedThrough + 1, to: journey.totalDays })}
               </div>
             )}
           </motion.div>
@@ -1092,7 +1092,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
         {activeTab === "community" && (
           <motion.div key="community" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{track.name} Community</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{t("journey.community_title", { name: track.name })}</p>
             <CommunityBoard slug={track.slug} userId={userId} />
           </motion.div>
         )}
@@ -1112,7 +1112,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               {chatMessages.length === 0 && (
                 <div className="rounded-xl bg-muted/50 p-4 flex gap-2">
                   <div className="h-2 w-2 rounded-full bg-muted-foreground mt-1.5 animate-pulse shrink-0" />
-                  <p className="text-sm text-muted-foreground italic">{archetype.name} is warming up…</p>
+                  <p className="text-sm text-muted-foreground italic">{t("journey.coach_warming_up", { name: archetype.name })}</p>
                 </div>
               )}
               {chatMessages.map(m => (
@@ -1147,28 +1147,28 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             <div className="sticky bottom-0 bg-background pt-1">
               {coachLimitReached ? (
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 p-3 text-center space-y-1">
-                  <p className="text-xs font-medium text-amber-400">Monthly message limit reached</p>
-                  <p className="text-[10px] text-muted-foreground">Free plan includes {FREE_COACH_LIMIT} messages/month. Your messages reset on the 1st.</p>
+                  <p className="text-xs font-medium text-amber-400">{t("journey.coach_limit_reached")}</p>
+                  <p className="text-[10px] text-muted-foreground">{t("journey.coach_limit_sub", { n: FREE_COACH_LIMIT })}</p>
                 </div>
               ) : (
                 <div className="flex gap-2">
                   <input value={chatInput} onChange={e => setChatInput(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                    placeholder={`Message ${archetype.name}…`}
+                    placeholder={t("journey.message_coach", { name: archetype.name })}
                     className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
                   <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
                     className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
-                    Send
+                    {t("common.send")}
                   </button>
                 </div>
               )}
               {!coachLimitReached && monthMsgCount >= 3 && (
                 <p className="mt-1.5 text-[10px] text-muted-foreground/60 font-mono text-center">
-                  {FREE_COACH_LIMIT - monthMsgCount} message{FREE_COACH_LIMIT - monthMsgCount !== 1 ? "s" : ""} left this month
+{t("journey.messages_left", { n: FREE_COACH_LIMIT - monthMsgCount })}
                 </p>
               )}
               {!coachLimitReached && monthMsgCount < 3 && (
-                <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">This stays between you and your coach. Always.</p>
+                <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">{t("journey.coach_privacy")}</p>
               )}
             </div>
           </motion.div>
@@ -1215,12 +1215,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               <h2 className="font-display text-xl font-semibold">{selectedDay.title}</h2>
               <p className="text-sm text-muted-foreground">{selectedDay.description}</p>
               <div className="rounded-xl bg-muted p-3">
-                <p className="text-[10px] uppercase tracking-wider font-mono text-muted-foreground mb-1">Task</p>
+                <p className="text-[10px] uppercase tracking-wider font-mono text-muted-foreground mb-1">{t("journey.task_label")}</p>
                 <p className="text-sm">{selectedDay.task}</p>
               </div>
               {selectedDay.completedAt && selectedDay.userNote && (
                 <div className="rounded-xl bg-[color:var(--tertiary)]/10 p-3">
-                  <p className="text-[10px] uppercase tracking-wider font-mono text-[color:var(--tertiary)] mb-1">Your note</p>
+                  <p className="text-[10px] uppercase tracking-wider font-mono text-[color:var(--tertiary)] mb-1">{t("journey.your_note")}</p>
                   <p className="text-sm">{selectedDay.userNote}</p>
                 </div>
               )}
@@ -1253,21 +1253,21 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 </div>
                 <div>
                   <p className="font-semibold text-base leading-snug">
-                    Welcome back
+                    {t("journey.welcome_back")}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    You were away for {adaptModal.missedDays} day{adaptModal.missedDays !== 1 ? "s" : ""}
+                    {t("journey.away_for_days", { n: adaptModal.missedDays })}
                   </p>
                 </div>
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Life happens — no judgment here. Want me to reshape the upcoming days around where you are now, or keep your original plan?
+                {t("journey.adapt_intro")}
               </p>
 
               {/* Reason selector */}
               <div className="space-y-2">
-                <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground">What happened?</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground">{t("journey.what_happened")}</p>
                 <div className="flex flex-wrap gap-2">
                   {ADAPT_REASONS.map(r => (
                     <button
@@ -1279,7 +1279,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                           : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
                       }`}
                     >
-                      {r.label}
+                      {t(`adapt_reasons.${r.id}`)}
                     </button>
                   ))}
                 </div>
@@ -1295,12 +1295,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   {adapting ? (
                     <>
                       <RefreshCw className="h-4 w-4 animate-spin" />
-                      Adapting your journey…
+                      {t("journey.adapting")}
                     </>
                   ) : (
                     <>
                       <Sparkles className="h-4 w-4" />
-                      Adapt my journey
+                      {t("journey.adapt_my_journey")}
                     </>
                   )}
                 </button>
@@ -1308,7 +1308,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   onClick={() => setAdaptModal(null)}
                   className="w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition"
                 >
-                  Keep original plan
+                  {t("journey.keep_original_plan")}
                 </button>
               </div>
             </motion.div>
@@ -1340,17 +1340,17 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 <Trophy className="h-8 w-8 text-yellow-400" />
               </div>
               <h2 className="font-display text-2xl font-bold">Day {milestoneDay}!</h2>
-              <p className="text-muted-foreground text-sm">You've hit a major milestone on your {track.name} journey. This is the moment most people quit — and you didn't.</p>
+              <p className="text-muted-foreground text-sm">{t("journey.milestone_message", { name: track.name })}</p>
               <button onClick={() => setMilestoneDay(null)}
                 className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-3 font-semibold">
-                Keep going
+                {t("journey.keep_going")}
               </button>
               <button onClick={() => {
                 const text = `Day ${milestoneDay} on ${track.name} with Forge. The streak continues. 🔥`;
                 if (navigator.share) navigator.share({ text });
                 else navigator.clipboard?.writeText(text);
               }} className="btn-chunk w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition">
-                Share this moment
+                {t("journey.share_moment")}
               </button>
             </motion.div>
           </motion.div>

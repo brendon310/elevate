@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import type { UserTrack, JourneyDay, Journey } from '../types';
@@ -83,6 +84,7 @@ function todayStr() { return new Date().toISOString().slice(0, 10); }
 function yesterdayStr() { return new Date(Date.now() - 86_400_000).toISOString().slice(0, 10); }
 
 function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () => void }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<"typing" | "message">("typing");
   const [message, setMessage] = useState<string>("");
   const [revealed, setRevealed] = useState(0);
@@ -228,7 +230,7 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
                 onClick={onDismiss}
                 className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-8 py-3 text-sm font-semibold"
               >
-                Begin today <ArrowRight className="h-4 w-4" />
+                {t("morning_coach.begin_today")} <ArrowRight className="h-4 w-4" />
               </button>
             </motion.div>
           )}

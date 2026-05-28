@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sun } from 'lucide-react';
 import type { UserTrack, Journey, JourneyDay } from '../types';
 import * as db from '../db';
@@ -66,6 +67,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
   onRestart?: (trackId: string) => void;
   userId?: string | null;
 }) {
+  const { t } = useTranslation();
   const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
   const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
 
@@ -119,20 +121,20 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
           <div className="relative z-10 text-center space-y-4 px-8">
             <p className="font-display text-6xl font-bold text-white tracking-tight"
               style={{ textShadow: "0 0 40px rgba(160,210,255,0.6)" }}>
-              Freezed
+              {t("tracks.frozen")}
             </p>
             <p className="text-white/60 text-sm font-mono tracking-widest uppercase">
-              Streak protected · until {track.vacation_until}
+              {t("tracks.streak_protected_until", { date: track.vacation_until })}
             </p>
             <button
               onClick={() => onVacation?.(track.id, "")}
               className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-2.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition">
               <Sun className="h-4 w-4" />
-              End Vacation
+              {t("tracks.end_vacation")}
             </button>
             <button onClick={onBack}
               className="block text-xs text-white/40 hover:text-white/70 transition font-mono mx-auto pt-2">
-              ← Torna indietro
+              {t("common.go_back")}
             </button>
           </div>
         </div>

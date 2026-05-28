@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Mail, BarChart2 } from 'lucide-react';
 import type { UserTrack, Log, JourneyDay } from '../types';
@@ -27,6 +28,7 @@ function liveStreak(ut: UserTrack): number {
 }
 
 function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; logs: Log[]; userId?: string }) {
+  const { t } = useTranslation();
   const [letterLoading, setLetterLoading] = useState(false);
   const [letter, setLetter] = useState<string | null>(null);
   const [showLetter, setShowLetter] = useState(false);
@@ -36,14 +38,14 @@ function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; l
   const generateLetter = async () => {
     setLetterLoading(true);
     try {
-      const journeyData = userTracks.map(t => {
-        const days = lsLoad<JourneyDay[]>(LS_DAYS(t.slug), []);
+      const journeyData = userTracks.map(ut => {
+        const days = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
         const completedDays = days.filter(d => d.completedAt !== null);
         const recentNotes = completedDays
           .filter(d => d.userNote)
           .slice(-7)
           .map(d => `Day ${d.dayNumber}: ${d.userNote}`);
-        return { trackName: t.name, category: t.category, streak: t.current_streak || 0, totalDone: t.total_done || 0, recentNotes };
+        return { trackName: ut.name, category: ut.category, streak: ut.current_streak || 0, totalDone: ut.total_done || 0, recentNotes };
       });
 
       const hasNotes = journeyData.some(d => d.recentNotes.length > 0);
@@ -153,14 +155,14 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl space-y-8">
       <header>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">Insights</h1>
-        <p className="text-muted-foreground mt-1">Your data, clear and honest.</p>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">{t("insights.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("insights.subtitle")}</p>
         <button onClick={generateLetter} disabled={letterLoading}
           className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
           {letterLoading ? (
-            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your letter…</>
+            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />{t("insights.generating_letter")}</>
           ) : (
-            <><Mail className="h-3.5 w-3.5" />Weekly recap letter</>
+            <><Mail className="h-3.5 w-3.5" />{t("insights.weekly_letter")}</>
           )}
         </button>
       </header>
@@ -171,11 +173,11 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
           <div className="h-12 w-12 rounded-full grad-electric flex items-center justify-center mx-auto opacity-70">
             <Sparkles className="h-5 w-5 text-white" />
           </div>
-          <h3 className="font-display text-xl font-semibold">Day one starts here</h3>
+          <h3 className="font-display text-xl font-semibold">{t("insights.day_one")}</h3>
           <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
-            Your first check-in unlocks your insights. Every pattern, streak, and milestone starts with one honest day.
+            {t("insights.empty_desc")}
           </p>
-          <p className="text-xs text-muted-foreground/60 font-mono italic">Your coach is waiting to see what you're made of.</p>
+          <p className="text-xs text-muted-foreground/60 font-mono italic">{t("insights.coach_waiting")}</p>
         </div>
       )}
 
@@ -183,10 +185,10 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
       {totalCheckins > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Total check-ins", value: totalCheckins },
-            { label: "Active days (90d)", value: activeDays },
-            { label: "Best streak", value: bestStreak, unit: "d" },
-            { label: "Active paths", value: userTracks.length },
+            { label: t("insights.total_checkins"), value: totalCheckins },
+            { label: t("insights.active_days"), value: activeDays },
+            { label: t("insights.best_streak"), value: bestStreak, unit: "d" },
+            { label: t("insights.active_paths"), value: userTracks.length },
           ].map(s => (
             <div key={s.label} className="rounded-2xl border border-border bg-card p-4 text-center">
               <p className="font-bold text-2xl font-display">{s.value}{s.unit ?? ""}</p>
@@ -199,13 +201,13 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
       {/* Weekly comparison */}
       {totalCheckins > 0 && (
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">This week vs last week</h2>
+          <h2 className="font-semibold mb-4">{t("insights.this_vs_last_week")}</h2>
           <div className="flex items-end gap-6">
             {/* Last week bar */}
             <div className="flex flex-col items-center gap-2 flex-1">
               <p className="text-xl font-bold font-display text-muted-foreground">{lastWeekCount}</p>
               <div className="w-full rounded-t-lg bg-muted/60 transition-all" style={{ height: `${Math.round((lastWeekCount / Math.max(1, thisWeekCount, lastWeekCount)) * 80) + 8}px` }} />
-              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Last week</p>
+              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">{t("insights.last_week")}</p>
             </div>
             {/* Delta */}
             <div className="flex flex-col items-center gap-1 pb-6 shrink-0">
@@ -218,7 +220,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
             <div className="flex flex-col items-center gap-2 flex-1">
               <p className="text-xl font-bold font-display" style={{ color: "var(--tertiary)" }}>{thisWeekCount}</p>
               <div className="w-full rounded-t-lg transition-all" style={{ height: `${Math.round((thisWeekCount / Math.max(1, thisWeekCount, lastWeekCount)) * 80) + 8}px`, background: "var(--tertiary)", opacity: 0.8 }} />
-              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">This week</p>
+              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">{t("insights.this_week")}</p>
             </div>
           </div>
         </section>
@@ -227,7 +229,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
       {/* 28-day activity bar chart */}
       {totalCheckins > 0 && (
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Daily activity — last 28 days</h2>
+          <h2 className="font-semibold mb-4">{t("insights.daily_activity")}</h2>
           <div className="flex items-end gap-[3px] h-16">
             {last28.map(d => (
               <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full" title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}>
@@ -244,23 +246,23 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
           </div>
           <div className="flex justify-between mt-2">
             <p className="text-[9px] text-muted-foreground font-mono">{last28[0]?.date.slice(5)}</p>
-            <p className="text-[9px] text-muted-foreground font-mono">today</p>
+            <p className="text-[9px] text-muted-foreground font-mono">{t("insights.today_label")}</p>
           </div>
         </section>
       )}
 
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">90-day activity</h2>
+          <h2 className="font-semibold">{t("insights.ninety_day")}</h2>
           <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
             <span>less</span>
             {[0,1,2,3].map(v => <div key={v} className={`h-2.5 w-2.5 rounded-sm ${tone(v)}`} />)}
-            <span>more</span>
+<span>{t("insights.more")}</span>
           </div>
         </div>
         {totalCheckins === 0 ? (
           <div className="py-6 text-center text-sm text-muted-foreground">
-            Complete your first check-in to see activity here.
+            {t("insights.no_activity_yet")}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -289,33 +291,33 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
 
       {userTracks.length > 0 && (
         <section>
-          <h2 className="font-semibold mb-3">Per path</h2>
+          <h2 className="font-semibold mb-3">{t("insights.per_path")}</h2>
           <div className="grid sm:grid-cols-2 gap-3">
-            {userTracks.map(t => {
-              const streak = liveStreak(t);
-              const best = t.longest_streak || 0;
-              const done = t.total_done || 0;
-              const target = t.target_days || 30;
+            {userTracks.map(ut => {
+              const streak = liveStreak(ut);
+              const best = ut.longest_streak || 0;
+              const done = ut.total_done || 0;
+              const target = ut.target_days || 30;
               const progressPct = Math.min(1, done / target);
               const streakPct = best > 0 ? Math.min(1, streak / best) : 0;
               return (
-                <div key={t.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                <div key={ut.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-semibold text-[15px] leading-tight">{t.name}</h3>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">{t.category}</p>
+                      <h3 className="font-semibold text-[15px] leading-tight">{ut.name}</h3>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">{ut.category}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="font-bold text-lg font-display leading-none" style={{ color: streak > 0 ? "var(--tertiary)" : undefined }}>{streak}d</p>
-                      <p className="text-[9px] text-muted-foreground font-mono mt-0.5">streak</p>
+                      <p className="text-[9px] text-muted-foreground font-mono mt-0.5">{t("common.streak")}</p>
                     </div>
                   </div>
 
                   {/* Journey progress bar */}
                   <div>
                     <div className="flex justify-between text-[10px] text-muted-foreground font-mono mb-1">
-                      <span>Journey progress</span>
-                      <span>{done}/{target} days</span>
+                      <span>{t("insights.journey_progress")}</span>
+                      <span>{done}/{target} {t("common.days")}</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                       <div className="h-full rounded-full transition-all" style={{ width: `${progressPct * 100}%`, background: "var(--tertiary)" }} />
@@ -326,7 +328,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
                   {best > 0 && (
                     <div>
                       <div className="flex justify-between text-[10px] text-muted-foreground font-mono mb-1">
-                        <span>Streak vs best</span>
+                        <span>{t("insights.streak_vs_best")}</span>
                         <span>{streak} / {best}d</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-muted overflow-hidden">
@@ -338,15 +340,15 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
                   <div className="flex gap-2 pt-1">
                     <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
                       <p className="font-bold text-sm">{best}d</p>
-                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Best</p>
+                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{t("insights.best")}</p>
                     </div>
                     <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
                       <p className="font-bold text-sm">{done}</p>
-                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Done</p>
+                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{t("insights.done")}</p>
                     </div>
                     <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
                       <p className="font-bold text-sm">{target - done > 0 ? target - done : "✓"}</p>
-                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{target - done > 0 ? "Left" : "Complete"}</p>
+                      <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{target - done > 0 ? t("insights.left") : t("insights.complete")}</p>
                     </div>
                   </div>
                 </div>
@@ -371,7 +373,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-display font-semibold text-base">Weekly Letter</p>
+                  <p className="font-display font-semibold text-base">{t("insights.weekly_letter")}</p>
                   <p className="text-[11px] text-muted-foreground font-mono">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
                 </div>
                 <button onClick={() => setShowLetter(false)}
@@ -380,7 +382,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
               <div className="rounded-2xl bg-card border border-border p-5">
                 <p className="text-sm leading-[1.75] whitespace-pre-line text-foreground">{letter}</p>
               </div>
-              <p className="mt-3 text-center text-[10px] text-muted-foreground font-mono">Generated privately for you alone</p>
+              <p className="mt-3 text-center text-[10px] text-muted-foreground font-mono">{t("insights.letter_private")}</p>
             </motion.div>
           </motion.div>
         )}

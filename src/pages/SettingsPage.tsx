@@ -93,13 +93,13 @@ function SettingsPage({
       return;
     }
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      setPushError("Push notifications are not supported in this browser.");
+setPushError(t("settings.push_not_supported"));
       return;
     }
     setPushLoading(true);
     try {
       const perm = await Notification.requestPermission();
-      if (perm !== "granted") { setPushError("Permission denied. Enable notifications in browser settings."); return; }
+if (perm !== "granted") { setPushError(t("settings.push_permission_denied")); return; }
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
       const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
@@ -110,7 +110,7 @@ function SettingsPage({
       setReminderOn(true);
       lsSave("forge-reminder-on", true);
     } catch {
-      setPushError("Could not enable notifications. Try again.");
+setPushError(t("settings.push_error"));
     } finally {
       setPushLoading(false);
     }
@@ -195,7 +195,7 @@ function SettingsPage({
     <div className="container mx-auto px-6 py-8 max-w-2xl space-y-6">
       <header>
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">{t('settings.title')}</h1>
-        <p className="text-muted-foreground mt-1">Account and preferences.</p>
+        <p className="text-muted-foreground mt-1">{t("settings.subtitle")}</p>
       </header>
 
       {/* Account */}
@@ -204,19 +204,19 @@ function SettingsPage({
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <UserIcon className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Account</h2>
+          <h2 className="font-semibold">{t("settings.account")}</h2>
         </div>
         <div className="space-y-3">
           <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground">Your name</label>
+            <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("settings.your_name")}</label>
             <div className="flex gap-2 mt-1.5">
               <input value={displayName} onChange={e => { setDisplayName(e.target.value); setNameSaved(false); }}
                 onKeyDown={e => e.key === "Enter" && handleSaveName()}
-                placeholder="What's your name?"
+                placeholder={t("settings.name_placeholder")}
                 className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
               <button onClick={handleSaveName}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${nameSaved ? "bg-[color:var(--tertiary)] text-white" : "bg-primary text-primary-foreground"}`}>
-                {nameSaved ? "Saved" : "Save"}
+{nameSaved ? t("common.saved") : t("common.save")}
               </button>
             </div>
           </div>
@@ -265,7 +265,7 @@ function SettingsPage({
         <div className="flex items-center justify-between py-2">
           <div>
             <p className="text-sm font-medium">{t('settings.reminder_time')}</p>
-            <p className="text-xs text-muted-foreground">Get a nudge when you have not checked in yet.</p>
+            <p className="text-xs text-muted-foreground">{t("settings.notifications_desc")}</p>
           </div>
           <button
             onClick={toggleReminder}
@@ -277,7 +277,7 @@ function SettingsPage({
         </div>
         {reminderOn && (
           <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
-            <p className="text-xs text-muted-foreground">You will get a daily nudge if you have not checked in.</p>
+            <p className="text-xs text-muted-foreground">{t("settings.notifications_active")}</p>
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
@@ -285,18 +285,18 @@ function SettingsPage({
 
       {/* Rank & Shields */}
       <section className="rounded-2xl border border-border bg-card p-5 md:p-6 space-y-3">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Rank & Shields</h3>
+        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">{t("settings.rank_shields")}</h3>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Your Title</p>
+            <p className="text-xs text-muted-foreground mb-0.5">{t("settings.your_title")}</p>
             <p className={`text-base font-semibold ${forgeTitle.color}`}>{forgeTitle.title}</p>
           </div>
           <div className="flex items-center gap-2 bg-white/5 border border-border rounded-xl px-4 py-2">
             <span className="text-xl font-bold text-blue-400">{shields}</span>
-            <span className="text-xs text-muted-foreground">shields</span>
+<span className="text-xs text-muted-foreground">{t("settings.shields")}</span>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">Earn a shield every 10 consecutive days. Auto-used if you miss a day.</p>
+        <p className="text-xs text-muted-foreground">{t("settings.shields_desc")}</p>
       </section>
 
       {/* Island Theme */}
@@ -305,7 +305,7 @@ function SettingsPage({
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.1 11.5 7.4 11.8.3.2.9.2 1.2 0C12.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
           </span>
-          <h2 className="font-semibold">Island Theme</h2>
+          <h2 className="font-semibold">{t("settings.island_theme")}</h2>
         </div>
         {(() => {
           const lastChanged = Number(localStorage.getItem('forge_island_theme_changed_at') || 0);
@@ -315,7 +315,7 @@ function SettingsPage({
           return (
             <>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                {[{ key: 'garden', label: 'Garden Island' }, { key: 'mountain', label: 'Mountain Peak' }].map(({ key, label }) => (
+                {[{ key: 'garden', label: t('settings.garden_island') }, { key: 'mountain', label: t('settings.mountain_peak') }].map(({ key, label }) => (
                   <button
                     key={key}
                     onClick={() => { if (!onCooldown) onChangeTheme(key); }}
@@ -327,9 +327,9 @@ function SettingsPage({
                 ))}
               </div>
               {onCooldown ? (
-                <p className="text-xs text-muted-foreground">Next change in {daysLeft} day{daysLeft !== 1 ? 's' : ''}</p>
+                <p className="text-xs text-muted-foreground">{t("settings.theme_cooldown", { n: daysLeft })}</p>
               ) : (
-                <p className="text-xs text-muted-foreground">Change available once every 2 weeks</p>
+                <p className="text-xs text-muted-foreground">{t("settings.theme_available")}</p>
               )}
             </>
           );
@@ -342,10 +342,10 @@ function SettingsPage({
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
             <Database className="h-4 w-4" />
           </span>
-          <h2 className="font-semibold">Data & Privacy</h2>
+          <h2 className="font-semibold">{t("settings.data_privacy")}</h2>
         </div>
         <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-          Your progress is saved locally and backed up to your account. You can export or delete your data at any time.
+{t("settings.data_desc")}
         </div>
         <div className="space-y-1">
           {/* Export */}
@@ -357,7 +357,7 @@ function SettingsPage({
             <button onClick={handleExport} disabled={exportLoading}
               className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition disabled:opacity-50">
               <Download className="h-3.5 w-3.5" />
-              {exportLoading ? 'Exporting...' : t('gdpr.export_btn')}
+              {exportLoading ? t('settings.exporting') : t('gdpr.export_btn')}
             </button>
           </div>
 
@@ -388,13 +388,13 @@ function SettingsPage({
                 <div className="flex gap-2">
                   <button onClick={() => { setShowDeleteConfirm(false); setDeleteConfirm(''); }}
                     className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-                    Cancel
+                    {t("common.cancel")}
                   </button>
                   <button
                     onClick={handleDeleteAccount}
                     disabled={deleteConfirm !== t('gdpr.delete_confirm_word') || deleteLoading}
                     className="flex-1 rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition disabled:opacity-40">
-                    {deleteLoading ? 'Deleting...' : t('gdpr.delete_btn')}
+                    {deleteLoading ? t('settings.deleting') : t('gdpr.delete_btn')}
                   </button>
                 </div>
               </div>
@@ -404,24 +404,24 @@ function SettingsPage({
           {/* Clear local data */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm font-medium text-[color:var(--secondary)]">Clear local data</p>
-              <p className="text-xs text-muted-foreground">Remove all locally cached data and sign out</p>
+              <p className="text-sm font-medium text-[color:var(--secondary)]">{t("settings.clear_local_data")}</p>
+              <p className="text-xs text-muted-foreground">{t("settings.clear_local_desc")}</p>
             </div>
             {showClearConfirm ? (
               <div className="flex gap-2">
                 <button onClick={() => setShowClearConfirm(false)}
                   className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium hover:bg-muted transition">
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button onClick={handleClearData}
                   className="rounded-xl bg-[color:var(--secondary)] text-white px-3 py-2 text-xs font-bold transition">
-                  Confirm
+                  {t("common.confirm")}
                 </button>
               </div>
             ) : (
               <button onClick={() => setShowClearConfirm(true)}
                 className="rounded-xl border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] px-3 py-2 text-xs font-medium hover:bg-[color:var(--secondary)]/10 transition">
-                Clear
+                {t("common.clear")}
               </button>
             )}
           </div>

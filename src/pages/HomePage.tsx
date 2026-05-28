@@ -9,6 +9,7 @@ import {
 import confetti from "canvas-confetti";
 import { supabase } from "../supabase";
 import { CoachNudge, useCoachNudge } from '../components/CoachNudge';
+import { useTranslation } from 'react-i18next';
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from '../types';
 
 function SlotNumber({ value }: { value: number }) {
@@ -100,10 +101,10 @@ function trackHueGradient(slug: string) {
 }
 
 function liveStreak(ut: UserTrack): number {
-  const t = todayStr();
+  const today = todayStr();
   const y = yesterdayStr();
-  if (ut.vacation_until && ut.vacation_until >= t) return ut.current_streak || 0;
-  if (ut.last_log_date === t || ut.last_log_date === y) return ut.current_streak || 0;
+  if (ut.vacation_until && ut.vacation_until >= today) return ut.current_streak || 0;
+  if (ut.last_log_date === today || ut.last_log_date === y) return ut.current_streak || 0;
   return 0;
 }
 
@@ -147,6 +148,7 @@ function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: 
 }
 
 function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () => void }) {
+  const { t } = useTranslation();
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
@@ -170,9 +172,9 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
   if (done) return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
       <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
-        <p className="text-white text-lg font-semibold text-center mb-2">You're on the list!</p>
-        <p className="text-white/50 text-sm text-center mb-6">We'll send your personalised prize to the address you provided.</p>
-        <button onClick={onClose} className="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-medium">Close</button>
+<p className="text-white text-lg font-semibold text-center mb-2">{t("home.prize_on_list")}</p>
+<p className="text-white/50 text-sm text-center mb-6">{t("home.prize_on_list_body")}</p>
+<button onClick={onClose} className="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-medium">{t("common.close")}</button>
       </div>
     </div>
   );
@@ -180,15 +182,15 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
       <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-white font-semibold">You made it!</p>
+<p className="text-white font-semibold">{t("home.prize_title")}</p>
           <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
         </div>
-        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.</p>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
-        <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
+<p className="text-white/50 text-sm mb-5">{t("home.prize_body")}</p>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder={t("home.name_placeholder")} className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <input value={email} onChange={e => setEmail(e.target.value)} placeholder={t("home.email_placeholder_field")} type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder={t("home.address_placeholder")} rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
         <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
-          {submitting ? 'Sending…' : 'Send my address — €7.99'}
+{submitting ? t('common.sending') : t('home.send_address')}
         </button>
       </div>
     </div>
@@ -249,6 +251,7 @@ export const MOUNTAIN_STAGES = [
 ];
 
 function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden' }: { tracks: UserTrack[]; user?: { name: string }; isPaused?: boolean; islandTheme?: 'garden' | 'mountain' }) {
+  const { t } = useTranslation();
   const THRESHOLDS = [0, 5, 12, 25, 50, 90, 150, 230, 330, 450];
   const STAGES = islandTheme === 'mountain' ? MOUNTAIN_STAGES : GARDEN_STAGES;
   const total = tracks.reduce((s, t) => s + (t.total_done ?? 0), 0);
@@ -372,19 +375,19 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
             className="flex items-center gap-1.5 text-xs text-white/70 hover:text-white/90 transition-colors mt-3 px-4 py-2 rounded-full bg-white/8 border border-white/25 hover:bg-white/12 active:scale-95 font-medium"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            Share my island
+{t("home.share_island")}
           </button>
           {isPaused && (
             <div className="flex flex-col items-center gap-2 mt-3 px-6">
               <p className="text-sm text-white/50 text-center">Your island is waiting at <span className="font-medium text-white/80">day {total}</span></p>
-              <button className="text-xs font-medium px-5 py-2 rounded-full border border-white/20 text-white/70 bg-white/5 active:bg-white/10 transition-colors">Reactivate your plan</button>
+<button className="text-xs font-medium px-5 py-2 rounded-full border border-white/20 text-white/70 bg-white/5 active:bg-white/10 transition-colors">{t("home.reactivate_plan")}</button>
             </div>
           )}
           {stageIndex === 9 && (
           <>
-            <p className="text-sm font-semibold text-white/80 mt-3 text-center">You've reached the final stage.</p>
-          <p className="text-xs text-white/50 mt-1 text-center mb-3">Congratulations! Want to receive your prize at home?</p>
-          <button onClick={() => setShowClaim(true)} className="px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">€7.99 — Get my prize</button>
+<p className="text-sm font-semibold text-white/80 mt-3 text-center">{t("home.final_stage_title")}</p>
+<p className="text-xs text-white/50 mt-1 text-center mb-3">{t("home.final_stage_body")}</p>
+<button onClick={() => setShowClaim(true)} className="px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">{t("home.claim_prize")}</button>
           </>
           )}
         </div>
@@ -568,84 +571,7 @@ function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── CHECK-IN RICH MODAL ───────────────────────────────────────────
-const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia","Tristezza","Abitudine"];
-
-function CheckInRichModal({ onConfirm, onSkip }: {
-  onConfirm: (data: { mood: number; hadUrge: boolean; urgeIntensity: number; trigger: string }) => void;
-  onSkip: () => void;
-}) {
-  const [mood, setMood] = useState(7);
-  const [hadUrge, setHadUrge] = useState<boolean | null>(null);
-  const [urgeIntensity, setUrgeIntensity] = useState(5);
-  const [trigger, setTrigger] = useState("");
-  const canConfirm = hadUrge !== null;
-  return (
-    <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/60 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onSkip()}>
-      <div className="w-full max-w-md rounded-t-3xl p-6 pb-10 space-y-5"
-        style={{ background: "oklch(0.12 0.02 145)" }}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-white">Come stai oggi?</h2>
-          <button onClick={onSkip} className="text-white/40 text-sm">salta</button>
-        </div>
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs text-white/50">
-            <span>Umore</span><span className="text-white font-semibold">{mood}/10</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg">😔</span>
-            <input type="range" min={1} max={10} value={mood}
-              onChange={e => setMood(Number(e.target.value))}
-              className="flex-1 accent-emerald-400 h-2" />
-            <span className="text-lg">😊</span>
-          </div>
-        </div>
-        <div className="space-y-2">
-          <p className="text-xs text-white/50">Hai sentito l'impulso oggi?</p>
-          <div className="flex gap-2">
-            {["Sì","No"].map(opt => (
-              <button key={opt} onClick={() => setHadUrge(opt === "Sì")}
-                className={"flex-1 py-2 rounded-xl text-sm font-medium border transition-all " + (
-                  (opt === "Sì" ? hadUrge === true : hadUrge === false)
-                    ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
-                    : "border-white/10 text-white/50")}>
-                {opt}
-              </button>
-            ))}
-          </div>
-        </div>
-        {hadUrge === true && (<>
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs text-white/50">
-              <span>Intensità impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
-            </div>
-            <input type="range" min={1} max={10} value={urgeIntensity}
-              onChange={e => setUrgeIntensity(Number(e.target.value))}
-              className="w-full accent-amber-400 h-2" />
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs text-white/50">Cosa l'ha scatenato?</p>
-            <div className="flex flex-wrap gap-2">
-              {CI_TRIGGERS.map(t => (
-                <button key={t} onClick={() => setTrigger(trigger === t ? "" : t)}
-                  className={"px-3 py-1 rounded-full text-xs font-medium border transition-all " + (
-                    trigger === t ? "bg-amber-500/20 border-amber-500/50 text-amber-400" : "border-white/10 text-white/40")}>
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>)}
-        <button disabled={!canConfirm}
-          onClick={() => onConfirm({ mood, hadUrge: hadUrge!, urgeIntensity: hadUrge ? urgeIntensity : 0, trigger: hadUrge ? trigger : "" })}
-          className={"w-full py-3 rounded-xl font-semibold text-sm transition-all " + (canConfirm ? "bg-emerald-500 text-white" : "bg-white/5 text-white/20 cursor-not-allowed")}>
-          Salva il check-in
-        </button>
-      </div>
-    </div>
-  );
-}
+// CheckInRichModal removed — use src/components/CheckInModal.tsx
 interface SnowflakeData { id: number; size: number; left: number; dur: number; opacity: number; }
 
 function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?: number }) {
@@ -692,6 +618,7 @@ function VacationModal({ track, onSave, onClose }: {
   onSave: (until: string) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [days, setDays] = useState(3);
   const [customDays, setCustomDays] = useState("");
   const activeDays = customDays !== "" ? Math.max(1, Math.min(90, parseInt(customDays) || 1)) : days;
@@ -707,10 +634,10 @@ function VacationModal({ track, onSave, onClose }: {
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="w-full max-w-sm rounded-3xl p-6" style={{background:'oklch(0.96 0 0 / 0.14)', backdropFilter:'blur(40px) saturate(200%)', WebkitBackdropFilter:'blur(40px) saturate(200%)', border:'1px solid oklch(1 0 0 / 0.25)', boxShadow:'0 24px 60px oklch(0 0 0 / 0.45)'}}
         onClick={e => e.stopPropagation()}>
-        <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Vacation mode</p>
-        <h3 className="font-display text-xl mb-1">Protect your streak</h3>
+<p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">{t("home.vacation_mode")}</p>
+<h3 className="font-display text-xl mb-1">{t("home.protect_streak")}</h3>
         <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-          Traveling or need a break? Pause your streak — it won't reset.
+{t("home.vacation_body")}
         </p>
         {isActive ? (
           <>
@@ -718,10 +645,10 @@ function VacationModal({ track, onSave, onClose }: {
               <p className="text-sm font-semibold text-[color:var(--tertiary)]">Pause active until {track.vacation_until}</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium">Chiudi</button>
+<button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium">{t("common.close")}</button>
               <button onClick={() => { onSave(""); onClose(); }}
-                className="flex-1 btn-chunk rounded-full bg-[color:var(--secondary)] text-white px-4 py-2.5 text-sm font-semibold">
-                End pause
+className="flex-1 btn-chunk rounded-full bg-[color:var(--secondary)] text-white px-4 py-2.5 text-sm font-semibold">
+                {t("home.end_pause")}
               </button>
             </div>
           </>
@@ -751,10 +678,10 @@ function VacationModal({ track, onSave, onClose }: {
               Streak protected until <span className="text-foreground">{until}</span>
             </p>
             <div className="flex gap-3">
-              <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">Cancel</button>
+<button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">{t("common.cancel")}</button>
               <button onClick={() => { onSave(until); onClose(); }}
-                className="flex-1 btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-2.5 text-sm font-semibold">
-                Pause streak
+className="flex-1 btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-2.5 text-sm font-semibold">
+                {t("home.pause_streak")}
               </button>
             </div>
           </>
@@ -769,6 +696,7 @@ function VacationModal({ track, onSave, onClose }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: () => void }) {
+  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [track, setTrack] = useState(tracks[0]?.name ?? "");
   const [phase, setPhase] = useState<"form" | "sending" | "done">("form");
@@ -811,8 +739,8 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
             <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[color:var(--tertiary)]/15 flex items-center justify-center">
               <Check className="h-6 w-6 text-[color:var(--tertiary)]" />
             </div>
-            <p className="font-display text-lg mb-1">Grazie.</p>
-            <p className="text-sm text-muted-foreground">We'll take your feedback into account.</p>
+<p className="font-display text-lg mb-1">{t("home.feedback_sent")}</p>
+<p className="text-sm text-muted-foreground">{t("home.feedback_sent_body")}</p>
             <button onClick={onClose} className="mt-5 btn-chunk rounded-full bg-foreground text-neutral-900 px-6 py-2.5 text-sm font-semibold">
               Chiudi
             </button>
@@ -820,7 +748,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
         ) : (
           <>
             <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Feedback</p>
-            <h3 className="font-display text-xl mb-1">Can't log in?</h3>
+<h3 className="font-display text-xl mb-1">{t("home.feedback_title")}</h3>
             <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
               Se hai avuto problemi ad aprire l'app, raccontaci cosa è successo. Ci aiuta a migliorare.
             </p>
@@ -849,14 +777,14 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
 
             <div className="flex gap-3">
               <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition">
-                Cancel
+  {t("common.cancel")}
               </button>
               <button
                 onClick={submit}
                 disabled={!message.trim() || phase === "sending"}
                 className="flex-1 btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-2.5 text-sm font-semibold disabled:opacity-40 transition"
               >
-                {phase === "sending" ? "Sending..." : "Send"}
+  {phase === "sending" ? t("common.sending") : t("common.send")}
               </button>
             </div>
 
@@ -880,6 +808,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
   onViewForCheckIn: (t: UserTrack) => void;
   onVacation: (trackId: string, until: string) => void;
 }) {
+  const { t } = useTranslation();
   const [showMissedModal, setShowMissedModal] = useState(false);
   const [vacationTrack, setVacationTrack] = useState<UserTrack | null>(null);
   const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>({});
@@ -926,10 +855,10 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
     return MOTIVATIONS[seed % MOTIVATIONS.length];
   }, []);
 
-  const t = todayStr();
+  const todayDate = todayStr();
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
   const hour = new Date().getHours();
-  const greeting = hour < 5 ? "Good evening" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 5 ? t("home.greeting_evening") : hour < 12 ? t("home.greeting_morning") : hour < 18 ? t("home.greeting_afternoon") : t("home.greeting_evening");
   const islandTheme = (localStorage.getItem('forge_island_theme') ?? 'garden') as 'garden' | 'mountain';
               const isPaused = user?.subscriptionStatus === 'paused';
   const firstName = user.name.split(" ")[0];
@@ -962,12 +891,12 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
       )}
 
       <div className="flex items-end justify-between mb-4">
-        <h2 className="font-display text-2xl tracking-tight">Your paths</h2>
+        <h2 className="font-display text-2xl tracking-tight">{t("home.your_paths")}</h2>
         {tracks.length > 0 && (
           <button onClick={() => onNavigate("tracks")}
             className="btn-chunk inline-flex items-center gap-1.5 rounded-full bg-[color:var(--primary)] text-primary-foreground px-3.5 py-2 text-xs font-semibold"
             style={{ boxShadow: "var(--shadow-violet)" }}>
-            <Plus className="h-3.5 w-3.5" /> Add
+            <Plus className="h-3.5 w-3.5" /> {t("common.add")}
           </button>
         )}
       </div>
@@ -978,14 +907,14 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
           <div className="mx-auto mb-4 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center opacity-80">
             <Target className="h-7 w-7 text-white" />
           </div>
-          <h3 className="font-display text-lg mb-1">No paths yet</h3>
+          <h3 className="font-display text-lg mb-1">{t("home.no_paths_title")}</h3>
           <p className="text-sm text-muted-foreground mb-5 max-w-xs mx-auto">
-            Pick your first track and your AI coach will build a personalized journey for you.
+{t("home.no_paths_body")}
           </p>
           <button onClick={() => onNavigate("tracks")}
             className="btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-6 py-2.5 text-sm font-semibold"
             style={{ boxShadow: "var(--shadow-violet)" }}>
-            <Layers className="h-4 w-4" /> Browse 50 tracks
+{t("common.browse_tracks")}
           </button>
         </motion.div>
       ) : (
@@ -996,12 +925,12 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
             const grad = trackHueGradient(ut.slug);
             const target = Math.max(1, ut.target_days ?? 30);
             const pct = Math.min(100, Math.round(((ut.current_streak ?? 0) / target) * 100));
-            const doneToday = ut.last_log_date === t;
+            const doneToday = ut.last_log_date === todayDate;
             return (
               <motion.div key={ut.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08 + i * 0.05, type: "spring", stiffness: 90, damping: 16 }}>
                 {(() => {
-                  const onVacCard = ut.vacation_until && ut.vacation_until >= t;
+                  const onVacCard = ut.vacation_until && ut.vacation_until >= todayDate;
                   return (
                     <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
                       onClick={() => onView(ut)}
@@ -1043,17 +972,17 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                             {liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) === 0 ? (
                               <button onClick={() => onView(ut)}
                                 className="inline-flex items-center gap-1.5 rounded-full grad-electric px-3 py-1.5 text-[11px] font-bold text-white shadow-[var(--shadow-violet)] hover:opacity-90 transition-opacity">
-                                Start Day 1 <ArrowRight className="h-3 w-3" />
+{t("home.start_day_1")} <ArrowRight className="h-3 w-3" />
                               </button>
                             ) : liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
                               <p className="text-[10px] font-mono text-white/45 leading-snug">
-                                No problem —<br />start again whenever you're ready.
+  {t("home.no_problem")}
                               </p>
                             ) : (
                               <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
                                 <Flame className="h-3 w-3 flame text-[color:var(--highlight)]" />
                                 <span className="font-mono">{liveStreak(ut)}</span>
-                                <span>streak</span>
+    <span>{t("common.streak")}</span>
                               </div>
                             )}
                             {doneToday && (
@@ -1089,21 +1018,21 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
           <button onClick={() => onNavigate("tracks")}
             className="snap-start flex flex-col items-center justify-center w-[200px] h-[340px] rounded-[20px] border-2 border-dashed border-[color:var(--primary)]/40 text-muted-foreground hover:border-[color:var(--primary)] hover:text-foreground transition btn-chunk">
             <Plus className="h-8 w-8 mb-2" />
-            <span className="text-sm font-medium">New path</span>
+<span className="text-sm font-medium">{t("common.new_path")}</span>
           </button>
         </div>
       </div>
       )}
 
-      <h2 className="font-display text-2xl tracking-tight mb-4">Today's actions</h2>
+      <h2 className="font-display text-2xl tracking-tight mb-4">{t("home.todays_actions")}</h2>
       <div className="space-y-2.5">
         {tracks.map(ut => {
           const hueVar = trackHueVar(ut.category);
-          const doneToday = ut.last_log_date === t;
+          const doneToday = ut.last_log_date === todayDate;
           return (
             <div key={ut.id} className="rounded-2xl depth-card overflow-hidden relative">
               {/* Frozen overlay on row */}
-              {ut.vacation_until && ut.vacation_until >= t && (
+              {ut.vacation_until && ut.vacation_until >= todayDate && (
                 <div className="absolute inset-0 z-10 flex items-center justify-between px-4 rounded-2xl overflow-hidden"
                   style={{ background: "oklch(0.13 0.08 220 / 0.88)" }}>
                   <SnowfallBackground count={12} speed={0.7} />
@@ -1136,7 +1065,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                   </div>
                 </div>
                 {(() => {
-                  const onVac = ut.vacation_until && ut.vacation_until >= t;
+                  const onVac = ut.vacation_until && ut.vacation_until >= todayDate;
                   if (doneToday) return (
                     <div className="shrink-0 flex items-center gap-2">
                       <button onClick={() => setVacationTrack(ut)}
@@ -1176,7 +1105,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                       <button onClick={() => onViewForCheckIn(ut)}
                         className="btn-chunk rounded-full bg-foreground text-neutral-900 px-3.5 py-2 text-xs font-semibold transition"
                         aria-label={`Check in for ${ut.name}`}>
-                        Check in
+                        {t("home.check_in")}
                       </button>
                     </div>
                   );
@@ -1195,7 +1124,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                     <div className="border-t border-border/40 px-4 pb-4 pt-3 space-y-2.5">
                       {/* Title */}
                       <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">
-                        Check-in rapido
+{t("home.quick_checkin_label")}
                       </p>
                       {/* Today's task as context */}
                       {(() => {
@@ -1216,7 +1145,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                           <button
                             onClick={() => setNoteSubmitted(prev => ({ ...prev, [ut.id]: false }))}
                             className="text-[11px] font-mono text-muted-foreground hover:text-foreground transition underline underline-offset-2">
-                            Modifica
+                            {t("home.edit_note")}
                           </button>
                         </div>
                       ) : (
@@ -1231,7 +1160,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                                 setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }));
                                 if (noteError[ut.id]) setNoteError(prev => ({ ...prev, [ut.id]: "" }));
                               }}
-                              placeholder="How did today go…"
+placeholder={t("home.quick_note_placeholder")}
                               className={`w-full bg-muted/40 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed border transition ${noteError[ut.id] ? "border-[color:var(--secondary)]" : "border-border/50 focus:border-foreground/30"}`}
                               rows={3}
                               autoFocus
@@ -1252,7 +1181,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                             <button
                               onClick={() => { toggleNote(ut.id); setNoteError(prev => ({ ...prev, [ut.id]: "" })); }}
                               className="text-xs text-muted-foreground hover:text-foreground transition font-mono">
-                              Cancel
+                              {t("common.cancel")}
                             </button>
                             <button
                               onClick={() => {
@@ -1276,7 +1205,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                                 setNoteError(prev => ({ ...prev, [ut.id]: "" }));
                               }}
                               className="btn-chunk rounded-full bg-foreground text-neutral-900 px-4 py-1.5 text-xs font-semibold transition hover:opacity-80">
-                              Invia
+                              {t("home.submit_note")}
                             </button>
                           </div>
                         </>
@@ -1291,13 +1220,13 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
       </div>
 
       {/* Missed access nudge — only when at least one track is behind */}
-      {tracks.length > 0 && tracks.some(tr => liveStreak(tr) === 0 && tr.last_log_date !== t) && (
+      {tracks.length > 0 && tracks.some(tr => liveStreak(tr) === 0 && tr.last_log_date !== todayDate) && (
         <div className="mt-8 text-center">
           <button
             onClick={() => setShowMissedModal(true)}
             className="text-[11px] text-muted-foreground hover:text-foreground transition underline underline-offset-2 font-mono"
           >
-            Missed a day and lost your streak? Click here
+{t("home.missed_streak")}
           </button>
         </div>
       )}
