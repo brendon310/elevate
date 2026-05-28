@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import confetti from "canvas-confetti";
 import { supabase } from "../supabase";
+import { CoachNudge, useCoachNudge } from '../components/CoachNudge';
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from '../types';
 
 function SlotNumber({ value }: { value: number }) {
@@ -886,6 +887,12 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
   const [noteError, setNoteError] = useState<Record<string, string>>({});
   const [noteSubmitted, setNoteSubmitted] = useState<Record<string, boolean>>({});
 
+  // Proactive coach nudge (once per session, after auth)
+  const { nudge: coachNudge, dismiss: dismissCoachNudge } = useCoachNudge(
+    user.supabaseId,
+    undefined, // token fetched internally by the hook via supabase.auth.getSession()
+  );
+
   // Load today's saved quick-notes from localStorage on mount / when tracks change
   useEffect(() => {
     const today = todayStr();
@@ -944,6 +951,14 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
         <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} isPaused={isPaused} />
         <SavingsCard tracks={tracks} />
         </>
+      )}
+
+      {coachNudge && (
+        <CoachNudge
+          nudge={coachNudge}
+          onDismiss={dismissCoachNudge}
+          onCta={(route) => { dismissCoachNudge(); onNavigate(route as AppPage); }}
+        />
       )}
 
       <div className="flex items-end justify-between mb-4">

@@ -16,6 +16,45 @@ const ADAPT_REASONS = [
 ] as const;
 type AdaptReasonId = typeof ADAPT_REASONS[number]["id"];
 
+// Post check-in micro-reactions per archetype (no API call — instant dopamine)
+const COACH_FLASH: Record<string, string[]> = {
+  Kai: [
+    "Logged. That's the rep that matters.",
+    "Good. Same time tomorrow.",
+    "Consistency is the only strategy that works.",
+    "One more day in the bank.",
+    "You're building something real here.",
+  ],
+  Iris: [
+    "Filed. Your brain noticed that.",
+    "Patterns form one day at a time. This was one.",
+    "Noted. Progress is quieter than you think.",
+    "Every check-in is a data point in your favor.",
+    "You're learning something today, even if it's subtle.",
+  ],
+  "Dr. Mara": [
+    "I see you showing up. That takes courage.",
+    "You came back. That's the whole work.",
+    "Good. Now rest in that for a moment.",
+    "Each day you return, the path widens.",
+    "That took something from you. It was worth it.",
+  ],
+  Roy: [
+    "Done. Stack another one tomorrow.",
+    "Execution noted. Systems compound.",
+    "That's leverage. Keep going.",
+    "One more proof point that you do what you say.",
+    "The gap closes a little more today.",
+  ],
+  Sasha: [
+    "That was a ritual. Honor it.",
+    "You deepened the groove today.",
+    "The work you do in the dark shows up in the light.",
+    "Something shifted. You may not feel it yet.",
+    "The journey recognizes your return.",
+  ],
+};
+
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
 const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
@@ -98,11 +137,11 @@ const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
   "gratitude": "guide",
 };
 const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  trainer: { id: "trainer", name: "Trainer", tagline: "Your direct trainer", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
-  teacher: { id: "teacher", name: "Teacher", tagline: "Your calm teacher", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
-  clinician: { id: "clinician", name: "Clinician", tagline: "Your warm clinician", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
-  mentor: { id: "mentor", name: "Mentor", tagline: "Your sharp mentor", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
-  guide: { id: "guide", name: "Guide", tagline: "Your creative guide", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+  trainer: { id: "trainer", name: "Kai", tagline: "Keeps you accountable", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Iris", tagline: "Makes it click", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Dr. Mara", tagline: "Validates, then guides", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Roy", tagline: "Strategic, no fluff", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Sasha", tagline: "Finds your deeper why", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
 };
 const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
 const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
@@ -431,7 +470,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{track.category}</p>
           <h1 className="mt-2 font-display text-3xl tracking-tight">{track.name}</h1>
-          <p className="mt-2 text-muted-foreground text-sm">Meet <strong>Your Coach</strong> â here for every day of this journey.</p>
+          <p className="mt-2 text-muted-foreground text-sm">Meet <strong>{archetypeForSlug(track.slug).name}</strong> â here for every day of this journey.</p>
         </div>
         <div className="space-y-5">
           <div>
@@ -573,6 +612,11 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => lsLoad<ChatMessage[]>(LS_CHAT(track.slug), []));
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  // Count this-month user messages across all tracks for free-tier soft limit
+  const thisMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  const monthMsgCount = chatMessages.filter(m => m.role === "user" && m.createdAt.startsWith(thisMonth)).length;
+  const FREE_COACH_LIMIT = 5;
+  const coachLimitReached = monthMsgCount >= FREE_COACH_LIMIT;
   const [coachOpening, setCoachOpening] = useState(false);
 
   // Load coach messages from Supabase on first open
@@ -621,6 +665,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [adapting, setAdapting] = useState(false);
   const [adaptedDayNumbers, setAdaptedDayNumbers] = useState<Set<number>>(new Set());
   const adaptShownRef = useRef(false);
+  const [coachFlash, setCoachFlash] = useState<string | null>(null);
 
   const archetype = archetypeForSlug(track.slug);
   const completedCount = days.filter(d => d.completedAt !== null).length;
@@ -772,6 +817,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     if (JOURNEY_MILESTONES.includes(completedNow)) {
       setMilestoneDay(completedNow);
       confetti({ particleCount: 100, spread: 80, origin: { y: 0.4 }, colors: ["#FFD000", "#FFB347", "#FFE680"] });
+    } else {
+      // Show coach micro-reaction (non-blocking, auto-dismisses)
+      const flashes = COACH_FLASH[archetype.name] ?? COACH_FLASH.Kai;
+      const msg = flashes[completedNow % flashes.length];
+      setCoachFlash(msg);
+      setTimeout(() => setCoachFlash(null), 4000);
     }
   };
 
@@ -844,7 +895,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     { key: "today", label: "Today" },
     { key: "map", label: "Journey" },
     { key: "community", label: "Community" },
-    { key: "coach", label: "Your Coach" },
+    { key: "coach", label: archetype.name },
   ];
 
   return (
@@ -1053,15 +1104,15 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
               <div>
-                <p className="font-semibold text-sm">Your Coach</p>
-                <p className="text-xs text-muted-foreground">Here for every day of this journey</p>
+                <p className="font-semibold text-sm">{archetype.name}</p>
+                <p className="text-xs text-muted-foreground">{archetype.tagline}</p>
               </div>
             </div>
             <div className="space-y-3 max-h-[420px] overflow-y-auto pb-1">
               {chatMessages.length === 0 && (
                 <div className="rounded-xl bg-muted/50 p-4 flex gap-2">
                   <div className="h-2 w-2 rounded-full bg-muted-foreground mt-1.5 animate-pulse shrink-0" />
-                  <p className="text-sm text-muted-foreground italic">Your coach is warming upâ¦</p>
+                  <p className="text-sm text-muted-foreground italic">{archetype.name} is warming up…</p>
                 </div>
               )}
               {chatMessages.map(m => (
@@ -1094,21 +1145,60 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             )}
 
             <div className="sticky bottom-0 bg-background pt-1">
-              <div className="flex gap-2">
-                <input value={chatInput} onChange={e => setChatInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-                  placeholder="Reply to your coachâ¦"
-                  className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
-                <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
-                  className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
-                  Send
-                </button>
-              </div>
-              <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">This stays between you and your coach. Always.</p>
+              {coachLimitReached ? (
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 p-3 text-center space-y-1">
+                  <p className="text-xs font-medium text-amber-400">Monthly message limit reached</p>
+                  <p className="text-[10px] text-muted-foreground">Free plan includes {FREE_COACH_LIMIT} messages/month. Your messages reset on the 1st.</p>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input value={chatInput} onChange={e => setChatInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
+                    placeholder={`Message ${archetype.name}…`}
+                    className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                  <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
+                    className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
+                    Send
+                  </button>
+                </div>
+              )}
+              {!coachLimitReached && monthMsgCount >= 3 && (
+                <p className="mt-1.5 text-[10px] text-muted-foreground/60 font-mono text-center">
+                  {FREE_COACH_LIMIT - monthMsgCount} message{FREE_COACH_LIMIT - monthMsgCount !== 1 ? "s" : ""} left this month
+                </p>
+              )}
+              {!coachLimitReached && monthMsgCount < 3 && (
+                <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">This stays between you and your coach. Always.</p>
+              )}
             </div>
           </motion.div>
         )}
       </div>
+
+      {/* Coach flash — micro-reaction after check-in */}
+      <AnimatePresence>
+        {coachFlash && (
+          <motion.div
+            key="coach-flash"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 260, damping: 22 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-sm"
+            onClick={() => setCoachFlash(null)}
+          >
+            <div className="rounded-2xl bg-card border border-border/60 shadow-2xl p-4 flex items-start gap-3">
+              <div className="shrink-0 h-8 w-8 rounded-full grad-electric flex items-center justify-center">
+                <Sparkles className="h-3.5 w-3.5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground mb-0.5">{archetype.name}</p>
+                <p className="text-sm leading-snug">{coachFlash}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {selectedDay && (

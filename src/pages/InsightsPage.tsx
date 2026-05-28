@@ -167,12 +167,15 @@ Start with "This week," and sign it "â Your Coach". Write like you actually
 
       {/* Empty state */}
       {totalCheckins === 0 && (
-        <div className="rounded-2xl border border-border bg-card p-10 text-center space-y-3">
-          <BarChart2 className="h-10 w-10 mx-auto text-muted-foreground/50" />
-          <h3 className="font-display text-xl font-semibold">No data yet</h3>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            Complete your first check-in to see your progress here.
+        <div className="rounded-2xl border border-[color:var(--secondary)]/20 bg-[color:var(--secondary)]/5 p-8 text-center space-y-3">
+          <div className="h-12 w-12 rounded-full grad-electric flex items-center justify-center mx-auto opacity-70">
+            <Sparkles className="h-5 w-5 text-white" />
+          </div>
+          <h3 className="font-display text-xl font-semibold">Day one starts here</h3>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+            Your first check-in unlocks your insights. Every pattern, streak, and milestone starts with one honest day.
           </p>
+          <p className="text-xs text-muted-foreground/60 font-mono italic">Your coach is waiting to see what you're made of.</p>
         </div>
       )}
 

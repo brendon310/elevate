@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../supabase';
 import { X, Moon, Zap, Heart, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -69,25 +70,29 @@ export function CoachNudge({
 }
 
 // Hook: fetch nudge from proactive-coach API (once per session)
-export function useCoachNudge(userId: string | undefined, token: string | undefined) {
+export function useCoachNudge(userId: string | undefined, _token?: string | undefined) {
   const [nudge, setNudge] = useState<CoachNudgeData | null>(null);
 
   useEffect(() => {
-    if (!userId || !token) return;
+    if (!userId) return;
     if (sessionStorage.getItem('forge-nudge-checked')) return;
     sessionStorage.setItem('forge-nudge-checked', '1');
 
-    fetch('/api/proactive-coach', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({}),
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then((data: { nudge: CoachNudgeData | null } | null) => {
-        if (data?.nudge) setNudge(data.nudge);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const tok = session?.access_token;
+      if (!tok) return;
+      fetch('/api/proactive-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` },
+        body: JSON.stringify({}),
       })
-      .catch(() => {});
-  }, [userId, token]);
+        .then(r => r.ok ? r.json() : null)
+        .then((data: { nudge: CoachNudgeData | null } | null) => {
+          if (data?.nudge) setNudge(data.nudge);
+        })
+        .catch(() => {});
+    }).catch(() => {});
+  }, [userId]);
 
   return { nudge, dismiss: () => setNudge(null) };
 }
