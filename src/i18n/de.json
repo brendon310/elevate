@@ -481,32 +481,170 @@
     "you_showed_up": "Du warst da. Das zählt."
   },
   "tracks": {
-    "library_label": "Bibliothek",
-    "headline_1": "Fünfzig",
-    "headline_2": "Spezialisten",
-    "headline_sub": "Wähle den, der dich heute anspricht.",
-    "search_placeholder": "Pfade, Kategorien suchen…",
-    "filter_all": "Alle",
-    "no_results": "Kein Pfad entspricht \"{{query}}\".",
-    "active_badge": "Aktiv",
-    "start_btn": "Starten",
-    "view_btn": "Ansehen",
-    "remove_confirm": "\"{{name}}\" aus deinen Pfaden entfernen?",
-    "duration_label": "Reiselänge",
-    "start_journey_btn": "{{label}} Reise starten",
-    "days_placeholder": "Tage (7–999)",
-    "one_year": "1 Jahr",
-    "library": "Bibliothek",
-    "headline": "Fünfzig Spezialisten",
-    "subheadline": "Wähle den, der dich heute anspricht.",
-    "all": "Alle",
-    "no_match": "Keine Tracks gefunden für \"{{q}}\".",
-    "active": "Aktiv",
-    "view": "Ansehen",
-    "start": "Starten",
-    "start_journey_label": "{{n}}-tägige Reise starten",
-    "start_journey": "Reise starten",
-    "one_year_label": "1 Jahr"
+    "meditation": {
+      "name": "Meditation",
+      "desc": "Trainiere deinen Geist, Stille zu finden."
+    },
+    "morning-run": {
+      "name": "Morgenlauf",
+      "desc": "Bau deine aerobe Basis auf."
+    },
+    "strength-training": {
+      "name": "Krafttraining",
+      "desc": "Progressive Überlastung für Stärke."
+    },
+    "quit-smoking": {
+      "name": "Rauchen Aufhören",
+      "desc": "Allen Carr Methode."
+    },
+    "deep-work": {
+      "name": "Deep Work",
+      "desc": "Cal Newports Framework."
+    },
+    "reading": {
+      "name": "Tägliches Lesen",
+      "desc": "Feynman-Technik zur Retention."
+    },
+    "sleep-routine": {
+      "name": "Schlaf-Routine",
+      "desc": "Schlafwissenschaftliche Protokolle."
+    },
+    "anxiety-relief": {
+      "name": "Angstbewältigung",
+      "desc": "Kognitive Verhaltenstherapie gegen Angst."
+    },
+    "journaling": {
+      "name": "Tagebuch Schreiben",
+      "desc": "Reflexive Schreibpraxis."
+    },
+    "cold-exposure": {
+      "name": "Kälteexposition",
+      "desc": "Hormetisches Stressprotokoll."
+    },
+    "no-social-media": {
+      "name": "Kein Social Media",
+      "desc": "Digitales Detox-Protokoll."
+    },
+    "quit-alcohol": {
+      "name": "Alkohol Aufhören",
+      "desc": "Befreiung von der Alkoholabhängigkeit."
+    },
+    "quit-pornography": {
+      "name": "Pornografie Aufhören",
+      "desc": "Verdrahte dein Gehirn neu, hol dir dein Leben zurück."
+    },
+    "quit-drugs": {
+      "name": "Drogen Aufhören",
+      "desc": "Strukturierter Nüchternheitsplan."
+    },
+    "quit-gambling": {
+      "name": "Glücksspiel Aufhören",
+      "desc": "Brich den Kreislauf des Zwangsspielens."
+    },
+    "binge-eating": {
+      "name": "Binge-Eating Stoppen",
+      "desc": "Heile deine Beziehung zum Essen."
+    },
+    "video-game-addiction": {
+      "name": "Videospielsucht",
+      "desc": "Gewinne die Kontrolle über Gaming zurück."
+    },
+    "compulsive-shopping": {
+      "name": "Kaufsucht",
+      "desc": "Brich die Kauf-dich-gut-fühl-Schleife."
+    },
+    "no-sugar": {
+      "name": "Kein Zucker",
+      "desc": "Beende die Zuckerabhängigkeit für immer."
+    },
+    "beat-procrastination": {
+      "name": "Prokrastination Besiegen",
+      "desc": "Handle, bevor die Stimme 'später' sagt."
+    },
+    "build-discipline": {
+      "name": "Disziplin Aufbauen",
+      "desc": "Die täglichen Wiederholungen, die eine Identität formen."
+    },
+    "stop-overthinking": {
+      "name": "Grübeln Stoppen",
+      "desc": "Stille die mentale Geräuschschleife."
+    },
+    "social-anxiety": {
+      "name": "Soziale Angst",
+      "desc": "Erscheine ohne den inneren Terror."
+    },
+    "anger-management": {
+      "name": "Wutbewältigung",
+      "desc": "Verwandle Wut in reaktive Kraft."
+    },
+    "chronic-stress": {
+      "name": "Chronischer Stress",
+      "desc": "Reguliere täglich dein Nervensystem."
+    },
+    "social-isolation": {
+      "name": "Soziale Isolation",
+      "desc": "Brücke zurück zur menschlichen Verbindung."
+    },
+    "negative-mindset": {
+      "name": "Negative Denkweise",
+      "desc": "Verdrahte pessimistische Denkmuster neu."
+    },
+    "breathwork": {
+      "name": "Atemarbeit",
+      "desc": "Nutze den Atem, um den Zustand sofort zu ändern."
+    },
+    "low-self-esteem": {
+      "name": "Geringes Selbstwertgefühl",
+      "desc": "Bau unerschütterliches Selbstwertgefühl auf."
+    },
+    "need-for-approval": {
+      "name": "Anerkennungsbedürfnis",
+      "desc": "Hör auf, deinen Selbstwert auszulagern."
+    },
+    "fear-of-failure": {
+      "name": "Versagensangst",
+      "desc": "Handle trotz des Ergebnisses."
+    },
+    "fear-of-judgment": {
+      "name": "Angst vor Urteil",
+      "desc": "Lebe jenseits der Meinungen anderer."
+    },
+    "emotional-dependency": {
+      "name": "Emotionale Abhängigkeit",
+      "desc": "Werde dein eigener emotionaler Anker."
+    },
+    "toxic-relationships": {
+      "name": "Toxische Beziehungen",
+      "desc": "Identifiziere und verlasse ungesunde Bindungen."
+    },
+    "control-issues": {
+      "name": "Kontrollprobleme",
+      "desc": "Lass Kontrolle los, finde echte Kraft."
+    },
+    "stop-self-sabotage": {
+      "name": "Selbstsabotage Stoppen",
+      "desc": "Unterbrich die Muster, die dich zurückhalten."
+    },
+    "toxic-perfectionism": {
+      "name": "Toxischer Perfektionismus",
+      "desc": "Fertig schlägt perfekt, jedes Mal."
+    },
+    "jealousy": {
+      "name": "Eifersucht",
+      "desc": "Verwandle Eifersucht in Selbstbewusstsein."
+    },
+    "money-management": {
+      "name": "Geldmanagement",
+      "desc": "Bau finanzielle Klarheit und Kontrolle auf."
+    },
+    "sedentary-lifestyle": {
+      "name": "Sitzender Lebensstil",
+      "desc": "Beweg dich jeden Tag ein bisschen, für immer."
+    },
+    "gratitude": {
+      "name": "Dankbarkeitsübung",
+      "desc": "Verdrahte dein Gehirn für Fülle neu."
+    }
   },
   "morning_coach": {
     "begin_today": "Heute starten"
@@ -603,5 +741,15 @@
     "free_col": "Kostenlos",
     "standard_col": "Standard",
     "premium_col": "Premium"
+  },
+  "categories": {
+    "Mental Health": "Psychische Gesundheit",
+    "Fitness & Body": "Fitness & Körper",
+    "Quit Bad Habits": "Schlechte Gewohnheiten Ablegen",
+    "Productivity & Life": "Produktivität & Leben",
+    "Addiction & Recovery": "Sucht & Genesung",
+    "Mind & Learning": "Geist & Lernen",
+    "Psychology & Self": "Psychologie & Ich",
+    "Financial Health": "Finanzielle Gesundheit"
   }
 }

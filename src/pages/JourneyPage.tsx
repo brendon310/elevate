@@ -394,6 +394,8 @@ function DayPanel({ label, children, accentColor }: { label: string; children: R
 
 function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onStarted: (j: Journey, days: JourneyDay[]) => void; userId?: string | null }) {
   const { t } = useTranslation();
+  const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
+  const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const archetype = archetypeForSlug(track.slug);
   const [totalDays, setTotalDays] = useState(30);
   const [isCustomDays, setIsCustomDays] = useState(false);
@@ -467,7 +469,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       <div className="max-w-xl mx-auto px-5 py-12 space-y-8">
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{track.category}</p>
-          <h1 className="mt-2 font-display text-3xl tracking-tight">{track.name}</h1>
+          <h1 className="mt-2 font-display text-3xl tracking-tight">{tn(track.slug, track.name)}</h1>
           <p className="mt-2 text-muted-foreground text-sm">{t("journey.meet_coach", { name: archetypeForSlug(track.slug).name })}</p>
         </div>
         <div className="space-y-5">
@@ -606,6 +608,8 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   userId?: string | null;
 }) {
   const { t } = useTranslation();
+  const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
+  const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const [journey, setJourney] = useState(initJourney);
   const [days, setDays] = useState(initDays);
   const [activeTab, setActiveTab] = useState<"today" | "map" | "community" | "coach">("today");
@@ -907,7 +911,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
           </button>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{track.category}</p>
-            <h1 className="font-semibold text-sm truncate">{track.name}</h1>
+            <h1 className="font-semibold text-sm truncate">{tn(track.slug, track.name)}</h1>
           </div>
           <div className="text-right flex items-center gap-2">
             <div>

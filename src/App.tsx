@@ -1427,7 +1427,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                     <div aria-hidden className="pointer-events-none absolute top-4 -right-8 h-40 w-40 rounded-full opacity-30"
                       style={{ background: "radial-gradient(circle, oklch(0.875 0.185 95 / 0.5), transparent 70%)" }} />
                     <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3">{sug.category}</p>
-                    <h3 className="font-display text-4xl font-bold mb-4">{sug.name}</h3>
+                    <h3 className="font-display text-4xl font-bold mb-4">{t(`tracks.${sug.slug}.name`, { defaultValue: sug.name })}</h3>
                     {TRACK_GLOBAL_STATS[sug.slug] && (
                       <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
                         {TRACK_GLOBAL_STATS[sug.slug]}.<br />
@@ -1466,7 +1466,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                         style={{ boxShadow: "0 0 28px 4px oklch(0.875 0.185 95 / 0.38)" }}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
-                            <p className="font-display text-xl font-semibold">{sug.name}</p>
+                            <p className="font-display text-xl font-semibold">{t(`tracks.${sug.slug}.name`, { defaultValue: sug.name })}</p>
                             <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">{sug.category}</p>
                             {TRACK_GLOBAL_STATS[sug.slug] && (
                               <p className="text-xs text-yellow-400/90 mt-2 leading-relaxed">

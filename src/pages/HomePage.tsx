@@ -799,6 +799,8 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
   onVacation: (trackId: string, until: string) => void;
 }) {
   const { t, i18n: i18nInstance } = useTranslation();
+  const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
+  const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const [showMissedModal, setShowMissedModal] = useState(false);
   const [vacationTrack, setVacationTrack] = useState<UserTrack | null>(null);
   const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>({});
@@ -947,7 +949,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                           {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
                             <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">{t("common.days_ahead", {gap})}</p>
                           ) : null; })()}
-                          <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
+                          <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{tn(ut.slug, ut.name)}</h3>
                           {(() => {
                             const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
                             const todayTask = jDays.find(d => d.completedAt === null) ?? jDays[jDays.length - 1];
@@ -1030,11 +1032,11 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                   <div className="relative z-10 flex items-center gap-2">
                     <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white/30 font-display text-base shrink-0 blur-[1px]"
                       style={{ background: trackHueGradient(ut.slug) }}>
-                      {ut.name.slice(0, 2)}
+                      {tn(ut.slug, ut.name).slice(0, 2)}
                     </div>
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: "#b8e0ff" }}>{t("overlays.freezed")}</p>
-                      <p className="font-semibold text-[15px] text-white/80 truncate">{ut.name}</p>
+                      <p className="font-semibold text-[15px] text-white/80 truncate">{tn(ut.slug, ut.name)}</p>
                     </div>
                   </div>
                   <button onClick={() => setVacationTrack(ut)}
@@ -1048,11 +1050,11 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-white font-display text-base shrink-0"
                     style={{ background: trackHueGradient(ut.slug), boxShadow: "0 6px 16px -4px oklch(0 0 0 / 0.5)" }}>
-                    {ut.name.slice(0, 2)}
+                    {tn(ut.slug, ut.name).slice(0, 2)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: `var(${hueVar})` }}>{ut.category}</p>
-                    <p className="font-semibold text-[15px] truncate">{ut.name}</p>
+                    <p className="font-semibold text-[15px] truncate">{tn(ut.slug, ut.name)}</p>
                   </div>
                 </div>
                 {(() => {
@@ -1095,7 +1097,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                       </button>
                       <button onClick={() => onViewForCheckIn(ut)}
                         className="btn-chunk rounded-full bg-foreground text-neutral-900 px-3.5 py-2 text-xs font-semibold transition"
-                        aria-label={`Check in for ${ut.name}`}>
+                        aria-label={`Check in for ${tn(ut.slug, ut.name)}`}>
                         {t("home.check_in")}
                       </button>
                     </div>

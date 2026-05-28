@@ -481,32 +481,170 @@
     "you_showed_up": "You showed up. That counts."
   },
   "tracks": {
-    "library_label": "Library",
-    "headline_1": "Fifty",
-    "headline_2": "specialists",
-    "headline_sub": "Pick the one that calls you today.",
-    "search_placeholder": "Search tracks, categories…",
-    "filter_all": "All",
-    "no_results": "No tracks match \"{{query}}\".",
-    "active_badge": "Active",
-    "start_btn": "Start",
-    "view_btn": "View",
-    "remove_confirm": "Remove \"{{name}}\" from your paths?",
-    "duration_label": "Journey length",
-    "start_journey_btn": "Start {{label}} journey",
-    "days_placeholder": "Days (7–999)",
-    "one_year": "1 year",
-    "library": "Library",
-    "headline": "Fifty specialists",
-    "subheadline": "Pick the one that calls you today.",
-    "all": "All",
-    "no_match": "No tracks match \"{{q}}\".",
-    "active": "Active",
-    "view": "View",
-    "start": "Start",
-    "start_journey_label": "Start {{n}}-day journey",
-    "start_journey": "Start journey",
-    "one_year_label": "1 year"
+    "meditation": {
+      "name": "Meditation",
+      "desc": "Train your mind to find stillness."
+    },
+    "morning-run": {
+      "name": "Morning Run",
+      "desc": "Build your aerobic base."
+    },
+    "strength-training": {
+      "name": "Strength Training",
+      "desc": "Progressive overload for strength."
+    },
+    "quit-smoking": {
+      "name": "Quit Smoking",
+      "desc": "Allen Carr method."
+    },
+    "deep-work": {
+      "name": "Deep Work",
+      "desc": "Cal Newport's framework."
+    },
+    "reading": {
+      "name": "Daily Reading",
+      "desc": "Feynman technique for retention."
+    },
+    "sleep-routine": {
+      "name": "Sleep Routine",
+      "desc": "Sleep science protocols."
+    },
+    "anxiety-relief": {
+      "name": "Anxiety Relief",
+      "desc": "CBT for anxiety."
+    },
+    "journaling": {
+      "name": "Journaling",
+      "desc": "Reflective writing practice."
+    },
+    "cold-exposure": {
+      "name": "Cold Exposure",
+      "desc": "Hormetic stress protocol."
+    },
+    "no-social-media": {
+      "name": "No Social Media",
+      "desc": "Digital detox protocol."
+    },
+    "quit-alcohol": {
+      "name": "Quit Alcohol",
+      "desc": "Break free from alcohol dependency."
+    },
+    "quit-pornography": {
+      "name": "Quit Pornography",
+      "desc": "Rewire your brain, reclaim your life."
+    },
+    "quit-drugs": {
+      "name": "Quit Drugs",
+      "desc": "Structured sobriety roadmap."
+    },
+    "quit-gambling": {
+      "name": "Quit Gambling",
+      "desc": "Break the cycle of compulsive betting."
+    },
+    "binge-eating": {
+      "name": "Stop Binge Eating",
+      "desc": "Heal your relationship with food."
+    },
+    "video-game-addiction": {
+      "name": "Video Game Addiction",
+      "desc": "Regain control over gaming."
+    },
+    "compulsive-shopping": {
+      "name": "Compulsive Shopping",
+      "desc": "Break the buy-to-feel-good loop."
+    },
+    "no-sugar": {
+      "name": "No Sugar",
+      "desc": "End sugar dependency for good."
+    },
+    "beat-procrastination": {
+      "name": "Beat Procrastination",
+      "desc": "Act before the voice says 'later'."
+    },
+    "build-discipline": {
+      "name": "Build Discipline",
+      "desc": "The daily reps that form an identity."
+    },
+    "stop-overthinking": {
+      "name": "Stop Overthinking",
+      "desc": "Silence the mental noise loop."
+    },
+    "social-anxiety": {
+      "name": "Social Anxiety",
+      "desc": "Show up without the inner terror."
+    },
+    "anger-management": {
+      "name": "Anger Management",
+      "desc": "Transform rage into responsive power."
+    },
+    "chronic-stress": {
+      "name": "Chronic Stress",
+      "desc": "Regulate your nervous system daily."
+    },
+    "social-isolation": {
+      "name": "Social Isolation",
+      "desc": "Bridge back to human connection."
+    },
+    "negative-mindset": {
+      "name": "Negative Mindset",
+      "desc": "Rewire pessimistic thought patterns."
+    },
+    "breathwork": {
+      "name": "Breathwork",
+      "desc": "Use breath to shift state instantly."
+    },
+    "low-self-esteem": {
+      "name": "Low Self-Esteem",
+      "desc": "Build unshakeable self-worth."
+    },
+    "need-for-approval": {
+      "name": "Need for Approval",
+      "desc": "Stop outsourcing your self-worth."
+    },
+    "fear-of-failure": {
+      "name": "Fear of Failure",
+      "desc": "Act despite the outcome."
+    },
+    "fear-of-judgment": {
+      "name": "Fear of Judgment",
+      "desc": "Live beyond others' opinions."
+    },
+    "emotional-dependency": {
+      "name": "Emotional Dependency",
+      "desc": "Become your own emotional anchor."
+    },
+    "toxic-relationships": {
+      "name": "Toxic Relationships",
+      "desc": "Identify and exit unhealthy bonds."
+    },
+    "control-issues": {
+      "name": "Control Issues",
+      "desc": "Release control, find real power."
+    },
+    "stop-self-sabotage": {
+      "name": "Stop Self-Sabotage",
+      "desc": "Interrupt the patterns that hold you back."
+    },
+    "toxic-perfectionism": {
+      "name": "Toxic Perfectionism",
+      "desc": "Done beats perfect, every single time."
+    },
+    "jealousy": {
+      "name": "Jealousy",
+      "desc": "Transform jealousy into self-awareness."
+    },
+    "money-management": {
+      "name": "Money Management",
+      "desc": "Build financial clarity and control."
+    },
+    "sedentary-lifestyle": {
+      "name": "Sedentary Lifestyle",
+      "desc": "Move a little every day, forever."
+    },
+    "gratitude": {
+      "name": "Gratitude Practice",
+      "desc": "Rewire your brain for abundance."
+    }
   },
   "morning_coach": {
     "begin_today": "Begin today"
@@ -603,5 +741,15 @@
     "free_col": "Free",
     "standard_col": "Standard",
     "premium_col": "Premium"
+  },
+  "categories": {
+    "Mental Health": "Mental Health",
+    "Fitness & Body": "Fitness & Body",
+    "Quit Bad Habits": "Quit Bad Habits",
+    "Productivity & Life": "Productivity & Life",
+    "Addiction & Recovery": "Addiction & Recovery",
+    "Mind & Learning": "Mind & Learning",
+    "Psychology & Self": "Psychology & Self",
+    "Financial Health": "Financial Health"
   }
 }

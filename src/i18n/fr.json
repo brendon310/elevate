@@ -481,32 +481,170 @@
     "you_showed_up": "Tu t'es présenté. Ça compte."
   },
   "tracks": {
-    "library_label": "Bibliothèque",
-    "headline_1": "Cinquante",
-    "headline_2": "spécialistes",
-    "headline_sub": "Choisis celui qui t'appelle aujourd'hui.",
-    "search_placeholder": "Rechercher des chemins, catégories…",
-    "filter_all": "Tous",
-    "no_results": "Aucun chemin ne correspond à \"{{query}}\".",
-    "active_badge": "Actif",
-    "start_btn": "Démarrer",
-    "view_btn": "Voir",
-    "remove_confirm": "Retirer \"{{name}}\" de tes chemins ?",
-    "duration_label": "Durée du parcours",
-    "start_journey_btn": "Commencer parcours de {{label}}",
-    "days_placeholder": "Jours (7–999)",
-    "one_year": "1 an",
-    "library": "Bibliothèque",
-    "headline": "Cinquante spécialistes",
-    "subheadline": "Choisis celui qui t'appelle aujourd'hui.",
-    "all": "Tous",
-    "no_match": "Aucun track ne correspond à \"{{q}}\".",
-    "active": "Actif",
-    "view": "Voir",
-    "start": "Démarrer",
-    "start_journey_label": "Démarrer un parcours de {{n}} jours",
-    "start_journey": "Démarrer le parcours",
-    "one_year_label": "1 an"
+    "meditation": {
+      "name": "Méditation",
+      "desc": "Entraîne ton esprit à trouver le calme."
+    },
+    "morning-run": {
+      "name": "Course Matinale",
+      "desc": "Construis ta base aérobique."
+    },
+    "strength-training": {
+      "name": "Musculation",
+      "desc": "Surcharge progressive pour la force."
+    },
+    "quit-smoking": {
+      "name": "Arrêter de Fumer",
+      "desc": "Méthode Allen Carr."
+    },
+    "deep-work": {
+      "name": "Travail Profond",
+      "desc": "La méthode de Cal Newport."
+    },
+    "reading": {
+      "name": "Lecture Quotidienne",
+      "desc": "Technique Feynman pour la rétention."
+    },
+    "sleep-routine": {
+      "name": "Routine de Sommeil",
+      "desc": "Protocoles de science du sommeil."
+    },
+    "anxiety-relief": {
+      "name": "Réduction de l'Anxiété",
+      "desc": "TCC pour l'anxiété."
+    },
+    "journaling": {
+      "name": "Journal Intime",
+      "desc": "Pratique d'écriture réflexive."
+    },
+    "cold-exposure": {
+      "name": "Exposition au Froid",
+      "desc": "Protocole de stress hormétique."
+    },
+    "no-social-media": {
+      "name": "Sans Réseaux Sociaux",
+      "desc": "Protocole de désintoxication numérique."
+    },
+    "quit-alcohol": {
+      "name": "Arrêter l'Alcool",
+      "desc": "Libère-toi de la dépendance à l'alcool."
+    },
+    "quit-pornography": {
+      "name": "Arrêter la Pornographie",
+      "desc": "Recâble ton cerveau, reprends ta vie."
+    },
+    "quit-drugs": {
+      "name": "Arrêter les Drogues",
+      "desc": "Feuille de route structurée pour la sobriété."
+    },
+    "quit-gambling": {
+      "name": "Arrêter les Jeux",
+      "desc": "Brise le cycle des paris compulsifs."
+    },
+    "binge-eating": {
+      "name": "Arrêter la Frénésie Alimentaire",
+      "desc": "Guéris ta relation avec la nourriture."
+    },
+    "video-game-addiction": {
+      "name": "Addiction aux Jeux Vidéo",
+      "desc": "Reprends le contrôle sur le gaming."
+    },
+    "compulsive-shopping": {
+      "name": "Achats Compulsifs",
+      "desc": "Brise la boucle acheter-pour-se-sentir-bien."
+    },
+    "no-sugar": {
+      "name": "Sans Sucre",
+      "desc": "Mets fin à la dépendance au sucre pour de bon."
+    },
+    "beat-procrastination": {
+      "name": "Vaincre la Procrastination",
+      "desc": "Agis avant que la voix dise 'plus tard'."
+    },
+    "build-discipline": {
+      "name": "Construire la Discipline",
+      "desc": "Les répétitions quotidiennes qui forment une identité."
+    },
+    "stop-overthinking": {
+      "name": "Arrêter de Ruminer",
+      "desc": "Silence la boucle du bruit mental."
+    },
+    "social-anxiety": {
+      "name": "Anxiété Sociale",
+      "desc": "Montre-toi sans la terreur intérieure."
+    },
+    "anger-management": {
+      "name": "Gestion de la Colère",
+      "desc": "Transforme la rage en puissance réactive."
+    },
+    "chronic-stress": {
+      "name": "Stress Chronique",
+      "desc": "Régule ton système nerveux chaque jour."
+    },
+    "social-isolation": {
+      "name": "Isolement Social",
+      "desc": "Recrée le lien avec la connexion humaine."
+    },
+    "negative-mindset": {
+      "name": "Mentalité Négative",
+      "desc": "Recâble les schémas de pensée pessimistes."
+    },
+    "breathwork": {
+      "name": "Travail Respiratoire",
+      "desc": "Utilise le souffle pour changer d'état instantanément."
+    },
+    "low-self-esteem": {
+      "name": "Faible Estime de Soi",
+      "desc": "Construis une estime de soi inébranlable."
+    },
+    "need-for-approval": {
+      "name": "Besoin d'Approbation",
+      "desc": "Arrête d'externaliser ta valeur personnelle."
+    },
+    "fear-of-failure": {
+      "name": "Peur de l'Échec",
+      "desc": "Agis malgré le résultat."
+    },
+    "fear-of-judgment": {
+      "name": "Peur du Jugement",
+      "desc": "Vis au-delà des opinions des autres."
+    },
+    "emotional-dependency": {
+      "name": "Dépendance Émotionnelle",
+      "desc": "Deviens ta propre ancre émotionnelle."
+    },
+    "toxic-relationships": {
+      "name": "Relations Toxiques",
+      "desc": "Identifie et quitte les liens malsains."
+    },
+    "control-issues": {
+      "name": "Problèmes de Contrôle",
+      "desc": "Lâche le contrôle, trouve le vrai pouvoir."
+    },
+    "stop-self-sabotage": {
+      "name": "Arrêter l'Auto-sabotage",
+      "desc": "Interromps les schémas qui te retiennent."
+    },
+    "toxic-perfectionism": {
+      "name": "Perfectionnisme Toxique",
+      "desc": "Fait bat parfait, à chaque fois."
+    },
+    "jealousy": {
+      "name": "Jalousie",
+      "desc": "Transforme la jalousie en conscience de soi."
+    },
+    "money-management": {
+      "name": "Gestion de l'Argent",
+      "desc": "Construis clarté et contrôle financiers."
+    },
+    "sedentary-lifestyle": {
+      "name": "Mode de Vie Sédentaire",
+      "desc": "Bouge un peu chaque jour, pour toujours."
+    },
+    "gratitude": {
+      "name": "Pratique de la Gratitude",
+      "desc": "Recâble ton cerveau pour l'abondance."
+    }
   },
   "morning_coach": {
     "begin_today": "Commencer aujourd'hui"
@@ -603,5 +741,15 @@
     "free_col": "Gratuit",
     "standard_col": "Standard",
     "premium_col": "Premium"
+  },
+  "categories": {
+    "Mental Health": "Santé Mentale",
+    "Fitness & Body": "Fitness & Corps",
+    "Quit Bad Habits": "Abandonner les Mauvaises Habitudes",
+    "Productivity & Life": "Productivité & Vie",
+    "Addiction & Recovery": "Addictions & Rétablissement",
+    "Mind & Learning": "Esprit & Apprentissage",
+    "Psychology & Self": "Psychologie & Soi",
+    "Financial Health": "Santé Financière"
   }
 }

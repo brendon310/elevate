@@ -128,6 +128,8 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
   onRemove: (id: string) => void;
 }) {
   const { t } = useTranslation();
+  const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
+  const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [pendingAdd, setPendingAdd] = useState<typeof ALL_TRACKS[0] | null>(null);
@@ -196,8 +198,8 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                     viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                     className="warm-card rounded-2xl p-5 flex flex-col gap-3">
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{track.category}</p>
-                      <h3 className="mt-1 font-semibold text-[15px]">{track.name}</h3>
+                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{tc(track.category)}</p>
+                      <h3 className="mt-1 font-semibold text-[15px]">{tn(track.slug, track.name)}</h3>
                       <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{track.short_description}</p>
                     </div>
                     {on && ut ? (

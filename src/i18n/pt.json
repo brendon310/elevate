@@ -481,32 +481,170 @@
     "you_showed_up": "Você apareceu. Isso conta."
   },
   "tracks": {
-    "library_label": "Biblioteca",
-    "headline_1": "Cinquenta",
-    "headline_2": "especialistas",
-    "headline_sub": "Escolhe o que te chama hoje.",
-    "search_placeholder": "Pesquisar caminhos, categorias…",
-    "filter_all": "Todos",
-    "no_results": "Nenhum caminho corresponde a \"{{query}}\".",
-    "active_badge": "Ativo",
-    "start_btn": "Começar",
-    "view_btn": "Ver",
-    "remove_confirm": "Remover \"{{name}}\" dos teus caminhos?",
-    "duration_label": "Duração do percurso",
-    "start_journey_btn": "Começar percurso de {{label}}",
-    "days_placeholder": "Dias (7–999)",
-    "one_year": "1 ano",
-    "library": "Biblioteca",
-    "headline": "Cinquenta especialistas",
-    "subheadline": "Escolha o que te chama hoje.",
-    "all": "Todos",
-    "no_match": "Nenhuma trilha corresponde a \"{{q}}\".",
-    "active": "Ativo",
-    "view": "Ver",
-    "start": "Iniciar",
-    "start_journey_label": "Iniciar jornada de {{n}} dias",
-    "start_journey": "Iniciar jornada",
-    "one_year_label": "1 ano"
+    "meditation": {
+      "name": "Meditação",
+      "desc": "Treine sua mente para encontrar a quietude."
+    },
+    "morning-run": {
+      "name": "Corrida Matinal",
+      "desc": "Construa sua base aeróbica."
+    },
+    "strength-training": {
+      "name": "Treino de Força",
+      "desc": "Sobrecarga progressiva para força."
+    },
+    "quit-smoking": {
+      "name": "Parar de Fumar",
+      "desc": "Método Allen Carr."
+    },
+    "deep-work": {
+      "name": "Trabalho Profundo",
+      "desc": "O framework de Cal Newport."
+    },
+    "reading": {
+      "name": "Leitura Diária",
+      "desc": "Técnica Feynman para retenção."
+    },
+    "sleep-routine": {
+      "name": "Rotina de Sono",
+      "desc": "Protocolos de ciência do sono."
+    },
+    "anxiety-relief": {
+      "name": "Alívio da Ansiedade",
+      "desc": "TCC para ansiedade."
+    },
+    "journaling": {
+      "name": "Diário Pessoal",
+      "desc": "Prática de escrita reflexiva."
+    },
+    "cold-exposure": {
+      "name": "Exposição ao Frio",
+      "desc": "Protocolo de estresse hormético."
+    },
+    "no-social-media": {
+      "name": "Sem Redes Sociais",
+      "desc": "Protocolo de detox digital."
+    },
+    "quit-alcohol": {
+      "name": "Parar de Beber",
+      "desc": "Liberte-se da dependência do álcool."
+    },
+    "quit-pornography": {
+      "name": "Parar com Pornografia",
+      "desc": "Reconfigure seu cérebro, recupere sua vida."
+    },
+    "quit-drugs": {
+      "name": "Parar com Drogas",
+      "desc": "Roteiro estruturado de sobriedade."
+    },
+    "quit-gambling": {
+      "name": "Parar de Jogar",
+      "desc": "Quebre o ciclo das apostas compulsivas."
+    },
+    "binge-eating": {
+      "name": "Parar de Comer Compulsivamente",
+      "desc": "Cure sua relação com a comida."
+    },
+    "video-game-addiction": {
+      "name": "Vício em Videogame",
+      "desc": "Recupere o controle sobre os jogos."
+    },
+    "compulsive-shopping": {
+      "name": "Compras Compulsivas",
+      "desc": "Quebre o ciclo de comprar para se sentir bem."
+    },
+    "no-sugar": {
+      "name": "Sem Açúcar",
+      "desc": "Acabe com a dependência do açúcar de vez."
+    },
+    "beat-procrastination": {
+      "name": "Vencer a Procrastinação",
+      "desc": "Aja antes que a voz diga 'depois'."
+    },
+    "build-discipline": {
+      "name": "Construir Disciplina",
+      "desc": "As repetições diárias que formam uma identidade."
+    },
+    "stop-overthinking": {
+      "name": "Parar de Remoer",
+      "desc": "Silencie o ciclo do ruído mental."
+    },
+    "social-anxiety": {
+      "name": "Ansiedade Social",
+      "desc": "Apareça sem o terror interior."
+    },
+    "anger-management": {
+      "name": "Controle da Raiva",
+      "desc": "Transforme a raiva em poder responsivo."
+    },
+    "chronic-stress": {
+      "name": "Estresse Crônico",
+      "desc": "Regule seu sistema nervoso diariamente."
+    },
+    "social-isolation": {
+      "name": "Isolamento Social",
+      "desc": "Reaproxime-se da conexão humana."
+    },
+    "negative-mindset": {
+      "name": "Mentalidade Negativa",
+      "desc": "Reconfigure padrões de pensamento pessimistas."
+    },
+    "breathwork": {
+      "name": "Respiração Consciente",
+      "desc": "Use a respiração para mudar de estado instantaneamente."
+    },
+    "low-self-esteem": {
+      "name": "Baixa Autoestima",
+      "desc": "Construa uma autoestima inabalável."
+    },
+    "need-for-approval": {
+      "name": "Necessidade de Aprovação",
+      "desc": "Pare de terceirizar seu valor pessoal."
+    },
+    "fear-of-failure": {
+      "name": "Medo do Fracasso",
+      "desc": "Aja apesar do resultado."
+    },
+    "fear-of-judgment": {
+      "name": "Medo do Julgamento",
+      "desc": "Viva além das opiniões dos outros."
+    },
+    "emotional-dependency": {
+      "name": "Dependência Emocional",
+      "desc": "Torne-se sua própria âncora emocional."
+    },
+    "toxic-relationships": {
+      "name": "Relacionamentos Tóxicos",
+      "desc": "Identifique e saia de vínculos prejudiciais."
+    },
+    "control-issues": {
+      "name": "Problemas de Controle",
+      "desc": "Solte o controle, encontre o poder real."
+    },
+    "stop-self-sabotage": {
+      "name": "Parar a Autossabotagem",
+      "desc": "Interrompa os padrões que te prendem."
+    },
+    "toxic-perfectionism": {
+      "name": "Perfeccionismo Tóxico",
+      "desc": "Feito vence perfeito, sempre."
+    },
+    "jealousy": {
+      "name": "Ciúme",
+      "desc": "Transforme o ciúme em autoconhecimento."
+    },
+    "money-management": {
+      "name": "Gestão Financeira",
+      "desc": "Construa clareza e controle financeiro."
+    },
+    "sedentary-lifestyle": {
+      "name": "Estilo de Vida Sedentário",
+      "desc": "Mova-se um pouco todo dia, para sempre."
+    },
+    "gratitude": {
+      "name": "Prática de Gratidão",
+      "desc": "Reconfigure seu cérebro para a abundância."
+    }
   },
   "morning_coach": {
     "begin_today": "Começa hoje"
@@ -603,5 +741,15 @@
     "free_col": "Gratuito",
     "standard_col": "Padrão",
     "premium_col": "Premium"
+  },
+  "categories": {
+    "Mental Health": "Saúde Mental",
+    "Fitness & Body": "Fitness & Corpo",
+    "Quit Bad Habits": "Largar Maus Hábitos",
+    "Productivity & Life": "Produtividade & Vida",
+    "Addiction & Recovery": "Vícios & Recuperação",
+    "Mind & Learning": "Mente & Aprendizado",
+    "Psychology & Self": "Psicologia & Eu",
+    "Financial Health": "Saúde Financeira"
   }
 }

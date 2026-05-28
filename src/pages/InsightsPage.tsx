@@ -29,6 +29,8 @@ function liveStreak(ut: UserTrack): number {
 
 function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; logs: Log[]; userId?: string }) {
   const { t } = useTranslation();
+  const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
+  const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const [letterLoading, setLetterLoading] = useState(false);
   const [letter, setLetter] = useState<string | null>(null);
   const [showLetter, setShowLetter] = useState(false);
@@ -304,8 +306,8 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
                 <div key={ut.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-semibold text-[15px] leading-tight">{ut.name}</h3>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">{ut.category}</p>
+                      <h3 className="font-semibold text-[15px] leading-tight">{tn(ut.slug, ut.name)}</h3>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono mt-0.5">{tc(ut.category)}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="font-bold text-lg font-display leading-none" style={{ color: streak > 0 ? "var(--tertiary)" : undefined }}>{streak}d</p>
