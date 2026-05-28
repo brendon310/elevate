@@ -642,7 +642,7 @@ function VacationModal({ track, onSave, onClose }: {
         {isActive ? (
           <>
             <div className="rounded-2xl bg-[color:var(--tertiary)]/10 border border-[color:var(--tertiary)]/20 p-4 mb-4 text-center">
-              <p className="text-sm font-semibold text-[color:var(--tertiary)]">Pause active until {track.vacation_until}</p>
+              <p className="text-sm font-semibold text-[color:var(--tertiary)]">{t("home.pause_active_until", {date: track.vacation_until})}</p>
             </div>
             <div className="flex gap-3">
 <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium">{t("common.close")}</button>
@@ -669,13 +669,13 @@ className="flex-1 btn-chunk rounded-full bg-[color:var(--secondary)] text-white 
                 type="number" min={1} max={90}
                 value={customDays}
                 onChange={e => setCustomDays(e.target.value)}
-                placeholder="Custom days…"
+                placeholder={t("home.custom_days_placeholder")}
                 className="flex-1 rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-foreground/30 transition"
               />
-              {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">days</span>}
+              {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">{t("home.vacation_days_label")}</span>}
             </div>
             <p className="text-xs text-muted-foreground text-center mb-5 font-mono">
-              Streak protected until <span className="text-foreground">{until}</span>
+              {t("home.streak_protected_until")} <span className="text-foreground">{until}</span>
             </p>
             <div className="flex gap-3">
 <button onClick={onClose} className="flex-1 rounded-full border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground">{t("common.cancel")}</button>
@@ -742,20 +742,20 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
 <p className="font-display text-lg mb-1">{t("home.feedback_sent")}</p>
 <p className="text-sm text-muted-foreground">{t("home.feedback_sent_body")}</p>
             <button onClick={onClose} className="mt-5 btn-chunk rounded-full bg-foreground text-neutral-900 px-6 py-2.5 text-sm font-semibold">
-              Chiudi
+              {t("common.close")}
             </button>
           </div>
         ) : (
           <>
-            <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Feedback</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">{t("home.feedback_label")}</p>
 <h3 className="font-display text-xl mb-1">{t("home.feedback_title")}</h3>
             <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-              Se hai avuto problemi ad aprire l'app, raccontaci cosa è successo. Ci aiuta a migliorare.
+              {t("home.feedback_body")}
             </p>
 
             {tracks.length > 1 && (
               <div className="mb-3">
-                <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">Track</label>
+                <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">{t("home.feedback_track_label")}</label>
                 <select
                   value={track}
                   onChange={e => setTrack(e.target.value)}
@@ -766,7 +766,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
               </div>
             )}
 
-            <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">Cosa è successo?</label>
+            <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">{t("home.feedback_what_happened")}</label>
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
@@ -789,7 +789,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
             </div>
 
             <p className="mt-3 text-center text-[10px] text-emerald-500/70 font-mono">
-              Inviato privatamente al team Forge.
+              {t("home.feedback_privacy")}
             </p>
           </>
         )}
@@ -946,15 +946,15 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                           <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
                         </div>
                         <div className="relative mt-auto pt-12">
-                          <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">{(ut.total_done ?? 0) >= (ut.target_days ?? 30) ? "Done" : "Day"}</p>
+                          <p className="text-[10px] uppercase tracking-[0.3em] text-white font-mono">{(ut.total_done ?? 0) >= (ut.target_days ?? 30) ? t("common.done") : t("common.day")}</p>
                           <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white"><SlotNumber value={liveStreak(ut) === 0 && (ut.total_done ?? 0) === 0 ? 1 : liveStreak(ut)} /></p>
                           {(ut.total_done ?? 0) >= (ut.target_days ?? 30) && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 px-2 py-0.5 text-[9px] font-bold text-yellow-300 uppercase tracking-widest mt-1">
-                              ✓ Completed
+                              ✓ {t("common.completed_badge")}
                             </span>
                           )}
                           {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
-                            <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">Ghost +{gap}d ahead</p>
+                            <p className="mt-0.5 text-[9px] font-mono text-white/35 tracking-[0.15em] uppercase">{t("common.days_ahead", {gap})}</p>
                           ) : null; })()}
                           <h3 className="mt-3 font-display text-xl text-white leading-tight line-clamp-2">{ut.name}</h3>
                           {(() => {
@@ -987,7 +987,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                             )}
                             {doneToday && (
                               <div className="inline-flex items-center gap-1 rounded-full bg-[color:var(--tertiary)] px-2.5 py-1 text-[11px] text-white font-semibold">
-                                <Check className="h-3 w-3" /> Done
+                                <Check className="h-3 w-3" /> {t("common.done")}
                               </div>
                             )}
                           </div>
@@ -1001,10 +1001,10 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                           <div className="relative z-10 text-center pointer-events-none">
                             <p className="font-display text-4xl font-bold text-white tracking-tight"
                               style={{ textShadow: "0 0 28px rgba(160,215,255,0.7)" }}>
-                              Freezed
+                              {t("overlays.freezed")}
                             </p>
                             <p className="text-white/50 text-[10px] font-mono mt-1.5 tracking-widest uppercase">
-                              until {ut.vacation_until}
+                              {t("home.streak_protected_until")} {ut.vacation_until}
                             </p>
                           </div>
                         </div>
@@ -1042,7 +1042,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                       {ut.name.slice(0, 2)}
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: "#b8e0ff" }}>Freezed</p>
+                      <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: "#b8e0ff" }}>{t("overlays.freezed")}</p>
                       <p className="font-semibold text-[15px] text-white/80 truncate">{ut.name}</p>
                     </div>
                   </div>
@@ -1079,7 +1079,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                         <PenLine className="h-3.5 w-3.5" />
                       </button>
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--tertiary)]/15 text-[color:var(--tertiary)] px-3.5 py-2 text-xs font-semibold">
-                        <Check className="h-3.5 w-3.5" /> Done
+                        <Check className="h-3.5 w-3.5" /> {t("common.done")}
                       </div>
                     </div>
                   );

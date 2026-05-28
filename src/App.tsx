@@ -622,6 +622,7 @@ const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia"
 
 
 function PrizeRequestModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ name: "", address: "", city: "", zip: "", country: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
 
@@ -667,9 +668,9 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
           {status === "done" ? (
             <div className="text-center py-8">
               <div className="text-5xl mb-4">🏆</div>
-              <h2 className="font-display text-2xl mb-2">Request submitted!</h2>
-              <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7–10 business days. You're a legend.</p>
-              <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Close</button>
+              <h2 className="font-display text-2xl mb-2">{t("badge.submitted")}</h2>
+              <p className="text-muted-foreground text-sm">{t("badge.received_msg")}</p>
+              <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">{t("common.close")}</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -679,49 +680,49 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
                   <Crown className="h-5 w-5" style={{ color: "#E24B4A" }} />
                 </div>
                 <div>
-                  <p className="font-display text-lg leading-tight">You've reached 100k Momentum</p>
-                  <p className="text-xs text-muted-foreground">Enter your address to receive the physical badge</p>
+                  <p className="font-display text-lg leading-tight">{t("badge.reached_100k")}</p>
+                  <p className="text-xs text-muted-foreground">{t("badge.address_desc")}</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Full name</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("badge.full_name")}</label>
                 <input required value={form.name} onChange={f("name")} placeholder="Brendon Hoxha"
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Address</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("badge.address")}</label>
                 <input required value={form.address} onChange={f("address")} placeholder="Via Roma 12, Appartamento 3"
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">City</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t("badge.city")}</label>
                   <input required value={form.city} onChange={f("city")} placeholder="Milano"
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">ZIP</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t("badge.zip")}</label>
                   <input required value={form.zip} onChange={f("zip")} placeholder="20100"
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Country</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("badge.country")}</label>
                 <input required value={form.country} onChange={f("country")} placeholder="Italia"
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
 
               {status === "error" && (
-                <p className="text-xs text-red-500">Something went wrong. Please try again shortly.</p>
+                <p className="text-xs text-red-500">{t("common.error_retry")}</p>
               )}
               <button type="submit" disabled={status === "loading"}
                 className="w-full py-3 rounded-2xl font-semibold text-sm text-white flex items-center justify-center gap-2"
                 style={{ background: "#E24B4A" }}>
-                {status === "loading" ? <Spinner light /> : <><Crown className="h-4 w-4" /> Request physical badge</>}
+                {status === "loading" ? <Spinner light /> : <><Crown className="h-4 w-4" /> {t("badge.request")}</>}
               </button>
               <p className="text-[10px] text-muted-foreground text-center">
-                Your address is only used for shipping. It is never shared with third parties.
+                {t("badge.shipping_note")}
               </p>
             </form>
           )}
@@ -740,8 +741,9 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   user: ElevateUser;
   onUpdateUser: (patch: Partial<ElevateUser>) => void;
   onCheckIn: (id: string) => void;
-  onView: (t: UserTrack) => void;
+  onView: (ut: UserTrack) => void;
 }) {
+  const { t } = useTranslation();
   const m = computeMomentum(tracks);
   const mxStreak = maxStreak(tracks);
   const evo = evolutionFor(mxStreak);
@@ -806,7 +808,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-mono">Momentum</p>
+              <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground font-mono">{t("app.momentum_label")}</p>
               <p className="font-display text-[3.25rem] leading-none text-foreground num-rise">{animated.toLocaleString()}</p>
               <p className="text-[10px] text-muted-foreground font-mono">/ {nextMs.label}</p>
             </div>
@@ -849,12 +851,12 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 
             <h2 className="font-display text-2xl leading-tight tracking-tight">
               {isMaxed
-                ? "Absolute legend. You made history."
-                : m.score >= 50_000 ? "You're among the best in the world."
-                : m.score >= 10_000 ? "Elite level. Keep pushing."
-                : m.score >= 1_000 ? "You're on fire."
-                : m.score >= 300 ? "Momentum is building."
-                : "Today is day one."}
+                ? t("app.legend_message")
+                : m.score >= 50_000 ? t("app.best_world")
+                : m.score >= 10_000 ? t("app.elite_message")
+                : m.score >= 1_000 ? t("app.on_fire")
+                : m.score >= 300 ? t("app.momentum_building")
+                : t("app.today_is_day_one")}
             </h2>
 
             {/* 50k → 100k teaser */}
@@ -862,14 +864,14 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               <p className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5"
                 style={{ background: "#FCEBEB", color: "#791F1F" }}>
                 <Crown className="h-3 w-3 shrink-0" />
-                At 100k you can <button onClick={() => setShowPrizeModal(false)} className="underline font-semibold">claim the physical badge</button>
+                {t("badge.at_100k")} <button onClick={() => setShowPrizeModal(false)} className="underline font-semibold">{t("badge.claim_link")}</button>
               </p>
             )}
             {effectivePeak >= 100_000 && (
               <button onClick={() => setShowPrizeModal(true)}
                 className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5 font-semibold"
                 style={{ background: "#E24B4A", color: "#fff" }}>
-                <Crown className="h-3 w-3 shrink-0" /> Claim your physical prize →
+                <Crown className="h-3 w-3 shrink-0" /> {t("badge.claim_prize")}
               </button>
             )}
 
@@ -880,10 +882,10 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               </p>
             )}
             <div className="mt-3 grid grid-cols-4 gap-1.5">
-              <Meter label="Volume" v={m.volume} max={Math.max(300, m.volume)} />
-              <Meter label="Streak" v={m.consistency} max={Math.max(400, m.consistency)} />
-              <Meter label="Depth" v={m.longevity} max={Math.max(200, m.longevity)} />
-              <Meter label="Breadth" v={m.breadth} max={Math.max(1500, m.breadth)} />
+              <Meter label={t("app.volume")} v={m.volume} max={Math.max(300, m.volume)} />
+              <Meter label={t("app.streak_meter")} v={m.consistency} max={Math.max(400, m.consistency)} />
+              <Meter label={t("app.depth")} v={m.longevity} max={Math.max(200, m.longevity)} />
+              <Meter label={t("app.breadth")} v={m.breadth} max={Math.max(1500, m.breadth)} />
             </div>
 
             {/* Prize modal */}
@@ -897,26 +899,25 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
           className="flow-banner rounded-2xl p-3.5 flex items-center gap-3 text-white">
           <Zap className="h-5 w-5 shrink-0" fill="currentColor" />
           <div className="flex-1 min-w-0">
-            <p className="font-display text-sm leading-tight">You are in flow right now.</p>
-            <p className="text-[11px] opacity-90">Protect this. Don't break the rhythm.</p>
+            <p className="font-display text-sm leading-tight">{t("app.in_flow")}</p>
+            <p className="text-[11px] opacity-90">{t("app.protect_flow")}</p>
           </div>
         </motion.div>
       )}
 
-      {atRisk.map(t => (
-        <motion.div key={t.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+      {atRisk.map(riskTrack => (
+        <motion.div key={riskTrack.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
           className="rounded-2xl p-3.5 border-2 border-[color:var(--secondary)] bg-card flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 text-[color:var(--secondary)] shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm leading-tight">
-              Your <span className="font-mono">{t.current_streak}</span>-day streak on{" "}
-              <span className="font-semibold">{t.name}</span> is at risk.
+              {t("app.streak_at_risk", { streak: riskTrack.current_streak, track: riskTrack.name })}
             </p>
-            <p className="text-[11px] text-muted-foreground">Check in today. I know you can do this.</p>
+            <p className="text-[11px] text-muted-foreground">{t("app.check_in_today")}</p>
           </div>
-          <button onClick={() => onView(t)}
+          <button onClick={() => onView(riskTrack)}
             className="shrink-0 rounded-full bg-[color:var(--secondary)] text-white px-3 py-1.5 text-xs font-semibold flex items-center gap-1 btn-chunk">
-            <Flame className="h-3 w-3" /> Save it
+            <Flame className="h-3 w-3" /> {t("app.save_it")}
           </button>
         </motion.div>
       ))}
@@ -987,6 +988,7 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
 type LoginMode = "options" | "phone" | "otp" | "name";
 
 function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; onBack: () => void }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState<string | null>(null);
   const [mode, setMode] = useState<LoginMode>("options");
   const [phone, setPhone] = useState("");
@@ -1064,7 +1066,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
       <button onClick={onBack}
         className="absolute top-7 left-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ChevronLeft className="h-4 w-4" /> Back
+        <ChevronLeft className="h-4 w-4" /> {t("login.back")}
       </button>
 
       <motion.div
@@ -1088,12 +1090,12 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
             {mode === "options" && (
               <motion.div key="options" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Almost there</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Save your path. Start Day 1.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">{t("login.almost_there")}</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">{t("login.save_path_start")}</p>
 
                 <div className="space-y-3">
                   <button onClick={handleGoogle} disabled={!!loading} className={btnSecondary}>
-                    {loading === "google" ? <Spinner /> : <><GoogleIcon /> Continue with Google</>}
+                    {loading === "google" ? <Spinner /> : <><GoogleIcon /> {t("login.continue_google")}</>}
                   </button>
                   {authError && <p className="text-xs text-red-400 text-center mt-1">{authError}</p>}
                 </div>
@@ -1105,7 +1107,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                 </div>
 
                 <button onClick={() => setMode("phone")} disabled={!!loading} className={btnSecondary}>
-                  <Phone className="h-4 w-4 text-muted-foreground" /> Continue with phone
+                  <Phone className="h-4 w-4 text-muted-foreground" /> {t("login.continue_phone")}
                 </button>
               </motion.div>
             )}
@@ -1115,8 +1117,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                 <button onClick={() => setMode("options")} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors">
                   <ChevronLeft className="h-4 w-4" /> Back
                 </button>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Your number</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">We'll send you a code via SMS.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">{t("login.your_number")}</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">{t("login.sms_code")}</p>
                 <div className="space-y-3">
                   <div>
                     <input
@@ -1129,7 +1131,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     {phoneError && <p className="text-xs text-red-400 mt-1.5">{phoneError}</p>}
                   </div>
                   <button onClick={handlePhoneContinue} disabled={!!loading} className={btnPrimary}>
-                    {loading === "phone-send" ? <Spinner light /> : "Send code →"}
+                    {loading === "phone-send" ? <Spinner light /> : t("login.send_code")}
                   </button>
                 </div>
               </motion.div>
@@ -1137,8 +1139,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
             {mode === "otp" && (
               <motion.div key="otp" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-                <h1 className="font-display text-2xl font-bold tracking-tight">Enter the code</h1>
-                <p className="text-sm text-muted-foreground mt-1 mb-6">Sent to {phone}.</p>
+                <h1 className="font-display text-2xl font-bold tracking-tight">{t("login.enter_code")}</h1>
+                <p className="text-sm text-muted-foreground mt-1 mb-6">{t("login.sent_to", {phone})}</p>
                 <div className="space-y-4">
                   <div className="flex gap-2 justify-center">
                     {otp.map((digit, i) => (
@@ -1156,12 +1158,12 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     ))}
                   </div>
                   <button onClick={handleOtpVerify} disabled={otp.join("").length < 6 || !!loading} className={btnPrimary}>
-                    {loading === "phone" ? <Spinner light /> : "Verify →"}
+                    {loading === "phone" ? <Spinner light /> : t("login.verify")}
                   </button>
                   <p className="text-xs text-center text-muted-foreground">
-                    Didn't receive it?{" "}
+                    {t("login.no_receive")}{" "}
                     <button onClick={() => { setOtp(["","","","","",""]); setMode("phone"); }} className="underline hover:text-foreground transition-colors">
-                      Try again
+                      {t("login.try_again")}
                     </button>
                   </p>
                 </div>
@@ -1174,8 +1176,8 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                   <div className="mx-auto mb-5 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
                     <span className="font-display text-white text-2xl font-bold">👋</span>
                   </div>
-                  <h1 className="font-display text-2xl font-bold tracking-tight">What's your name?</h1>
-                  <p className="text-sm text-muted-foreground mt-1">Your coach will use this every day.</p>
+                  <h1 className="font-display text-2xl font-bold tracking-tight">{t("login.whats_name")}</h1>
+                  <p className="text-sm text-muted-foreground mt-1">{t("login.coach_use")}</p>
                 </div>
                 <div className="space-y-3">
                   <input
@@ -1189,7 +1191,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     onClick={() => enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
                     disabled={enteredName.trim().length === 0}
                     className={btnPrimary}>
-                    Start Day 1 →
+                    {t("login.start_day1_btn")}
                   </button>
                 </div>
               </motion.div>
@@ -1199,10 +1201,10 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
         </div>
 
         <p className="mt-4 text-center text-[11px] text-muted-foreground leading-relaxed">
-          By continuing you agree to our{" "}
-          <span className="underline cursor-pointer hover:text-foreground transition-colors">Terms of Service</span>
-          {" e la "}
-          <span className="underline cursor-pointer hover:text-foreground transition-colors">Privacy Policy</span>
+          {t("login.agree_prefix")}{" "}
+          <span className="underline cursor-pointer hover:text-foreground transition-colors">{t("login.terms")}</span>
+          {" "}{t("login.and")}{" "}
+          <span className="underline cursor-pointer hover:text-foreground transition-colors">{t("login.privacy")}</span>
         </p>
       </motion.div>
     </div>
@@ -1297,6 +1299,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 }
 
 function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack; name?: string }) => void }) {
+  const { t } = useTranslation();
   type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "island" | "coach" | "name";
   const [step, setStep] = useState<OnboardingStep>("question");
   const [showAllPaths, setShowAllPaths] = useState(false);
@@ -1353,7 +1356,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
         {step === "question" && (
           <motion.div key="q" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.7 }} className="max-w-3xl w-full text-center">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">One question</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">{t("onboarding.one_question")}</p>
             <h1 className="font-display text-[clamp(2rem,6vw,4.5rem)] leading-[1.05] tracking-[-0.04em] font-semibold">
               What is the one thing that,<br />
               if you changed it,<br />
@@ -1361,12 +1364,12 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             </h1>
             <div className="mt-14">
               <textarea autoFocus value={answer} onChange={e => setAnswer(e.target.value.slice(0, 1000))}
-                placeholder="Be honest. No one else will read this."
+                placeholder={t("onboarding.be_honest")}
                 className="w-full bg-transparent border-0 border-b-2 border-border focus:border-foreground outline-none text-center font-display text-2xl placeholder:text-muted-foreground py-5 px-2 resize-none min-h-[140px] transition-colors" />
               <div className="mt-3 text-[11px] text-muted-foreground font-mono tracking-wider">
-                {answer.trim().length < 10 ? `${Math.max(0, 10 - answer.trim().length)} more to continue` : "Ready when you are"}
+                {answer.trim().length < 10 ? t("onboarding.n_more_to_continue", {n: Math.max(0, 10 - answer.trim().length)}) : t("onboarding.ready")}
               </div>
-              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">This stays between you and your coach. Always.</p>
+              <p className="mt-1.5 text-[11px] text-emerald-500/80 font-mono">{t("common.privacy_coach")}</p>
               <AnimatePresence>
                 {answer.trim().length >= 10 && (
                   <motion.button key="cont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -1383,7 +1386,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
         {step === "thinking" && (
           <motion.div key="t" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
             <div className="mx-auto h-28 w-28 rounded-full grad-electric breathe" style={{ boxShadow: "var(--shadow-violet)" }} />
-            <p className="mt-10 font-display text-xl text-muted-foreground">Your coach is reading this…</p>
+            <p className="mt-10 font-display text-xl text-muted-foreground">{t("onboarding.coach_reading")}</p>
           </motion.div>
         )}
 
@@ -1411,11 +1414,11 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
           <motion.div key="tracks" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }} className="max-w-5xl w-full">
             <div className="text-center mb-10">
-              <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-4">Choose your path</p>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-4">{t("onboarding.choose_path")}</p>
               <h2 className="font-display text-[clamp(1.75rem,4vw,3rem)] tracking-[-0.03em] leading-tight">
                 Let's start with <span className="text-[color:var(--secondary)] italic">one thing</span>.
               </h2>
-              <p className="mt-4 text-muted-foreground">You can add more later. For now, one commitment is enough.</p>
+              <p className="mt-4 text-muted-foreground">{t("onboarding.add_more_later")}</p>
             </div>
 
             {/* ── Hero-card-only view when a suggestion exists ── */}
@@ -1424,7 +1427,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
               if (!sug) return null;
               return (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-xl mx-auto">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">✦ Your path, based on what you wrote</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">{t("onboarding.your_path_based")}</p>
 
                   {/* Hero card */}
                   <div className="warm-card rounded-[2rem] p-8 mb-6 text-center relative overflow-hidden"
@@ -1436,19 +1439,19 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                     {TRACK_GLOBAL_STATS[sug.slug] && (
                       <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
                         {TRACK_GLOBAL_STATS[sug.slug]}.<br />
-                        <span className="text-yellow-400 font-medium">You're not alone in this.</span>
+                        <span className="text-yellow-400 font-medium">{t("onboarding.not_alone")}</span>
                       </p>
                     )}
                     <button onClick={() => { setPendingTrackForName(sug); setStep("island"); }}
                       className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]">
-                      This is my path <ArrowRight className="h-4 w-4" />
+                      {t("onboarding.this_is_my_path")} <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
 
                   {/* Toggle to see all paths */}
                   <button onClick={() => setShowAllPaths(true)}
                     className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2 underline underline-offset-4">
-                    That's not quite right — show me all 50 paths ↓
+                    {t("onboarding.show_all_paths")}
                   </button>
                 </motion.div>
               );
@@ -1465,7 +1468,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   const isChosen = chosen?.slug === sug.slug;
                   return (
                     <div className="mb-8">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">✦ Suggested for you</p>
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">{t("onboarding.suggested_for_you")}</p>
                       <button onClick={() => setChosen(sug)}
                         className={`w-full text-left warm-card rounded-2xl p-5 transition btn-chunk relative ${isChosen ? "ring-2 ring-yellow-400" : "ring-2 ring-yellow-400/60"}`}
                         style={{ boxShadow: "0 0 28px 4px oklch(0.875 0.185 95 / 0.38)" }}>
@@ -1475,7 +1478,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                             <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">{sug.category}</p>
                             {TRACK_GLOBAL_STATS[sug.slug] && (
                               <p className="text-xs text-yellow-400/90 mt-2 leading-relaxed">
-                                {TRACK_GLOBAL_STATS[sug.slug]}. You're not alone in this.
+                                {TRACK_GLOBAL_STATS[sug.slug]}. {t("onboarding.not_alone")}
                               </p>
                             )}
                           </div>
@@ -1518,7 +1521,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   <div className="mt-10 text-center">
                     <button onClick={() => { setPendingTrackForName(chosen!); setStep("island"); }}
                       className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                      This is my path <ArrowRight className="h-4 w-4" />
+                      {t("onboarding.this_is_my_path")} <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
                 )}
@@ -1531,15 +1534,15 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
         {step === "island" && (
           <motion.div key="island" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">Choose your island</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">{t("onboarding.choose_island")}</p>
             <h1 className="font-display text-[clamp(1.8rem,5vw,2.6rem)] leading-tight tracking-tight mb-2">
               Your island reflects<br /><span className="text-electric">your journey</span>
             </h1>
-            <p className="text-sm text-muted-foreground mb-10 max-w-xs mx-auto">Every check-in grows your world. Pick the landscape that speaks to you.</p>
+            <p className="text-sm text-muted-foreground mb-10 max-w-xs mx-auto">{t("onboarding.island_body")}</p>
             <div className="grid grid-cols-2 gap-4 mb-8">
               {([
-                { key: 'garden' as const, label: 'The Garden', desc: 'Forest & nature', img: 'https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png' },
-                { key: 'mountain' as const, label: 'The Mountain', desc: 'Peaks & summits', img: 'https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png' },
+                { key: 'garden' as const, label: t('onboarding.garden_label'), desc: t('onboarding.garden_desc'), img: 'https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png' },
+                { key: 'mountain' as const, label: t('onboarding.mountain_label'), desc: t('onboarding.mountain_desc'), img: 'https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png' },
               ] as { key: 'garden' | 'mountain'; label: string; desc: string; img: string }[]).map(({ key, label, desc, img }) => (
                 <button
                   key={key}
@@ -1581,7 +1584,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   <motion.p
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
                     className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">
-                    your coach
+                    {t("onboarding.your_coach_label")}
                   </motion.p>
                   <motion.div
                     initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
@@ -1623,12 +1626,12 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
         {step === "name" && (
           <motion.div key="name" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">One last thing</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">{t("onboarding.one_last_thing")}</p>
             <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.04em] font-semibold mb-4">
               What should your coach<br />
               <span className="text-[color:var(--secondary)] italic">call you?</span>
             </h1>
-            <p className="text-muted-foreground text-sm mb-12">Your coach will use this every day.</p>
+            <p className="text-muted-foreground text-sm mb-12">{t("login.coach_use")}</p>
             <input
               type="text" autoFocus value={onboardingName}
               onChange={e => setOnboardingName(e.target.value.slice(0, 40))}
@@ -1771,6 +1774,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
   track: UserTrack;
   onComplete: () => void;
 }) {
+  const { t } = useTranslation();
   type FDRPhase = "welcome" | "track" | "duration" | "generating" | "reveal";
   const [phase, setPhase] = useState<FDRPhase>("welcome");
   const [glowPulse, setGlowPulse] = useState(false);
@@ -1881,7 +1885,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
               Forge
             </motion.p>
             <h1 className="font-display text-5xl text-foreground tracking-tight">
-              Welcome, {userName}.
+              {t("fdr.welcome_name", {name: userName})}
             </h1>
           </motion.div>
         )}
@@ -1907,7 +1911,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
             <motion.p
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }}
               className="text-muted-foreground text-sm">
-              Your 30-day journey starts now.
+              {t("fdr.journey_starts", {n: 30})}
             </motion.p>
           </motion.div>
         )}
@@ -1920,15 +1924,15 @@ function FirstDayReveal({ userName, track, onComplete }: {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="absolute inset-0 flex flex-col items-center justify-center px-6 gap-6 text-center">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">How long?</p>
-              <h2 className="font-display text-3xl text-foreground tracking-tight">Choose your commitment.</h2>
+              <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">{t("fdr.how_long")}</p>
+              <h2 className="font-display text-3xl text-foreground tracking-tight">{t("fdr.choose_commitment")}</h2>
             </div>
             <div className="w-full max-w-xs grid grid-cols-3 gap-2">
               {([30, 60, 90, 120, 180, 365] as const).map(d => (
                 <button key={d}
                   onClick={() => { setTargetDays(d); setCustomDur(false); }}
                   className={`rounded-xl py-3 text-sm font-semibold border transition ${!customDur && targetDays === d ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-                  {d === 365 ? "1 year" : `${d}d`}
+                  {d === 365 ? t("tracks.one_year_label") : `${d}d`}
                 </button>
               ))}
             </div>
@@ -1947,7 +1951,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
               onClick={() => { lsSave("forge-track-target-days-" + track.slug, targetDays); setPhase("generating"); }}
               className="w-full max-w-xs rounded-2xl py-4 font-semibold text-[15px] flex items-center justify-center gap-2"
               style={{ background: "oklch(0.6 0.22 250)", color: "#fff" }}>
-              Build my {targetDays === 365 ? "year-long" : targetDays + "-day"} journey
+              {t("fdr.build_journey", {label: targetDays === 365 ? t("fdr.year_long") : targetDays + "-day"})}
               <ArrowRight className="h-5 w-5" />
             </button>
           </motion.div>
@@ -1968,7 +1972,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                   transition={{ duration: 1.3, repeat: Infinity, delay: i * 0.22 }} />
               ))}
             </div>
-            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">Building your Day 1…</p>
+            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">{t("fdr.generating")}</p>
           </motion.div>
         )}
 
@@ -1998,7 +2002,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 className="rounded-2xl p-5 border-l-4"
                 style={{ background: "oklch(0.13 0.04 250)", borderLeftColor: "oklch(0.6 0.22 250)" }}>
                 <p className="text-[9px] uppercase tracking-[0.4em] font-mono mb-2.5"
-                  style={{ color: "oklch(0.65 0.2 250)" }}>Today's Task</p>
+                  style={{ color: "oklch(0.65 0.2 250)" }}>{t("app.today_task")}</p>
                 <p className="text-foreground text-[15px] leading-relaxed">{day1.task}</p>
               </motion.div>
 
@@ -2008,7 +2012,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 transition={{ delay: 0.5, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className="rounded-2xl p-5"
                 style={{ background: "oklch(0.11 0.02 240)" }}>
-                <p className="text-[9px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-2.5">Context</p>
+                <p className="text-[9px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-2.5">{t("app.context")}</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">{day1.description}</p>
               </motion.div>
 
@@ -2019,7 +2023,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 className="rounded-2xl p-5 border-l-4"
                 style={{ background: "oklch(0.12 0.04 150)", borderLeftColor: "oklch(0.62 0.2 150)" }}>
                 <p className="text-[9px] uppercase tracking-[0.4em] font-mono mb-2.5"
-                  style={{ color: "oklch(0.65 0.2 150)" }}>The Science</p>
+                  style={{ color: "oklch(0.65 0.2 150)" }}>{t("app.the_science")}</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">{day1.science}</p>
               </motion.div>
 
@@ -2030,7 +2034,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 className="rounded-2xl p-5 border-l-4"
                 style={{ background: "oklch(0.13 0.04 65)", borderLeftColor: "oklch(0.72 0.18 65)" }}>
                 <p className="text-[9px] uppercase tracking-[0.4em] font-mono mb-2.5"
-                  style={{ color: "oklch(0.72 0.18 65)" }}>Tonight's Reflection</p>
+                  style={{ color: "oklch(0.72 0.18 65)" }}>{t("app.tonights_reflection")}</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">{day1.reflection}</p>
               </motion.div>
             </div>
@@ -2044,11 +2048,11 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 onClick={onComplete}
                 className="w-full rounded-2xl py-4 font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity active:opacity-80"
                 style={{ background: "oklch(0.6 0.22 250)", color: "#fff" }}>
-                I'm ready. Start Day 1
+                {t("fdr.ready_start")}
                 <ArrowRight className="h-5 w-5" />
               </button>
               <p className="text-center text-[11px] text-muted-foreground mt-3 font-mono">
-                30-day journey · {track.name}
+                {t("fdr.journey_footer", {n: targetDays, track: track.name})}
               </p>
             </motion.div>
           </motion.div>

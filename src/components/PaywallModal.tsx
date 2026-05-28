@@ -3,6 +3,7 @@
 // Appears every session until user upgrades.
 // Placeholder checkout: wire startCheckout() in plans.ts to Stripe later.
 
+import { useTranslation } from 'react-i18next';
 import React, { useEffect } from 'react';
 import {
   Plan, PlanConfig, PLANS, Feature,
@@ -32,6 +33,7 @@ export interface PaywallModalProps {
 }
 
 export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanChange }: PaywallModalProps) {
+  const { t } = useTranslation();
   useEffect(() => { trackEvent('paywall_shown', { plan: currentPlan }); }, []);
 
   async function handleUpgrade(plan: Exclude<Plan, 'free'>) {
