@@ -49,7 +49,7 @@ function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; l
       const hasNotes = journeyData.some(d => d.recentNotes.length > 0);
       const prompt = `You are a warm, personal growth coach writing a weekly recap letter for someone using the Forge app. Based on their journey data below, write a heartfelt letter (3-4 paragraphs, 150-200 words total) that:
 - Acknowledges their specific progress with genuine warmth
-${hasNotes ? "- Reflects back meaningful moments from their own notes/reflections â use their actual words where possible" : "- Encourages them to start writing notes after check-ins so you can reflect their journey back to them"}
+${hasNotes ? "- Reflects back meaningful moments from their own notes/reflections — use their actual words where possible" : "- Encourages them to start writing notes after check-ins so you can reflect their journey back to them"}
 - Feels deeply personal, never generic or motivational-poster-ish
 - Ends with one concrete, specific thing to focus on this week
 
@@ -57,9 +57,9 @@ Their journey data:
 ${journeyData.map(d => `
 ${d.trackName} (${d.category})
 Streak: ${d.streak} days | Total completed: ${d.totalDone} days
-${d.recentNotes.length > 0 ? `Recent reflections:\n${d.recentNotes.join("\n")}` : "No notes yet â they are just getting started"}`).join("\n---\n")}
+${d.recentNotes.length > 0 ? `Recent reflections:\n${d.recentNotes.join("\n")}` : "No notes yet — they are just getting started"}`).join("\n---\n")}
 
-Start with "This week," and sign it "â Your Coach". Write like you actually know and care about them.`;
+Start with "This week," and sign it "— Your Coach". Write like you actually know and care about them.`;
 
       const res = await fetch("/api/coach", {
         method: "POST",
@@ -158,7 +158,7 @@ Start with "This week," and sign it "â Your Coach". Write like you actually
         <button onClick={generateLetter} disabled={letterLoading}
           className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
           {letterLoading ? (
-            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your letterâ¦</>
+            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your letter…</>
           ) : (
             <><Mail className="h-3.5 w-3.5" />Weekly recap letter</>
           )}
@@ -227,7 +227,7 @@ Start with "This week," and sign it "â Your Coach". Write like you actually
       {/* 28-day activity bar chart */}
       {totalCheckins > 0 && (
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-4">Daily activity â last 28 days</h2>
+          <h2 className="font-semibold mb-4">Daily activity — last 28 days</h2>
           <div className="flex items-end gap-[3px] h-16">
             {last28.map(d => (
               <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full" title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}>
@@ -345,7 +345,7 @@ Start with "This week," and sign it "â Your Coach". Write like you actually
                       <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">Done</p>
                     </div>
                     <div className="flex-1 rounded-xl bg-muted/50 p-2 text-center">
-                      <p className="font-bold text-sm">{target - done > 0 ? target - done : "â"}</p>
+                      <p className="font-bold text-sm">{target - done > 0 ? target - done : "✓"}</p>
                       <p className="text-[9px] text-muted-foreground font-mono uppercase mt-0.5">{target - done > 0 ? "Left" : "Complete"}</p>
                     </div>
                   </div>
@@ -375,7 +375,7 @@ Start with "This week," and sign it "â Your Coach". Write like you actually
                   <p className="text-[11px] text-muted-foreground font-mono">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
                 </div>
                 <button onClick={() => setShowLetter(false)}
-                  className="text-muted-foreground hover:text-foreground text-xl leading-none shrink-0">â</button>
+                  className="text-muted-foreground hover:text-foreground text-xl leading-none shrink-0">✕</button>
               </div>
               <div className="rounded-2xl bg-card border border-border p-5">
                 <p className="text-sm leading-[1.75] whitespace-pre-line text-foreground">{letter}</p>

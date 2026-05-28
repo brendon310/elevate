@@ -51,7 +51,7 @@ function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?:
         <div key={f.id} className="absolute select-none"
           style={{ left: `${f.left}%`, top: 0, fontSize: `${f.size}px`, opacity: f.opacity,
             color: "#b8e0ff", animation: `sf${f.id} ${f.dur}s linear infinite`,
-            textShadow: "0 0 6px rgba(180,220,255,0.95)" }}>â</div>
+            textShadow: "0 0 6px rgba(180,220,255,0.95)" }}>❄</div>
       ))}
     </div>
   );
@@ -107,7 +107,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
 
   return (
     <div className="relative min-h-screen">
-      {/* Main content â blurred when on vacation */}
+      {/* Main content — blurred when on vacation */}
       <div className={onVac ? "blur-sm pointer-events-none select-none" : ""}>
         {inner}
       </div>
@@ -122,7 +122,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
               Freezed
             </p>
             <p className="text-white/60 text-sm font-mono tracking-widest uppercase">
-              Streak protected Â· until {track.vacation_until}
+              Streak protected · until {track.vacation_until}
             </p>
             <button
               onClick={() => onVacation?.(track.id, "")}
@@ -132,7 +132,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
             </button>
             <button onClick={onBack}
               className="block text-xs text-white/40 hover:text-white/70 transition font-mono mx-auto pt-2">
-              â Torna indietro
+              ← Torna indietro
             </button>
           </div>
         </div>

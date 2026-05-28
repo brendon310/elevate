@@ -4,7 +4,7 @@ import { ArrowRight, Check, Plus, Search } from 'lucide-react';
 import type { UserTrack } from '../types';
 
 const ALL_TRACKS = [
-  // ââ Fitness & Body ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Fitness & Body ──────────────────────────────────────────────────────────
   { id: "1",  slug: "meditation",          name: "Meditation",           category: "Mental Health",       short_description: "Train your mind to find stillness." },
   { id: "2",  slug: "morning-run",         name: "Morning Run",          category: "Fitness & Body",      short_description: "Build your aerobic base." },
   { id: "3",  slug: "strength-training",   name: "Strength Training",    category: "Fitness & Body",      short_description: "Progressive overload for strength." },
@@ -16,7 +16,7 @@ const ALL_TRACKS = [
   { id: "9",  slug: "journaling",          name: "Journaling",           category: "Mind & Learning",     short_description: "Reflective writing practice." },
   { id: "10", slug: "cold-exposure",       name: "Cold Exposure",        category: "Fitness & Body",      short_description: "Hormetic stress protocol." },
   { id: "11", slug: "no-social-media",     name: "No Social Media",      category: "Quit Bad Habits",     short_description: "Digital detox protocol." },
-  // ââ Addiction & Recovery ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Addiction & Recovery ────────────────────────────────────────────────────
   { id: "12", slug: "quit-alcohol",        name: "Quit Alcohol",         category: "Addiction & Recovery",short_description: "Break free from alcohol dependency." },
   { id: "13", slug: "quit-pornography",    name: "Quit Pornography",     category: "Addiction & Recovery",short_description: "Rewire your brain, reclaim your life." },
   { id: "14", slug: "quit-drugs",          name: "Quit Drugs",           category: "Addiction & Recovery",short_description: "Structured sobriety roadmap." },
@@ -24,12 +24,12 @@ const ALL_TRACKS = [
   { id: "16", slug: "binge-eating",        name: "Stop Binge Eating",    category: "Addiction & Recovery",short_description: "Heal your relationship with food." },
   { id: "17", slug: "video-game-addiction",name: "Video Game Addiction", category: "Addiction & Recovery",short_description: "Regain control over gaming." },
   { id: "18", slug: "compulsive-shopping", name: "Compulsive Shopping",  category: "Addiction & Recovery",short_description: "Break the buy-to-feel-good loop." },
-  // ââ Quit Bad Habits âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Quit Bad Habits ─────────────────────────────────────────────────────────
   { id: "20", slug: "no-sugar",            name: "No Sugar",             category: "Quit Bad Habits",     short_description: "End sugar dependency for good." },
-  // ââ Productivity & Life âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Productivity & Life ─────────────────────────────────────────────────────
   { id: "22", slug: "beat-procrastination",name: "Beat Procrastination", category: "Productivity & Life", short_description: "Act before the voice says 'later'." },
   { id: "23", slug: "build-discipline",    name: "Build Discipline",     category: "Productivity & Life", short_description: "The daily reps that form an identity." },
-  // ââ Mental Health ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Mental Health ────────────────────────────────────────────────────────────
   { id: "26", slug: "stop-overthinking",   name: "Stop Overthinking",    category: "Mental Health",       short_description: "Silence the mental noise loop." },
   { id: "27", slug: "social-anxiety",      name: "Social Anxiety",       category: "Mental Health",       short_description: "Show up without the inner terror." },
   { id: "28", slug: "anger-management",    name: "Anger Management",     category: "Mental Health",       short_description: "Transform rage into responsive power." },
@@ -37,7 +37,7 @@ const ALL_TRACKS = [
   { id: "30", slug: "social-isolation",    name: "Social Isolation",     category: "Mental Health",       short_description: "Bridge back to human connection." },
   { id: "31", slug: "negative-mindset",    name: "Negative Mindset",     category: "Mental Health",       short_description: "Rewire pessimistic thought patterns." },
   { id: "32", slug: "breathwork",          name: "Breathwork",           category: "Mental Health",       short_description: "Use breath to shift state instantly." },
-  // ââ Psychology & Self ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Psychology & Self ────────────────────────────────────────────────────────
   { id: "33", slug: "low-self-esteem",     name: "Low Self-Esteem",      category: "Psychology & Self",   short_description: "Build unshakeable self-worth." },
   { id: "34", slug: "need-for-approval",   name: "Need for Approval",    category: "Psychology & Self",   short_description: "Stop outsourcing your self-worth." },
   { id: "35", slug: "fear-of-failure",     name: "Fear of Failure",      category: "Psychology & Self",   short_description: "Act despite the outcome." },
@@ -48,9 +48,9 @@ const ALL_TRACKS = [
   { id: "42", slug: "stop-self-sabotage",  name: "Stop Self-Sabotage",   category: "Psychology & Self",   short_description: "Interrupt the patterns that hold you back." },
   { id: "44", slug: "toxic-perfectionism", name: "Toxic Perfectionism",  category: "Psychology & Self",   short_description: "Done beats perfect, every single time." },
   { id: "45", slug: "jealousy",            name: "Jealousy",             category: "Psychology & Self",   short_description: "Transform jealousy into self-awareness." },
-  // ââ Financial Health âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Financial Health ─────────────────────────────────────────────────────────
   { id: "47", slug: "money-management",    name: "Money Management",     category: "Financial Health",    short_description: "Build financial clarity and control." },
-  // ââ Mind & Learning ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Mind & Learning ──────────────────────────────────────────────────────────
   { id: "49", slug: "sedentary-lifestyle", name: "Sedentary Lifestyle",  category: "Fitness & Body",      short_description: "Move a little every day, forever." },
   { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
@@ -99,7 +99,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
         {custom && (
           <input type="number" autoFocus value={customVal}
             onChange={e => setCustomVal(e.target.value)}
-            min={7} max={999} placeholder="Days (7â999)"
+            min={7} max={999} placeholder="Days (7–999)"
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
         )}
         <div className="flex gap-3 pt-1">
@@ -150,13 +150,13 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <input
           value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Search tracks, categoriesâ¦"
+          placeholder="Search tracks, categories…"
           className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition"
         />
         {search && (
           <button onClick={() => setSearch("")}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-base leading-none">
-            â
+            ✕
           </button>
         )}
       </div>
@@ -209,7 +209,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                         <button onClick={() => { if (confirm(`Remove "${t.name}" from your paths?`)) onRemove(ut.id); }}
                           className="btn-chunk inline-flex items-center rounded-full px-2.5 py-1.5 text-xs border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] hover:bg-[color:var(--secondary)]/10 transition"
                           title="Rimuovi track">
-                          â
+                          ✕
                         </button>
                       </div>
                     ) : (

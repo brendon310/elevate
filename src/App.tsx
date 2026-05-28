@@ -1,4 +1,4 @@
-// Complete self-contained Forge app â localStorage persistence, no backend.
+// Complete self-contained Forge app — localStorage persistence, no backend.
 
 import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,9 +26,9 @@ import { CheckInRichModal } from './components/CheckInModal';
 import i18n from './i18n';
 import { CoachNudge, useCoachNudge } from './components/CoachNudge';
 import { MilestoneShareCard } from './components/MilestoneShareCard';
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Constants
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 const LS_USER = "forge-user";
 const LS_TRACKS = "forge-tracks";
@@ -41,7 +41,7 @@ const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
 const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
 
 const ALL_TRACKS = [
-  // ââ Fitness & Body ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Fitness & Body ──────────────────────────────────────────────────────────
   { id: "1",  slug: "meditation",          name: "Meditation",           category: "Mental Health",       short_description: "Train your mind to find stillness." },
   { id: "2",  slug: "morning-run",         name: "Morning Run",          category: "Fitness & Body",      short_description: "Build your aerobic base." },
   { id: "3",  slug: "strength-training",   name: "Strength Training",    category: "Fitness & Body",      short_description: "Progressive overload for strength." },
@@ -53,7 +53,7 @@ const ALL_TRACKS = [
   { id: "9",  slug: "journaling",          name: "Journaling",           category: "Mind & Learning",     short_description: "Reflective writing practice." },
   { id: "10", slug: "cold-exposure",       name: "Cold Exposure",        category: "Fitness & Body",      short_description: "Hormetic stress protocol." },
   { id: "11", slug: "no-social-media",     name: "No Social Media",      category: "Quit Bad Habits",     short_description: "Digital detox protocol." },
-  // ââ Addiction & Recovery ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Addiction & Recovery ────────────────────────────────────────────────────
   { id: "12", slug: "quit-alcohol",        name: "Quit Alcohol",         category: "Addiction & Recovery",short_description: "Break free from alcohol dependency." },
   { id: "13", slug: "quit-pornography",    name: "Quit Pornography",     category: "Addiction & Recovery",short_description: "Rewire your brain, reclaim your life." },
   { id: "14", slug: "quit-drugs",          name: "Quit Drugs",           category: "Addiction & Recovery",short_description: "Structured sobriety roadmap." },
@@ -61,12 +61,12 @@ const ALL_TRACKS = [
   { id: "16", slug: "binge-eating",        name: "Stop Binge Eating",    category: "Addiction & Recovery",short_description: "Heal your relationship with food." },
   { id: "17", slug: "video-game-addiction",name: "Video Game Addiction", category: "Addiction & Recovery",short_description: "Regain control over gaming." },
   { id: "18", slug: "compulsive-shopping", name: "Compulsive Shopping",  category: "Addiction & Recovery",short_description: "Break the buy-to-feel-good loop." },
-  // ââ Quit Bad Habits âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Quit Bad Habits ─────────────────────────────────────────────────────────
   { id: "20", slug: "no-sugar",            name: "No Sugar",             category: "Quit Bad Habits",     short_description: "End sugar dependency for good." },
-  // ââ Productivity & Life âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Productivity & Life ─────────────────────────────────────────────────────
   { id: "22", slug: "beat-procrastination",name: "Beat Procrastination", category: "Productivity & Life", short_description: "Act before the voice says 'later'." },
   { id: "23", slug: "build-discipline",    name: "Build Discipline",     category: "Productivity & Life", short_description: "The daily reps that form an identity." },
-  // ââ Mental Health ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Mental Health ────────────────────────────────────────────────────────────
   { id: "26", slug: "stop-overthinking",   name: "Stop Overthinking",    category: "Mental Health",       short_description: "Silence the mental noise loop." },
   { id: "27", slug: "social-anxiety",      name: "Social Anxiety",       category: "Mental Health",       short_description: "Show up without the inner terror." },
   { id: "28", slug: "anger-management",    name: "Anger Management",     category: "Mental Health",       short_description: "Transform rage into responsive power." },
@@ -74,7 +74,7 @@ const ALL_TRACKS = [
   { id: "30", slug: "social-isolation",    name: "Social Isolation",     category: "Mental Health",       short_description: "Bridge back to human connection." },
   { id: "31", slug: "negative-mindset",    name: "Negative Mindset",     category: "Mental Health",       short_description: "Rewire pessimistic thought patterns." },
   { id: "32", slug: "breathwork",          name: "Breathwork",           category: "Mental Health",       short_description: "Use breath to shift state instantly." },
-  // ââ Psychology & Self ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Psychology & Self ────────────────────────────────────────────────────────
   { id: "33", slug: "low-self-esteem",     name: "Low Self-Esteem",      category: "Psychology & Self",   short_description: "Build unshakeable self-worth." },
   { id: "34", slug: "need-for-approval",   name: "Need for Approval",    category: "Psychology & Self",   short_description: "Stop outsourcing your self-worth." },
   { id: "35", slug: "fear-of-failure",     name: "Fear of Failure",      category: "Psychology & Self",   short_description: "Act despite the outcome." },
@@ -85,15 +85,15 @@ const ALL_TRACKS = [
   { id: "42", slug: "stop-self-sabotage",  name: "Stop Self-Sabotage",   category: "Psychology & Self",   short_description: "Interrupt the patterns that hold you back." },
   { id: "44", slug: "toxic-perfectionism", name: "Toxic Perfectionism",  category: "Psychology & Self",   short_description: "Done beats perfect, every single time." },
   { id: "45", slug: "jealousy",            name: "Jealousy",             category: "Psychology & Self",   short_description: "Transform jealousy into self-awareness." },
-  // ââ Financial Health âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Financial Health ─────────────────────────────────────────────────────────
   { id: "47", slug: "money-management",    name: "Money Management",     category: "Financial Health",    short_description: "Build financial clarity and control." },
-  // ââ Mind & Learning ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Mind & Learning ──────────────────────────────────────────────────────────
   { id: "49", slug: "sedentary-lifestyle", name: "Sedentary Lifestyle",  category: "Fitness & Body",      short_description: "Move a little every day, forever." },
   { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
 
 const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
-  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up â what now?", "Call me out on something."],
+  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
   clinician: ["I'm struggling today.", "Why do I keep falling back?", "What does the science say about cravings?", "Help me understand my pattern."],
   mentor:    ["What's the strategic move here?", "What am I not seeing?", "Help me build a system.", "Where do I go from here?"],
   teacher:   ["Why does this habit work neurologically?", "Break it down simply.", "What should I focus on this week?", "Explain the psychology of my pattern."],
@@ -101,11 +101,11 @@ const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
 };
 
 const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
-  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start â what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report â are you going through the motions or actually changing?`,
-  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now â not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
+  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
+  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
   mentor:    (d, t) => d <= 1 ? `Day 1, ${t}. Every system starts with an honest audit. What got you here, and what specifically has to change for this to be different?` : `Day ${d}. You're ${d - 1} days in. What's working, what isn't, and what would you tell yourself on Day 1 knowing what you know now?`,
-  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process â something you didn't know before?`,
-  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently â how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted â even if it's small â in how you see yourself?`,
+  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process — something you didn't know before?`,
+  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted — even if it's small — in how you see yourself?`,
 };
 
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
@@ -153,9 +153,9 @@ function archetypeForSlug(slug: string): Archetype {
   return ARCHETYPES[id];
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Ghost + Morning Coach constants
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 /** The day number the user would be on if they had checked in every single day. */
 function ghostDayFor(ut: UserTrack): number {
@@ -174,7 +174,7 @@ const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
   ],
   clinician: [
     "Coming back again takes more courage than you may realize. I'm glad you're here. Let's make today gentle and intentional.",
-    "Progress isn't always visible in a day â but it lives in the choice to return. You returned. That matters deeply.",
+    "Progress isn't always visible in a day — but it lives in the choice to return. You returned. That matters deeply.",
   ],
   mentor: [
     "The gap between who you are and who you're becoming closes one check-in at a time. Today is one of those times.",
@@ -227,7 +227,7 @@ const CHECKIN_WARNINGS = [
   "The only bad answer is no answer. Go.",
 ];
 
-// Community content moderation â stems catch conjugations and variants
+// Community content moderation — stems catch conjugations and variants
 const COMMUNITY_BLOCKLIST = [
   "jerk","masturbat","porn","sex ","fap","orgasm","naked","nude","dick","cock","pussy","ass ","fuck","shit ","bitch","whore","slut","cum ","jizz","rape","abuse","kill myself","kms","kys","nigger","faggot",
 ];
@@ -245,9 +245,9 @@ const COMMUNITY_MODERATION_MESSAGES = [
 ];
 
 const COACH_RESPONSES = [
-  "What you've written holds more courage than you may realize. The desire to change isn't weaknessâit's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
-  "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compassâwe don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
-  "The fact that you named itâclearly, honestlyâalready sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
+  "What you've written holds more courage than you may realize. The desire to change isn't weakness—it's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
+  "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compass—we don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
+  "The fact that you named it—clearly, honestly—already sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
   "There's a version of you that has already made this change, and they made one decision that you're making right now: to begin. Not when ready. Not when perfect. Just now. That desire you feel is valid, real, and more than enough. I'll be with you every step of the way.",
 ];
 
@@ -262,7 +262,7 @@ const TRACK_GLOBAL_STATS: Record<string, string> = {
   "sleep-routine":        "45% of adults worldwide report poor sleep quality",
   "anxiety-relief":       "28% of people experience anxiety disorders in their lifetime",
   "journaling":           "67% of people want to reflect more but never start",
-  "cold-exposure":        "Growing wellness practice â millions are discovering this",
+  "cold-exposure":        "Growing wellness practice — millions are discovering this",
   "no-social-media":      "40% of people report problematic social media use",
   "quit-alcohol":         "14% of people worldwide struggle with alcohol use",
   "quit-pornography":     "12% of people report problematic pornography use",
@@ -274,7 +274,7 @@ const TRACK_GLOBAL_STATS: Record<string, string> = {
   "no-sugar":             "50% of people struggle to reduce sugar consumption",
   "beat-procrastination": "20% of adults are chronic procrastinators",
   "build-discipline":     "41% say lack of discipline is their #1 challenge",
-  "stop-overthinking":    "73% of adults between 25â35 report chronic overthinking",
+  "stop-overthinking":    "73% of adults between 25–35 report chronic overthinking",
   "social-anxiety":       "12% of people experience social anxiety disorder",
   "anger-management":     "7% of adults report uncontrolled anger issues",
   "chronic-stress":       "77% of adults regularly experience physical stress symptoms",
@@ -302,7 +302,7 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "quit-alcohol",        keywords: ["alcohol","alcol","alcool","drinking","bere","wine","vino","beer","birra","drink","ubriaco","drunk","liquor","whisky","vodka"] },
   { slug: "quit-pornography",    keywords: ["porn","pornograph","pornografi","porno","xxx","adult content","masturbat","masturbazione","video adult"] },
   { slug: "quit-drugs",          keywords: ["drug","droga","cocaine","cocaina","marijuana","cannabis","heroin","eroina","substance","sostanza","addict","dipendente da"] },
-  { slug: "quit-gambling",       keywords: ["gambl","gambling","gioco d'azzardo","scommesse","bet","betting","casino","casinÃ²","poker","slot","lottery","lotteria"] },
+  { slug: "quit-gambling",       keywords: ["gambl","gambling","gioco d'azzardo","scommesse","bet","betting","casino","casinò","poker","slot","lottery","lotteria"] },
   { slug: "no-social-media",     keywords: ["social media","instagram","facebook","tiktok","twitter","social","scrolling","scorrere","like","reels","post"] },
   { slug: "no-sugar",            keywords: ["sugar","zucchero","dolci","sweets","candy","caramel","cioccolato","chocolate","junk food","dessert","zuccheri"] },
   { slug: "binge-eating",        keywords: ["binge","overeating","abbuffate","compulsive eat","mangio troppo","cibo","food compuls","eating disorder"] },
@@ -327,7 +327,7 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "toxic-perfectionism", keywords: ["perfect","perfetto","perfectionism","perfezionismo","perfectionist","perfezionista","never good enough","mai abbastanza"] },
   { slug: "social-isolation",    keywords: ["lonely","solo","solitudine","loneliness","isolated","isolato","connection","connessione","no friends","senza amici","withdraw"] },
   { slug: "video-game-addiction",keywords: ["video game","videogiochi","gaming","giochi","gamer","game addict","gioco troppo","console","twitch","esport","online game"] },
-  { slug: "negative-mindset",    keywords: ["negative","negativo","pessimist","pessimista","mindset","mentalitÃ ","always negative","sempre negativo","dark thoughts"] },
+  { slug: "negative-mindset",    keywords: ["negative","negativo","pessimist","pessimista","mindset","mentalità","always negative","sempre negativo","dark thoughts"] },
   { slug: "sedentary-lifestyle", keywords: ["sedentary","sedentario","inactive","inattivo","sit all day","never move","non mi muovo","couch","divano","exercise"] },
   { slug: "jealousy",            keywords: ["jealous","geloso","jealousy","gelosia","partner jealous","relazione","possessive","possessivo","gelosia partner"] },
   { slug: "morning-run",         keywords: ["run","corsa","running","jogging","cardio","cardio exercise","correre"] },
@@ -341,7 +341,7 @@ const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
   { slug: "gratitude",           keywords: ["gratitude","gratitudine","grateful","grato","thankful","positive","positivo","appreciate","apprezzare"] },
 ];
 
-// Always returns a slug â either the best keyword match, or a smart fallback based on text hash.
+// Always returns a slug — either the best keyword match, or a smart fallback based on text hash.
 // This ensures the onboarding "Suggested path" hero card always appears.
 const FALLBACK_SLUGS = [
   "build-discipline", "stop-self-sabotage", "beat-procrastination",
@@ -363,9 +363,9 @@ function suggestTrackFromText(text: string): string {
   return bestSlug ?? FALLBACK_SLUGS[hashStr(text) % FALLBACK_SLUGS.length];
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // LocalStorage helpers
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function lsLoad<T>(key: string, fallback: T): T {
   try {
@@ -385,9 +385,9 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Utilities
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function nanoid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
 function todayStr() { return new Date().toISOString().slice(0, 10); }
@@ -430,11 +430,11 @@ function trackHueGradient(slug: string) {
   return `linear-gradient(160deg, ${a}, ${b})`;
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Momentum (mirrors momentum.ts, pure client-side)
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
-/** Returns 0 if the user hasn't checked in today or yesterday â streak visually resets in real time */
+/** Returns 0 if the user hasn't checked in today or yesterday — streak visually resets in real time */
 function liveStreak(ut: UserTrack): number {
   const t = todayStr();
   const y = yesterdayStr();
@@ -451,10 +451,10 @@ const QUICK_NOTE_BANNED = [
 function validateQuickNote(text: string): string | null {
   const t = text.trim();
   if (t.length < 10) return "Write at least a few words before sending.";
-  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando â scrivi davvero!";
+  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
   if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
-  if (t.length > 6 && !/[aeiouÃ Ã¨Ã©Ã¬Ã²Ã¹AEIOUÃÃÃÃÃÃ]/u.test(t))
-    return "Scrivi una risposta vera â anche due parole bastano.";
+  if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
+    return "Scrivi una risposta vera — anche due parole bastano.";
   if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
     return "Choose better words for your check-in.";
   return null;
@@ -488,7 +488,7 @@ function computeMomentum(tracks: UserTrack[]) {
   const totalLongest = tracks.reduce((s, x) => s + (x.longest_streak || 0), 0);
   const totalDone = tracks.reduce((s, x) => s + (x.total_done || 0), 0);
   const breadth = tracks.filter(x => (x.total_done || 0) > 0).length;
-  // No caps â momentum grows forever with real effort
+  // No caps — momentum grows forever with real effort
   const consistency = totalStreak * 100;          // 100/day per active path
   const longevity   = totalLongest * 50;           // personal record bonus
   const breadthScore = breadth * 300;              // +300 first check-in on any path
@@ -525,9 +525,9 @@ function maxStreak(tracks: UserTrack[]) {
   return tracks.reduce((m, x) => Math.max(m, x.current_streak || 0, x.longest_streak || 0), 0);
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // ArcRing
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: string; color?: string; size?: number }) {
   const stroke = 8;
@@ -551,9 +551,9 @@ function ArcRing({ value, hueVar, color, size = 84 }: { value: number; hueVar?: 
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // useCountUp
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function useCountUp(target: number, duration = 900) {
   const [v, setV] = useState(0);
@@ -572,9 +572,9 @@ function useCountUp(target: number, duration = 900) {
   return v;
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // Meter
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   const pct = Math.min(100, (v / max) * 100);
@@ -593,9 +593,9 @@ function Meter({ label, v, max }: { label: string; v: number; max: number }) {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// PrizeRequestModal â shown at 100k milestone
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
+// PrizeRequestModal — shown at 100k milestone
+// ─────────────────────────────────────────────────────────────────────────────
 
 function Spinner({ light = false }: { light?: boolean }) {
   return (
@@ -665,9 +665,9 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
 
           {status === "done" ? (
             <div className="text-center py-8">
-              <div className="text-5xl mb-4">ð</div>
+              <div className="text-5xl mb-4">🏆</div>
               <h2 className="font-display text-2xl mb-2">Request submitted!</h2>
-              <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7â10 business days. You're a legend.</p>
+              <p className="text-muted-foreground text-sm">You'll receive your physical badge within 7–10 business days. You're a legend.</p>
               <button onClick={onClose} className="mt-6 btn-primary px-8 py-2.5 rounded-full font-semibold text-sm">Chiudi</button>
             </div>
           ) : (
@@ -695,7 +695,7 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">CittÃ </label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Città</label>
                   <input required value={form.city} onChange={f("city")} placeholder="Milano"
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
@@ -730,9 +730,9 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // MomentumHero
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   tracks: UserTrack[];
@@ -748,7 +748,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   const atRisk = atRiskTracks(tracks);
   const animated = useCountUp(m.score);
 
-  // Peak momentum â persists forever, drives milestone badges
+  // Peak momentum — persists forever, drives milestone badges
   const [peakScore, setPeakScore] = useState<number>(() => lsLoad<number>("forge-peak-momentum", 0));
   const [showPrizeModal, setShowPrizeModal] = useState(false);
   useEffect(() => {
@@ -839,8 +839,8 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
                     style={{ cursor: is100k ? "pointer" : "default", ...badgeStyle }}
                     title={is100k ? "Click to claim your prize" : `${ms.label} reached`}>
-                    {is100k ? "â" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
-                    {is100k ? " 100k â" : ms.label}
+                    {is100k ? "★" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
+                    {is100k ? " 100k ★" : ms.label}
                   </span>
                 );
               })}
@@ -856,7 +856,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                 : "Today is day one."}
             </h2>
 
-            {/* 50k â 100k teaser */}
+            {/* 50k → 100k teaser */}
             {effectivePeak >= 50_000 && effectivePeak < 100_000 && (
               <p className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5"
                 style={{ background: "#FCEBEB", color: "#791F1F" }}>
@@ -868,7 +868,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
               <button onClick={() => setShowPrizeModal(true)}
                 className="mt-1.5 text-[11px] rounded-xl px-2.5 py-1.5 inline-flex items-center gap-1.5 font-semibold"
                 style={{ background: "#E24B4A", color: "#fff" }}>
-                <Crown className="h-3 w-3 shrink-0" /> Claim your physical prize â
+                <Crown className="h-3 w-3 shrink-0" /> Claim your physical prize →
               </button>
             )}
 
@@ -923,13 +923,13 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // LandingPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // LoginPage helpers
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () => void }) {
   const [name, setName] = useState(userName);
@@ -968,20 +968,20 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
           <p className="text-white font-semibold">You made it!</p>
           <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
         </div>
-        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just â¬7.99.</p>
+        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.</p>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
         <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
-          {submitting ? 'Sendingâ¦' : 'Send my address â â¬7.99'}
+          {submitting ? 'Sending…' : 'Send my address — €7.99'}
         </button>
       </div>
     </div>
   );
 }
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // LoginPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 type LoginMode = "options" | "phone" | "otp" | "name";
 
@@ -993,7 +993,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
   const [phoneError, setPhoneError] = useState("");
   const [enteredName, setEnteredName] = useState<string>(() => lsLoad<string | null>("forge-pending-name", null) ?? "");
 
-  // ââ Real Supabase auth ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Real Supabase auth ──────────────────────────────────────────────────────
 
   // On mount: if we already have a Supabase session (e.g. returning from
   // Google OAuth redirect), jump straight to the name step.
@@ -1013,7 +1013,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
       options: { redirectTo: window.location.origin },
     });
     if (error) { setAuthError(error.message); setLoading(null); }
-    // on success the browser will redirect â no further action needed here
+    // on success the browser will redirect — no further action needed here
   };
 
   const handlePhoneContinue = async () => {
@@ -1128,7 +1128,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     {phoneError && <p className="text-xs text-red-400 mt-1.5">{phoneError}</p>}
                   </div>
                   <button onClick={handlePhoneContinue} disabled={!!loading} className={btnPrimary}>
-                    {loading === "phone-send" ? <Spinner light /> : "Send code â"}
+                    {loading === "phone-send" ? <Spinner light /> : "Send code →"}
                   </button>
                 </div>
               </motion.div>
@@ -1155,7 +1155,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     ))}
                   </div>
                   <button onClick={handleOtpVerify} disabled={otp.join("").length < 6 || !!loading} className={btnPrimary}>
-                    {loading === "phone" ? <Spinner light /> : "Verify â"}
+                    {loading === "phone" ? <Spinner light /> : "Verify →"}
                   </button>
                   <p className="text-xs text-center text-muted-foreground">
                     Didn't receive it?{" "}
@@ -1171,7 +1171,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
               <motion.div key="name" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
                 <div className="text-center mb-8">
                   <div className="mx-auto mb-5 h-14 w-14 rounded-2xl grad-electric flex items-center justify-center shadow-[var(--shadow-violet)]">
-                    <span className="font-display text-white text-2xl font-bold">ð</span>
+                    <span className="font-display text-white text-2xl font-bold">👋</span>
                   </div>
                   <h1 className="font-display text-2xl font-bold tracking-tight">What's your name?</h1>
                   <p className="text-sm text-muted-foreground mt-1">Your coach will use this every day.</p>
@@ -1188,7 +1188,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     onClick={() => enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
                     disabled={enteredName.trim().length === 0}
                     className={btnPrimary}>
-                    Start Day 1 â
+                    Start Day 1 →
                   </button>
                 </div>
               </motion.div>
@@ -1208,9 +1208,9 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // LandingPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function LandingPage({ onBegin }: { onBegin: () => void }) {
   const [phase, setPhase] = useState<"typing" | "question" | "input">("typing");
@@ -1281,7 +1281,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
                 disabled={!answer.trim()}
                 className={"w-11 h-11 rounded-xl flex items-center justify-center transition-all text-lg " + (answer.trim() ? "bg-emerald-500 text-white" : "bg-white/[0.05] text-white/20")}
               >
-                â
+                ↑
               </button>
             </div>
             <button onClick={() => { localStorage.removeItem("forge_init_slug"); onBegin(); }}
@@ -1382,7 +1382,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
         {step === "thinking" && (
           <motion.div key="t" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
             <div className="mx-auto h-28 w-28 rounded-full grad-electric breathe" style={{ boxShadow: "var(--shadow-violet)" }} />
-            <p className="mt-10 font-display text-xl text-muted-foreground">Your coach is reading thisâ¦</p>
+            <p className="mt-10 font-display text-xl text-muted-foreground">Your coach is reading this…</p>
           </motion.div>
         )}
 
@@ -1417,13 +1417,13 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
               <p className="mt-4 text-muted-foreground">You can add more later. For now, one commitment is enough.</p>
             </div>
 
-            {/* ââ Hero-card-only view when a suggestion exists ââ */}
+            {/* ── Hero-card-only view when a suggestion exists ── */}
             {suggestedSlug && !showAllPaths && (() => {
               const sug = ONBOARDING_TRACKS.find(t => t.slug === suggestedSlug);
               if (!sug) return null;
               return (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-xl mx-auto">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">â¦ Your path, based on what you wrote</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-4 text-center font-bold">✦ Your path, based on what you wrote</p>
 
                   {/* Hero card */}
                   <div className="warm-card rounded-[2rem] p-8 mb-6 text-center relative overflow-hidden"
@@ -1447,13 +1447,13 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   {/* Toggle to see all paths */}
                   <button onClick={() => setShowAllPaths(true)}
                     className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2 underline underline-offset-4">
-                    That's not quite right â show me all 50 paths â
+                    That's not quite right — show me all 50 paths ↓
                   </button>
                 </motion.div>
               );
             })()}
 
-            {/* ââ Full grid view ââ */}
+            {/* ── Full grid view ── */}
             {(showAllPaths || !suggestedSlug) && (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 
@@ -1464,7 +1464,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   const isChosen = chosen?.slug === sug.slug;
                   return (
                     <div className="mb-8">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">â¦ Suggested for you</p>
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3 font-bold">✦ Suggested for you</p>
                       <button onClick={() => setChosen(sug)}
                         className={`w-full text-left warm-card rounded-2xl p-5 transition btn-chunk relative ${isChosen ? "ring-2 ring-yellow-400" : "ring-2 ring-yellow-400/60"}`}
                         style={{ boxShadow: "0 0 28px 4px oklch(0.875 0.185 95 / 0.38)" }}>
@@ -1662,9 +1662,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // DashboardLayout
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function DashboardLayout({ currentPage, onNavigate, children }: {
   currentPage: AppPage;
@@ -1711,58 +1711,58 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // HomePage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// ReEntryOverlay â shown when user returns after 3+ days away
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
+// ReEntryOverlay — shown when user returns after 3+ days away
+// ─────────────────────────────────────────────────────────────────────────────
 
 const REENTRY_MESSAGES = [
   "You're back. That's all that matters.",
   "The gap doesn't define the path. You're here now.",
-  "I migliori non si arrendono â si ripartono. Ricominciamo.",
+  "I migliori non si arrendono — si ripartono. Ricominciamo.",
   "Every great story has a chapter where the main character comes back. This is yours.",
 ];
 
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // DayPanel
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // TrackDetailPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 // TrackDetailPage → src/pages/TrackDetailPage.tsx
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // TracksPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // DurationPickerModal
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 // TracksPage (+ DurationPickerModal) → src/pages/TracksPage.tsx
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // InsightsPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 // InsightsPage → src/pages/InsightsPage.tsx
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // SettingsPage
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 // SettingsPage → src/pages/SettingsPage.tsx
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// FirstDayReveal â cinematic first-login experience
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
+// FirstDayReveal — cinematic first-login experience
+// ─────────────────────────────────────────────────────────────────────────────
 
 function FirstDayReveal({ userName, track, onComplete }: {
   userName: string;
@@ -1777,7 +1777,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
   const [customDur, setCustomDur] = useState(false);
   const [customDurVal, setCustomDurVal] = useState("");
 
-  // Phase auto-progression (welcome â track only; duration waits for user)
+  // Phase auto-progression (welcome → track only; duration waits for user)
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("track"), 1400);
     const t2 = setTimeout(() => setPhase("duration"), 2800);
@@ -1797,12 +1797,12 @@ function FirstDayReveal({ userName, track, onComplete }: {
       };
       const makeFallback = (): JourneyDay[] => Array.from({ length: 7 }, (_, i) => ({
         id: nanoid(), journeyId: j.id, dayNumber: i + 1,
-        title: `Day ${i + 1} â ${track.name}`,
+        title: `Day ${i + 1} — ${track.name}`,
         description: `Your ${track.name} journey begins. Every day forward counts.`,
         task: `Spend at least 15 minutes on ${track.name} today. Notice how it feels.`,
         reflection: "What surprised you about today's experience?",
         science: "Repetition within 24 hours strengthens neural pathways by up to 40%.",
-        checkinPrompt: "How are you feeling right now, 1â10?",
+        checkinPrompt: "How are you feeling right now, 1–10?",
         completedAt: null, userNote: null,
       }));
       try {
@@ -1866,7 +1866,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* PHASE 1 â Welcome */}
+        {/* PHASE 1 — Welcome */}
         {phase === "welcome" && (
           <motion.div key="welcome"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -1884,7 +1884,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 2 â Track name */}
+        {/* PHASE 2 — Track name */}
         {phase === "track" && (
           <motion.div key="track"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -1910,7 +1910,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 3 â Duration picker */}
+        {/* PHASE 3 — Duration picker */}
         {phase === "duration" && (
           <motion.div key="duration"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -1938,7 +1938,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
             {customDur && (
               <input type="number" autoFocus value={customDurVal}
                 onChange={e => { setCustomDurVal(e.target.value); const n = parseInt(e.target.value); if (n >= 7 && n <= 999) setTargetDays(n); }}
-                min={7} max={999} placeholder="Days (7â999)"
+                min={7} max={999} placeholder="Days (7–999)"
                 className="w-full max-w-xs rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring text-center" />
             )}
             <button
@@ -1951,7 +1951,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
           </motion.div>
         )}
 
-        {/* PHASE 4 â Generating */}
+        {/* PHASE 4 — Generating */}
         {phase === "generating" && (
           <motion.div key="generating"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -1966,11 +1966,11 @@ function FirstDayReveal({ userName, track, onComplete }: {
                   transition={{ duration: 1.3, repeat: Infinity, delay: i * 0.22 }} />
               ))}
             </div>
-            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">Building your Day 1â¦</p>
+            <p className="text-muted-foreground text-xs font-mono uppercase tracking-wider">Building your Day 1…</p>
           </motion.div>
         )}
 
-        {/* PHASE 5 â Day 1 Reveal */}
+        {/* PHASE 5 — Day 1 Reveal */}
         {phase === "reveal" && day1 && (
           <motion.div key="reveal"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}
@@ -1983,7 +1983,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
               className="pt-14 pb-6 px-6 text-center flex-shrink-0">
               <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">Day 1</p>
               <h1 className="font-display text-3xl text-foreground tracking-tight leading-tight">
-                {day1.title.replace(/^Day\s+\d+\s*[â\-â]\s*/i, "")}
+                {day1.title.replace(/^Day\s+\d+\s*[—\-–]\s*/i, "")}
               </h1>
             </motion.div>
 
@@ -2046,7 +2046,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
                 <ArrowRight className="h-5 w-5" />
               </button>
               <p className="text-center text-[11px] text-muted-foreground mt-3 font-mono">
-                30-day journey Â· {track.name}
+                30-day journey · {track.name}
               </p>
             </motion.div>
           </motion.div>
@@ -2057,9 +2057,9 @@ function FirstDayReveal({ userName, track, onComplete }: {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // CheckInCelebration overlay
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 const CELEBRATION_PHRASES = [
   "The version of you who quit is getting further away.",
@@ -2068,18 +2068,18 @@ const CELEBRATION_PHRASES = [
   "Another rep. Another brick. Another day.",
   "The streak doesn't care how you feel. It cares that you came.",
   "Most people talked about it. You did it.",
-  "One day you'll look back â this is when it started.",
+  "One day you'll look back — this is when it started.",
   "Your future self just exhaled.",
   "Identity is built in moments like this one.",
   "The hard days count double.",
   "You're not building a habit. You're building a person.",
   "Small reps. Big identity.",
   "Every check-in is a vote for who you're becoming.",
-  "Consistency isn't glamorous. Neither is greatness â until it is.",
+  "Consistency isn't glamorous. Neither is greatness — until it is.",
   "This is what the comeback looks like.",
   "No one can take today away from you.",
   "The gap between who you are and who you want to be just got smaller.",
-  "Showing up when you don't want to â that's the real flex.",
+  "Showing up when you don't want to — that's the real flex.",
   "You didn't need motivation. You used discipline. That's stronger.",
   "Day by day. That's how empires are built.",
 ];
@@ -2188,9 +2188,9 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// ElevateApp â root component
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
+// ElevateApp — root component
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function ElevateApp() {
   const [screen, setScreen] = useState<Screen>(() => {
@@ -2198,7 +2198,7 @@ export function ElevateApp() {
     const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);
     const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
     if (user) return "dashboard";
-    // Auth done but no user yet â finish setting up
+    // Auth done but no user yet → finish setting up
     if (auth && !pendingTrack) return "onboarding";
     if (auth && pendingTrack) return "dashboard"; // should not happen, but safe fallback
     return "landing";
@@ -2429,14 +2429,14 @@ export function ElevateApp() {
     setPendingCheckIn(false);
   }, []);
 
-  // Called after user picks their track â save it and go to login
+  // Called after user picks their track — save it and go to login
   const handleOnboardingComplete = useCallback(({ track, name }: { track: OnboardingTrack; name?: string }) => {
     lsSave("forge-pending-track", track);
     if (name) lsSave("forge-pending-name", name);
     setScreen("login");
   }, []);
 
-  // Called after successful login â create user from entered name + pending track, then open Day 1
+  // Called after successful login — create user from entered name + pending track, then open Day 1
   const handleLoginSuccess = useCallback((enteredName: string) => {
     const pendingTrack = lsLoad<OnboardingTrack | null>("forge-pending-track", null);
     const savedName = lsLoad<string | null>("forge-pending-name", null);
@@ -2472,7 +2472,7 @@ export function ElevateApp() {
           db.saveTracks(uid, [ut]).catch(() => {});
         }
       } else if (uid) {
-        // No pending track â save profile only
+        // No pending track — save profile only
         db.saveProfile(uid, displayName, Intl.DateTimeFormat().resolvedOptions().timeZone, i18n.language).catch(() => {});
       }
     });
@@ -2496,7 +2496,7 @@ export function ElevateApp() {
 
   // Handle auth state changes.
   // SIGNED_IN: fires after OAuth code exchange completes (may race with useEffect).
-  // INITIAL_SESSION: fires immediately when listener is registered â catches the case
+  // INITIAL_SESSION: fires immediately when listener is registered — catches the case
   //   where Supabase already processed the OAuth code before useEffect ran.
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -2514,7 +2514,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           const localLogs = lsLoad<Log[]>(LS_LOGS, []);
 
           if (profile && dbTracks.length > 0) {
-            // ââ Supabase has data: use it as source of truth ââ
+            // ── Supabase has data: use it as source of truth ──
             const restoredUser: ElevateUser = {
               name: profile.name,
               createdAt: profile.created_at,
@@ -2537,7 +2537,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             setLogs(dbLogs as Log[]);
             setScreen("dashboard");
           } else if (localUser) {
-            // ââ No Supabase data but have localStorage: migrate up ââ
+            // ── No Supabase data but have localStorage: migrate up ──
             db.migrateFromLocalStorage(
               uid, localUser, localTracks, localLogs,
               (slug) => lsLoad<JourneyDay[]>(LS_DAYS(slug), []),
@@ -2551,7 +2551,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             setUser(merged);
             setScreen("dashboard");
           } else {
-            // ââ Brand new user ââ
+            // ── Brand new user ──
             setScreen("login");
           }
         }).catch(() => {
@@ -2606,7 +2606,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     setShowReEntry(false);
   }, []);
 
-  // Detect broken streaks â show StreakRecoveryOverlay once per break event
+  // Detect broken streaks — show StreakRecoveryOverlay once per break event
   useEffect(() => {
     if (screen !== "dashboard" || tracks.length === 0) return;
     const y = yesterdayStr();
@@ -2624,7 +2624,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     }
   }, [screen, tracks]);
 
-  // Re-engagement check â show overlay if user was active but missed 3+ days
+  // Re-engagement check — show overlay if user was active but missed 3+ days
   useEffect(() => {
     if (tracks.length === 0) return;
     const today = new Date().toISOString().slice(0, 10);
@@ -2642,7 +2642,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     setTimeout(() => setReengagement({ daysMissed, trackName: dormant.name }), 1200);
   }, [tracks]);
 
-  // Notification reminder check â every minute
+  // Notification reminder check — every minute
   useEffect(() => {
     if (!("Notification" in window)) return;
     const interval = setInterval(() => {
@@ -2681,7 +2681,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         <motion.div className="text-center max-w-sm space-y-5 w-full"
           initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 80, damping: 14, delay: 0.1 }}>
-          <div className="text-5xl">ð</div>
+          <div className="text-5xl">👋</div>
           <div>
             <p className="font-display text-3xl font-bold text-white tracking-tight leading-tight mb-2">
               Welcome back.
@@ -2697,7 +2697,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-white/30">What helps</p>
             <p className="text-white/70 text-sm leading-relaxed">
               {reengagement.daysMissed >= 7
-                ? "Start with one minute. Seriously â open your journey, read today's task, and just begin. That's the whole job."
+                ? "Start with one minute. Seriously — open your journey, read today's task, and just begin. That's the whole job."
                 : reengagement.daysMissed >= 3
                 ? "Three days off doesn't erase what you built. Your identity is still there. One check-in and you're back."
                 : "Missing a day happens to everyone. The only mistake is letting one miss become two."}
@@ -2707,7 +2707,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
             <button
               onClick={() => { setReengagement(null); setPage("home"); }}
               className="w-full btn-chunk rounded-full bg-white text-black px-8 py-3 text-sm font-bold">
-              Let's go â
+              Let's go →
             </button>
             <button
               onClick={() => setReengagement(null)}
@@ -2728,7 +2728,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         <motion.div className="text-center px-8 space-y-6"
           initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 90, damping: 14, delay: 0.1 }}>
-          <p className="text-6xl">ð</p>
+          <p className="text-6xl">🏆</p>
           <p className="font-display text-4xl font-bold text-white tracking-tight leading-tight">
             Journey<br />Complete
           </p>
@@ -2816,7 +2816,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}>
           <div className="flex-1">
             <p className="text-sm font-semibold">Add Forge to Home Screen</p>
-            <p className="text-xs text-muted-foreground">Install for the full experience â works offline too</p>
+            <p className="text-xs text-muted-foreground">Install for the full experience — works offline too</p>
           </div>
           <button onClick={() => {
             (installPrompt as BeforeInstallPromptEvent)?.prompt?.();
@@ -2824,7 +2824,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           }} className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-xs font-semibold">
             Install
           </button>
-          <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">Ã</button>
+          <button onClick={() => setShowInstallBanner(false)} className="text-muted-foreground hover:text-foreground text-lg leading-none">×</button>
         </motion.div>
       )}
       <DashboardLayout currentPage={page} onNavigate={setPage}>

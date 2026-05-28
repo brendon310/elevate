@@ -15,7 +15,7 @@ function hashStr(s: string) {
 const REENTRY_MESSAGES = [
   "You're back. That's all that matters.",
   "The gap doesn't define the path. You're here now.",
-  "I migliori non si arrendono â si ripartono. Ricominciamo.",
+  "I migliori non si arrendono — si ripartono. Ricominciamo.",
   "Every great story has a chapter where the main character comes back. This is yours.",
 ];
 
@@ -117,7 +117,7 @@ function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: ()
       <div className="relative max-w-sm w-full text-center">
         <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6">
-          Welcome back â {gapDays} days later
+          Welcome back — {gapDays} days later
         </motion.p>
         <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           className="font-display text-[2rem] leading-[1.2] tracking-[-0.02em] text-foreground mb-10">
@@ -197,7 +197,7 @@ function StreakRecoveryOverlay({
           transition={{ delay: 0.55 }}
           className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-[264px] mx-auto"
         >
-          {"Streaks measure consistency â not worth. Missing one day doesn't erase what you built."}
+          {"Streaks measure consistency — not worth. Missing one day doesn't erase what you built."}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 6 }}
@@ -210,7 +210,7 @@ function StreakRecoveryOverlay({
             <div>
               <p className="text-xs font-semibold text-foreground mb-1">Shields protect your streak</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {"Forge gives you 1 Shield every 14 days of consistent use â automatically spent when you miss a day. Keep going to earn the next one."}
+                {"Forge gives you 1 Shield every 14 days of consistent use — automatically spent when you miss a day. Keep going to earn the next one."}
               </p>
             </div>
           </div>
@@ -285,7 +285,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-8 px-6"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos â breathing
+              sos — breathing
             </p>
 
             {/* Breathing circle */}
@@ -325,7 +325,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             </div>
 
             <p className="text-center text-sm text-white/30 max-w-xs">
-              2 full cycles â then we ground you
+              2 full cycles — then we ground you
             </p>
 
             <button
@@ -346,7 +346,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-8 px-8 max-w-sm text-center"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos â grounding
+              sos — grounding
             </p>
 
             <div className="space-y-4">
@@ -364,7 +364,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             >
               <p className="text-sm font-medium text-white/60">What's happening in your brain</p>
               <p className="text-sm text-white/40 leading-relaxed">
-                Urges peak at 15â20 minutes, then naturally subside. Your prefrontal cortex â the part that makes decisions â is temporarily overwhelmed. It will come back online.
+                Urges peak at 15–20 minutes, then naturally subside. Your prefrontal cortex — the part that makes decisions — is temporarily overwhelmed. It will come back online.
               </p>
             </div>
 
@@ -390,7 +390,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             className="relative flex flex-col items-center gap-6 px-8 max-w-sm w-full"
           >
             <p className="text-sm font-mono tracking-widest text-white/30 uppercase">
-              sos â act now
+              sos — act now
             </p>
 
             <p className="text-center text-white/70 text-sm">
@@ -530,7 +530,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       ctx.fillStyle = 'rgba(255,255,255,0.35)';
       ctx.font = 'bold 26px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('â  F O R G E  â', 540, 128);
+      ctx.fillText('❖  F O R G E  ❖', 540, 128);
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '500 30px system-ui, sans-serif';
       ctx.fillText('Certificate of Progress', 540, 175);
@@ -558,7 +558,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       const blob = await fetch(imgUrl).then(r => r.blob());
       const file = new File([blob], 'forge-cert.png', { type: 'image/png' });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `${streak} Days on Forge`, text: `${streak} consecutive days â certified.` });
+        await navigator.share({ files: [file], title: `${streak} Days on Forge`, text: `${streak} consecutive days — certified.` });
       } else { const a = document.createElement('a'); a.href = imgUrl; a.download = 'forge-cert.png'; a.click(); }
     } catch {}
     setSharing(false);
@@ -584,7 +584,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
         <div className="flex gap-3">
           <button onClick={handleShare} disabled={!imgUrl || sharing}
             className="flex-1 rounded-xl bg-yellow-500 py-3 text-sm font-semibold text-black disabled:opacity-50 active:scale-95 transition-transform">
-            {sharing ? 'Sharingâ¦' : 'Share'}
+            {sharing ? 'Sharing…' : 'Share'}
           </button>
           <button onClick={onDismiss} className="flex-1 rounded-xl border border-border py-3 text-sm font-medium text-muted-foreground">
             Close
@@ -596,7 +596,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
 }
 
 function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
-  const m = MILESTONE_MESSAGES[days] ?? { emoji: "ð¥", title: `Day ${days}!`, sub: "Keep it up." };
+  const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Keep it up." };
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}

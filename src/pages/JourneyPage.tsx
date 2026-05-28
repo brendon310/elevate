@@ -71,17 +71,17 @@ const CHECKIN_WARNINGS = [
   "The only bad answer is no answer. Go.",
 ];
 
-// Community content moderation â stems catch conjugations and variants
+// Community content moderation — stems catch conjugations and variants
 const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
-  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start â what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report â are you going through the motions or actually changing?`,
-  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now â not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
+  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
+  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
   mentor:    (d, t) => d <= 1 ? `Day 1, ${t}. Every system starts with an honest audit. What got you here, and what specifically has to change for this to be different?` : `Day ${d}. You're ${d - 1} days in. What's working, what isn't, and what would you tell yourself on Day 1 knowing what you know now?`,
-  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process â something you didn't know before?`,
-  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently â how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted â even if it's small â in how you see yourself?`,
+  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process — something you didn't know before?`,
+  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted — even if it's small — in how you see yourself?`,
 };
 
 const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
-  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up â what now?", "Call me out on something."],
+  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
   clinician: ["I'm struggling today.", "Why do I keep falling back?", "What does the science say about cravings?", "Help me understand my pattern."],
   mentor:    ["What's the strategic move here?", "What am I not seeing?", "Help me build a system.", "Where do I go from here?"],
   teacher:   ["Why does this habit work neurologically?", "Break it down simply.", "What should I focus on this week?", "Explain the psychology of my pattern."],
@@ -145,8 +145,8 @@ const ARCHETYPES: Record<ArchetypeId, Archetype> = {
 };
 const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
 const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
-  { content: "Finished day 7. Never thought I'd make it this far â the habit is starting to feel natural.", dayNumber: 7, flameCount: 14, userHasFlamed: false, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { content: "Hit my first milestone today ð The science note about neuroplasticity blew my mind.", dayNumber: 21, flameCount: 8, userHasFlamed: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
+  { content: "Finished day 7. Never thought I'd make it this far — the habit is starting to feel natural.", dayNumber: 7, flameCount: 14, userHasFlamed: false, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
+  { content: "Hit my first milestone today 🎉 The science note about neuroplasticity blew my mind.", dayNumber: 21, flameCount: 8, userHasFlamed: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
   { content: "Day 3 was brutal but I checked in anyway. Small win counts.", dayNumber: 3, flameCount: 22, userHasFlamed: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
 ];
 const COMMUNITY_MODERATION_MESSAGES = [
@@ -213,20 +213,20 @@ function CheckInRichModal({ onConfirm, onSkip }: {
             <span>Umore</span><span className="text-white font-semibold">{mood}/10</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-lg">Ã°ÂÂÂ</span>
+            <span className="text-lg">😔</span>
             <input type="range" min={1} max={10} value={mood}
               onChange={e => setMood(Number(e.target.value))}
               className="flex-1 accent-emerald-400 h-2" />
-            <span className="text-lg">Ã°ÂÂÂ</span>
+            <span className="text-lg">😊</span>
           </div>
         </div>
         <div className="space-y-2">
           <p className="text-xs text-white/50">Hai sentito l'impulso oggi?</p>
           <div className="flex gap-2">
-            {["SÃÂ¬","No"].map(opt => (
-              <button key={opt} onClick={() => setHadUrge(opt === "SÃÂ¬")}
+            {["Sì","No"].map(opt => (
+              <button key={opt} onClick={() => setHadUrge(opt === "Sì")}
                 className={"flex-1 py-2 rounded-xl text-sm font-medium border transition-all " + (
-                  (opt === "SÃÂ¬" ? hadUrge === true : hadUrge === false)
+                  (opt === "Sì" ? hadUrge === true : hadUrge === false)
                     ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
                     : "border-white/10 text-white/50")}>
                 {opt}
@@ -237,7 +237,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
         {hadUrge === true && (<>
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-white/50">
-              <span>IntensitÃÂ  impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
+              <span>Intensità impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
             </div>
             <input type="range" min={1} max={10} value={urgeIntensity}
               onChange={e => setUrgeIntensity(Number(e.target.value))}
@@ -346,7 +346,7 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
         <div className="flex gap-2">
           <input value={draft} onChange={e => { setDraft(e.target.value); if (modWarnKey > 0) setModWarnKey(0); }}
             onKeyDown={e => e.key === "Enter" && !e.shiftKey && post()}
-            placeholder="Share a win or struggleâ¦"
+            placeholder="Share a win or struggle…"
             className={`flex-1 rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors ${modWarnKey > 0 ? "border-red-500" : "border-border"}`} />
           <button onClick={post} disabled={!draft.trim() || posting}
             className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
@@ -419,12 +419,12 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
     };
     const makeFallback = (): JourneyDay[] => Array.from({ length: 7 }, (_, i) => ({
       id: nanoid(), journeyId: journey.id, dayNumber: i + 1,
-      title: `Day ${i + 1} â ${track.name}`,
+      title: `Day ${i + 1} — ${track.name}`,
       description: `Your ${track.name} journey, day ${i + 1}. Consistency is the foundation of every transformation.`,
       task: `Spend at least 15 minutes on ${track.name} today. Record how it felt.`,
       reflection: "What did you notice about yourself today?",
       science: "Research shows repetition within 24 hours strengthens neural pathways by up to 40%.",
-      checkinPrompt: "How are you feeling right now, on a scale from 1â10?",
+      checkinPrompt: "How are you feeling right now, on a scale from 1–10?",
       completedAt: null, userNote: null,
     }));
     try {
@@ -470,7 +470,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{track.category}</p>
           <h1 className="mt-2 font-display text-3xl tracking-tight">{track.name}</h1>
-          <p className="mt-2 text-muted-foreground text-sm">Meet <strong>{archetypeForSlug(track.slug).name}</strong> â here for every day of this journey.</p>
+          <p className="mt-2 text-muted-foreground text-sm">Meet <strong>{archetypeForSlug(track.slug).name}</strong> — here for every day of this journey.</p>
         </div>
         <div className="space-y-5">
           <div>
@@ -495,7 +495,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
                   const n = parseInt(e.target.value);
                   if (n >= 7 && n <= 999) setTotalDays(n);
                 }}
-                min={7} max={999} placeholder="Enter days (7â999)"
+                min={7} max={999} placeholder="Enter days (7–999)"
                 className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
               />
             )}
@@ -525,7 +525,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
           <button onClick={handleStart} disabled={loading}
             className="btn-chunk w-full rounded-2xl bg-foreground text-neutral-900 py-3.5 font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2">
             {loading ? (
-              <><span className="h-4 w-4 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your journeyâ¦</>
+              <><span className="h-4 w-4 rounded-full border-2 border-background/30 border-t-background animate-spin" />Generating your journey…</>
             ) : (
               <><Sparkles className="h-4 w-4" />Begin my journey</>
             )}
@@ -577,7 +577,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
         {custom && (
           <input type="number" autoFocus value={customVal}
             onChange={e => setCustomVal(e.target.value)}
-            min={7} max={999} placeholder="Days (7â999)"
+            min={7} max={999} placeholder="Days (7–999)"
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
         )}
         <div className="flex gap-3 pt-1">
@@ -847,7 +847,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     if (!todayDay) return;
     let richMeta = "\n\n---\nUmore: " + richData.mood + "/10";
     if (richData.hadUrge) {
-      richMeta += " | Impulso: SÃ¬ (" + richData.urgeIntensity + "/10)";
+      richMeta += " | Impulso: Sì (" + richData.urgeIntensity + "/10)";
       if (richData.trigger) richMeta += " | Trigger: " + richData.trigger;
     } else { richMeta += " | Impulso: No"; }
     checkIn(todayDay.id, "Task: " + checkInTask.trim() + "\n\nReflection: " + checkInReflect.trim() + richMeta);
@@ -882,7 +882,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       setChatMessages(withReply);
       lsSave(LS_CHAT(track.slug), withReply);
     } catch {
-      const fallback: ChatMessage = { id: nanoid(), role: "assistant", content: `I'm here with you on day ${completedCount + 1}. Keep going â each session builds the foundation of who you're becoming.`, createdAt: new Date().toISOString() };
+      const fallback: ChatMessage = { id: nanoid(), role: "assistant", content: `I'm here with you on day ${completedCount + 1}. Keep going — each session builds the foundation of who you're becoming.`, createdAt: new Date().toISOString() };
       const withFallback = [...newMessages, fallback];
       setChatMessages(withFallback);
       lsSave(LS_CHAT(track.slug), withFallback);
@@ -921,7 +921,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 onClick={() => { if (confirm("Restart this journey? Your streak and progress will be reset.")) { onRestart(track.id); onBack(); } }}
                 className="text-[10px] text-muted-foreground hover:text-foreground border border-border rounded-lg px-2 py-1 transition"
                 title="Restart journey">
-                âº
+                ↺
               </button>
             )}
           </div>
@@ -950,10 +950,10 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   <svg className="h-5 w-5 mt-0.5 shrink-0 text-[color:var(--secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                   <div className="flex-1 min-w-0">
                     <p className="font-display font-semibold text-sm text-[color:var(--secondary)]">Fill this in first!</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Write down what you did and your reflection â then you're ready to check in.</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Write down what you did and your reflection — then you're ready to check in.</p>
                   </div>
                   <button onClick={() => setFillFirstBanner(false)}
-                    className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0 mt-0.5">â</button>
+                    className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0 mt-0.5">✕</button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -962,7 +962,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               <h2 className="mt-1.5 font-display text-xl font-semibold">{todayDay.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{todayDay.description}</p>
             </div>
-            {/* Today's task â mission-style card (blue) */}
+            {/* Today's task — mission-style card (blue) */}
             <div className="rounded-2xl overflow-hidden border border-border bg-card relative">
               <div className="px-5 py-3 border-b border-border/60 flex items-center gap-2"
                 style={{ borderLeft: "3px solid oklch(0.65 0.22 240)" }}>
@@ -989,7 +989,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-foreground">Did you do the task? How did it go?</p>
                   <textarea value={checkInTask} onChange={e => { setCheckInTask(e.target.value); if (e.target.value) setFillFirstBanner(false); }}
-                    placeholder="Describe what you actually did todayâ¦" rows={2}
+                    placeholder="Describe what you actually did today…" rows={2}
                     className={`w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none transition-colors ${warnTaskKey > 0 && !checkInTask.trim() ? "border-red-500" : "border-border"}`} />
                   <AnimatePresence mode="wait">
                     {warnTaskKey > 0 && !checkInTask.trim() && (
@@ -1044,7 +1044,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
         {activeTab === "map" && (
           <motion.div key="map" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">Journey Map â {journey.totalDays} days</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">Journey Map — {journey.totalDays} days</p>
             {days.map(d => {
               const isCompleted = d.completedAt !== null;
               const isCurrent = d.id === todayDay?.id;
@@ -1070,7 +1070,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">{locked ? `Day ${d.dayNumber}` : d.title}</p>
                     <p className="text-[11px] text-muted-foreground truncate">
-                      {locked ? "Complete today's check-in to unlock" : `${d.description.slice(0, 60)}â¦`}
+                      {locked ? "Complete today's check-in to unlock" : `${d.description.slice(0, 60)}…`}
                     </p>
                   </div>
                   {JOURNEY_MILESTONES.includes(d.dayNumber) && !locked && <Trophy className="shrink-0 h-3.5 w-3.5 text-yellow-400" />}
@@ -1084,7 +1084,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             })}
             {journey.generatedThrough < journey.totalDays && (
               <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
-                Days {journey.generatedThrough + 1}â{journey.totalDays} will be generated as you progress.
+                Days {journey.generatedThrough + 1}–{journey.totalDays} will be generated as you progress.
               </div>
             )}
           </motion.div>
@@ -1131,7 +1131,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               )}
             </div>
 
-            {/* Suggested prompts â shown only when few messages */}
+            {/* Suggested prompts — shown only when few messages */}
             {chatMessages.length <= 2 && (
               <div className="flex gap-2 flex-wrap">
                 {(COACH_SUGGESTED_PROMPTS[archetype.id] ?? COACH_SUGGESTED_PROMPTS.teacher).map(prompt => (
@@ -1210,7 +1210,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
                 <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Day {selectedDay.dayNumber}</p>
-                <button onClick={() => setSelectedDay(null)} className="text-muted-foreground hover:text-foreground text-lg">â</button>
+                <button onClick={() => setSelectedDay(null)} className="text-muted-foreground hover:text-foreground text-lg">✕</button>
               </div>
               <h2 className="font-display text-xl font-semibold">{selectedDay.title}</h2>
               <p className="text-sm text-muted-foreground">{selectedDay.description}</p>
@@ -1340,13 +1340,13 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 <Trophy className="h-8 w-8 text-yellow-400" />
               </div>
               <h2 className="font-display text-2xl font-bold">Day {milestoneDay}!</h2>
-              <p className="text-muted-foreground text-sm">You've hit a major milestone on your {track.name} journey. This is the moment most people quit â and you didn't.</p>
+              <p className="text-muted-foreground text-sm">You've hit a major milestone on your {track.name} journey. This is the moment most people quit — and you didn't.</p>
               <button onClick={() => setMilestoneDay(null)}
                 className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-3 font-semibold">
                 Keep going
               </button>
               <button onClick={() => {
-                const text = `Day ${milestoneDay} on ${track.name} with Forge. The streak continues. ð¥`;
+                const text = `Day ${milestoneDay} on ${track.name} with Forge. The streak continues. 🔥`;
                 if (navigator.share) navigator.share({ text });
                 else navigator.clipboard?.writeText(text);
               }} className="btn-chunk w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition">

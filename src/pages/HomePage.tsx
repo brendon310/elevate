@@ -183,12 +183,12 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
           <p className="text-white font-semibold">You made it!</p>
           <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
         </div>
-        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just â¬7.99.</p>
+        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.</p>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
         <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
         <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
-          {submitting ? 'Sendingâ¦' : 'Send my address â â¬7.99'}
+          {submitting ? 'Sending…' : 'Send my address — €7.99'}
         </button>
       </div>
     </div>
@@ -214,10 +214,10 @@ const QUICK_NOTE_BANNED = [
 function validateQuickNote(text: string): string | null {
   const t = text.trim();
   if (t.length < 10) return "Write at least a few words before sending.";
-  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando â scrivi davvero!";
+  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
   if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
-  if (t.length > 6 && !/[aeiouÃ Ã¨Ã©Ã¬Ã²Ã¹AEIOUÃÃÃÃÃÃ]/u.test(t))
-    return "Scrivi una risposta vera â anche due parole bastano.";
+  if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
+    return "Scrivi una risposta vera — anche due parole bastano.";
   if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
     return "Choose better words for your check-in.";
   return null;
@@ -384,7 +384,7 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
           <>
             <p className="text-sm font-semibold text-white/80 mt-3 text-center">You've reached the final stage.</p>
           <p className="text-xs text-white/50 mt-1 text-center mb-3">Congratulations! Want to receive your prize at home?</p>
-          <button onClick={() => setShowClaim(true)} className="px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">â¬7.99 â Get my prize</button>
+          <button onClick={() => setShowClaim(true)} className="px-5 py-2 rounded-full bg-emerald-600 text-white text-xs font-semibold tracking-wide">€7.99 — Get my prize</button>
           </>
           )}
         </div>
@@ -443,49 +443,49 @@ const TRACK_SAVINGS: Record<string, TrackSavings> = {
     costPerUnit: 7,
     unitName: "drink",
     unitNamePlural: "drink",
-    emoji: "ðº",
+    emoji: "🍺",
   },
   "quit-pornography": {
     costPerUnit: 0,
     unitName: "sessione",
     unitNamePlural: "sessioni",
-    emoji: "ð§ ",
+    emoji: "🧠",
   },
   "quit-drugs": {
     costPerUnit: 20,
     unitName: "dose",
     unitNamePlural: "dosi",
-    emoji: "ð",
+    emoji: "💊",
   },
   "quit-gambling": {
     costPerUnit: 30,
     unitName: "sessione",
     unitNamePlural: "sessioni",
-    emoji: "ð²",
+    emoji: "🎲",
   },
   "binge-eating": {
     costPerUnit: 12,
     unitName: "binge",
     unitNamePlural: "binge",
-    emoji: "ð",
+    emoji: "🍕",
   },
   "video-game-addiction": {
     costPerUnit: 0,
     unitName: "sessione",
     unitNamePlural: "sessioni",
-    emoji: "ð®",
+    emoji: "🎮",
   },
   "compulsive-shopping": {
     costPerUnit: 45,
     unitName: "acquisto",
     unitNamePlural: "acquisti",
-    emoji: "ðï¸",
+    emoji: "🛍️",
   },
   "social-media-addiction": {
     costPerUnit: 0,
     unitName: "ora",
     unitNamePlural: "ore",
-    emoji: "ðµ",
+    emoji: "📵",
   },
 };
 
@@ -521,7 +521,7 @@ function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
             className="text-2xl font-bold tabular-nums"
             style={{ color: "oklch(0.82 0.18 145)" }}
           >
-            â¬{animMoney}
+            €{animMoney}
           </span>
           <span className="text-xs text-white/40">risparmiati</span>
         </div>
@@ -566,9 +566,9 @@ function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
-// ââ CHECK-IN RICH MODAL âââââââââââââââââââââââââââââââââââââââââââ
+// ── CHECK-IN RICH MODAL ───────────────────────────────────────────
 const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia","Tristezza","Abitudine"];
 
 function CheckInRichModal({ onConfirm, onSkip }: {
@@ -594,20 +594,20 @@ function CheckInRichModal({ onConfirm, onSkip }: {
             <span>Umore</span><span className="text-white font-semibold">{mood}/10</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-lg">ð</span>
+            <span className="text-lg">😔</span>
             <input type="range" min={1} max={10} value={mood}
               onChange={e => setMood(Number(e.target.value))}
               className="flex-1 accent-emerald-400 h-2" />
-            <span className="text-lg">ð</span>
+            <span className="text-lg">😊</span>
           </div>
         </div>
         <div className="space-y-2">
           <p className="text-xs text-white/50">Hai sentito l'impulso oggi?</p>
           <div className="flex gap-2">
-            {["SÃ¬","No"].map(opt => (
-              <button key={opt} onClick={() => setHadUrge(opt === "SÃ¬")}
+            {["Sì","No"].map(opt => (
+              <button key={opt} onClick={() => setHadUrge(opt === "Sì")}
                 className={"flex-1 py-2 rounded-xl text-sm font-medium border transition-all " + (
-                  (opt === "SÃ¬" ? hadUrge === true : hadUrge === false)
+                  (opt === "Sì" ? hadUrge === true : hadUrge === false)
                     ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
                     : "border-white/10 text-white/50")}>
                 {opt}
@@ -618,7 +618,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
         {hadUrge === true && (<>
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-white/50">
-              <span>IntensitÃ  impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
+              <span>Intensità impulso</span><span className="text-white font-semibold">{urgeIntensity}/10</span>
             </div>
             <input type="range" min={1} max={10} value={urgeIntensity}
               onChange={e => setUrgeIntensity(Number(e.target.value))}
@@ -677,15 +677,15 @@ function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?:
         <div key={f.id} className="absolute select-none"
           style={{ left: `${f.left}%`, top: 0, fontSize: `${f.size}px`, opacity: f.opacity,
             color: "#b8e0ff", animation: `sf${f.id} ${f.dur}s linear infinite`,
-            textShadow: "0 0 6px rgba(180,220,255,0.95)" }}>â</div>
+            textShadow: "0 0 6px rgba(180,220,255,0.95)" }}>❄</div>
       ))}
     </div>
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // VacationModal
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function VacationModal({ track, onSave, onClose }: {
   track: UserTrack;
@@ -710,7 +710,7 @@ function VacationModal({ track, onSave, onClose }: {
         <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Vacation mode</p>
         <h3 className="font-display text-xl mb-1">Protect your streak</h3>
         <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-          Traveling or need a break? Pause your streak â it won't reset.
+          Traveling or need a break? Pause your streak — it won't reset.
         </p>
         {isActive ? (
           <>
@@ -742,7 +742,7 @@ function VacationModal({ track, onSave, onClose }: {
                 type="number" min={1} max={90}
                 value={customDays}
                 onChange={e => setCustomDays(e.target.value)}
-                placeholder="Custom daysâ¦"
+                placeholder="Custom days…"
                 className="flex-1 rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-foreground/30 transition"
               />
               {customDays !== "" && <span className="text-xs text-muted-foreground font-mono shrink-0">days</span>}
@@ -764,9 +764,9 @@ function VacationModal({ track, onSave, onClose }: {
   );
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 // MissedAccessModal
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─────────────────────────────────────────────────────────────────────────────
 
 function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: () => void }) {
   const [message, setMessage] = useState("");
@@ -822,7 +822,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
             <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-2">Feedback</p>
             <h3 className="font-display text-xl mb-1">Can't log in?</h3>
             <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-              Se hai avuto problemi ad aprire l'app, raccontaci cosa Ã¨ successo. Ci aiuta a migliorare.
+              Se hai avuto problemi ad aprire l'app, raccontaci cosa è successo. Ci aiuta a migliorare.
             </p>
 
             {tracks.length > 1 && (
@@ -838,7 +838,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
               </div>
             )}
 
-            <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">Cosa Ã¨ successo?</label>
+            <label className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground block mb-1.5">Cosa è successo?</label>
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
@@ -1006,7 +1006,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                     <div className="snap-start w-[260px] h-[340px] rounded-[20px] p-5 relative overflow-hidden btn-chunk cursor-pointer"
                       onClick={() => onView(ut)}
                       style={{ background: grad.replace(/oklch\((\S+ \S+ \S+)\)/g, 'oklch($1 / 0.75)'), backdropFilter: "blur(20px) saturate(160%)", WebkitBackdropFilter: "blur(20px) saturate(160%)", border: "1px solid oklch(1 0 0 / 0.15)", boxShadow: "0 20px 44px -12px oklch(0 0 0 / 0.55), 0 4px 12px -4px oklch(0 0 0 / 0.3)" }}>
-                      {/* Normal card content â blurred when frozen */}
+                      {/* Normal card content — blurred when frozen */}
                       <div className={onVacCard ? "blur-[2px] pointer-events-none" : ""}>
                         <div aria-hidden className="absolute -right-12 -bottom-12 h-56 w-56 rounded-full opacity-50 blur-2xl"
                           style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.5), transparent 60%)" }} />
@@ -1021,7 +1021,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                           <p className="font-display text-[5.5rem] leading-[0.85] tracking-[-0.05em] text-white"><SlotNumber value={liveStreak(ut) === 0 && (ut.total_done ?? 0) === 0 ? 1 : liveStreak(ut)} /></p>
                           {(ut.total_done ?? 0) >= (ut.target_days ?? 30) && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 px-2 py-0.5 text-[9px] font-bold text-yellow-300 uppercase tracking-widest mt-1">
-                              â Completed
+                              ✓ Completed
                             </span>
                           )}
                           {(() => { const gd = ghostDayFor(ut); const gap = gd - (ut.total_done || 0); return gap > 1 ? (
@@ -1047,7 +1047,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                               </button>
                             ) : liveStreak(ut) === 0 && !doneToday && (ut.total_done ?? 0) > 0 ? (
                               <p className="text-[10px] font-mono text-white/45 leading-snug">
-                                No problem â<br />start again whenever you're ready.
+                                No problem —<br />start again whenever you're ready.
                               </p>
                             ) : (
                               <div className="inline-flex items-center gap-1.5 rounded-full bg-black px-2.5 py-1 text-[11px] text-white">
@@ -1120,7 +1120,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                   <button onClick={() => setVacationTrack(ut)}
                     className="relative z-10 shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition"
                     style={{ borderColor: "oklch(0.55 0.1 220 / 0.5)", color: "#b8e0ff", background: "oklch(0.2 0.08 220 / 0.6)" }}>
-                    â until {ut.vacation_until}
+                    ❄ until {ut.vacation_until}
                   </button>
                 </div>
               )}
@@ -1158,7 +1158,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                     <button onClick={() => setVacationTrack(ut)}
                       className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-semibold transition"
                       style={{ background: "oklch(0.18 0.07 220 / 0.9)", borderColor: "oklch(0.55 0.1 220 / 0.4)", color: "#b8e0ff" }}>
-                      â Freezed
+                      ❄ Freezed
                     </button>
                   );
                   return (
@@ -1182,7 +1182,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                   );
                 })()}
               </div>
-              {/* Quick check-in â inline, animated */}
+              {/* Quick check-in — inline, animated */}
               <AnimatePresence>
                 {noteOpen[ut.id] && (
                   <motion.div
@@ -1231,7 +1231,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                                 setNoteText(prev => ({ ...prev, [ut.id]: e.target.value }));
                                 if (noteError[ut.id]) setNoteError(prev => ({ ...prev, [ut.id]: "" }));
                               }}
-                              placeholder="How did today goâ¦"
+                              placeholder="How did today go…"
                               className={`w-full bg-muted/40 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none outline-none leading-relaxed border transition ${noteError[ut.id] ? "border-[color:var(--secondary)]" : "border-border/50 focus:border-foreground/30"}`}
                               rows={3}
                               autoFocus
@@ -1259,7 +1259,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                                 const text = (noteText[ut.id] ?? "").trim();
                                 const err = validateQuickNote(text);
                                 if (err) { setNoteError(prev => ({ ...prev, [ut.id]: err })); return; }
-                                // Complete the active journey day â advances to next day
+                                // Complete the active journey day → advances to next day
                                 const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);
                                 const activeDayIdx = jDays.findIndex(d => d.completedAt === null);
                                 if (activeDayIdx !== -1) {
@@ -1290,7 +1290,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
         })}
       </div>
 
-      {/* Missed access nudge â only when at least one track is behind */}
+      {/* Missed access nudge — only when at least one track is behind */}
       {tracks.length > 0 && tracks.some(tr => liveStreak(tr) === 0 && tr.last_log_date !== t) && (
         <div className="mt-8 text-center">
           <button
