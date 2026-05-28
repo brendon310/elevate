@@ -4,7 +4,17 @@ import { supabase } from "../supabase";
 import * as db from "../db";
 import type { UserTrack, Journey, JourneyDay, ChatMessage, CommunityPost } from "../types";
 import confetti from 'canvas-confetti';
-import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock } from 'lucide-react';
+import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock, RefreshCw } from 'lucide-react';
+
+const ADAPT_REASONS = [
+  { id: "busy", label: "Life got busy" },
+  { id: "motivation", label: "Lost motivation" },
+  { id: "overwhelmed", label: "Felt overwhelmed" },
+  { id: "sick", label: "Got sick or injured" },
+  { id: "travel", label: "Travelling / disrupted routine" },
+  { id: "other", label: "Something else" },
+] as const;
+type AdaptReasonId = typeof ADAPT_REASONS[number]["id"];
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
@@ -605,6 +615,13 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [fillFirstBanner, setFillFirstBanner] = useState(showCheckInHint ?? false);
   const [showRichModal, setShowRichModal] = useState(false);
 
+  // Phase 5 — missed days adaptation
+  const [adaptModal, setAdaptModal] = useState<{ missedDays: number } | null>(null);
+  const [adaptReason, setAdaptReason] = useState<AdaptReasonId>("busy");
+  const [adapting, setAdapting] = useState(false);
+  const [adaptedDayNumbers, setAdaptedDayNumbers] = useState<Set<number>>(new Set());
+  const adaptShownRef = useRef(false);
+
   const archetype = archetypeForSlug(track.slug);
   const completedCount = days.filter(d => d.completedAt !== null).length;
   const todayDay = days.find(d => d.completedAt === null) ?? days[days.length - 1];
@@ -642,6 +659,107 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       })();
     }
   }, [completedCount, journey, days.length, track]);
+
+  // Phase 5 — detect missed days and prompt adaptation
+  useEffect(() => {
+    if (adaptShownRef.current || days.length === 0 || completedCount === 0) return;
+    const completed = days.filter(d => d.completedAt !== null);
+    if (completed.length === 0) return;
+    const last = completed.sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())[0];
+    const daysSince = Math.floor((Date.now() - new Date(last.completedAt!).getTime()) / 86400000);
+    if (daysSince >= 2) {
+      adaptShownRef.current = true;
+      setAdaptModal({ missedDays: daysSince - 1 });
+    }
+  }, [days, completedCount]);
+
+  // Phase 5 — adapt journey via API
+  const adaptJourney = async () => {
+    if (!journey || !userId || adapting) return;
+    setAdapting(true);
+
+    // Extract recent moods and triggers from check-in notes
+    const recentNotes = days
+      .filter(d => d.completedAt && d.userNote)
+      .slice(-7)
+      .map(d => d.userNote ?? "");
+
+    const recentMoods: number[] = [];
+    const recentTriggers: string[] = [];
+    recentNotes.forEach(note => {
+      const moodMatch = note.match(/Umore:\s*(\d+)/);
+      if (moodMatch) recentMoods.push(parseInt(moodMatch[1]));
+      const triggerMatch = note.match(/Trigger:\s*([^\n]+)/);
+      if (triggerMatch) recentTriggers.push(triggerMatch[1].trim());
+    });
+
+    const missedDays = adaptModal?.missedDays ?? 1;
+    const reasonLabel = ADAPT_REASONS.find(r => r.id === adaptReason)?.label ?? adaptReason;
+    const fromDay = completedCount + 1;
+    const count = Math.min(7, journey.totalDays - completedCount);
+    if (count <= 0) { setAdapting(false); setAdaptModal(null); return; }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/adapt-journey", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token ?? ""}` },
+        body: JSON.stringify({
+          slug: track.slug,
+          trackName: track.name,
+          category: track.category,
+          startingPoint: journey.startingPoint,
+          motivation: journey.motivation,
+          obstacle: journey.obstacle,
+          fromDay,
+          count,
+          recentMoods,
+          recentTriggers,
+          missedDays,
+          reason: reasonLabel,
+        }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const { days: adapted } = await res.json() as { days: Array<{ day: number; task: string; type: string; duration: string }> };
+
+      // Convert to JourneyDay format, replacing upcoming uncompleted days
+      const adaptedDays = adapted.map((d, i) => ({
+        id: nanoid(),
+        journeyId: journey.id,
+        dayNumber: fromDay + i,
+        title: `Day ${fromDay + i} — Adapted for you`,
+        description: `Your journey continues. This task was adapted to meet you exactly where you are.`,
+        task: d.task,
+        reflection: "Looking back at the days you missed — what was the real barrier? What would make it easier?",
+        science: "Research shows returning after a break with adapted goals is 3× more effective than restarting from scratch.",
+        checkinPrompt: "How are you feeling about getting back on track today?",
+        completedAt: null,
+        userNote: null,
+      }));
+
+      const adaptedNumbers = new Set(adaptedDays.map(d => d.dayNumber));
+      setAdaptedDayNumbers(prev => new Set([...prev, ...adaptedNumbers]));
+
+      setDays(prev => {
+        // Replace upcoming days (dayNumber >= fromDay) with adapted ones
+        const kept = prev.filter(d => d.dayNumber < fromDay);
+        const merged = [...kept, ...adaptedDays];
+        lsSave(LS_DAYS(track.slug), merged);
+        if (userId) db.saveJourneyDays(userId, track.slug, merged).catch(() => {});
+        return merged;
+      });
+
+      const nextJourney = { ...journey, generatedThrough: Math.max(journey.generatedThrough, fromDay + count - 1) };
+      setJourney(nextJourney);
+      lsSave(LS_JOURNEY(track.slug), nextJourney);
+      db.saveJourney(userId, nextJourney).catch(() => {});
+    } catch (e) {
+      console.error("adaptJourney error:", e);
+    } finally {
+      setAdapting(false);
+      setAdaptModal(null);
+    }
+  };
 
   const checkIn = (dayId: string, note: string) => {
     setDays(prev => {
@@ -905,6 +1023,11 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                     </p>
                   </div>
                   {JOURNEY_MILESTONES.includes(d.dayNumber) && !locked && <Trophy className="shrink-0 h-3.5 w-3.5 text-yellow-400" />}
+                  {adaptedDayNumbers.has(d.dayNumber) && !locked && (
+                    <span className="shrink-0 flex items-center gap-1 rounded-full bg-[color:var(--secondary)]/15 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--secondary)]">
+                      <Sparkles className="h-2.5 w-2.5" />adapted
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -1011,6 +1134,93 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   <p className="text-sm">{selectedDay.userNote}</p>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {adaptModal !== null && (
+          <motion.div
+            key="adapt-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 60, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 220, damping: 26 }}
+              className="w-full max-w-sm bg-background rounded-3xl p-6 space-y-5"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-[color:var(--secondary)]/15 flex items-center justify-center shrink-0">
+                  <RefreshCw className="h-4 w-4 text-[color:var(--secondary)]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-base leading-snug">
+                    Welcome back
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    You were away for {adaptModal.missedDays} day{adaptModal.missedDays !== 1 ? "s" : ""}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Life happens — no judgment here. Want me to reshape the upcoming days around where you are now, or keep your original plan?
+              </p>
+
+              {/* Reason selector */}
+              <div className="space-y-2">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-muted-foreground">What happened?</p>
+                <div className="flex flex-wrap gap-2">
+                  {ADAPT_REASONS.map(r => (
+                    <button
+                      key={r.id}
+                      onClick={() => setAdaptReason(r.id)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition border ${
+                        adaptReason === r.id
+                          ? "bg-foreground text-neutral-900 border-foreground"
+                          : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTAs */}
+              <div className="space-y-2 pt-1">
+                <button
+                  onClick={adaptJourney}
+                  disabled={adapting}
+                  className="w-full rounded-xl bg-foreground text-neutral-900 py-3 font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-60 transition"
+                >
+                  {adapting ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Adapting your journey…
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      Adapt my journey
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setAdaptModal(null)}
+                  className="w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground transition"
+                >
+                  Keep original plan
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
