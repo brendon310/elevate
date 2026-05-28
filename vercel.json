@@ -1,14 +1,8 @@
 {
   "crons": [
-    {
-      "path": "/api/cron-push",
-      "schedule": "0 9 * * *"
-    }
+    { "path": "/api/cron-push", "schedule": "0 9 * * *" }
   ],
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
