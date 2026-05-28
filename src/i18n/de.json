@@ -21,7 +21,44 @@
     "streak_meter": "Serie",
     "depth": "Tiefe",
     "breadth": "Breite",
-    "days_to_next": "{{n}} Tag{{s}} bis"
+    "days_to_next": "{{n}} Tag{{s}} bis",
+    "motivations": [
+      "Heute ist eine leere Seite. Schreib eine gute Zeile.",
+      "Kleine Wiederholungen. Große Identität.",
+      "Erscheine. Der Rest folgt.",
+      "Du bist näher, als du gestern warst.",
+      "Wiederholung ist der Weg, wie du wirst.",
+      "Mach einen Schritt, den dein zukünftiges Ich bejubelt.",
+      "Disziplin ist Selbstliebe in Zeitlupe."
+    ],
+    "celebration_phrases": [
+      "Die Version von dir, die aufgegeben hat, wird immer weiter weg.",
+      "Du bist erschienen. Das ist das ganze Spiel.",
+      "Disziplin ist nur Selbstliebe anders geschrieben.",
+      "Eine weitere Wiederholung. Ein weiterer Baustein. Ein weiterer Tag.",
+      "Der Streak fragt nicht, wie du dich fühlst. Ihm ist wichtig, dass du gekommen bist.",
+      "Die meisten haben darüber geredet. Du hast es getan.",
+      "Eines Tages wirst du zurückblicken — hier hat es angefangen.",
+      "Dein zukünftiges Ich hat gerade aufgeatmet.",
+      "Identität wird in Momenten wie diesem aufgebaut.",
+      "Die schweren Tage zählen doppelt.",
+      "Du baust keine Gewohnheit. Du baust eine Person.",
+      "Kleine Wiederholungen. Große Identität.",
+      "Jeder Check-in ist eine Stimme für die Person, die du wirst.",
+      "Beständigkeit ist nicht glamourös. Größe auch nicht — bis sie es ist.",
+      "So sieht das Comeback aus.",
+      "Niemand kann dir den heutigen Tag nehmen.",
+      "Die Lücke zwischen dem, wer du bist, und dem, wer du sein willst, ist gerade kleiner geworden.",
+      "Erscheinen wenn man nicht möchte — das ist die echte Stärke.",
+      "Du brauchtest keine Motivation. Du hast Disziplin genutzt. Das ist stärker.",
+      "Tag für Tag. So werden Imperien gebaut."
+    ],
+    "reentry_messages": [
+      "Du bist zurück. Das ist alles, was zählt.",
+      "Die Pause definiert nicht den Weg. Du bist jetzt hier.",
+      "Die Besten geben nicht auf — sie fangen neu an. Lass uns wieder beginnen.",
+      "Jede große Geschichte hat ein Kapitel, in dem die Hauptfigur zurückkommt. Das ist deins."
+    ]
   },
   "common": {
     "next": "Weiter",

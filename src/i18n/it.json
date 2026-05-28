@@ -21,7 +21,44 @@
     "streak_meter": "Serie",
     "depth": "Profondità",
     "breadth": "Ampiezza",
-    "days_to_next": "{{n}} giorno{{s}} a"
+    "days_to_next": "{{n}} giorno{{s}} a",
+    "motivations": [
+      "Oggi è una pagina bianca. Scrivi una riga buona.",
+      "Piccole ripetizioni. Grande identità.",
+      "Presentati. Il resto viene da sé.",
+      "Sei più vicino di quanto fossi ieri.",
+      "La ripetizione è il modo in cui diventi.",
+      "Fai una mossa di cui il te futuro sarà fiero.",
+      "La disciplina è amore per sé stessi al rallentatore."
+    ],
+    "celebration_phrases": [
+      "La versione di te che si è arresa si sta allontanando sempre di più.",
+      "Ti sei presentato. È tutto il gioco.",
+      "La disciplina è solo l'amore per sé stessi scritto in modo diverso.",
+      "Un'altra rep. Un altro mattone. Un altro giorno.",
+      "La streak non si preoccupa di come ti senti. Le importa che tu sia venuto.",
+      "La maggior parte delle persone ne ha parlato. Tu l'hai fatto.",
+      "Un giorno guarderai indietro — questo è quando è iniziato.",
+      "Il tuo io futuro ha appena tirato un sospiro di sollievo.",
+      "L'identità si costruisce in momenti come questo.",
+      "I giorni difficili contano doppio.",
+      "Non stai costruendo un'abitudine. Stai costruendo una persona.",
+      "Piccole ripetizioni. Grande identità.",
+      "Ogni check-in è un voto per chi stai diventando.",
+      "La costanza non è glamour. Neanche la grandezza — finché non lo è.",
+      "Questo è l'aspetto del ritorno.",
+      "Nessuno può toglierti oggi.",
+      "Il divario tra chi sei e chi vuoi essere si è appena ridotto.",
+      "Presentarsi quando non vuoi — questo è il vero coraggio.",
+      "Non hai avuto bisogno di motivazione. Hai usato la disciplina. È più forte.",
+      "Giorno per giorno. Così si costruiscono gli imperi."
+    ],
+    "reentry_messages": [
+      "Sei tornato. È tutto ciò che conta.",
+      "Il vuoto non definisce il percorso. Sei qui ora.",
+      "I migliori non si arrendono — si ripartono. Ricominciamo.",
+      "Ogni grande storia ha un capitolo in cui il protagonista torna. Questo è il tuo."
+    ]
   },
   "common": {
     "next": "Avanti",

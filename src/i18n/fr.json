@@ -21,7 +21,44 @@
     "streak_meter": "Série",
     "depth": "Profondeur",
     "breadth": "Étendue",
-    "days_to_next": "{{n}} jour{{s}} jusqu'à"
+    "days_to_next": "{{n}} jour{{s}} jusqu'à",
+    "motivations": [
+      "Aujourd'hui est une page blanche. Écris une bonne ligne.",
+      "Petites répétitions. Grande identité.",
+      "Présente-toi. Le reste suit.",
+      "Tu es plus proche qu'hier.",
+      "La répétition est ta façon de devenir.",
+      "Fais un geste dont ton futur toi sera fier.",
+      "La discipline est l'amour de soi au ralenti."
+    ],
+    "celebration_phrases": [
+      "La version de toi qui a abandonné s'éloigne de plus en plus.",
+      "Tu t'es présenté·e. C'est tout le jeu.",
+      "La discipline, c'est juste l'amour de soi écrit différemment.",
+      "Une autre répétition. Une autre brique. Un autre jour.",
+      "La série ne se soucie pas de comment tu te sens. Elle se soucie que tu sois venu·e.",
+      "La plupart des gens en ont parlé. Toi, tu l'as fait.",
+      "Un jour tu regarderas en arrière — c'est là que ça a commencé.",
+      "Ton futur toi vient de souffler.",
+      "L'identité se construit dans des moments comme celui-ci.",
+      "Les jours difficiles comptent double.",
+      "Tu ne construis pas une habitude. Tu construis une personne.",
+      "Petites répétitions. Grande identité.",
+      "Chaque check-in est un vote pour la personne que tu deviens.",
+      "La constance n'est pas glamour. La grandeur non plus — jusqu'à ce qu'elle le soit.",
+      "Voilà à quoi ressemble le retour.",
+      "Personne ne peut te prendre aujourd'hui.",
+      "L'écart entre qui tu es et qui tu veux être vient de rétrécir.",
+      "Se présenter quand on ne veut pas — c'est la vraie force.",
+      "Tu n'avais pas besoin de motivation. Tu as utilisé la discipline. C'est plus fort.",
+      "Jour après jour. C'est comme ça que les empires se construisent."
+    ],
+    "reentry_messages": [
+      "Tu es de retour. C'est tout ce qui compte.",
+      "La pause ne définit pas le chemin. Tu es là maintenant.",
+      "Les meilleurs n'abandonnent pas — ils recommencent. Recommençons.",
+      "Chaque grande histoire a un chapitre où le personnage principal revient. C'est le tien."
+    ]
   },
   "common": {
     "next": "Suivant",

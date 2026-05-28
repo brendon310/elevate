@@ -21,7 +21,44 @@
     "streak_meter": "Racha",
     "depth": "Profundidad",
     "breadth": "Amplitud",
-    "days_to_next": "{{n}} día{{s}} para"
+    "days_to_next": "{{n}} día{{s}} para",
+    "motivations": [
+      "Hoy es una página en blanco. Escribe una buena línea.",
+      "Pequeñas repeticiones. Gran identidad.",
+      "Aparece. El resto sigue.",
+      "Estás más cerca de donde estabas ayer.",
+      "La repetición es cómo te conviertes.",
+      "Haz un movimiento del que tu yo futuro se enorgullezca.",
+      "La disciplina es amor propio a cámara lenta."
+    ],
+    "celebration_phrases": [
+      "La versión de ti que se rindió se aleja cada vez más.",
+      "Te presentaste. Eso es todo el juego.",
+      "La disciplina es solo el amor propio escrito de otra manera.",
+      "Otra repetición. Otro ladrillo. Otro día.",
+      "La racha no le importa cómo te sientes. Le importa que hayas venido.",
+      "La mayoría habló de ello. Tú lo hiciste.",
+      "Un día mirarás atrás — aquí es cuando empezó.",
+      "Tu yo futuro acaba de exhalar.",
+      "La identidad se construye en momentos como este.",
+      "Los días difíciles cuentan doble.",
+      "No estás construyendo un hábito. Estás construyendo una persona.",
+      "Pequeñas repeticiones. Gran identidad.",
+      "Cada check-in es un voto por quien te estás convirtiendo.",
+      "La consistencia no es glamorosa. Tampoco la grandeza — hasta que lo es.",
+      "Así es como se ve el regreso.",
+      "Nadie puede quitarte el día de hoy.",
+      "La brecha entre quién eres y quién quieres ser acaba de hacerse más pequeña.",
+      "Aparecer cuando no quieres — eso es la verdadera fortaleza.",
+      "No necesitaste motivación. Usaste disciplina. Es más fuerte.",
+      "Día a día. Así se construyen los imperios."
+    ],
+    "reentry_messages": [
+      "Estás de vuelta. Eso es todo lo que importa.",
+      "La pausa no define el camino. Estás aquí ahora.",
+      "Los mejores no se rinden — recomienzan. Empecemos de nuevo.",
+      "Toda gran historia tiene un capítulo donde el protagonista regresa. Este es el tuyo."
+    ]
   },
   "common": {
     "next": "Siguiente",

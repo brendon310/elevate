@@ -21,7 +21,44 @@
     "streak_meter": "Streak",
     "depth": "Depth",
     "breadth": "Breadth",
-    "days_to_next": "{{n}} day{{s}} to"
+    "days_to_next": "{{n}} day{{s}} to",
+    "motivations": [
+      "Today is a clean page. Write one good line.",
+      "Small reps. Big identity.",
+      "Show up. The rest follows.",
+      "You're closer than you were yesterday.",
+      "Repetition is how you become.",
+      "Make one move that future-you applauds.",
+      "Discipline is self-love in slow motion."
+    ],
+    "celebration_phrases": [
+      "The version of you who quit is getting further away.",
+      "You showed up. That's the whole game.",
+      "Discipline is just self-love spelled differently.",
+      "Another rep. Another brick. Another day.",
+      "The streak doesn't care how you feel. It cares that you came.",
+      "Most people talked about it. You did it.",
+      "One day you'll look back — this is when it started.",
+      "Your future self just exhaled.",
+      "Identity is built in moments like this one.",
+      "The hard days count double.",
+      "You're not building a habit. You're building a person.",
+      "Small reps. Big identity.",
+      "Every check-in is a vote for who you're becoming.",
+      "Consistency isn't glamorous. Neither is greatness — until it is.",
+      "This is what the comeback looks like.",
+      "No one can take today away from you.",
+      "The gap between who you are and who you want to be just got smaller.",
+      "Showing up when you don't want to — that's the real flex.",
+      "You didn't need motivation. You used discipline. That's stronger.",
+      "Day by day. That's how empires are built."
+    ],
+    "reentry_messages": [
+      "You're back. That's all that matters.",
+      "The gap doesn't define the path. You're here now.",
+      "The best ones don't give up — they restart. Let's begin again.",
+      "Every great story has a chapter where the main character comes back. This is yours."
+    ]
   },
   "common": {
     "next": "Next",

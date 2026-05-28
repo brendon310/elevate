@@ -63,16 +63,6 @@ function lsSave(key: string, val: unknown) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-const MOTIVATIONS = [
-  "Today is a clean page. Write one good line.",
-  "Small reps. Big identity.",
-  "Show up. The rest follows.",
-  "You're closer than you were yesterday.",
-  "Repetition is how you become.",
-  "Make one move that future-you applauds.",
-  "Discipline is self-love in slow motion.",
-];
-
 function trackHueVar(category?: string) {
   const map: Record<string, string> = {
     "Fitness & Body": "--fitness",
@@ -808,7 +798,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
   onViewForCheckIn: (t: UserTrack) => void;
   onVacation: (trackId: string, until: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n: i18nInstance } = useTranslation();
   const [showMissedModal, setShowMissedModal] = useState(false);
   const [vacationTrack, setVacationTrack] = useState<UserTrack | null>(null);
   const [noteOpen, setNoteOpen] = useState<Record<string, boolean>>({});
@@ -849,14 +839,15 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
     setNoteOpen(prev => ({ ...prev, [trackId]: !prev[trackId] }));
   };
 
+  const motivations = t("app.motivations", { returnObjects: true }) as string[];
   const motivation = useMemo(() => {
     const d = new Date();
     const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-    return MOTIVATIONS[seed % MOTIVATIONS.length];
-  }, []);
+    return motivations[seed % motivations.length];
+  }, [motivations]);
 
   const todayDate = todayStr();
-  const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
+  const todayFormatted = new Date().toLocaleDateString(i18nInstance.language || 'en', { weekday: "long", month: "long", day: "numeric" }).toUpperCase();
   const hour = new Date().getHours();
   const greeting = hour < 5 ? t("home.greeting_evening") : hour < 12 ? t("home.greeting_morning") : hour < 18 ? t("home.greeting_afternoon") : t("home.greeting_evening");
   const islandTheme = (localStorage.getItem('forge_island_theme') ?? 'garden') as 'garden' | 'mountain';

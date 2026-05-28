@@ -205,15 +205,7 @@ const ONBOARDING_TRACKS: OnboardingTrack[] = ALL_TRACKS.map(t => ({
   slug: t.slug, name: t.name, category: t.category,
 }));
 
-const MOTIVATIONS = [
-  "Today is a clean page. Write one good line.",
-  "Small reps. Big identity.",
-  "Show up. The rest follows.",
-  "You're closer than you were yesterday.",
-  "Repetition is how you become.",
-  "Make one move that future-you applauds.",
-  "Discipline is self-love in slow motion.",
-];
+// MOTIVATIONS moved to i18n JSON (app.motivations)
 
 const CHECKIN_WARNINGS = [
   "The task won't complete itself. Write something.",
@@ -1722,12 +1714,7 @@ function DashboardLayout({ currentPage, onNavigate, children }: {
 // ReEntryOverlay — shown when user returns after 3+ days away
 // ─────────────────────────────────────────────────────────────────────────────
 
-const REENTRY_MESSAGES = [
-  "You're back. That's all that matters.",
-  "The gap doesn't define the path. You're here now.",
-  "I migliori non si arrendono — si ripartono. Ricominciamo.",
-  "Every great story has a chapter where the main character comes back. This is yours.",
-];
+// REENTRY_MESSAGES moved to i18n JSON (app.reentry_messages)
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2067,35 +2054,16 @@ function FirstDayReveal({ userName, track, onComplete }: {
 // CheckInCelebration overlay
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CELEBRATION_PHRASES = [
-  "The version of you who quit is getting further away.",
-  "You showed up. That's the whole game.",
-  "Discipline is just self-love spelled differently.",
-  "Another rep. Another brick. Another day.",
-  "The streak doesn't care how you feel. It cares that you came.",
-  "Most people talked about it. You did it.",
-  "One day you'll look back — this is when it started.",
-  "Your future self just exhaled.",
-  "Identity is built in moments like this one.",
-  "The hard days count double.",
-  "You're not building a habit. You're building a person.",
-  "Small reps. Big identity.",
-  "Every check-in is a vote for who you're becoming.",
-  "Consistency isn't glamorous. Neither is greatness — until it is.",
-  "This is what the comeback looks like.",
-  "No one can take today away from you.",
-  "The gap between who you are and who you want to be just got smaller.",
-  "Showing up when you don't want to — that's the real flex.",
-  "You didn't need motivation. You used discipline. That's stronger.",
-  "Day by day. That's how empires are built.",
-];
+// CELEBRATION_PHRASES moved to i18n JSON (app.celebration_phrases)
 
 function CheckInCelebration({ trackName, streak, onDismiss }: {
   trackName: string;
   streak: number;
   onDismiss: () => void;
 }) {
-  const phrase = useMemo(() => CELEBRATION_PHRASES[Math.floor(Math.random() * CELEBRATION_PHRASES.length)], []);
+  const { t } = useTranslation();
+  const celebPhrases = t("app.celebration_phrases", { returnObjects: true }) as string[];
+  const phrase = useMemo(() => celebPhrases[Math.floor(Math.random() * celebPhrases.length)], [celebPhrases]);
   const [progress, setProgress] = useState(100);
   const DURATION = 3000;
 

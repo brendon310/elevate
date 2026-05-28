@@ -13,12 +13,7 @@ function hashStr(s: string) {
   return Math.abs(h);
 }
 
-const REENTRY_MESSAGES = [
-  "You're back. That's all that matters.",
-  "The gap doesn't define the path. You're here now.",
-  "I migliori non si arrendono — si ripartono. Ricominciamo.",
-  "Every great story has a chapter where the main character comes back. This is yours.",
-];
+// REENTRY_MESSAGES moved to i18n (app.reentry_messages)
 
 const SOS_ALTERNATIVES: Record<string, string[]> = {
   "quit-alcohol": [
@@ -106,7 +101,8 @@ const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: st
 
 function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: () => void }) {
   const { t } = useTranslation();
-  const msg = REENTRY_MESSAGES[hashStr(todayStr()) % REENTRY_MESSAGES.length];
+  const reentryMsgs = t("app.reentry_messages", { returnObjects: true }) as string[];
+  const msg = reentryMsgs[hashStr(todayStr()) % reentryMsgs.length];
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}

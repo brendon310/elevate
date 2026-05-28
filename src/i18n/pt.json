@@ -21,7 +21,44 @@
     "streak_meter": "Sequência",
     "depth": "Profundidade",
     "breadth": "Amplitude",
-    "days_to_next": "{{n}} dia{{s}} para"
+    "days_to_next": "{{n}} dia{{s}} para",
+    "motivations": [
+      "Hoje é uma página em branco. Escreva uma boa linha.",
+      "Pequenas repetições. Grande identidade.",
+      "Apareça. O resto segue.",
+      "Você está mais perto do que estava ontem.",
+      "A repetição é como você se torna.",
+      "Faça um movimento que seu eu futuro aplauda.",
+      "A disciplina é amor-próprio em câmera lenta."
+    ],
+    "celebration_phrases": [
+      "A versão de você que desistiu está cada vez mais longe.",
+      "Você apareceu. Isso é tudo o que importa.",
+      "Disciplina é só amor-próprio com outra ortografia.",
+      "Mais uma rep. Mais um tijolo. Mais um dia.",
+      "A sequência não se importa com como você se sente. Importa que você veio.",
+      "A maioria falou sobre isso. Você fez.",
+      "Um dia você vai olhar para trás — foi aqui que começou.",
+      "Seu eu futuro acabou de respirar aliviado.",
+      "A identidade é construída em momentos como este.",
+      "Os dias difíceis contam em dobro.",
+      "Você não está construindo um hábito. Você está construindo uma pessoa.",
+      "Pequenas repetições. Grande identidade.",
+      "Cada check-in é um voto por quem você está se tornando.",
+      "Consistência não é glamorosa. Nem a grandeza — até que seja.",
+      "É assim que a volta por cima parece.",
+      "Ninguém pode tirar o dia de hoje de você.",
+      "A distância entre quem você é e quem quer ser ficou menor.",
+      "Aparecer quando não quer — essa é a verdadeira força.",
+      "Você não precisou de motivação. Usou disciplina. Isso é mais forte.",
+      "Dia a dia. É assim que os impérios são construídos."
+    ],
+    "reentry_messages": [
+      "Você voltou. Isso é tudo que importa.",
+      "A pausa não define o caminho. Você está aqui agora.",
+      "Os melhores não desistem — recomeçam. Vamos começar de novo.",
+      "Toda grande história tem um capítulo onde o personagem principal volta. Este é o seu."
+    ]
   },
   "common": {
     "next": "Próximo",
