@@ -775,7 +775,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
     const justHit = MOMENTUM_MILESTONES.find(ms => prev < ms.threshold && effectivePeak >= ms.threshold);
     if (!justHit) return;
     const gold = justHit.icon === "flame" ? ["#E24B4A","#F09595","#FFFFFF","#F7C1C1"] : ["#EF9F27","#FAC775","#FFFFFF","#FAEEDA"];
-    confetti({ particleCount: 120, spread: 90, startVelocity: 45, gravity: 0.9, ticks: 250, origin: { x: 0.5, y: 0.35 }, colors: gold });
+    confetti({ particleCount: 55, spread: 65, startVelocity: 30, gravity: 0.9, ticks: 200, origin: { x: 0.5, y: 0.42 }, colors: gold });
     if (justHit.key === "100k") onUpdateUser({ peakReachedAt: new Date().toISOString() });
   }, [effectivePeak]);
 
@@ -1771,6 +1771,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
 }) {
   type FDRPhase = "welcome" | "track" | "duration" | "generating" | "reveal";
   const [phase, setPhase] = useState<FDRPhase>("welcome");
+  const [glowPulse, setGlowPulse] = useState(false);
   const [day1, setDay1] = useState<JourneyDay | null>(null);
   const [targetDays, setTargetDays] = useState(30);
   const [customDur, setCustomDur] = useState(false);
@@ -1844,20 +1845,24 @@ function FirstDayReveal({ userName, track, onComplete }: {
     generate();
   }, [phase, track, targetDays]);
 
-  // Confetti burst on reveal
+  // Ambient glow pulse on reveal — cinematic, no confetti
   useEffect(() => {
     if (phase !== "reveal") return;
-    setTimeout(() => {
-      confetti({ particleCount: 90, spread: 75, origin: { y: 0.38 }, colors: ["#3b82f6", "#6366f1", "#8b5cf6", "#ffffff", "#38bdf8"] });
-    }, 600);
+    setTimeout(() => { setGlowPulse(true); }, 400);
+    setTimeout(() => { setGlowPulse(false); }, 2200);
   }, [phase]);
 
   return (
     <div className="fixed inset-0 z-[100] overflow-hidden" style={{ background: "oklch(0.08 0.02 240)" }}>
-      {/* Ambient glow */}
+      {/* Ambient glow — breathes on reveal */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] rounded-full opacity-[0.15]"
-          style={{ background: "radial-gradient(circle, oklch(0.55 0.22 250) 0%, transparent 70%)" }} />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[32rem] h-[32rem] rounded-full"
+          style={{
+            background: "radial-gradient(circle, oklch(0.55 0.22 250) 0%, transparent 70%)",
+            opacity: glowPulse ? 0.55 : 0.15,
+            transform: glowPulse ? "translate(-50%, -50%) scale(1.6)" : "translate(-50%, -50%) scale(1)",
+            transition: "opacity 1.2s ease-out, transform 1.8s cubic-bezier(0.2, 0.9, 0.2, 1)",
+          }} />
       </div>
 
       <AnimatePresence mode="wait">
@@ -2088,9 +2093,9 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
   const [progress, setProgress] = useState(100);
   const DURATION = 3000;
 
-  // confetti on mount
+  // Ambient flash on mount (no confetti — cinematic, not casino)
   useEffect(() => {
-    confetti({ particleCount: 70, spread: 60, origin: { y: 0.5 }, colors: ["#3b82f6","#6366f1","#8b5cf6","#ffffff","#fbbf24"] });
+    void 0; // intentional — the progress bar + coach flash carry the moment
     const start = Date.now();
     const raf = requestAnimationFrame(function tick() {
       const elapsed = Date.now() - start;
