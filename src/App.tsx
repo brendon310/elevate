@@ -1296,7 +1296,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
 }
 
 function OnboardingPage({ onComplete }: { onComplete: (data: { track: OnboardingTrack; name?: string }) => void }) {
-  type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "name" | "island";
+  type OnboardingStep = "question" | "thinking" | "response" | "tracks" | "island" | "coach" | "name";
   const [step, setStep] = useState<OnboardingStep>("question");
   const [showAllPaths, setShowAllPaths] = useState(false);
   const [answer, setAnswer] = useState("");
@@ -1307,6 +1307,14 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(() => localStorage.getItem("forge_init_slug"));
   const [pendingTrackForName, setPendingTrackForName] = useState<OnboardingTrack | null>(null);
   const [onboardingName, setOnboardingName] = useState("");
+
+  const COACH_INTRO_LINES: Record<string, string> = {
+    "Kai": "I'll push you forward, one day at a time.",
+    "Iris": "We'll break this down until it fully clicks.",
+    "Dr. Mara": "I'll help you move gently — and still go far.",
+    "Roy": "No fluff. Just clear steps and honest feedback.",
+    "Sasha": "We'll find what this journey really means to you.",
+  };
 
   const words = useMemo(() => message.split(/(\s+)/), [message]);
   const typingDone = typedCount >= words.length && words.length > 0;
@@ -1553,11 +1561,61 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
               ))}
             </div>
             <button
-              onClick={() => { localStorage.setItem('forge_island_theme', islandThemePick); setStep('name'); }}
+              onClick={() => { localStorage.setItem('forge_island_theme', islandThemePick); setStep('coach'); }}
               className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]"
             >
               Continue <ArrowRight className="h-4 w-4" />
             </button>
+          </motion.div>
+        )}
+
+        {step === "coach" && pendingTrackForName && (
+          <motion.div key="coach" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.7 }} className="max-w-sm w-full text-center">
+            {(() => {
+              const _arch = archetypeForSlug(pendingTrackForName.slug);
+              const _line = COACH_INTRO_LINES[_arch.name] ?? "I'm here to help you follow through.";
+              return (
+                <>
+                  <motion.p
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+                    className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">
+                    your coach
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.25, duration: 0.55, type: "spring", stiffness: 180, damping: 18 }}
+                    className="mx-auto mb-8 h-20 w-20 rounded-full grad-electric flex items-center justify-center text-2xl font-bold text-white select-none"
+                    style={{ boxShadow: "var(--shadow-violet)" }}>
+                    {_arch.name.replace("Dr. ", "").charAt(0)}
+                  </motion.div>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    className="font-display text-[clamp(2rem,6vw,3rem)] leading-tight tracking-tight mb-1">
+                    Meet <span className="text-electric">{_arch.name}</span>
+                  </motion.h1>
+                  <motion.p
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
+                    className="text-xs text-muted-foreground mb-8 uppercase tracking-[0.22em] font-mono">
+                    {_arch.tagline}
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.75, duration: 0.5 }}
+                    className="text-lg text-foreground/75 leading-relaxed mb-12 max-w-xs mx-auto">
+                    "{_line}"
+                  </motion.p>
+                  <motion.button
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.0 }}
+                    onClick={() => setStep("name")}
+                    className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
+                    Continue <ArrowRight className="h-4 w-4" />
+                  </motion.button>
+                </>
+              );
+            })()}
           </motion.div>
         )}
 
@@ -2506,21 +2564,32 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Morning coach / re-entry: show once per day
+  // Morning coach / re-entry: emotionally intelligent trigger
   useEffect(() => {
     if (screen !== "dashboard" || tracks.length === 0) return;
+    // Never interrupt a brand-new user on Day 1 — let them explore freely
+    if (user?.createdAt) {
+      const ageMs = Date.now() - new Date(user.createdAt).getTime();
+      if (ageMs < 24 * 60 * 60 * 1000) return;
+    }
+    // Only activate once the user has completed at least one check-in
+    const hasAnyActivity = tracks.some(t => (t.total_done ?? 0) > 0);
+    if (!hasAnyActivity) return;
+    // Once per calendar day
     const key = `forge-morning-${todayStr()}`;
     if (lsLoad<boolean>(key, false)) return;
     const maxGap = Math.max(...tracks.map(ut => {
       if (!ut.last_log_date) return 0;
       return Math.floor((Date.now() - new Date(ut.last_log_date).getTime()) / 86_400_000);
     }));
+    // Slightly quicker for returning-after-miss users; slower for active daily users
+    const delay = maxGap >= 1 ? 1100 : 2200;
     const timer = setTimeout(() => {
       if (maxGap >= 3) { setReEntryGap(maxGap); setShowReEntry(true); }
       else setShowMorningCoach(true);
-    }, 900);
+    }, delay);
     return () => clearTimeout(timer);
-  }, [screen, tracks.length]);
+  }, [screen, tracks.length, user?.createdAt]);
 
   const handleMorningDismiss = useCallback(() => {
     lsSave(`forge-morning-${todayStr()}`, true);

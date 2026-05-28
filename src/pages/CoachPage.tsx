@@ -181,7 +181,7 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6 text-center"
         >
-          {archetype.tagline}
+          {archetype.name} · {archetype.tagline}
         </motion.p>
 
         {/* Message area */}
