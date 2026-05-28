@@ -87,7 +87,7 @@ function SettingsPage({
         if (sub) await sub.unsubscribe().catch(() => {});
       }
       const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
-      if (userId) fetch("/api/push-unsubscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) }).catch(() => {});
+      if (userId) fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, action: 'unsubscribe' }) }).catch(() => {});
       setReminderOn(false);
       lsSave("forge-reminder-on", false);
       return;
@@ -105,7 +105,7 @@ function SettingsPage({
       const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
       const hour = parseInt(reminderTime.split(":")[0], 10);
       if (userId) {
-        await fetch("/api/push-subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, subscription: sub, reminderHour: hour }) });
+        await fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, subscription: sub, reminderHour: hour }) });
       }
       setReminderOn(true);
       lsSave("forge-reminder-on", true);

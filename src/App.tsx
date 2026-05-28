@@ -2174,7 +2174,7 @@ export function ElevateApp() {
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(key),
         });
-        await fetch('/api/push-subscribe', {
+        await fetch('/api/push', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subscription: sub.toJSON(), userId: user.supabaseId, reminderHour: 9 }),
@@ -2198,7 +2198,7 @@ export function ElevateApp() {
       supabase.auth.getUser().then(({ data: { user: au } }) => {
         if (au?.email && !localStorage.getItem('forge_welcome_sent')) {
           localStorage.setItem('forge_welcome_sent', '1');
-          fetch('/api/emails/welcome', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email: au.email, name: au.user_metadata?.full_name }) }).catch(() => {});
+          fetch('/api/emails/send', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'welcome', email: au.email, name: au.user_metadata?.full_name }) }).catch(() => {});
         }
       });
       }
@@ -2297,7 +2297,7 @@ export function ElevateApp() {
           // Milestone email
           supabase.auth.getUser().then(({ data: { user: au } }) => {
             if (au?.email) {
-              fetch('/api/emails/milestone', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email: au.email, name: ut.name, milestone: newStreak }) }).catch(() => {});
+              fetch('/api/emails/send', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'milestone', email: au.email, name: ut.name, milestone: newStreak }) }).catch(() => {});
             }
           });
         }
