@@ -176,7 +176,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
           <button key={cat}
             onClick={() => setCategoryFilter(cat === categoryFilter ? null : cat)}
             className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold border transition-colors ${categoryFilter === cat ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-            {cat}
+            {tc(cat)}
           </button>
         ))}
       </div>
@@ -188,7 +188,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
       <div className="mt-8 space-y-10">
         {Object.entries(grouped).map(([cat, tracks]) => (
           <section key={cat}>
-            <h2 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-4">{cat}</h2>
+            <h2 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-4">{tc(cat)}</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {tracks.map((track, i) => {
                 const ut = activeMap.get(track.id);

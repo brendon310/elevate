@@ -45,8 +45,7 @@ function SlotNumber({ value }: { value: number }) {
 
 interface TrackSavings {
   costPerUnit: number;   // euro
-  unitName: string;      // singolare
-  unitNamePlural: string;
+  unitKey: string;       // i18n key (singular)
   emoji: string;
 }
 
@@ -432,57 +431,18 @@ function AppleIcon() {
 }
 
 const TRACK_SAVINGS: Record<string, TrackSavings> = {
-  "quit-alcohol": {
-    costPerUnit: 7,
-    unitName: "drink",
-    unitNamePlural: "drink",
-    emoji: "🍺",
-  },
-  "quit-pornography": {
-    costPerUnit: 0,
-    unitName: "sessione",
-    unitNamePlural: "sessioni",
-    emoji: "🧠",
-  },
-  "quit-drugs": {
-    costPerUnit: 20,
-    unitName: "dose",
-    unitNamePlural: "dosi",
-    emoji: "💊",
-  },
-  "quit-gambling": {
-    costPerUnit: 30,
-    unitName: "sessione",
-    unitNamePlural: "sessioni",
-    emoji: "🎲",
-  },
-  "binge-eating": {
-    costPerUnit: 12,
-    unitName: "binge",
-    unitNamePlural: "binge",
-    emoji: "🍕",
-  },
-  "video-game-addiction": {
-    costPerUnit: 0,
-    unitName: "sessione",
-    unitNamePlural: "sessioni",
-    emoji: "🎮",
-  },
-  "compulsive-shopping": {
-    costPerUnit: 45,
-    unitName: "acquisto",
-    unitNamePlural: "acquisti",
-    emoji: "🛍️",
-  },
-  "social-media-addiction": {
-    costPerUnit: 0,
-    unitName: "ora",
-    unitNamePlural: "ore",
-    emoji: "📵",
-  },
+  "quit-alcohol":          { costPerUnit: 7,  unitKey: "drink",    emoji: "🍺" },
+  "quit-pornography":      { costPerUnit: 0,  unitKey: "session",  emoji: "🧠" },
+  "quit-drugs":            { costPerUnit: 20, unitKey: "dose",     emoji: "💊" },
+  "quit-gambling":         { costPerUnit: 30, unitKey: "session",  emoji: "🎲" },
+  "binge-eating":          { costPerUnit: 12, unitKey: "binge",    emoji: "🍕" },
+  "video-game-addiction":  { costPerUnit: 0,  unitKey: "session",  emoji: "🎮" },
+  "compulsive-shopping":   { costPerUnit: 45, unitKey: "purchase", emoji: "🛍️" },
+  "social-media-addiction":{ costPerUnit: 0,  unitKey: "hour",     emoji: "📵" },
 };
 
 function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
+  const { t } = useTranslation();
   const primaryTrack = tracks[0];
   if (!primaryTrack) return null;
 
@@ -516,7 +476,7 @@ function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
           >
             €{animMoney}
           </span>
-          <span className="text-xs text-white/40">risparmiati</span>
+          <span className="text-xs text-white/40">{t("home.savings_saved")}</span>
         </div>
       )}
 
@@ -535,7 +495,7 @@ function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
           {animUnits}
         </span>
         <span className="text-xs text-white/40">
-          {totalUnits === 1 ? savings.unitName : savings.unitNamePlural} {savings.costPerUnit === 0 ? "evitate" : "saltate"}
+          {t(`home.savings_unit.${totalUnits === 1 ? savings.unitKey : savings.unitKey + "s"}`, { defaultValue: savings.unitKey })}{" "}{t(savings.costPerUnit === 0 ? "home.savings_avoided" : "home.savings_skipped")}
         </span>
       </div>
 
@@ -552,7 +512,7 @@ function SavingsCard({ tracks }: { tracks: UserTrack[] }) {
           {totalDays}
         </span>
         <span className="text-xs text-white/40">
-          {totalDays === 1 ? "giorno" : "giorni"} puliti
+          {t(totalDays === 1 ? "home.savings_clean_day" : "home.savings_clean_days")}
         </span>
       </div>
     </div>
@@ -935,7 +895,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                         <div aria-hidden className="absolute right-3 top-3 h-20 w-20 rounded-full opacity-70"
                           style={{ background: "radial-gradient(circle, oklch(1 0 0 / 0.35), transparent 70%)" }} />
                         <div className="relative flex items-start justify-between pt-2">
-                          <span className="text-[10px] uppercase tracking-[0.25em] text-white font-mono">{ut.category}</span>
+                          <span className="text-[10px] uppercase tracking-[0.25em] text-white font-mono">{tc(ut.category)}</span>
                           <ArcRing value={pct} color="oklch(1 0 0 / 0.85)" size={56} />
                         </div>
                         <div className="relative mt-auto pt-12">
@@ -1053,7 +1013,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
                     {tn(ut.slug, ut.name).slice(0, 2)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: `var(${hueVar})` }}>{ut.category}</p>
+                    <p className="text-[10px] uppercase tracking-[0.25em] font-mono" style={{ color: `var(${hueVar})` }}>{tc(ut.category)}</p>
                     <p className="font-semibold text-[15px] truncate">{tn(ut.slug, ut.name)}</p>
                   </div>
                 </div>

@@ -146,9 +146,9 @@
     "claim_prize": "€7.99 — Reclamar mi premio",
     "checkins_to_unlock": "{{count}} registro{{plural}} para desbloquear",
     "island_waiting": "Tu isla te espera en el día {{day}}",
-    "savings_saved": "ahorrado",
+    "savings_saved": "ahorrados",
     "savings_clean_days": "días limpios",
-    "savings_avoided": "evitado",
+    "savings_avoided": "evitadas",
     "vacation_mode": "Modo vacaciones",
     "protect_streak": "Protege tu racha",
     "vacation_body": "¿Viajando o necesitas un descanso? Pausa tu racha — no se reiniciará.",
@@ -174,7 +174,23 @@
     "send_address": "Enviar mi dirección — €7.99",
     "custom_days_placeholder": "Días personalizados…",
     "feedback_track_label": "Hábito",
-    "feedback_what_happened": "¿Qué pasó?"
+    "feedback_what_happened": "¿Qué pasó?",
+    "savings_skipped": "omitidas",
+    "savings_clean_day": "día limpio",
+    "savings_unit": {
+      "drink": "trago",
+      "drinks": "tragos",
+      "session": "sesión",
+      "sessions": "sesiones",
+      "dose": "dosis",
+      "doses": "dosis",
+      "binge": "atracón",
+      "binges": "atracones",
+      "purchase": "compra",
+      "purchases": "compras",
+      "hour": "hora",
+      "hours": "horas"
+    }
   },
   "journey": {
     "today": "Hoy",

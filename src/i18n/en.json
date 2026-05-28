@@ -174,7 +174,23 @@
     "send_address": "Send my address — €7.99",
     "custom_days_placeholder": "Custom days…",
     "feedback_track_label": "Track",
-    "feedback_what_happened": "What happened?"
+    "feedback_what_happened": "What happened?",
+    "savings_skipped": "skipped",
+    "savings_clean_day": "clean day",
+    "savings_unit": {
+      "drink": "drink",
+      "drinks": "drinks",
+      "session": "session",
+      "sessions": "sessions",
+      "dose": "dose",
+      "doses": "doses",
+      "binge": "binge",
+      "binges": "binges",
+      "purchase": "purchase",
+      "purchases": "purchases",
+      "hour": "hour",
+      "hours": "hours"
+    }
   },
   "journey": {
     "today": "Today",

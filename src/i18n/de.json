@@ -174,7 +174,23 @@
     "send_address": "Meine Adresse senden — €7.99",
     "custom_days_placeholder": "Eigene Tage…",
     "feedback_track_label": "Gewohnheit",
-    "feedback_what_happened": "Was ist passiert?"
+    "feedback_what_happened": "Was ist passiert?",
+    "savings_skipped": "ausgelassen",
+    "savings_clean_day": "sauberer Tag",
+    "savings_unit": {
+      "drink": "Drink",
+      "drinks": "Drinks",
+      "session": "Sitzung",
+      "sessions": "Sitzungen",
+      "dose": "Dosis",
+      "doses": "Dosen",
+      "binge": "Binge",
+      "binges": "Binges",
+      "purchase": "Kauf",
+      "purchases": "Käufe",
+      "hour": "Stunde",
+      "hours": "Stunden"
+    }
   },
   "journey": {
     "today": "Heute",

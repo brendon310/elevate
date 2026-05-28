@@ -146,9 +146,9 @@
     "claim_prize": "€7.99 — Réclamer mon prix",
     "checkins_to_unlock": "{{count}} check-in{{plural}} pour déverrouiller",
     "island_waiting": "Ton île t'attend au jour {{day}}",
-    "savings_saved": "économisé",
+    "savings_saved": "économisés",
     "savings_clean_days": "jours propres",
-    "savings_avoided": "évité",
+    "savings_avoided": "évitées",
     "vacation_mode": "Mode vacances",
     "protect_streak": "Protège ta série",
     "vacation_body": "En voyage ou besoin d'une pause ? Mets ta série en pause — elle ne sera pas réinitialisée.",
@@ -174,7 +174,23 @@
     "send_address": "Envoyer mon adresse — €7.99",
     "custom_days_placeholder": "Jours personnalisés…",
     "feedback_track_label": "Habitude",
-    "feedback_what_happened": "Que s'est-il passé ?"
+    "feedback_what_happened": "Que s'est-il passé ?",
+    "savings_skipped": "sautées",
+    "savings_clean_day": "jour propre",
+    "savings_unit": {
+      "drink": "verre",
+      "drinks": "verres",
+      "session": "séance",
+      "sessions": "séances",
+      "dose": "dose",
+      "doses": "doses",
+      "binge": "binge",
+      "binges": "binges",
+      "purchase": "achat",
+      "purchases": "achats",
+      "hour": "heure",
+      "hours": "heures"
+    }
   },
   "journey": {
     "today": "Aujourd'hui",

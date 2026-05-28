@@ -174,7 +174,23 @@
     "send_address": "Invia il mio indirizzo — €7.99",
     "custom_days_placeholder": "Giorni personalizzati…",
     "feedback_track_label": "Percorso",
-    "feedback_what_happened": "Cosa è successo?"
+    "feedback_what_happened": "Cosa è successo?",
+    "savings_skipped": "saltate",
+    "savings_clean_day": "giorno pulito",
+    "savings_unit": {
+      "drink": "drink",
+      "drinks": "drink",
+      "session": "sessione",
+      "sessions": "sessioni",
+      "dose": "dose",
+      "doses": "dosi",
+      "binge": "binge",
+      "binges": "binge",
+      "purchase": "acquisto",
+      "purchases": "acquisti",
+      "hour": "ora",
+      "hours": "ore"
+    }
   },
   "journey": {
     "today": "Oggi",
