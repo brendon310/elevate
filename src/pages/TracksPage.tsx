@@ -200,7 +200,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{tc(track.category)}</p>
                       <h3 className="mt-1 font-semibold text-[15px]">{tn(track.slug, track.name)}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{track.short_description}</p>
+                      <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{t(`tracks.${track.slug}.desc`, { defaultValue: track.short_description })}</p>
                     </div>
                     {on && ut ? (
                       <div className="flex gap-1.5 flex-wrap">

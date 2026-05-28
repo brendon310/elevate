@@ -660,7 +660,18 @@
     "gratitude": {
       "name": "Pratica della Gratitudine",
       "desc": "Ricabla il cervello per l'abbondanza."
-    }
+    },
+    "library": "Libreria Percorsi",
+    "headline": "La Tua Libreria",
+    "subheadline": "Tutti i percorsi per diventare una versione migliore di te.",
+    "search_placeholder": "Cerca percorsi...",
+    "all": "Tutti",
+    "no_match": "Nessun percorso trovato",
+    "active": "Attivo",
+    "view": "Visualizza",
+    "remove_confirm": "Rimuovere {{name}} dai tuoi percorsi?",
+    "start": "Inizia",
+    "one_year_label": "1 anno"
   },
   "morning_coach": {
     "begin_today": "Inizia oggi"

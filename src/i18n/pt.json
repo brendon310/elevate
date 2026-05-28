@@ -660,7 +660,18 @@
     "gratitude": {
       "name": "Prática de Gratidão",
       "desc": "Reconfigure seu cérebro para a abundância."
-    }
+    },
+    "library": "Biblioteca de Trilhas",
+    "headline": "Sua Biblioteca",
+    "subheadline": "Todos os caminhos para ser uma versao melhor de voce.",
+    "search_placeholder": "Buscar trilhas...",
+    "all": "Todas",
+    "no_match": "Nenhuma trilha encontrada",
+    "active": "Ativo",
+    "view": "Ver",
+    "remove_confirm": "Remover {{name}} das suas trilhas?",
+    "start": "Iniciar",
+    "one_year_label": "1 ano"
   },
   "morning_coach": {
     "begin_today": "Começa hoje"

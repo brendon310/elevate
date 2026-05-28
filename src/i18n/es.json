@@ -660,7 +660,18 @@
     "gratitude": {
       "name": "Práctica de Gratitud",
       "desc": "Recablea tu cerebro para la abundancia."
-    }
+    },
+    "library": "Biblioteca de Rutas",
+    "headline": "Tu Biblioteca",
+    "subheadline": "Todos los caminos para ser una mejor version de ti.",
+    "search_placeholder": "Buscar rutas...",
+    "all": "Todas",
+    "no_match": "Ninguna ruta encontrada",
+    "active": "Activo",
+    "view": "Ver",
+    "remove_confirm": "Eliminar {{name}} de tus rutas?",
+    "start": "Iniciar",
+    "one_year_label": "1 ano"
   },
   "morning_coach": {
     "begin_today": "Empieza hoy"

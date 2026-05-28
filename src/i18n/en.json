@@ -660,7 +660,18 @@
     "gratitude": {
       "name": "Gratitude Practice",
       "desc": "Rewire your brain for abundance."
-    }
+    },
+    "library": "Tracks Library",
+    "headline": "Your Library",
+    "subheadline": "All paths to become a better you.",
+    "search_placeholder": "Search tracks...",
+    "all": "All",
+    "no_match": "No tracks match this search",
+    "active": "Active",
+    "view": "View",
+    "remove_confirm": "Remove {{name}} from your paths?",
+    "start": "Start",
+    "one_year_label": "1 year"
   },
   "morning_coach": {
     "begin_today": "Begin today"

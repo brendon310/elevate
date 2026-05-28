@@ -660,7 +660,18 @@
     "gratitude": {
       "name": "Dankbarkeitsübung",
       "desc": "Verdrahte dein Gehirn für Fülle neu."
-    }
+    },
+    "library": "Pfad-Bibliothek",
+    "headline": "Deine Bibliothek",
+    "subheadline": "Alle Wege zu einer besseren Version von dir.",
+    "search_placeholder": "Pfade suchen...",
+    "all": "Alle",
+    "no_match": "Keine Pfade gefunden",
+    "active": "Aktiv",
+    "view": "Ansehen",
+    "remove_confirm": "{{name}} aus deinen Pfaden entfernen?",
+    "start": "Starten",
+    "one_year_label": "1 Jahr"
   },
   "morning_coach": {
     "begin_today": "Heute starten"
