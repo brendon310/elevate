@@ -10,20 +10,9 @@ import {
   startCheckout, trackEvent,
 } from '../plans';
 
-interface FeatureRow { label: string; free: string; standard: string; premium: string; }
+interface FeatureRowDef { labelKey: string; free: string; standard: string; premium: string; }
 
-const FEATURE_ROWS: FeatureRow[] = [
-  { label: 'Active tracks',       free: '1',           standard: 'Up to 5',     premium: 'Unlimited' },
-  { label: 'Journey length',      free: '7 days',      standard: 'Full access', premium: 'Full access' },
-  { label: 'AI Coach messages',   free: '5 / month',   standard: '50 / month',  premium: 'Unlimited' },
-  { label: 'Community',           free: 'Read only',   standard: 'Full',        premium: 'Full' },
-  { label: 'Streak shields',      free: 'None',        standard: '2 max',       premium: '5 max' },
-  { label: 'Island themes',       free: 'Forest only', standard: 'All 3',       premium: 'All 3' },
-  { label: 'Enriched check-ins',  free: '\u2014',     standard: '\u2014',     premium: 'Yes' },
-  { label: 'Weekly letter',       free: '\u2014',     standard: '\u2014',     premium: 'Yes' },
-  { label: 'SOS crisis button',   free: '\u2014',     standard: 'Yes',         premium: 'Yes' },
-  { label: 'Savings calculator',  free: '\u2014',     standard: 'Yes',         premium: 'Yes' },
-];
+// FEATURE_ROWS is now built dynamically using t() inside the component
 
 export interface PaywallModalProps {
   currentPlan: Plan;
@@ -46,11 +35,9 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
     <div role="dialog" aria-modal="true" style={S.overlay}>
       <div style={S.card}>
         <div style={S.header}>
-          <span style={S.badge}>Trial ended</span>
-          <h2 style={S.title}>Continue your journey</h2>
-          <p style={S.subtitle}>
-            Your 14-day free trial has ended. Choose a plan to keep your streak and full access.
-          </p>
+          <span style={S.badge}>{t('paywall.trial_ended')}</span>
+          <h2 style={S.title}>{t('paywall.continue_journey')}</h2>
+          <p style={S.subtitle}>{t('paywall.subtitle')}</p>
         </div>
 
         <div style={S.planGrid}>
@@ -62,16 +49,27 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
           <table style={{ width: '100%', borderCollapse: 'collapse' as const, fontSize: '0.8125rem' }}>
             <thead>
               <tr>
-                <th style={{ ...S.th, textAlign: 'left' as const, color: '#64748b' }}>Feature</th>
-                <th style={{ ...S.th, color: '#6b7280' }}>Free</th>
-                <th style={{ ...S.th, color: '#60a5fa' }}>Standard</th>
-                <th style={{ ...S.th, color: '#a78bfa' }}>Premium</th>
+                <th style={{ ...S.th, textAlign: 'left' as const, color: '#64748b' }}>{t('paywall.feature_col')}</th>
+                <th style={{ ...S.th, color: '#6b7280' }}>{t('paywall.free_col')}</th>
+                <th style={{ ...S.th, color: '#60a5fa' }}>{t('paywall.standard_col')}</th>
+                <th style={{ ...S.th, color: '#a78bfa' }}>{t('paywall.premium_col')}</th>
               </tr>
             </thead>
             <tbody>
-              {FEATURE_ROWS.map((row, i) => (
+              {([
+                { labelKey: 'paywall.features.active_tracks',     free: '1',           standard: t('paywall.up_to_5'),      premium: t('common.unlimited') },
+                { labelKey: 'paywall.features.journey_length',    free: t('paywall.seven_days'), standard: t('paywall.full_access'), premium: t('paywall.full_access') },
+                { labelKey: 'paywall.features.ai_coach',          free: t('paywall.five_per_month'), standard: t('paywall.fifty_per_month'), premium: t('common.unlimited') },
+                { labelKey: 'paywall.features.community',         free: t('paywall.read_only'),  standard: t('paywall.full_access'), premium: t('paywall.full_access') },
+                { labelKey: 'paywall.features.shields',           free: t('common.none'),        standard: t('paywall.two_max'),  premium: t('paywall.five_max') },
+                { labelKey: 'paywall.features.island_themes',     free: t('paywall.forest_only'), standard: t('paywall.all_3'), premium: t('paywall.all_3') },
+                { labelKey: 'paywall.features.enriched_checkins', free: '—',  standard: '—',  premium: t('common.yes') },
+                { labelKey: 'paywall.features.weekly_letter',     free: '—',  standard: '—',  premium: t('common.yes') },
+                { labelKey: 'paywall.features.sos',               free: '—',  standard: t('common.yes'), premium: t('common.yes') },
+                { labelKey: 'paywall.features.savings',           free: '—',  standard: t('common.yes'), premium: t('common.yes') },
+              ] as FeatureRowDef[]).map((row, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.025)' }}>
-                  <td style={{ ...S.td, color: '#cbd5e1' }}>{row.label}</td>
+                  <td style={{ ...S.td, color: '#cbd5e1' }}>{t(row.labelKey)}</td>
                   <td style={{ ...S.td, color: '#6b7280', textAlign: 'center' as const }}>{row.free}</td>
                   <td style={{ ...S.td, color: '#93c5fd', textAlign: 'center' as const }}>{row.standard}</td>
                   <td style={{ ...S.td, color: '#c4b5fd', textAlign: 'center' as const }}>{row.premium}</td>
@@ -83,7 +81,7 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
 
         {onDismiss && (
           <button onClick={() => { trackEvent('paywall_dismissed', { plan: currentPlan }); onDismiss(); }} style={S.dismissBtn}>
-            Continue with limited free access
+{t('paywall.continue_free')}
           </button>
         )}
       </div>
@@ -94,6 +92,7 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
 interface PlanCardProps { plan: Exclude<Plan, 'free'>; recommended?: boolean; onUpgrade: (p: Exclude<Plan, 'free'>) => void; }
 
 function PlanCard({ plan, recommended, onUpgrade }: PlanCardProps) {
+  const { t } = useTranslation();
   const config: PlanConfig = PLANS[plan];
   const isStd = plan === 'standard';
   const accent = isStd ? '#3b82f6' : '#8b5cf6';
@@ -110,19 +109,19 @@ function PlanCard({ plan, recommended, onUpgrade }: PlanCardProps) {
           background: accent, color: '#fff', fontSize: '0.6875rem', fontWeight: 700,
           letterSpacing: '0.08em', textTransform: 'uppercase' as const,
           padding: '0.2rem 0.75rem', borderRadius: '2rem', whiteSpace: 'nowrap' as const }}>
-          Most popular
+{t('paywall.most_popular')}
         </div>
       )}
       <div>
         <div style={{ color: accent, fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.25rem' }}>{config.label}</div>
         <div style={{ fontSize: '1.625rem', fontWeight: 700, color: '#f1f5f9', lineHeight: 1.1 }}>{config.price}</div>
-        <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.125rem' }}>per month, cancel anytime</div>
+        <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.125rem' }}>{t('paywall.per_month')}</div>
       </div>
       <ul style={{ margin: 0, padding: 0, listStyle: 'none' as const, display: 'flex', flexDirection: 'column' as const, gap: '0.4rem' }}>
         {Array.from(config.features).slice(0, 5).map(f => (
           <li key={f} style={{ display: 'flex', alignItems: 'flex-start' as const, gap: '0.5rem', color: '#cbd5e1', fontSize: '0.8125rem' }}>
             <span style={{ color: accent, marginTop: '1px', flexShrink: 0 }}>\u2713</span>
-            {featureLabel(f as Feature)}
+{t(FEATURE_KEYS[f as Feature] ?? f)}
           </li>
         ))}
       </ul>
@@ -130,22 +129,24 @@ function PlanCard({ plan, recommended, onUpgrade }: PlanCardProps) {
         marginTop: 'auto', padding: '0.6875rem', background: accent, border: 'none',
         borderRadius: '0.625rem', color: '#fff', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
       }}>
-        Upgrade to {config.label}
+{t('paywall.upgrade_to', { plan: config.label })}
       </button>
     </div>
   );
 }
 
-function featureLabel(f: Feature): string {
-  const m: Record<Feature, string> = {
-    multiple_tracks: 'Multiple active tracks', full_journey: 'Full journey access',
-    coach_unlimited: 'Unlimited AI Coach', community_post: 'Post to community',
-    streak_shield: 'Streak shields', all_themes: 'All island themes',
-    enriched_checkin: 'Enriched check-ins', weekly_letter: 'Weekly review letter',
-    sos_button: 'SOS crisis button', savings_calculator: 'Savings calculator',
-  };
-  return m[f] ?? f;
-}
+const FEATURE_KEYS: Record<Feature, string> = {
+  multiple_tracks: 'paywall.features.active_tracks',
+  full_journey: 'paywall.features.journey_length',
+  coach_unlimited: 'paywall.features.ai_coach',
+  community_post: 'paywall.features.community',
+  streak_shield: 'paywall.features.shields',
+  all_themes: 'paywall.features.island_themes',
+  enriched_checkin: 'paywall.features.enriched_checkins',
+  weekly_letter: 'paywall.features.weekly_letter',
+  sos_button: 'paywall.features.sos',
+  savings_calculator: 'paywall.features.savings',
+};
 
 const S = {
   overlay: { position: 'fixed' as const, inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.88)',

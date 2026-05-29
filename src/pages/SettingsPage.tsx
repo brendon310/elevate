@@ -23,14 +23,14 @@ function lsSave(key: string, val: unknown) {
 }
 
 const FORGE_TITLES = [
-  { days: 0, title: 'Newcomer', color: 'text-muted-foreground' },
-  { days: 10, title: 'Apprentice', color: 'text-blue-400' },
-  { days: 25, title: 'Journeyman', color: 'text-purple-400' },
-  { days: 50, title: 'Forge Master', color: 'text-amber-400' },
-  { days: 100, title: 'Legend', color: 'text-yellow-300' },
+  { days: 0, titleKey: 'settings.title_newcomer', color: 'text-muted-foreground' },
+  { days: 10, titleKey: 'settings.title_apprentice', color: 'text-blue-400' },
+  { days: 25, titleKey: 'settings.title_journeyman', color: 'text-purple-400' },
+  { days: 50, titleKey: 'settings.title_forge_master', color: 'text-amber-400' },
+  { days: 100, titleKey: 'settings.title_legend', color: 'text-yellow-300' },
 ];
 
-function getForgeTitle(tracks: UserTrack[]): { title: string; color: string } {
+function getForgeTitle(tracks: UserTrack[]): { titleKey: string; color: string } {
   const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
   let result = FORGE_TITLES[0];
   for (const ft of FORGE_TITLES) { if (maxStreak >= ft.days) result = ft; }
@@ -99,7 +99,7 @@ setPushError(t("settings.push_not_supported"));
     setPushLoading(true);
     try {
       const perm = await Notification.requestPermission();
-if (perm !== "granted") { setPushError(t("settings.push_permission_denied")); return; }
+if (perm !== "granted") { setPushError(t("settings.push_denied")); return; }
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
       const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
@@ -110,7 +110,7 @@ if (perm !== "granted") { setPushError(t("settings.push_permission_denied")); re
       setReminderOn(true);
       lsSave("forge-reminder-on", true);
     } catch {
-setPushError(t("settings.push_error"));
+setPushError(t("settings.push_failed"));
     } finally {
       setPushLoading(false);
     }
@@ -265,7 +265,7 @@ setPushError(t("settings.push_error"));
         <div className="flex items-center justify-between py-2">
           <div>
             <p className="text-sm font-medium">{t('settings.reminder_time')}</p>
-            <p className="text-xs text-muted-foreground">{t("settings.notifications_desc")}</p>
+            <p className="text-xs text-muted-foreground">{t("settings.reminder_body")}</p>
           </div>
           <button
             onClick={toggleReminder}
@@ -277,7 +277,7 @@ setPushError(t("settings.push_error"));
         </div>
         {reminderOn && (
           <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
-            <p className="text-xs text-muted-foreground">{t("settings.notifications_active")}</p>
+            <p className="text-xs text-muted-foreground">{t("settings.reminder_active")}</p>
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
@@ -289,14 +289,14 @@ setPushError(t("settings.push_error"));
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-muted-foreground mb-0.5">{t("settings.your_title")}</p>
-            <p className={`text-base font-semibold ${forgeTitle.color}`}>{forgeTitle.title}</p>
+            <p className={`text-base font-semibold ${forgeTitle.color}`}>{t(forgeTitle.titleKey)}</p>
           </div>
           <div className="flex items-center gap-2 bg-white/5 border border-border rounded-xl px-4 py-2">
             <span className="text-xl font-bold text-blue-400">{shields}</span>
 <span className="text-xs text-muted-foreground">{t("settings.shields")}</span>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">{t("settings.shields_desc")}</p>
+        <p className="text-xs text-muted-foreground">{t("settings.shields_body")}</p>
       </section>
 
       {/* Island Theme */}
@@ -327,7 +327,7 @@ setPushError(t("settings.push_error"));
                 ))}
               </div>
               {onCooldown ? (
-                <p className="text-xs text-muted-foreground">{t("settings.theme_cooldown", { n: daysLeft })}</p>
+                <p className="text-xs text-muted-foreground">{t("settings.theme_cooldown", { days: daysLeft, plural: daysLeft === 1 ? '' : 's' })}</p>
               ) : (
                 <p className="text-xs text-muted-foreground">{t("settings.theme_available")}</p>
               )}
@@ -345,7 +345,7 @@ setPushError(t("settings.push_error"));
           <h2 className="font-semibold">{t("settings.data_privacy")}</h2>
         </div>
         <div className="rounded-xl bg-muted/50 border border-border/50 p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-{t("settings.data_desc")}
+{t("settings.data_body")}
         </div>
         <div className="space-y-1">
           {/* Export */}
@@ -404,8 +404,8 @@ setPushError(t("settings.push_error"));
           {/* Clear local data */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm font-medium text-[color:var(--secondary)]">{t("settings.clear_local_data")}</p>
-              <p className="text-xs text-muted-foreground">{t("settings.clear_local_desc")}</p>
+              <p className="text-sm font-medium text-[color:var(--secondary)]">{t("settings.clear_local")}</p>
+              <p className="text-xs text-muted-foreground">{t("settings.clear_local_body")}</p>
             </div>
             {showClearConfirm ? (
               <div className="flex gap-2">

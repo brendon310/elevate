@@ -610,7 +610,7 @@ function GoogleIcon() {
   );
 }
 
-const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia","Tristezza","Abitudine"];
+const CI_TRIGGERS = ["stress","boredom","social","loneliness","fatigue","anger","sadness","habit"];
 
 
 function PrizeRequestModal({ onClose }: { onClose: () => void }) {
@@ -926,6 +926,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () => void }) {
+  const { t } = useTranslation();
   const [name, setName] = useState(userName);
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
@@ -949,9 +950,9 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
   if (done) return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
       <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
-        <p className="text-white text-lg font-semibold text-center mb-2">You're on the list!</p>
-        <p className="text-white/50 text-sm text-center mb-6">We'll send your personalised prize to the address you provided.</p>
-        <button onClick={onClose} className="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-medium">Close</button>
+        <p className="text-white text-lg font-semibold text-center mb-2">{t("home.prize_on_list")}</p>
+        <p className="text-white/50 text-sm text-center mb-6">{t("home.prize_on_list_body")}</p>
+        <button onClick={onClose} className="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-medium">{t("common.close")}</button>
       </div>
     </div>
   );
@@ -959,15 +960,15 @@ function PrizeClaimModal({ userName, onClose }: { userName: string; onClose: () 
     <div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.75)'}}>
       <div className="w-full max-w-md bg-neutral-900 rounded-t-2xl p-6 pb-10">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-white font-semibold">You made it!</p>
+          <p className="text-white font-semibold">{t("home.prize_title")}</p>
           <button onClick={onClose} className="text-white/40 text-2xl leading-none">&times;</button>
         </div>
-        <p className="text-white/50 text-sm mb-5">You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.</p>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
-        <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="Delivery address" rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
+        <p className="text-white/50 text-sm mb-5">{t("home.prize_body")}</p>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder={t("home.prize_name_placeholder")} className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <input value={email} onChange={e => setEmail(e.target.value)} placeholder={t("home.prize_email_placeholder")} type="email" className="w-full mb-3 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none" />
+        <textarea value={address} onChange={e => setAddress(e.target.value)} placeholder={t("home.prize_address_placeholder")} rows={3} className="w-full mb-5 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/30 text-sm border border-white/10 focus:outline-none resize-none" />
         <button onClick={handleSubmit} disabled={submitting || !name.trim() || !email.trim() || !address.trim()} className="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-40">
-          {submitting ? 'Sending…' : 'Send my address — €7.99'}
+          {submitting ? t('home.prize_sending') : t('home.prize_send_address')}
         </button>
       </div>
     </div>
@@ -1176,7 +1177,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
                     type="text" value={enteredName} autoFocus
                     onChange={e => setEnteredName(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && enteredName.trim().length > 0 && onSuccess(enteredName.trim())}
-                    placeholder="Your name"
+                    placeholder={t("home.prize_name_placeholder")}
                     className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition text-center font-display text-lg"
                   />
                   <button
@@ -1633,7 +1634,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   onComplete({ track: pendingTrackForName!, name: n });
                 }
               }}
-              placeholder="Your name"
+              placeholder={t("home.prize_name_placeholder")}
               className="w-full bg-transparent border-0 border-b-2 border-border focus:border-foreground outline-none text-center font-display text-3xl placeholder:text-muted-foreground py-4 transition-colors"
             />
             <div className="mt-10 flex flex-col items-center gap-3">
@@ -2122,7 +2123,7 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
               {streak}
             </motion.p>
             <p className="text-[10px] uppercase tracking-[0.35em] font-mono text-white/50 mt-1">
-              {streak === 1 ? "day" : "days"}
+{t(streak === 1 ? "common.day" : "common.days")}
             </p>
           </div>
         </motion.div>
@@ -2133,7 +2134,7 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
           transition={{ delay: 0.3, duration: 0.5 }}>
           <p className="text-[10px] uppercase tracking-[0.4em] font-mono text-muted-foreground mb-1">{trackName}</p>
           <h2 className="font-display text-2xl text-white tracking-tight">
-            Day {streak} complete.
+            {t("app.day_complete", { n: streak })}
           </h2>
         </motion.div>
 
@@ -2150,7 +2151,7 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 0.75, duration: 0.5 }}
           className="text-[11px] font-mono uppercase tracking-[0.4em] text-white/30">
-          See you tomorrow.
+{t("app.see_you_tomorrow")}
         </motion.p>
       </div>
 
@@ -2661,35 +2662,35 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           <div className="text-5xl">👋</div>
           <div>
             <p className="font-display text-3xl font-bold text-white tracking-tight leading-tight mb-2">
-              Welcome back.
+  {t("app.reengagement_welcome")}
             </p>
             <p className="text-white/50 text-sm leading-relaxed">
-              {reengagement.daysMissed === 1
-                ? `You missed yesterday on ${reengagement.trackName}.`
-                : `You've been away for ${reengagement.daysMissed} days.`}
-              <br />That's okay. The path is still here.
+{reengagement.daysMissed === 1
+                ? t("app.reengagement_missed_yesterday", { name: reengagement.trackName })
+                : t("app.reengagement_away", { n: reengagement.daysMissed })}
+              <br />{t("app.reengagement_path_here")}
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-left space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-white/30">What helps</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-mono text-white/30">{t("app.reengagement_what_helps")}</p>
             <p className="text-white/70 text-sm leading-relaxed">
-              {reengagement.daysMissed >= 7
-                ? "Start with one minute. Seriously — open your journey, read today's task, and just begin. That's the whole job."
+{reengagement.daysMissed >= 7
+                ? t("app.reengagement_body_7d")
                 : reengagement.daysMissed >= 3
-                ? "Three days off doesn't erase what you built. Your identity is still there. One check-in and you're back."
-                : "Missing a day happens to everyone. The only mistake is letting one miss become two."}
+                ? t("app.reengagement_body_3d")
+                : t("app.reengagement_body_1d")}
             </p>
           </div>
           <div className="space-y-2 w-full">
             <button
               onClick={() => { setReengagement(null); setPage("home"); }}
               className="w-full btn-chunk rounded-full bg-white text-black px-8 py-3 text-sm font-bold">
-              Let's go →
+{t("app.reengagement_lets_go")} →
             </button>
             <button
               onClick={() => setReengagement(null)}
               className="w-full text-white/30 text-xs py-2">
-              Maybe later
+{t("app.reengagement_maybe_later")}
             </button>
           </div>
         </motion.div>
@@ -2707,15 +2708,15 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           transition={{ type: "spring", stiffness: 90, damping: 14, delay: 0.1 }}>
           <p className="text-6xl">🏆</p>
           <p className="font-display text-4xl font-bold text-white tracking-tight leading-tight">
-            Journey<br />Complete
+{t("app.track_complete_title")}
           </p>
           <p className="text-white/60 text-sm max-w-xs mx-auto leading-relaxed">
             You finished <span className="text-white font-semibold">{trackCompletion.trackName}</span>.<br />
-            That is real. You showed up every day.
+{t("app.track_complete_body")}
           </p>
           <button onClick={() => setTrackCompletion(null)}
             className="btn-chunk rounded-full bg-white text-black px-8 py-3 text-sm font-bold">
-            Continue
+            {t("common.continue")}
           </button>
         </motion.div>
       </motion.div>

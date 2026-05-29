@@ -89,7 +89,7 @@ const JOURNEY_MILESTONES = [1, 3, 7, 14, 21, 30, 60, 90, 180, 365];
 
 const JOURNEY_PRESETS = [30, 60, 90, 120, 180, 365] as const;
 
-const CI_TRIGGERS = ["Stress","Noia","Social","Solitudine","Stanchezza","Rabbia","Tristezza","Abitudine"];
+const CI_TRIGGERS = ["stress","boredom","social","loneliness","fatigue","anger","sadness","habit"];
 
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
 const TRACK_HUE: Record<string, string> = {
@@ -242,11 +242,11 @@ function CheckInRichModal({ onConfirm, onSkip }: {
           <div className="space-y-2">
             <p className="text-xs text-white/50">{t("journey.what_triggered_it")}</p>
             <div className="flex flex-wrap gap-2">
-              {CI_TRIGGERS.map(t => (
-                <button key={t} onClick={() => setTrigger(trigger === t ? "" : t)}
+              {CI_TRIGGERS.map(trig => (
+                <button key={trig} onClick={() => setTrigger(trigger === trig ? "" : trig)}
                   className={"px-3 py-1 rounded-full text-xs font-medium border transition-all " + (
-                    trigger === t ? "bg-amber-500/20 border-amber-500/50 text-amber-400" : "border-white/10 text-white/40")}>
-                  {t}
+                    trigger === trig ? "bg-amber-500/20 border-amber-500/50 text-amber-400" : "border-white/10 text-white/40")}>
+                  {t(`checkin.triggers.${trig}`)}
                 </button>
               ))}
             </div>

@@ -202,15 +202,15 @@ const QUICK_NOTE_BANNED = [
   "fuck","shit","bitch","asshole","bastard","cunt","dick","pussy","nigger","faggot",
 ];
 
-function validateQuickNote(text: string): string | null {
-  const t = text.trim();
-  if (t.length < 10) return "Write at least a few words before sending.";
-  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
-  if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
-  if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
-    return "Scrivi una risposta vera — anche due parole bastano.";
-  if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
-    return "Choose better words for your check-in.";
+function validateQuickNote(text: string, tFn: (k: string) => string): string | null {
+  const v = text.trim();
+  if (v.length < 10) return tFn("checkin.validation_too_short");
+  if (/^(.)\1{5,}$/.test(v)) return tFn("checkin.validation_joking");
+  if (/^[\d\s\W]+$/.test(v)) return tFn("checkin.validation_write_something");
+  if (v.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(v))
+    return tFn("checkin.validation_real_answer");
+  if (QUICK_NOTE_BANNED.some(w => v.toLowerCase().includes(w)))
+    return tFn("checkin.validation_bad_words");
   return null;
 }
 export const GARDEN_STAGES = [
@@ -1139,7 +1139,7 @@ placeholder={t("home.quick_note_placeholder")}
                             <button
                               onClick={() => {
                                 const text = (noteText[ut.id] ?? "").trim();
-                                const err = validateQuickNote(text);
+                                const err = validateQuickNote(text, t);
                                 if (err) { setNoteError(prev => ({ ...prev, [ut.id]: err })); return; }
                                 // Complete the active journey day → advances to next day
                                 const jDays = lsLoad<JourneyDay[]>(LS_DAYS(ut.slug), []);

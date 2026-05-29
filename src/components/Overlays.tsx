@@ -80,23 +80,15 @@ const SOS_GENERIC = [
 ];
 
 const BREATHE_PHASES = [
-  { label: "Breathe in", sub: "through your nose", duration: 4000, targetScale: 1.45 },
-  { label: "Hold", sub: "keep it steady", duration: 7000, targetScale: 1.45 },
-  { label: "Breathe out", sub: "slowly through your mouth", duration: 8000, targetScale: 0.85 },
-  { label: "Hold", sub: "ready for the next breath", duration: 4000, targetScale: 0.85 },
+  { labelKey: "sos.breathe_in", subKey: "sos.through_nose", duration: 4000, targetScale: 1.45 },
+  { labelKey: "sos.hold", subKey: "sos.keep_steady", duration: 7000, targetScale: 1.45 },
+  { labelKey: "sos.breathe_out", subKey: "sos.slowly_mouth", duration: 8000, targetScale: 0.85 },
+  { labelKey: "sos.hold", subKey: "sos.ready_next", duration: 4000, targetScale: 0.85 },
 ];
 
-const MILESTONE_MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
-  1:   { emoji: "🌱", title: "Day 1. Done.", sub: "The journey begins now." },
-  3:   { emoji: "🔥", title: "3 days straight.", sub: "You're building something real." },
-  7:   { emoji: "⚡", title: "One full week.", sub: "Most people quit before this." },
-  14:  { emoji: "🏅", title: "Two weeks in.", sub: "Your brain is already changing." },
-  21:  { emoji: "💎", title: "21 days.", sub: "A new habit is taking root." },
-  30:  { emoji: "🌟", title: "30 days.", sub: "One month. Extraordinary." },
-  60:  { emoji: "🚀", title: "60 days.", sub: "Two months of discipline." },
-  90:  { emoji: "👑", title: "90 days.", sub: "Three months. You are the proof." },
-  180: { emoji: "🏆", title: "180 days.", sub: "Half a year. Legendary." },
-  365: { emoji: "🎯", title: "One full year.", sub: "365 days. You changed your life." },
+const MILESTONE_EMOJIS: Record<number, string> = {
+  1: "🌱", 3: "🔥", 7: "⚡", 14: "🏅", 21: "💎",
+  30: "🌟", 60: "🚀", 90: "👑", 180: "🏆", 365: "🎯",
 };
 
 function ReEntryOverlay({ gapDays, onDismiss }: { gapDays: number; onDismiss: () => void }) {
@@ -256,7 +248,7 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
 
   const primarySlug = tracks[0]?.slug ?? "";
   const alternatives = SOS_ALTERNATIVES[primarySlug] ?? SOS_GENERIC;
-  const { label: breatheLabel, sub: breatheSub, duration: breatheDur } = BREATHE_PHASES[breatheIdx];
+  const { labelKey: breatheLabelKey, subKey: breatheSubKey, duration: breatheDur } = BREATHE_PHASES[breatheIdx];
 
   return (
     <motion.div
@@ -303,8 +295,8 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
                 }}
               />
               <div className="absolute flex flex-col items-center gap-1">
-                <span className="text-xl font-semibold text-white/90">{breatheLabel}</span>
-                <span className="text-xs text-white/40">{breatheSub}</span>
+                <span className="text-xl font-semibold text-white/90">{t(breatheLabelKey)}</span>
+                <span className="text-xs text-white/40">{t(breatheSubKey)}</span>
               </div>
             </div>
 
@@ -599,7 +591,9 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
 
 function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackName: string; onDismiss: () => void }) {
   const { t } = useTranslation();
-  const m = MILESTONE_MESSAGES[days] ?? { emoji: "🔥", title: `Day ${days}!`, sub: "Keep it up." };
+  const mEmoji = MILESTONE_EMOJIS[days] ?? "🔥";
+  const mTitle = t(`milestones.${days}_title`, { defaultValue: `Day ${days}!` });
+  const mSub = t(`milestones.${days}_sub`, { defaultValue: "Keep it up." });
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
@@ -609,11 +603,11 @@ function MilestoneOverlay({ days, trackName, onDismiss }: { days: number; trackN
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
         className="max-w-sm w-full text-center space-y-5">
         <motion.p initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.15 }}
-          className="text-7xl">{m.emoji}</motion.p>
+          className="text-7xl">{mEmoji}</motion.p>
         <div>
           <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground font-mono mb-2">{trackName}</p>
-          <h2 className="font-display text-4xl font-bold tracking-tight leading-tight">{m.title}</h2>
-          <p className="mt-2 text-muted-foreground text-lg">{m.sub}</p>
+          <h2 className="font-display text-4xl font-bold tracking-tight leading-tight">{mTitle}</h2>
+          <p className="mt-2 text-muted-foreground text-lg">{mSub}</p>
         </div>
         <button onClick={onDismiss}
           className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-8 py-3.5 text-sm font-bold shadow-[var(--shadow-violet)]">

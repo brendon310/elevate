@@ -58,7 +58,21 @@
       "La pause ne définit pas le chemin. Tu es là maintenant.",
       "Les meilleurs n'abandonnent pas — ils recommencent. Recommençons.",
       "Chaque grande histoire a un chapitre où le personnage principal revient. C'est le tien."
-    ]
+    ],
+    "day_complete": "Jour {{n}} accompli.",
+    "see_you_tomorrow": "À demain.",
+    "reengagement_welcome": "Bon retour.",
+    "reengagement_missed_yesterday": "Tu as raté {{name}} hier.",
+    "reengagement_away": "Tu as été absent(e) pendant {{n}} jours.",
+    "reengagement_path_here": "C'est normal. Le chemin est encore là.",
+    "reengagement_what_helps": "Ce qui aide",
+    "reengagement_body_7d": "Commence par une minute. Ouvre ton parcours, lis la tâche d'aujourd'hui et commence. C'est tout.",
+    "reengagement_body_3d": "Trois jours de pause n'effacent pas ce que tu as construit. Ton identité est toujours là. Un check-in et tu es de retour.",
+    "reengagement_body_1d": "Rater un jour arrive à tout le monde. La seule erreur est de laisser un raté en devenir deux.",
+    "reengagement_lets_go": "C'est parti",
+    "reengagement_maybe_later": "Peut-être plus tard",
+    "track_complete_title": "Parcours Accompli",
+    "track_complete_body": "C'est réel. Tu t'es présenté(e) chaque jour."
   },
   "common": {
     "next": "Suivant",
@@ -108,7 +122,9 @@
     "install_desc": "Installe Forge pour la meilleure expérience.",
     "install": "Installer",
     "track_label": "Habitude",
-    "error_retry": "Une erreur s'est produite. Veuillez réessayer bientôt."
+    "error_retry": "Une erreur s'est produite. Veuillez réessayer bientôt.",
+    "unlimited": "Illimité",
+    "none": "Aucun"
   },
   "nav": {
     "home": "Accueil",
@@ -164,9 +180,9 @@
     "feedback_sent": "Merci.",
     "feedback_sent_body": "Nous tiendrons compte de tes commentaires.",
     "feedback_privacy": "Envoyé en privé à l'équipe Forge.",
-    "prize_title": "Tu l'as fait !",
-    "prize_body": "Tu as atteint l'étape finale. Entre ton adresse et nous t'enverrons un prix personnalisé pour seulement €7.99.",
-    "prize_on_list": "Tu es sur la liste !",
+    "prize_title": "Tu l'as fait!",
+    "prize_body": "Tu as atteint la dernière étape. Entrez votre adresse et nous vous enverrons un prix personnalisé pour seulement €7.99.",
+    "prize_on_list": "Tu es sur la liste!",
     "prize_on_list_body": "Nous t'enverrons ton prix personnalisé à l'adresse que tu as fournie.",
     "name_placeholder": "Ton nom",
     "email_placeholder_field": "Ton email",
@@ -190,7 +206,16 @@
       "purchases": "achats",
       "hour": "heure",
       "hours": "heures"
-    }
+    },
+    "checkin_aria": "Check-in pour {{name}}",
+    "quick_note_title": "Note rapide",
+    "pause_streak_title": "Mettre la série en pause",
+    "prize_name_placeholder": "Ton nom",
+    "prize_email_placeholder": "Ton email",
+    "prize_address_placeholder": "Adresse de livraison",
+    "prize_sending": "Envoi…",
+    "prize_send_address": "Envoyer mon adresse — €7.99",
+    "prize_claim_tooltip": "Clique pour réclamer ton prix"
   },
   "journey": {
     "today": "Aujourd'hui",
@@ -316,7 +341,12 @@
       "anger": "Colère",
       "sadness": "Tristesse",
       "habit": "Habitude"
-    }
+    },
+    "validation_too_short": "Écris au moins quelques mots avant d'envoyer.",
+    "validation_joking": "On dirait que tu plaisantes — écris vraiment quelque chose!",
+    "validation_write_something": "Écris quelque chose de réel, même une courte phrase.",
+    "validation_real_answer": "Écris une vraie réponse — même deux mots suffisent.",
+    "validation_bad_words": "Choisis de meilleurs mots pour ton check-in."
   },
   "insights": {
     "title": "Statistiques",
@@ -384,7 +414,27 @@
     "download": "Sauvegarder l'image",
     "share": "Partager",
     "congrats_title": "Jalon atteint !",
-    "congrats_body": "Tu as atteint {{days}} jours. Tu veux partager ce moment ?"
+    "congrats_body": "Tu as atteint {{days}} jours. Tu veux partager ce moment ?",
+    "1_title": "Jour 1. Fait.",
+    "1_sub": "Le voyage commence maintenant.",
+    "3_title": "3 jours d'affilée.",
+    "3_sub": "Tu construis quelque chose de réel.",
+    "7_title": "Une semaine entière.",
+    "7_sub": "La plupart abandonnent avant ça.",
+    "14_title": "Deux semaines.",
+    "14_sub": "Ton cerveau est déjà en train de changer.",
+    "21_title": "21 jours.",
+    "21_sub": "Une nouvelle habitude prend racine.",
+    "30_title": "30 jours.",
+    "30_sub": "Un mois. Extraordinaire.",
+    "60_title": "60 jours.",
+    "60_sub": "Deux mois de discipline.",
+    "90_title": "90 jours.",
+    "90_sub": "Trois mois. Tu es la preuve.",
+    "180_title": "180 jours.",
+    "180_sub": "Un demi-an. Légendaire.",
+    "365_title": "Une année entière.",
+    "365_sub": "365 jours. Tu as changé ta vie."
   },
   "accountability": {
     "title": "Partenaire de Responsabilité",
@@ -421,7 +471,7 @@
     "island_theme": "Thème de l'île",
     "garden_island": "Île Jardin",
     "mountain_peak": "Sommet Montagne",
-    "theme_cooldown": "Prochain changement dans {{days}} jour{{plural}}",
+    "theme_cooldown": "Prochain changement dans {{n}} jours",
     "theme_available": "Changement disponible toutes les 2 semaines",
     "data_privacy": "Données et Confidentialité",
     "data_body": "Tes progrès sont sauvegardés localement et synchronisés avec ton compte. Tu peux exporter ou supprimer tes données à tout moment.",
@@ -432,7 +482,12 @@
     "deleting": "Suppression...",
     "push_not_supported": "Les notifications push ne sont pas prises en charge par ce navigateur.",
     "push_denied": "Permission refusée. Active les notifications dans les paramètres du navigateur.",
-    "push_failed": "Impossible d'activer les notifications. Réessaie."
+    "push_failed": "Impossible d'activer les notifications. Réessaie.",
+    "title_newcomer": "Novice",
+    "title_apprentice": "Apprenti",
+    "title_journeyman": "Compagnon",
+    "title_forge_master": "Maître Forgeron",
+    "title_legend": "Légende"
   },
   "gdpr": {
     "export_title": "Exporter tes données",
@@ -465,7 +520,14 @@
     "show_what_to_do": "Montre-moi quoi faire",
     "do_one_now": "Fais l'une de ces choses maintenant :",
     "im_okay_now": "Je vais bien maintenant",
-    "im_struggling": "J'ai du mal"
+    "im_struggling": "J'ai du mal",
+    "breathe_in": "Inspirez",
+    "through_nose": "par le nez",
+    "hold": "Retenez",
+    "keep_steady": "restez stable",
+    "breathe_out": "Expirez",
+    "slowly_mouth": "lentement par la bouche",
+    "ready_next": "prêt pour le prochain souffle"
   },
   "overlays": {
     "welcome_back": "Bon retour — {{days}} jours plus tard",
@@ -762,12 +824,40 @@
     "year_long": "d'un an"
   },
   "paywall": {
-    "trial_ended": "Période d'essai terminée",
-    "continue_journey": "Continue ton parcours",
+    "trial_ended": "Essai terminé",
+    "continue_journey": "Continuez votre parcours",
     "feature_col": "Fonctionnalité",
     "free_col": "Gratuit",
     "standard_col": "Standard",
-    "premium_col": "Premium"
+    "premium_col": "Premium",
+    "subtitle": "Votre essai gratuit de 14 jours est terminé. Choisissez un plan pour garder votre série et l'accès complet.",
+    "continue_free": "Continuer avec l'accès gratuit limité",
+    "most_popular": "Le plus populaire",
+    "per_month": "par mois, annulez à tout moment",
+    "upgrade_to": "Passer à {{plan}}",
+    "upgrade": "Mettre à niveau",
+    "features": {
+      "active_tracks": "Parcours actifs",
+      "journey_length": "Durée du parcours",
+      "ai_coach": "Messages AI Coach",
+      "community": "Communauté",
+      "shields": "Boucliers de série",
+      "island_themes": "Thèmes d'île",
+      "enriched_checkins": "Check-ins enrichis",
+      "weekly_letter": "Lettre hebdomadaire",
+      "sos": "Bouton SOS crise",
+      "savings": "Calculateur d'économies"
+    },
+    "up_to_5": "Jusqu'à 5",
+    "full_access": "Accès complet",
+    "seven_days": "7 jours",
+    "five_per_month": "5 / mois",
+    "fifty_per_month": "50 / mois",
+    "read_only": "Lecture seule",
+    "two_max": "Max. 2",
+    "five_max": "Max. 5",
+    "forest_only": "Forêt seulement",
+    "all_3": "Les 3"
   },
   "categories": {
     "Mental Health": "Santé Mentale",
@@ -778,5 +868,11 @@
     "Mind & Learning": "Esprit & Apprentissage",
     "Psychology & Self": "Psychologie & Soi",
     "Financial Health": "Santé Financière"
+  },
+  "plangate": {
+    "upgrade_aria": "Mettre à niveau pour déverrouiller cette fonctionnalité",
+    "default_label": "Cette fonctionnalité nécessite une mise à niveau",
+    "upgrade_btn": "Mettre à niveau",
+    "upgrade_inline": "Mettre à niveau pour déverrouiller"
   }
 }

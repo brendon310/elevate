@@ -58,7 +58,21 @@
       "A pausa não define o caminho. Você está aqui agora.",
       "Os melhores não desistem — recomeçam. Vamos começar de novo.",
       "Toda grande história tem um capítulo onde o personagem principal volta. Este é o seu."
-    ]
+    ],
+    "day_complete": "Dia {{n}} concluído.",
+    "see_you_tomorrow": "Até amanhã.",
+    "reengagement_welcome": "Bem-vindo de volta.",
+    "reengagement_missed_yesterday": "Você pulou {{name}} ontem.",
+    "reengagement_away": "Você esteve ausente por {{n}} dias.",
+    "reengagement_path_here": "Tudo bem. O caminho ainda está aqui.",
+    "reengagement_what_helps": "O que ajuda",
+    "reengagement_body_7d": "Comece com um minuto. Abra sua jornada, leia a tarefa de hoje e apenas comece. Isso é tudo.",
+    "reengagement_body_3d": "Três dias de pausa não apagam o que você construiu. Sua identidade ainda está lá. Um check-in e você está de volta.",
+    "reengagement_body_1d": "Pular um dia acontece com todos. O único erro é deixar um erro se tornar dois.",
+    "reengagement_lets_go": "Vamos lá",
+    "reengagement_maybe_later": "Talvez mais tarde",
+    "track_complete_title": "Jornada Concluída",
+    "track_complete_body": "É real. Você apareceu todos os dias."
   },
   "common": {
     "next": "Próximo",
@@ -108,7 +122,9 @@
     "install_desc": "Instale o Forge para a melhor experiência.",
     "install": "Instalar",
     "track_label": "Hábito",
-    "error_retry": "Algo deu errado. Tente novamente em breve."
+    "error_retry": "Algo deu errado. Tente novamente em breve.",
+    "unlimited": "Ilimitado",
+    "none": "Nenhum"
   },
   "nav": {
     "home": "Início",
@@ -160,14 +176,14 @@
     "feedback_title": "Não consegues entrar?",
     "feedback_label": "Comentários",
     "feedback_body": "Se tiveste problemas a abrir a app, conta-nos o que aconteceu.",
-    "feedback_placeholder": "ex. sem ligação, a app não abria...",
+    "feedback_placeholder": "ex. sem conexão, o app não abria...",
     "feedback_sent": "Obrigado.",
     "feedback_sent_body": "Vamos ter em conta o teu feedback.",
     "feedback_privacy": "Enviado de forma privada para a equipa Forge.",
-    "prize_title": "Conseguiste!",
-    "prize_body": "Chegaste à fase final. Introduz o teu endereço e enviamos-te um prémio personalizado por apenas €7.99.",
-    "prize_on_list": "Estás na lista!",
-    "prize_on_list_body": "Enviaremos o teu prémio personalizado para o endereço que forneceste.",
+    "prize_title": "Você conseguiu!",
+    "prize_body": "Você chegou à fase final. Insira seu endereço e enviaremos um prêmio personalizado por apenas €7.99.",
+    "prize_on_list": "Você está na lista!",
+    "prize_on_list_body": "Enviaremos seu prêmio personalizado para o endereço fornecido.",
     "name_placeholder": "O teu nome",
     "email_placeholder_field": "O teu email",
     "address_placeholder": "Endereço de entrega",
@@ -190,7 +206,16 @@
       "purchases": "compras",
       "hour": "hora",
       "hours": "horas"
-    }
+    },
+    "checkin_aria": "Check-in para {{name}}",
+    "quick_note_title": "Nota rápida",
+    "pause_streak_title": "Pausar sequência",
+    "prize_name_placeholder": "Seu nome",
+    "prize_email_placeholder": "Seu email",
+    "prize_address_placeholder": "Endereço de entrega",
+    "prize_sending": "Enviando…",
+    "prize_send_address": "Enviar meu endereço — €7.99",
+    "prize_claim_tooltip": "Clique para reivindicar seu prêmio"
   },
   "journey": {
     "today": "Hoje",
@@ -316,7 +341,12 @@
       "anger": "Raiva",
       "sadness": "Tristeza",
       "habit": "Hábito"
-    }
+    },
+    "validation_too_short": "Escreva pelo menos algumas palavras antes de enviar.",
+    "validation_joking": "Parece que você está brincando — escreva algo real!",
+    "validation_write_something": "Escreva algo real, mesmo uma frase curta.",
+    "validation_real_answer": "Escreva uma resposta real — até duas palavras bastam.",
+    "validation_bad_words": "Escolha palavras melhores para o seu check-in."
   },
   "insights": {
     "title": "Estatísticas",
@@ -384,7 +414,27 @@
     "download": "Guardar imagem",
     "share": "Partilhar",
     "congrats_title": "Marco atingido!",
-    "congrats_body": "Atingiste {{days}} dias. Queres partilhar este momento?"
+    "congrats_body": "Atingiste {{days}} dias. Queres partilhar este momento?",
+    "1_title": "Dia 1. Feito.",
+    "1_sub": "A jornada começa agora.",
+    "3_title": "3 dias seguidos.",
+    "3_sub": "Você está construindo algo real.",
+    "7_title": "Uma semana inteira.",
+    "7_sub": "A maioria desiste antes disso.",
+    "14_title": "Duas semanas.",
+    "14_sub": "Seu cérebro já está mudando.",
+    "21_title": "21 dias.",
+    "21_sub": "Um novo hábito está criando raízes.",
+    "30_title": "30 dias.",
+    "30_sub": "Um mês. Extraordinário.",
+    "60_title": "60 dias.",
+    "60_sub": "Dois meses de disciplina.",
+    "90_title": "90 dias.",
+    "90_sub": "Três meses. Você é a prova.",
+    "180_title": "180 dias.",
+    "180_sub": "Meio ano. Lendário.",
+    "365_title": "Um ano inteiro.",
+    "365_sub": "365 dias. Você mudou sua vida."
   },
   "accountability": {
     "title": "Parceiro de Responsabilidade",
@@ -421,7 +471,7 @@
     "island_theme": "Tema da Ilha",
     "garden_island": "Ilha Jardim",
     "mountain_peak": "Pico Montanha",
-    "theme_cooldown": "Próxima mudança em {{days}} dia{{plural}}",
+    "theme_cooldown": "Próxima mudança em {{n}} dias",
     "theme_available": "Mudança disponível a cada 2 semanas",
     "data_privacy": "Dados e Privacidade",
     "data_body": "O teu progresso é guardado localmente e sincronizado com a tua conta. Podes exportar ou eliminar os teus dados a qualquer momento.",
@@ -432,7 +482,12 @@
     "deleting": "A eliminar...",
     "push_not_supported": "As notificações push não são suportadas neste navegador.",
     "push_denied": "Permissão negada. Ativa as notificações nas definições do navegador.",
-    "push_failed": "Não foi possível ativar as notificações. Tenta novamente."
+    "push_failed": "Não foi possível ativar as notificações. Tenta novamente.",
+    "title_newcomer": "Iniciante",
+    "title_apprentice": "Aprendiz",
+    "title_journeyman": "Oficial",
+    "title_forge_master": "Mestre Ferreiro",
+    "title_legend": "Lenda"
   },
   "gdpr": {
     "export_title": "Exportar os teus dados",
@@ -465,7 +520,14 @@
     "show_what_to_do": "Me mostre o que fazer",
     "do_one_now": "Faça uma destas coisas agora:",
     "im_okay_now": "Estou bem agora",
-    "im_struggling": "Estou lutando"
+    "im_struggling": "Estou lutando",
+    "breathe_in": "Inspire",
+    "through_nose": "pelo nariz",
+    "hold": "Segure",
+    "keep_steady": "mantenha firme",
+    "breathe_out": "Expire",
+    "slowly_mouth": "lentamente pela boca",
+    "ready_next": "pronto para o próximo respiro"
   },
   "overlays": {
     "welcome_back": "Bem-vindo de volta — {{days}} dias depois",
@@ -762,12 +824,40 @@
     "year_long": "de um ano"
   },
   "paywall": {
-    "trial_ended": "Período de avaliação encerrado",
+    "trial_ended": "Teste encerrado",
     "continue_journey": "Continue sua jornada",
-    "feature_col": "Função",
-    "free_col": "Gratuito",
-    "standard_col": "Padrão",
-    "premium_col": "Premium"
+    "feature_col": "Recurso",
+    "free_col": "Grátis",
+    "standard_col": "Standard",
+    "premium_col": "Premium",
+    "subtitle": "Seu teste gratuito de 14 dias terminou. Escolha um plano para manter sua sequência e acesso completo.",
+    "continue_free": "Continuar com acesso gratuito limitado",
+    "most_popular": "Mais popular",
+    "per_month": "por mês, cancele quando quiser",
+    "upgrade_to": "Mudar para {{plan}}",
+    "upgrade": "Upgrade",
+    "features": {
+      "active_tracks": "Trilhas ativas",
+      "journey_length": "Duração da jornada",
+      "ai_coach": "Mensagens AI Coach",
+      "community": "Comunidade",
+      "shields": "Escudos de sequência",
+      "island_themes": "Temas de ilha",
+      "enriched_checkins": "Check-ins enriquecidos",
+      "weekly_letter": "Carta semanal",
+      "sos": "Botão SOS crise",
+      "savings": "Calculadora de economias"
+    },
+    "up_to_5": "Até 5",
+    "full_access": "Acesso completo",
+    "seven_days": "7 dias",
+    "five_per_month": "5 / mês",
+    "fifty_per_month": "50 / mês",
+    "read_only": "Somente leitura",
+    "two_max": "Máx. 2",
+    "five_max": "Máx. 5",
+    "forest_only": "Apenas floresta",
+    "all_3": "Os 3"
   },
   "categories": {
     "Mental Health": "Saúde Mental",
@@ -778,5 +868,11 @@
     "Mind & Learning": "Mente & Aprendizado",
     "Psychology & Self": "Psicologia & Eu",
     "Financial Health": "Saúde Financeira"
+  },
+  "plangate": {
+    "upgrade_aria": "Upgrade para desbloquear este recurso",
+    "default_label": "Este recurso requer upgrade",
+    "upgrade_btn": "Upgrade",
+    "upgrade_inline": "Upgrade para desbloquear"
   }
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
 import { X, Moon, Zap, Heart, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +29,7 @@ export function CoachNudge({
   onDismiss: () => void;
   onCta?: (route: string) => void;
 }) {
+  const { t } = useTranslation();
   const cfg = NUDGE_CONFIG[nudge.type] || NUDGE_CONFIG.inactivity;
   const Icon = cfg.icon;
 
@@ -43,7 +45,7 @@ export function CoachNudge({
         <button
           onClick={onDismiss}
           className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition"
-          aria-label="Dismiss"
+{...{ "aria-label": t("coach.dismiss") }}
         >
           <X className="h-3.5 w-3.5" />
         </button>

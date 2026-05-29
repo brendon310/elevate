@@ -58,7 +58,21 @@
       "The gap doesn't define the path. You're here now.",
       "The best ones don't give up — they restart. Let's begin again.",
       "Every great story has a chapter where the main character comes back. This is yours."
-    ]
+    ],
+    "day_complete": "Day {{n}} complete.",
+    "see_you_tomorrow": "See you tomorrow.",
+    "reengagement_welcome": "Welcome back.",
+    "reengagement_missed_yesterday": "You missed yesterday on {{name}}.",
+    "reengagement_away": "You've been away for {{n}} days.",
+    "reengagement_path_here": "That's okay. The path is still here.",
+    "reengagement_what_helps": "What helps",
+    "reengagement_body_7d": "Start with one minute. Open your journey, read today's task, and just begin. That's the whole job.",
+    "reengagement_body_3d": "Three days off doesn't erase what you built. Your identity is still there. One check-in and you're back.",
+    "reengagement_body_1d": "Missing a day happens to everyone. The only mistake is letting one miss become two.",
+    "reengagement_lets_go": "Let's go",
+    "reengagement_maybe_later": "Maybe later",
+    "track_complete_title": "Journey Complete",
+    "track_complete_body": "That is real. You showed up every day."
   },
   "common": {
     "next": "Next",
@@ -108,7 +122,9 @@
     "install_desc": "Install Forge for the best experience.",
     "install": "Install",
     "track_label": "Track",
-    "error_retry": "Something went wrong. Please try again shortly."
+    "error_retry": "Something went wrong. Please try again shortly.",
+    "unlimited": "Unlimited",
+    "none": "None"
   },
   "nav": {
     "home": "Home",
@@ -165,7 +181,7 @@
     "feedback_sent_body": "We'll take your feedback into account.",
     "feedback_privacy": "Sent privately to the Forge team.",
     "prize_title": "You made it!",
-    "prize_body": "You've reached the final stage. Enter your address below and we'll ship you a personalised prize for just €7.99.",
+    "prize_body": "You've reached the final stage. Enter your address and we'll ship you a personalised prize for just €7.99.",
     "prize_on_list": "You're on the list!",
     "prize_on_list_body": "We'll send your personalised prize to the address you provided.",
     "name_placeholder": "Your name",
@@ -190,7 +206,16 @@
       "purchases": "purchases",
       "hour": "hour",
       "hours": "hours"
-    }
+    },
+    "checkin_aria": "Check in for {{name}}",
+    "quick_note_title": "Quick note",
+    "pause_streak_title": "Pause streak",
+    "prize_name_placeholder": "Your name",
+    "prize_email_placeholder": "Your email",
+    "prize_address_placeholder": "Delivery address",
+    "prize_sending": "Sending…",
+    "prize_send_address": "Send my address — €7.99",
+    "prize_claim_tooltip": "Click to claim your prize"
   },
   "journey": {
     "today": "Today",
@@ -316,7 +341,12 @@
       "anger": "Anger",
       "sadness": "Sadness",
       "habit": "Habit"
-    }
+    },
+    "validation_too_short": "Write at least a few words before sending.",
+    "validation_joking": "Looks like you're joking — write something real!",
+    "validation_write_something": "Write something real, even a short sentence.",
+    "validation_real_answer": "Write a real answer — even two words is enough.",
+    "validation_bad_words": "Choose better words for your check-in."
   },
   "insights": {
     "title": "Insights",
@@ -384,7 +414,27 @@
     "download": "Save image",
     "share": "Share",
     "congrats_title": "Milestone reached!",
-    "congrats_body": "You've hit {{days}} days. Want to share this moment?"
+    "congrats_body": "You've hit {{days}} days. Want to share this moment?",
+    "1_title": "Day 1. Done.",
+    "1_sub": "The journey begins now.",
+    "3_title": "3 days straight.",
+    "3_sub": "You're building something real.",
+    "7_title": "One full week.",
+    "7_sub": "Most people quit before this.",
+    "14_title": "Two weeks in.",
+    "14_sub": "Your brain is already changing.",
+    "21_title": "21 days.",
+    "21_sub": "A new habit is taking root.",
+    "30_title": "30 days.",
+    "30_sub": "One month. Extraordinary.",
+    "60_title": "60 days.",
+    "60_sub": "Two months of discipline.",
+    "90_title": "90 days.",
+    "90_sub": "Three months. You are the proof.",
+    "180_title": "180 days.",
+    "180_sub": "Half a year. Legendary.",
+    "365_title": "One full year.",
+    "365_sub": "365 days. You changed your life."
   },
   "accountability": {
     "title": "Accountability Partner",
@@ -421,7 +471,7 @@
     "island_theme": "Island Theme",
     "garden_island": "Garden Island",
     "mountain_peak": "Mountain Peak",
-    "theme_cooldown": "Next change in {{days}} day{{plural}}",
+    "theme_cooldown": "Next change in {{n}} days",
     "theme_available": "Change available once every 2 weeks",
     "data_privacy": "Data & Privacy",
     "data_body": "Your progress is saved locally and backed up to your account. You can export or delete your data at any time.",
@@ -432,7 +482,12 @@
     "deleting": "Deleting...",
     "push_not_supported": "Push notifications are not supported in this browser.",
     "push_denied": "Permission denied. Enable notifications in browser settings.",
-    "push_failed": "Could not enable notifications. Try again."
+    "push_failed": "Could not enable notifications. Try again.",
+    "title_newcomer": "Newcomer",
+    "title_apprentice": "Apprentice",
+    "title_journeyman": "Journeyman",
+    "title_forge_master": "Forge Master",
+    "title_legend": "Legend"
   },
   "gdpr": {
     "export_title": "Export your data",
@@ -465,7 +520,14 @@
     "show_what_to_do": "Show me what to do",
     "do_one_now": "Do one of these right now:",
     "im_okay_now": "I'm okay now",
-    "im_struggling": "I'm struggling"
+    "im_struggling": "I'm struggling",
+    "breathe_in": "Breathe in",
+    "through_nose": "through your nose",
+    "hold": "Hold",
+    "keep_steady": "keep it steady",
+    "breathe_out": "Breathe out",
+    "slowly_mouth": "slowly through your mouth",
+    "ready_next": "ready for the next breath"
   },
   "overlays": {
     "welcome_back": "Welcome back — {{days}} days later",
@@ -767,7 +829,35 @@
     "feature_col": "Feature",
     "free_col": "Free",
     "standard_col": "Standard",
-    "premium_col": "Premium"
+    "premium_col": "Premium",
+    "subtitle": "Your 14-day free trial has ended. Choose a plan to keep your streak and full access.",
+    "continue_free": "Continue with limited free access",
+    "most_popular": "Most popular",
+    "per_month": "per month, cancel anytime",
+    "upgrade_to": "Upgrade to {{plan}}",
+    "upgrade": "Upgrade",
+    "features": {
+      "active_tracks": "Active tracks",
+      "journey_length": "Journey length",
+      "ai_coach": "AI Coach messages",
+      "community": "Community",
+      "shields": "Streak shields",
+      "island_themes": "Island themes",
+      "enriched_checkins": "Enriched check-ins",
+      "weekly_letter": "Weekly letter",
+      "sos": "SOS crisis button",
+      "savings": "Savings calculator"
+    },
+    "up_to_5": "Up to 5",
+    "full_access": "Full access",
+    "seven_days": "7 days",
+    "five_per_month": "5 / month",
+    "fifty_per_month": "50 / month",
+    "read_only": "Read only",
+    "two_max": "2 max",
+    "five_max": "5 max",
+    "forest_only": "Forest only",
+    "all_3": "All 3"
   },
   "categories": {
     "Mental Health": "Mental Health",
@@ -778,5 +868,11 @@
     "Mind & Learning": "Mind & Learning",
     "Psychology & Self": "Psychology & Self",
     "Financial Health": "Financial Health"
+  },
+  "plangate": {
+    "upgrade_aria": "Upgrade to unlock this feature",
+    "default_label": "This feature requires an upgrade",
+    "upgrade_btn": "Upgrade",
+    "upgrade_inline": "Upgrade to unlock"
   }
 }
