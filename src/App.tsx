@@ -441,15 +441,15 @@ const QUICK_NOTE_BANNED = [
   "fuck","shit","bitch","asshole","bastard","cunt","dick","pussy","nigger","faggot",
 ];
 
-function validateQuickNote(text: string): string | null {
-  const t = text.trim();
-  if (t.length < 10) return "Write at least a few words before sending.";
-  if (/^(.)\1{5,}$/.test(t)) return "Sembra che tu stia scherzando — scrivi davvero!";
-  if (/^[\d\s\W]+$/.test(t)) return "Scrivi qualcosa di reale, anche una frase breve.";
-  if (t.length > 6 && !/[aeiouàèéìòùAEIOUÀÈÉÌÒÙ]/u.test(t))
-    return "Scrivi una risposta vera — anche due parole bastano.";
-  if (QUICK_NOTE_BANNED.some(w => t.toLowerCase().includes(w)))
-    return "Choose better words for your check-in.";
+function validateQuickNote(text: string, tFn: (k: string) => string): string | null {
+  const v = text.trim();
+  if (v.length < 10) return tFn("checkin.validation_too_short");
+  if (/^(.)\1{5,}$/.test(v)) return tFn("checkin.validation_joking");
+  if (/^[\d\s\W]+$/.test(v)) return tFn("checkin.validation_write_something");
+  if (v.length > 6 && !/[aeiou\u00e0\u00e8\u00e9\u00ec\u00f2\u00f9AEIOU\u00c0\u00c8\u00c9\u00cc\u00d2\u00d9]/u.test(v))
+    return tFn("checkin.validation_real_answer");
+  if (QUICK_NOTE_BANNED.some(w => v.toLowerCase().includes(w)))
+    return tFn("checkin.validation_bad_words");
   return null;
 }
 
