@@ -93,14 +93,6 @@ const ALL_TRACKS = [
   { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
 
-const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
-  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
-  clinician: ["I'm struggling today.", "Why do I keep falling back?", "What does the science say about cravings?", "Help me understand my pattern."],
-  mentor:    ["What's the strategic move here?", "What am I not seeing?", "Help me build a system.", "Where do I go from here?"],
-  teacher:   ["Why does this habit work neurologically?", "Break it down simply.", "What should I focus on this week?", "Explain the psychology of my pattern."],
-  guide:     ["What does this journey mean?", "Help me find my why again.", "I need a different perspective.", "What ritual could help me today?"],
-};
-
 const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
   trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
   clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
@@ -110,14 +102,14 @@ const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> 
 };
 
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
-interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
+interface Archetype { id: ArchetypeId; name: string; taglineKey: string; voice: string; }
 
 const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  trainer: { id: "trainer", name: "Kai", tagline: "Keeps you accountable", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
-  teacher: { id: "teacher", name: "Iris", tagline: "Makes it click", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
-  clinician: { id: "clinician", name: "Dr. Mara", tagline: "Validates, then guides", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
-  mentor: { id: "mentor", name: "Roy", tagline: "Strategic, no fluff", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
-  guide: { id: "guide", name: "Sasha", tagline: "Finds your deeper why", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+  trainer: { id: "trainer", name: "Kai", taglineKey: "coach.trainer_tagline", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Iris", taglineKey: "coach.teacher_tagline", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Dr. Mara", taglineKey: "coach.clinician_tagline", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Roy", taglineKey: "coach.mentor_tagline", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Sasha", taglineKey: "coach.guide_tagline", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
 };
 
 const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
@@ -1595,7 +1587,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   <motion.p
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
                     className="text-xs text-muted-foreground mb-8 uppercase tracking-[0.22em] font-mono">
-                    {_arch.tagline}
+                    {t(_arch.taglineKey)}
                   </motion.p>
                   <motion.p
                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -1813,7 +1805,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
               startingPoint: "Complete beginner, first time",
               motivation: "I want real and lasting change in my life",
               obstacle: "Staying consistent when motivation drops",
-              fromDay: 1, count: 7,
+              fromDay: 1, count: 7, language: i18n.language,
             }),
           });
           if (!res.ok) throw new Error();
@@ -2168,7 +2160,7 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function ElevateApp() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [screen, setScreen] = useState<Screen>(() => {
     const user = lsLoad<ElevateUser | null>(LS_USER, null);
     const auth = lsLoad<ElevateAuth | null>(LS_AUTH, null);

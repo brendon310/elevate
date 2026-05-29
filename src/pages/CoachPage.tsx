@@ -6,13 +6,13 @@ import type { UserTrack, JourneyDay, Journey } from '../types';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
-interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
+interface Archetype { id: ArchetypeId; name: string; taglineKey: string; voice: string; }
 const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  trainer: { id: "trainer", name: "Kai", tagline: "Keeps you accountable", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
-  teacher: { id: "teacher", name: "Iris", tagline: "Makes it click", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
-  clinician: { id: "clinician", name: "Dr. Mara", tagline: "Validates, then guides", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
-  mentor: { id: "mentor", name: "Roy", tagline: "Strategic, no fluff", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
-  guide: { id: "guide", name: "Sasha", tagline: "Finds your deeper why", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+  trainer: { id: "trainer", name: "Kai", taglineKey: "coach.trainer_tagline", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Iris", taglineKey: "coach.teacher_tagline", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Dr. Mara", taglineKey: "coach.clinician_tagline", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Roy", taglineKey: "coach.mentor_tagline", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Sasha", taglineKey: "coach.guide_tagline", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
 };
 const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
   // Fitness & Body
@@ -183,7 +183,7 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground mb-6 text-center"
         >
-          {archetype.name} · {archetype.tagline}
+          {archetype.name} · {t(archetype.taglineKey)}
         </motion.p>
 
         {/* Message area */}

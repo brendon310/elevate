@@ -75,12 +75,12 @@ const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> 
   guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted — even if it's small — in how you see yourself?`,
 };
 
-const COACH_SUGGESTED_PROMPTS: Record<string, string[]> = {
-  trainer:   ["How am I actually doing? Be honest.", "Give me today's challenge.", "I almost gave up — what now?", "Call me out on something."],
-  clinician: ["I'm struggling today.", "Why do I keep falling back?", "What does the science say about cravings?", "Help me understand my pattern."],
-  mentor:    ["What's the strategic move here?", "What am I not seeing?", "Help me build a system.", "Where do I go from here?"],
-  teacher:   ["Why does this habit work neurologically?", "Break it down simply.", "What should I focus on this week?", "Explain the psychology of my pattern."],
-  guide:     ["What does this journey mean?", "Help me find my why again.", "I need a different perspective.", "What ritual could help me today?"],
+const COACH_PROMPT_KEYS: Record<string, string[]> = {
+  trainer:   ["coach.prompts.trainer_1","coach.prompts.trainer_2","coach.prompts.trainer_3","coach.prompts.trainer_4"],
+  clinician: ["coach.prompts.clinician_1","coach.prompts.clinician_2","coach.prompts.clinician_3","coach.prompts.clinician_4"],
+  mentor:    ["coach.prompts.mentor_1","coach.prompts.mentor_2","coach.prompts.mentor_3","coach.prompts.mentor_4"],
+  teacher:   ["coach.prompts.teacher_1","coach.prompts.teacher_2","coach.prompts.teacher_3","coach.prompts.teacher_4"],
+  guide:     ["coach.prompts.guide_1","coach.prompts.guide_2","coach.prompts.guide_3","coach.prompts.guide_4"],
 };
 
 const DURATION_PRESETS = [30, 60, 90, 120, 180, 365] as const;
@@ -393,7 +393,7 @@ function DayPanel({ label, children, accentColor }: { label: string; children: R
 }
 
 function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onStarted: (j: Journey, days: JourneyDay[]) => void; userId?: string | null }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
   const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const archetype = archetypeForSlug(track.slug);
@@ -438,7 +438,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
         const res = await fetch("/api/generate-days", {
           method: "POST",
           headers: { "Content-Type": "application/json" , "Authorization": `Bearer ${_gds?.access_token ?? ""}` },
-          body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint, motivation, obstacle, fromDay: 1, count: 7 }),
+          body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint, motivation, obstacle, fromDay: 1, count: 7, language: i18n.language }),
         });
         if (!res.ok) throw new Error("API error");
         const { days: freshDays } = await res.json() as { days: JourneyDay[] };
@@ -607,7 +607,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   onRestart?: (trackId: string) => void;
   userId?: string | null;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
   const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const [journey, setJourney] = useState(initJourney);
@@ -690,7 +690,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
           const r = await fetch("/api/generate-days", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint: journey.startingPoint, motivation: journey.motivation, obstacle: journey.obstacle, fromDay, count }),
+            body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint: journey.startingPoint, motivation: journey.motivation, obstacle: journey.obstacle, fromDay, count, language: i18n.language }),
           }).catch(() => null);
           if (!r || !r.ok) return;
           const data = await r.json() as { days: JourneyDay[] };
@@ -1138,11 +1138,11 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             {/* Suggested prompts — shown only when few messages */}
             {chatMessages.length <= 2 && (
               <div className="flex gap-2 flex-wrap">
-                {(COACH_SUGGESTED_PROMPTS[archetype.id] ?? COACH_SUGGESTED_PROMPTS.teacher).map(prompt => (
-                  <button key={prompt}
-                    onClick={() => { setChatInput(prompt); }}
+                {(COACH_PROMPT_KEYS[archetype.id] ?? COACH_PROMPT_KEYS.teacher).map(key => (
+                  <button key={key}
+                    onClick={() => { setChatInput(t(key)); }}
                     className="rounded-full border border-border bg-background px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground hover:border-foreground/40 transition-colors text-left">
-                    {prompt}
+                    {t(key)}
                   </button>
                 ))}
               </div>

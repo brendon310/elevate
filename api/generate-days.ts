@@ -66,10 +66,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { data: { user }, error: _authErr } = await _supa.auth.getUser(token);
   if (_authErr || !user) return res.status(401).json({ error: "Unauthorized" });
 
-  const { slug, trackName, category, startingPoint, motivation, obstacle, fromDay, count } = req.body as {
+  const { slug, trackName, category, startingPoint, motivation, obstacle, fromDay, count, language } = req.body as {
     slug: string; trackName: string; category: string;
     startingPoint: string; motivation: string; obstacle: string;
-    fromDay: number; count: number;
+    fromDay: number; count: number; language?: string;
   };
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -77,7 +77,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const taskHint = TRACK_TASK_HINTS[slug] ?? `Concrete, specific daily action for ${trackName}.`;
 
-  const systemPrompt = `You are a world-class behavior change coach. Design a deeply personal daily program for someone on the "${trackName}" path (category: ${category}).
+  const langName = ({ it:"Italian", es:"Spanish", de:"German", fr:"French", pt:"Portuguese" }[language ?? "en"]) ?? "English";
+  const systemPrompt = `IMPORTANT: Write ALL content (titles, descriptions, tasks, reflections, science, check-in prompts) in ${langName}. Native ${langName} only — not a translation, but natural fluent ${langName} as a native speaker would write it.
+
+You are a world-class behavior change coach. Design a deeply personal daily program for someone on the "${trackName}" path (category: ${category}).
 
 Generate exactly ${count} daily entries for days ${fromDay} through ${fromDay + count - 1}.
 
