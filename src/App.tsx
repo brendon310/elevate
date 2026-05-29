@@ -2185,6 +2185,7 @@ export function ElevateApp() {
   const [pendingCheckIn, setPendingCheckIn] = useState(false);
   const [showMorningCoach, setShowMorningCoach] = useState(false);
   const [showReEntry, setShowReEntry] = useState(false);
+  const reentryDismissedRef = useRef(false);
   const [reEntryGap, setReEntryGap] = useState(0);
   const [milestone, setMilestone] = useState<{ days: number; trackName: string } | null>(null);
   const [showSOS, setShowSOS] = useState(false);
@@ -2557,7 +2558,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     if (!hasAnyActivity) return;
     // Once per calendar day
     const key = `forge-morning-${todayStr()}`;
-    if (lsLoad<boolean>(key, false)) return;
+    if (lsLoad<boolean>(key, false) || reentryDismissedRef.current) return;
     const maxGap = Math.max(...tracks.map(ut => {
       if (!ut.last_log_date) return 0;
       return Math.floor((Date.now() - new Date(ut.last_log_date).getTime()) / 86_400_000);
@@ -2577,6 +2578,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
   }, []);
 
   const handleReEntryDismiss = useCallback(() => {
+    reentryDismissedRef.current = true;
     lsSave(`forge-morning-${todayStr()}`, true);
     setShowReEntry(false);
   }, []);
@@ -2765,27 +2767,28 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
     <>
       <AnimatePresence>
         {milestone && (
-          <MilestoneOverlay days={milestone.days} trackName={milestone.trackName} onDismiss={() => setMilestone(null)} />
+          <MilestoneOverlay key="milestone" days={milestone.days} trackName={milestone.trackName} onDismiss={() => setMilestone(null)} />
         )}
         {cert !== null && (
-          <CertModal streak={cert} tracks={tracks} islandTheme={user?.islandTheme ?? 'garden'} userName={user?.name ?? 'Forger'} onDismiss={() => setCert(null)} />
+          <CertModal key="cert" streak={cert} tracks={tracks} islandTheme={user?.islandTheme ?? 'garden'} userName={user?.name ?? 'Forger'} onDismiss={() => setCert(null)} />
         )}
         {!milestone && showReEntry && (
-          <ReEntryOverlay gapDays={reEntryGap} onDismiss={handleReEntryDismiss} />
+          <ReEntryOverlay key="reentry" gapDays={reEntryGap} onDismiss={handleReEntryDismiss} />
         )}
-                      {showSOS && <SOSOverlay tracks={tracks} onDismiss={() => setShowSOS(false)} />}
-              <SOSButton onClick={() => setShowSOS(true)} />
-              {!milestone && showMorningCoach && (
-          <MorningCoachOverlay tracks={tracks} onDismiss={handleMorningDismiss} />
+        {showSOS && <SOSOverlay key="sos" tracks={tracks} onDismiss={() => setShowSOS(false)} />}
+        {!milestone && showMorningCoach && (
+          <MorningCoachOverlay key="morning" tracks={tracks} onDismiss={handleMorningDismiss} />
         )}
         {!milestone && !showReEntry && !showMorningCoach && streakRecovery && (
           <StreakRecoveryOverlay
+            key="streak-recovery"
             brokenStreak={streakRecovery.brokenStreak}
             trackName={streakRecovery.trackName}
             onDismiss={() => setStreakRecovery(null)}
           />
         )}
       </AnimatePresence>
+      <SOSButton onClick={() => setShowSOS(true)} />
       {showInstallBanner && (
         <motion.div className="fixed bottom-20 left-4 right-4 z-40 rounded-2xl bg-muted border border-border p-4 flex items-center gap-3 shadow-2xl"
           initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}>
