@@ -452,7 +452,18 @@
       "guide_2": "Help me find my why again.",
       "guide_3": "I need a different perspective.",
       "guide_4": "What ritual could help me today?"
-    }
+    },
+    "opener_day1_trainer": "Day one of {{name}}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.",
+    "opener_later_trainer": "Day {{day}}. You showed up {{prev}} times before this. What's the honest report — are you going through the motions or actually changing?",
+    "opener_day1_clinician": "Welcome. Starting {{name}} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?",
+    "opener_later_clinician": "Day {{day}} of {{name}}. Check in with yourself: what emotion is most present when you think about this journey today?",
+    "opener_day1_mentor": "Day 1, {{name}}. Every system starts with an honest audit. What got you here, and what specifically has to change for this to be different?",
+    "opener_later_mentor": "Day {{day}}. You're {{prev}} days in. What's working, what isn't, and what would you tell yourself on Day 1 knowing what you know now?",
+    "opener_day1_teacher": "Let's start with a question: what do you already know about why {{name}} has been hard? There's data in your past attempts.",
+    "opener_later_teacher": "Day {{day}} of {{name}}. What's one thing you've learned about yourself so far in this process — something you didn't know before?",
+    "opener_day1_guide": "You've chosen {{name}}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?",
+    "opener_later_guide": "Day {{day}}. You've been on this path for {{prev}} days. What's shifted — even if it's small — in how you see yourself?",
+    "opener_fallback": "I'm here. What's on your mind today about your {{name}} journey?"
   },
   "milestones": {
     "10_days": "You've built a real habit. 10 days of choosing yourself.",

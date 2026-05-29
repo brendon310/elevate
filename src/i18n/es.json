@@ -452,7 +452,18 @@
       "guide_2": "Ayúdame a encontrar mi porqué de nuevo.",
       "guide_3": "Necesito una perspectiva diferente.",
       "guide_4": "¿Qué ritual podría ayudarme hoy?"
-    }
+    },
+    "opener_day1_trainer": "Día uno de {{name}}. Antes de empezar — ¿cuál es la excusa que ya te has puesto en la cabeza sobre por qué esto no va a funcionar? Dila en voz alta.",
+    "opener_later_trainer": "Día {{day}}. Te presentaste {{prev}} veces antes de esta. Reporte honesto — ¿estás yendo por inercia o realmente cambiando?",
+    "opener_day1_clinician": "Bienvenido. Comenzar {{name}} requiere el coraje que la mayoría de las personas no admite. ¿Cómo te sientes ahora mismo — no la versión editada, la real?",
+    "opener_later_clinician": "Día {{day}} de {{name}}. Conéctate contigo mismo: ¿qué emoción está más presente cuando piensas en este viaje hoy?",
+    "opener_day1_mentor": "Día 1, {{name}}. Todo sistema comienza con una auditoría honesta. ¿Qué te trajo aquí, y qué específicamente tiene que cambiar para que esto sea diferente?",
+    "opener_later_mentor": "Día {{day}}. Llevas {{prev}} días adentro. ¿Qué está funcionando, qué no, y qué le dirías a tu yo del Día 1 sabiendo lo que sabes ahora?",
+    "opener_day1_teacher": "Empecemos con una pregunta: ¿qué ya sabes sobre por qué {{name}} ha sido difícil? Hay datos en tus intentos pasados.",
+    "opener_later_teacher": "Día {{day}} de {{name}}. ¿Cuál es una cosa que has aprendido sobre ti mismo hasta ahora en este proceso — algo que no sabías antes?",
+    "opener_day1_guide": "Has elegido {{name}}. Esa elección vino de un lugar profundo. ¿Qué hace diferente la versión de ti al final de este viaje — cómo se siente su día?",
+    "opener_later_guide": "Día {{day}}. Has estado en este camino durante {{prev}} días. ¿Qué ha cambiado — aunque sea pequeño — en cómo te ves a ti mismo?",
+    "opener_fallback": "Estoy aquí. ¿Qué tienes en mente hoy sobre tu viaje de {{name}}?"
   },
   "milestones": {
     "10_days": "Has creado un hábito real. 10 días eligiéndote a ti mismo.",

@@ -452,7 +452,18 @@
       "guide_2": "Hilf mir, mein Warum wiederzufinden.",
       "guide_3": "Ich brauche eine andere Perspektive.",
       "guide_4": "Welches Ritual könnte mir heute helfen?"
-    }
+    },
+    "opener_day1_trainer": "Tag eins von {{name}}. Bevor wir anfangen — was ist die Ausrede, die du dir bereits im Kopf gemacht hast, warum das nicht funktionieren wird? Sag sie laut.",
+    "opener_later_trainer": "Tag {{day}}. Du bist {{prev}} Mal davor aufgetaucht. Ehrlicher Bericht — machst du es mechanisch oder veränderst du dich wirklich?",
+    "opener_day1_clinician": "Willkommen. {{name}} anzufangen erfordert Mut, den die meisten Menschen nicht zugeben. Wie fühlst du dich gerade — nicht die bearbeitete Version, die echte?",
+    "opener_later_clinician": "Tag {{day}} von {{name}}. Check in bei dir selbst: Welche Emotion ist am stärksten präsent, wenn du heute an diese Reise denkst?",
+    "opener_day1_mentor": "Tag 1, {{name}}. Jedes System beginnt mit einem ehrlichen Audit. Was hat dich hierher gebracht, und was muss sich konkret ändern, damit das diesmal anders ist?",
+    "opener_later_mentor": "Tag {{day}}. Du bist {{prev}} Tage drin. Was funktioniert, was nicht, und was würdest du dir an Tag 1 sagen, wenn du wüsstest, was du jetzt weißt?",
+    "opener_day1_teacher": "Lass uns mit einer Frage beginnen: Was weißt du bereits darüber, warum {{name}} schwer war? In deinen vergangenen Versuchen stecken Daten.",
+    "opener_later_teacher": "Tag {{day}} von {{name}}. Was ist eine Sache, die du bisher über dich selbst in diesem Prozess gelernt hast — etwas, das du vorher nicht wusstest?",
+    "opener_day1_guide": "Du hast {{name}} gewählt. Diese Wahl kam aus einem tiefen Ort. Was macht die Version von dir am Ende dieser Reise anders — wie fühlt sich ihr Tag an?",
+    "opener_later_guide": "Tag {{day}}. Du bist seit {{prev}} Tagen auf diesem Weg. Was hat sich verändert — auch wenn es klein ist — in der Art, wie du dich siehst?",
+    "opener_fallback": "Ich bin hier. Was beschäftigt dich heute bei deiner {{name}}-Reise?"
   },
   "milestones": {
     "10_days": "Du hast eine echte Gewohnheit aufgebaut. 10 Tage, an denen du dich für dich entschieden hast.",

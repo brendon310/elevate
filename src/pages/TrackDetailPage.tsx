@@ -68,8 +68,28 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
   userId?: string | null;
 }) {
   const { t } = useTranslation();
-  const [journey, setJourney] = useState<Journey | null>(() => lsLoad<Journey | null>(LS_JOURNEY(track.slug), null));
-  const [days, setDays] = useState<JourneyDay[]>(() => lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []));
+  const { i18n } = useTranslation();
+  const [journey, setJourney] = useState<Journey | null>(() => {
+    const j = lsLoad<Journey | null>(LS_JOURNEY(track.slug), null);
+    const rawDays = lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []);
+    const storedLang = localStorage.getItem(`forge-days-lang-${track.slug}`) ?? 'en';
+    if (j && storedLang !== i18n.language && rawDays.length > 0) {
+      const completed = rawDays.filter(d => d.completedAt !== null);
+      return { ...j, generatedThrough: completed.length };
+    }
+    return j;
+  });
+  const [days, setDays] = useState<JourneyDay[]>(() => {
+    const rawDays = lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []);
+    const storedLang = localStorage.getItem(`forge-days-lang-${track.slug}`) ?? 'en';
+    if (storedLang !== i18n.language && rawDays.length > 0) {
+      const completed = rawDays.filter(d => d.completedAt !== null);
+      lsSave(LS_DAYS(track.slug), completed);
+      localStorage.setItem(`forge-days-lang-${track.slug}`, i18n.language);
+      return completed;
+    }
+    return rawDays;
+  });
 
   // Load journey days from Supabase if localStorage is empty (cross-device / cleared cache)
   useEffect(() => {

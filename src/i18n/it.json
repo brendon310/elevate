@@ -452,7 +452,18 @@
       "guide_2": "Aiutami a ritrovare il mio perché.",
       "guide_3": "Ho bisogno di una prospettiva diversa.",
       "guide_4": "Quale rituale potrebbe aiutarmi oggi?"
-    }
+    },
+    "opener_day1_trainer": "Giorno uno di {{name}}. Prima di iniziare — qual è la scusa che hai già fatto nella tua testa su perché questo non funzionerà? Dilla ad alta voce.",
+    "opener_later_trainer": "Giorno {{day}}. Ti sei presentato {{prev}} volte prima di questa. Report onesto — stai andando per inerzia o stai davvero cambiando?",
+    "opener_day1_clinician": "Benvenuto. Iniziare {{name}} richiede il coraggio che la maggior parte delle persone non ammette. Come ti senti adesso — non la versione editata, quella reale?",
+    "opener_later_clinician": "Giorno {{day}} di {{name}}. Fermati un attimo: quale emozione è più presente quando pensi a questo percorso oggi?",
+    "opener_day1_mentor": "Giorno 1, {{name}}. Ogni sistema inizia con un audit onesto. Cosa ti ha portato qui, e cosa deve cambiare specificamente perché questa volta sia diversa?",
+    "opener_later_mentor": "Giorno {{day}}. Sei {{prev}} giorni dentro. Cosa funziona, cosa no, e cosa diresti a te stesso al Giorno 1 sapendo quello che sai adesso?",
+    "opener_day1_teacher": "Iniziamo con una domanda: cosa sai già sul perché {{name}} è stato difficile? Ci sono dati nei tuoi tentativi passati.",
+    "opener_later_teacher": "Giorno {{day}} di {{name}}. Cos'è una cosa che hai imparato su te stesso finora in questo processo — qualcosa che non sapevi prima?",
+    "opener_day1_guide": "Hai scelto {{name}}. Quella scelta viene da un posto profondo. Come si sente la versione di te alla fine di questo percorso — come si sentirà la sua giornata?",
+    "opener_later_guide": "Giorno {{day}}. Sei su questo cammino da {{prev}} giorni. Cos'è cambiato — anche se è piccolo — in come ti vedi?",
+    "opener_fallback": "Sono qui. Cosa hai in mente oggi riguardo al tuo percorso {{name}}?"
   },
   "milestones": {
     "10_days": "Hai creato una vera abitudine. 10 giorni a scegliere te stesso.",

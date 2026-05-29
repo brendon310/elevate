@@ -452,7 +452,18 @@
       "guide_2": "Aide-moi à retrouver mon pourquoi.",
       "guide_3": "J'ai besoin d'une perspective différente.",
       "guide_4": "Quel rituel pourrait m'aider aujourd'hui ?"
-    }
+    },
+    "opener_day1_trainer": "Jour un de {{name}}. Avant de commencer — quelle est l'excuse que tu t'es déjà faite dans la tête sur pourquoi ça ne marchera pas ? Dis-la à voix haute.",
+    "opener_later_trainer": "Jour {{day}}. Tu t'es présenté {{prev}} fois avant celle-ci. Rapport honnête — est-ce que tu fais les choses mécaniquement ou est-ce que tu changes vraiment ?",
+    "opener_day1_clinician": "Bienvenue. Commencer {{name}} demande le courage que la plupart des gens n'admettent pas. Comment tu te sens en ce moment — pas la version éditée, la vraie ?",
+    "opener_later_clinician": "Jour {{day}} de {{name}}. Fais un point sur toi-même : quelle émotion est la plus présente quand tu penses à ce voyage aujourd'hui ?",
+    "opener_day1_mentor": "Jour 1, {{name}}. Chaque système commence par un audit honnête. Qu'est-ce qui t'a amené ici, et qu'est-ce qui doit spécifiquement changer pour que ça soit différent cette fois ?",
+    "opener_later_mentor": "Jour {{day}}. Tu es à {{prev}} jours. Qu'est-ce qui fonctionne, qu'est-ce qui ne fonctionne pas, et que te dirais-tu au Jour 1 en sachant ce que tu sais maintenant ?",
+    "opener_day1_teacher": "Commençons par une question : qu'est-ce que tu sais déjà sur pourquoi {{name}} a été difficile ? Il y a des données dans tes tentatives passées.",
+    "opener_later_teacher": "Jour {{day}} de {{name}}. Quelle est une chose que tu as apprise sur toi-même jusqu'à présent dans ce processus — quelque chose que tu ne savais pas avant ?",
+    "opener_day1_guide": "Tu as choisi {{name}}. Ce choix vient d'un endroit profond. Que fait différemment la version de toi à la fin de ce voyage — comment se sent sa journée ?",
+    "opener_later_guide": "Jour {{day}}. Tu es sur ce chemin depuis {{prev}} jours. Qu'est-ce qui a changé — même si c'est petit — dans la façon dont tu te vois ?",
+    "opener_fallback": "Je suis là. Qu'est-ce qui te préoccupe aujourd'hui concernant ton voyage {{name}} ?"
   },
   "milestones": {
     "10_days": "Tu as créé une vraie habitude. 10 jours à te choisir toi-même.",

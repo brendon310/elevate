@@ -452,7 +452,18 @@
       "guide_2": "Ajude-me a encontrar meu porquê novamente.",
       "guide_3": "Preciso de uma perspectiva diferente.",
       "guide_4": "Qual ritual poderia me ajudar hoje?"
-    }
+    },
+    "opener_day1_trainer": "Dia um de {{name}}. Antes de começar — qual é a desculpa que já criaste na tua cabeça sobre por que isso não vai funcionar? Diz-a em voz alta.",
+    "opener_later_trainer": "Dia {{day}}. Apareceste {{prev}} vezes antes desta. Relatório honesto — estás a fazer as coisas mecanicamente ou estás realmente a mudar?",
+    "opener_day1_clinician": "Bem-vindo. Começar {{name}} requer a coragem que a maioria das pessoas não admite. Como te sentes agora mesmo — não a versão editada, a real?",
+    "opener_later_clinician": "Dia {{day}} de {{name}}. Faz um check-in contigo mesmo: que emoção está mais presente quando pensas nesta jornada hoje?",
+    "opener_day1_mentor": "Dia 1, {{name}}. Todo sistema começa com uma auditoria honesta. O que te trouxe aqui, e o que especificamente tem de mudar para que isto seja diferente?",
+    "opener_later_mentor": "Dia {{day}}. Estás {{prev}} dias dentro. O que está a funcionar, o que não está, e o que dirias ao teu eu do Dia 1 sabendo o que sabes agora?",
+    "opener_day1_teacher": "Vamos começar com uma pergunta: o que já sabes sobre por que {{name}} tem sido difícil? Há dados nas tuas tentativas passadas.",
+    "opener_later_teacher": "Dia {{day}} de {{name}}. Qual é uma coisa que aprendeste sobre ti mesmo até agora neste processo — algo que não sabias antes?",
+    "opener_day1_guide": "Escolheste {{name}}. Essa escolha veio de um lugar profundo. O que faz diferente a versão de ti no final desta jornada — como se sente o seu dia?",
+    "opener_later_guide": "Dia {{day}}. Estás neste caminho há {{prev}} dias. O que mudou — mesmo que seja pequeno — na forma como te vês?",
+    "opener_fallback": "Estou aqui. O que tens em mente hoje sobre a tua jornada {{name}}?"
   },
   "milestones": {
     "10_days": "Criaste um hábito real. 10 dias a escolheres-te a ti mesmo.",
