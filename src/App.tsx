@@ -1242,14 +1242,6 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
   const [pendingTrackForName, setPendingTrackForName] = useState<OnboardingTrack | null>(null);
   const [onboardingName, setOnboardingName] = useState("");
 
-  const COACH_INTRO_LINES: Record<string, string> = {
-    "Kai": "I'll push you forward, one day at a time.",
-    "Iris": "We'll break this down until it fully clicks.",
-    "Dr. Mara": "I'll help you move gently — and still go far.",
-    "Roy": "No fluff. Just clear steps and honest feedback.",
-    "Sasha": "We'll find what this journey really means to you.",
-  };
-
   const words = useMemo(() => message.split(/(\s+)/), [message]);
   const typingDone = typedCount >= words.length && words.length > 0;
 
@@ -1289,9 +1281,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             transition={{ duration: 0.7 }} className="max-w-3xl w-full text-center">
             <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">{t("onboarding.one_question")}</p>
             <h1 className="font-display text-[clamp(2rem,6vw,4.5rem)] leading-[1.05] tracking-[-0.04em] font-semibold">
-              What is the one thing that,<br />
-              if you changed it,<br />
-              <span className="text-[color:var(--secondary)] italic">would change everything?</span>
+              {t("onboarding.what_to_change")}
             </h1>
             <div className="mt-14">
               <textarea autoFocus value={answer} onChange={e => setAnswer(e.target.value.slice(0, 1000))}
@@ -1306,7 +1296,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   <motion.button key="cont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                     onClick={handleQuestion}
                     className="btn-chunk mt-10 inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                    Continue <ArrowRight className="h-4 w-4" />
+                    {t("common.continue")} <ArrowRight className="h-4 w-4" />
                   </motion.button>
                 )}
               </AnimatePresence>
@@ -1334,7 +1324,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                 <motion.button key="rcont" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
                   onClick={() => { setSuggestedSlug(suggestTrackFromText(answer)); setStep("tracks"); }}
                   className="btn-chunk mt-12 inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                  Continue <ArrowRight className="h-4 w-4" />
+                  {t("common.continue")} <ArrowRight className="h-4 w-4" />
                 </motion.button>
               )}
             </AnimatePresence>
@@ -1347,7 +1337,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             <div className="text-center mb-10">
               <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-4">{t("onboarding.choose_path")}</p>
               <h2 className="font-display text-[clamp(1.75rem,4vw,3rem)] tracking-[-0.03em] leading-tight">
-                Let's start with <span className="text-[color:var(--secondary)] italic">one thing</span>.
+                {t("onboarding.one_thing")}
               </h2>
               <p className="mt-4 text-muted-foreground">{t("onboarding.add_more_later")}</p>
             </div>
@@ -1406,7 +1396,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <p className="font-display text-xl font-semibold">{t(`tracks.${sug.slug}.name`, { defaultValue: sug.name })}</p>
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">{sug.category}</p>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">{t(`categories.${sug.category}`, { defaultValue: sug.category })}</p>
                             {TRACK_STAT_SLUGS.has(sug.slug) && (
                               <p className="text-xs text-yellow-400/90 mt-2 leading-relaxed">
                                 {t(`tracks.stats.${sug.slug}`)}. {t("onboarding.not_alone")}
@@ -1426,20 +1416,20 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                 <div className="space-y-8">
                   {Object.entries(grouped).map(([cat, tracks]) => (
                     <div key={cat}>
-                      <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-3">{cat}</h3>
+                      <h3 className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono mb-3">{t(`categories.${cat}`, { defaultValue: cat })}</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {tracks.map(t => {
-                          const isSuggested = t.slug === suggestedSlug;
-                          const isChosen = chosen?.slug === t.slug;
+                        {tracks.map(tr => {
+                          const isSuggested = tr.slug === suggestedSlug;
+                          const isChosen = chosen?.slug === tr.slug;
                           return (
-                            <button key={t.slug} onClick={() => setChosen(t)}
+                            <button key={tr.slug} onClick={() => setChosen(tr)}
                               className={`warm-card rounded-2xl p-4 text-left transition btn-chunk relative ${
                                 isChosen ? "ring-2 ring-[color:var(--primary)]"
                                 : isSuggested ? "ring-2 ring-yellow-400/50"
                                 : ""
                               }`}
                               style={isSuggested ? { boxShadow: "0 0 12px 1px oklch(0.875 0.185 95 / 0.25)" } : undefined}>
-                              <p className="font-semibold text-sm">{t.name}</p>
+                              <p className="font-semibold text-sm">{t(`tracks.${tr.slug}.name`, { defaultValue: tr.name })}</p>
                               {isChosen && <Check className="h-4 w-4 mt-1 text-[color:var(--tertiary)]" />}
                             </button>
                           );
@@ -1509,7 +1499,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             transition={{ duration: 0.7 }} className="max-w-sm w-full text-center">
             {(() => {
               const _arch = archetypeForSlug(pendingTrackForName.slug);
-              const _line = COACH_INTRO_LINES[_arch.name] ?? "I'm here to help you follow through.";
+              const _line = t(`coach.intro_${_arch.id}`) || t("coach.intro_fallback");
               return (
                 <>
                   <motion.p
@@ -1528,7 +1518,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                     initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
                     className="font-display text-[clamp(2rem,6vw,3rem)] leading-tight tracking-tight mb-1">
-                    Meet <span className="text-electric">{_arch.name}</span>
+                    {t("onboarding.meet")} <span className="text-electric">{_arch.name}</span>
                   </motion.h1>
                   <motion.p
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
@@ -1546,7 +1536,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                     transition={{ delay: 1.0 }}
                     onClick={() => setStep("name")}
                     className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                    Continue <ArrowRight className="h-4 w-4" />
+                    {t("common.continue")} <ArrowRight className="h-4 w-4" />
                   </motion.button>
                 </>
               );
@@ -1559,8 +1549,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
             <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-10">{t("onboarding.one_last_thing")}</p>
             <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.04em] font-semibold mb-4">
-              What should your coach<br />
-              <span className="text-[color:var(--secondary)] italic">call you?</span>
+              {t("onboarding.call_you")}
             </h1>
             <p className="text-muted-foreground text-sm mb-12">{t("login.coach_use")}</p>
             <input
@@ -1582,11 +1571,11 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                   onComplete({ track: pendingTrackForName!, name: n });
                 }}
                 className="btn-chunk inline-flex items-center gap-2 rounded-full grad-electric text-white px-9 py-4 text-sm font-bold shadow-[var(--shadow-violet)]">
-                Start Day 1 <ArrowRight className="h-4 w-4" />
+                {t("onboarding.start_day1_arrow")} <ArrowRight className="h-4 w-4" />
               </button>
               <button onClick={() => onComplete({ track: pendingTrackForName! })}
                 className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
-                Skip for now
+                {t("onboarding.skip_for_now")}
               </button>
             </div>
           </motion.div>

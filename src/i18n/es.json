@@ -463,7 +463,13 @@
     "opener_later_teacher": "Día {{day}} de {{name}}. ¿Cuál es una cosa que has aprendido sobre ti mismo hasta ahora en este proceso — algo que no sabías antes?",
     "opener_day1_guide": "Has elegido {{name}}. Esa elección vino de un lugar profundo. ¿Qué hace diferente la versión de ti al final de este viaje — cómo se siente su día?",
     "opener_later_guide": "Día {{day}}. Has estado en este camino durante {{prev}} días. ¿Qué ha cambiado — aunque sea pequeño — en cómo te ves a ti mismo?",
-    "opener_fallback": "Estoy aquí. ¿Qué tienes en mente hoy sobre tu viaje de {{name}}?"
+    "opener_fallback": "Estoy aquí. ¿Qué tienes en mente hoy sobre tu viaje de {{name}}?",
+    "intro_trainer": "Te impulsaré hacia adelante, un día a la vez.",
+    "intro_teacher": "Lo desglosaremos hasta que tenga sentido completo.",
+    "intro_clinician": "Te ayudaré a avanzar con suavidad — y llegar lejos.",
+    "intro_mentor": "Sin rodeos. Solo pasos claros y retroalimentación honesta.",
+    "intro_guide": "Descubriremos lo que este viaje realmente significa para ti.",
+    "intro_fallback": "Estoy aquí para ayudarte a seguir adelante."
   },
   "milestones": {
     "10_days": "Has creado un hábito real. 10 días eligiéndote a ti mismo.",
@@ -1008,7 +1014,8 @@
       "Escucho la profundidad de lo que has compartido. Debajo de la cosa específica que quieres cambiar vive una persona que ya sabe quién está destinada a ser. Ese conocimiento es tu brújula—aquí no añadimos nada, despejamos lo que lo ha estado cubriendo. Estaré contigo en cada paso del camino.",
       "El hecho de que lo hayas nombrado—claramente, honestamente—ya te distingue de la mayoría de las personas que sienten este peso pero nunca encuentran las palabras. Tu precisión es poder. Ahora construyamos algo con eso, un día a la vez. Estaré contigo en cada paso del camino.",
       "Existe una versión de ti que ya ha hecho este cambio, y tomó una decisión que tú estás tomando ahora mismo: comenzar. No cuando estés listo. No cuando sea perfecto. Justo ahora. Ese deseo que sientes es válido, real, y más que suficiente. Estaré contigo en cada paso del camino."
-    ]
+    ],
+    "meet": "Conoce a"
   },
   "fdr": {
     "welcome_name": "Bienvenido, {{name}}.",

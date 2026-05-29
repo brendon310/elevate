@@ -403,7 +403,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
     try {
       let rawDays: JourneyDay[] | null = null;
       // Check cache first
-      const cached1 = await db.loadJourneyTemplate(track.slug, 1, 7).catch(() => null);
+      const cached1 = i18n.language === "en" ? await db.loadJourneyTemplate(track.slug, 1, 7).catch(() => null) : null;
       if (cached1) {
         rawDays = cached1 as JourneyDay[];
       } else {
@@ -659,7 +659,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       const count = Math.min(7, journey.totalDays - journey.generatedThrough);
       (async () => {
         let rawNext: JourneyDay[] | null = null;
-        const cachedNext = await db.loadJourneyTemplate(track.slug, fromDay, count).catch(() => null);
+        const cachedNext = i18n.language === "en" ? await db.loadJourneyTemplate(track.slug, fromDay, count).catch(() => null) : null;
         if (cachedNext) {
           rawNext = cachedNext as JourneyDay[];
         } else {
@@ -938,7 +938,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               )}
             </AnimatePresence>
             <div className="rounded-2xl bg-card border border-border p-5" style={{ borderLeft: `3px solid ${accentColor}` }}>
-              <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Day {todayDay.dayNumber}</p>
+              <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{t("journey.day_n", { n: todayDay.dayNumber })}</p>
               <h2 className="mt-1.5 font-display text-xl font-semibold">{todayDay.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{todayDay.description}</p>
             </div>
@@ -1189,7 +1189,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               className="w-full max-w-lg bg-background rounded-3xl p-6 space-y-4 max-h-[80vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
-                <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">Day {selectedDay.dayNumber}</p>
+                <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{t("journey.day_n", { n: selectedDay.dayNumber })}</p>
                 <button onClick={() => setSelectedDay(null)} className="text-muted-foreground hover:text-foreground text-lg">✕</button>
               </div>
               <h2 className="font-display text-xl font-semibold">{selectedDay.title}</h2>
@@ -1319,7 +1319,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               <div className="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-400/15 mx-auto">
                 <Trophy className="h-8 w-8 text-yellow-400" />
               </div>
-              <h2 className="font-display text-2xl font-bold">Day {milestoneDay}!</h2>
+              <h2 className="font-display text-2xl font-bold">{t("journey.milestone_title", { day: milestoneDay })}</h2>
               <p className="text-muted-foreground text-sm">{t("journey.milestone_message", { name: track.name })}</p>
               <button onClick={() => setMilestoneDay(null)}
                 className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-3 font-semibold">

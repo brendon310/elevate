@@ -463,7 +463,13 @@
     "opener_later_teacher": "Dia {{day}} de {{name}}. Qual é uma coisa que aprendeste sobre ti mesmo até agora neste processo — algo que não sabias antes?",
     "opener_day1_guide": "Escolheste {{name}}. Essa escolha veio de um lugar profundo. O que faz diferente a versão de ti no final desta jornada — como se sente o seu dia?",
     "opener_later_guide": "Dia {{day}}. Estás neste caminho há {{prev}} dias. O que mudou — mesmo que seja pequeno — na forma como te vês?",
-    "opener_fallback": "Estou aqui. O que tens em mente hoje sobre a tua jornada {{name}}?"
+    "opener_fallback": "Estou aqui. O que tens em mente hoje sobre a tua jornada {{name}}?",
+    "intro_trainer": "Vou empurrar-te para a frente, um dia de cada vez.",
+    "intro_teacher": "Vamos decompor isto até fazer total sentido.",
+    "intro_clinician": "Vou ajudar-te a avançar com suavidade — e a ir longe.",
+    "intro_mentor": "Sem rodeios. Apenas passos claros e feedback honesto.",
+    "intro_guide": "Vamos descobrir juntos o que esta jornada significa para ti.",
+    "intro_fallback": "Estou aqui para te ajudar a manter o compromisso."
   },
   "milestones": {
     "10_days": "Criaste um hábito real. 10 dias a escolheres-te a ti mesmo.",
@@ -1008,7 +1014,8 @@
       "Ouço a profundidade do que partilhaste. Por baixo da coisa específica que queres mudar vive uma pessoa que já sabe quem está destinada a ser. Esse conhecimento é a tua bússola—não acrescentamos nada aqui, limpamos o que o estava cobrindo. Estarei contigo a cada passo do caminho.",
       "O facto de teres nomeado—claramente, honestamente—já te distingue da maioria das pessoas que sentem este peso mas nunca encontram as palavras. A tua precisão é poder. Agora vamos construir algo com isso, um dia de cada vez. Estarei contigo a cada passo do caminho.",
       "Existe uma versão de ti que já fez esta mudança, e ela tomou uma decisão que estás a tomar agora mesmo: começar. Não quando estiveres pronto. Não quando for perfeito. Agora mesmo. Esse desejo que sentes é válido, real, e mais do que suficiente. Estarei contigo a cada passo do caminho."
-    ]
+    ],
+    "meet": "Conhece"
   },
   "fdr": {
     "welcome_name": "Bem-vindo, {{name}}.",

@@ -463,7 +463,13 @@
     "opener_later_teacher": "Day {{day}} of {{name}}. What's one thing you've learned about yourself so far in this process — something you didn't know before?",
     "opener_day1_guide": "You've chosen {{name}}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?",
     "opener_later_guide": "Day {{day}}. You've been on this path for {{prev}} days. What's shifted — even if it's small — in how you see yourself?",
-    "opener_fallback": "I'm here. What's on your mind today about your {{name}} journey?"
+    "opener_fallback": "I'm here. What's on your mind today about your {{name}} journey?",
+    "intro_trainer": "I'll push you forward, one day at a time.",
+    "intro_teacher": "We'll break this down until it fully clicks.",
+    "intro_clinician": "I'll help you move gently — and still go far.",
+    "intro_mentor": "No fluff. Just clear steps and honest feedback.",
+    "intro_guide": "We'll find what this journey really means to you.",
+    "intro_fallback": "I'm here to help you follow through."
   },
   "milestones": {
     "10_days": "You've built a real habit. 10 days of choosing yourself.",
@@ -1008,7 +1014,8 @@
       "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compass—we don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
       "The fact that you named it—clearly, honestly—already sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
       "There's a version of you that has already made this change, and they made one decision that you're making right now: to begin. Not when ready. Not when perfect. Just now. That desire you feel is valid, real, and more than enough. I'll be with you every step of the way."
-    ]
+    ],
+    "meet": "Meet"
   },
   "fdr": {
     "welcome_name": "Welcome, {{name}}.",

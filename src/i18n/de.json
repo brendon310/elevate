@@ -463,7 +463,13 @@
     "opener_later_teacher": "Tag {{day}} von {{name}}. Was ist eine Sache, die du bisher über dich selbst in diesem Prozess gelernt hast — etwas, das du vorher nicht wusstest?",
     "opener_day1_guide": "Du hast {{name}} gewählt. Diese Wahl kam aus einem tiefen Ort. Was macht die Version von dir am Ende dieser Reise anders — wie fühlt sich ihr Tag an?",
     "opener_later_guide": "Tag {{day}}. Du bist seit {{prev}} Tagen auf diesem Weg. Was hat sich verändert — auch wenn es klein ist — in der Art, wie du dich siehst?",
-    "opener_fallback": "Ich bin hier. Was beschäftigt dich heute bei deiner {{name}}-Reise?"
+    "opener_fallback": "Ich bin hier. Was beschäftigt dich heute bei deiner {{name}}-Reise?",
+    "intro_trainer": "Ich treibe dich voran, einen Tag nach dem anderen.",
+    "intro_teacher": "Wir schlüsseln das auf, bis es vollständig klar ist.",
+    "intro_clinician": "Ich helfe dir, sanft voranzukommen — und trotzdem weit zu kommen.",
+    "intro_mentor": "Kein Schnickschnack. Nur klare Schritte und ehrliches Feedback.",
+    "intro_guide": "Wir finden heraus, was diese Reise wirklich für dich bedeutet.",
+    "intro_fallback": "Ich bin hier, um dir zu helfen, durchzuhalten."
   },
   "milestones": {
     "10_days": "Du hast eine echte Gewohnheit aufgebaut. 10 Tage, an denen du dich für dich entschieden hast.",
@@ -1008,7 +1014,8 @@
       "Ich höre die Tiefe in dem, was du geteilt hast. Unter der spezifischen Sache, die du ändern möchtest, lebt eine Person, die bereits weiß, wer sie sein soll. Dieses Wissen ist dein Kompass—wir fügen hier nichts hinzu, wir räumen weg, was es verdeckt hat. Ich bin bei jedem Schritt bei dir.",
       "Die Tatsache, dass du es benannt hast—klar, ehrlich—unterscheidet dich bereits von den meisten Menschen, die diese Last spüren, aber nie die Worte finden. Deine Präzision ist Macht. Jetzt lass uns damit etwas aufbauen, einen Tag nach dem anderen. Ich bin bei jedem Schritt bei dir.",
       "Es gibt eine Version von dir, die diese Veränderung bereits vollzogen hat, und sie hat eine Entscheidung getroffen, die du gerade triffst: anzufangen. Nicht wenn du bereit bist. Nicht wenn es perfekt ist. Genau jetzt. Dieser Wunsch, den du fühlst, ist gültig, real und mehr als genug. Ich bin bei jedem Schritt bei dir."
-    ]
+    ],
+    "meet": "Triff"
   },
   "fdr": {
     "welcome_name": "Willkommen, {{name}}.",

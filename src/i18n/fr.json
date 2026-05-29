@@ -463,7 +463,13 @@
     "opener_later_teacher": "Jour {{day}} de {{name}}. Quelle est une chose que tu as apprise sur toi-même jusqu'à présent dans ce processus — quelque chose que tu ne savais pas avant ?",
     "opener_day1_guide": "Tu as choisi {{name}}. Ce choix vient d'un endroit profond. Que fait différemment la version de toi à la fin de ce voyage — comment se sent sa journée ?",
     "opener_later_guide": "Jour {{day}}. Tu es sur ce chemin depuis {{prev}} jours. Qu'est-ce qui a changé — même si c'est petit — dans la façon dont tu te vois ?",
-    "opener_fallback": "Je suis là. Qu'est-ce qui te préoccupe aujourd'hui concernant ton voyage {{name}} ?"
+    "opener_fallback": "Je suis là. Qu'est-ce qui te préoccupe aujourd'hui concernant ton voyage {{name}} ?",
+    "intro_trainer": "Je te pousserai en avant, un jour à la fois.",
+    "intro_teacher": "On va décomposer ça jusqu'à ce que ce soit vraiment clair.",
+    "intro_clinician": "Je t'aiderai à avancer doucement — et à aller loin quand même.",
+    "intro_mentor": "Pas de fioritures. Juste des étapes claires et un retour honnête.",
+    "intro_guide": "On découvrira ce que ce voyage signifie vraiment pour toi.",
+    "intro_fallback": "Je suis là pour t'aider à tenir bon."
   },
   "milestones": {
     "10_days": "Tu as créé une vraie habitude. 10 jours à te choisir toi-même.",
@@ -1008,7 +1014,8 @@
       "J'entends la profondeur de ce que tu as partagé. Sous la chose spécifique que tu veux changer vit une personne qui sait déjà qui elle est destinée à être. Cette connaissance est ta boussole—nous n'ajoutons rien ici, nous enlevons ce qui la recouvrait. Je serai avec toi à chaque étape.",
       "Le fait que tu l'aies nommé—clairement, honnêtement—te distingue déjà de la plupart des gens qui ressentent ce poids mais ne trouvent jamais les mots. Ta précision est ta force. Maintenant construisons quelque chose avec ça, un jour à la fois. Je serai avec toi à chaque étape.",
       "Il existe une version de toi qui a déjà fait ce changement, et elle a pris une décision que tu prends en ce moment : commencer. Pas quand tu es prêt. Pas quand c'est parfait. Juste maintenant. Ce désir que tu ressens est valide, réel, et plus que suffisant. Je serai avec toi à chaque étape."
-    ]
+    ],
+    "meet": "Voici"
   },
   "fdr": {
     "welcome_name": "Bienvenue, {{name}}.",

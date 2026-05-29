@@ -463,7 +463,13 @@
     "opener_later_teacher": "Giorno {{day}} di {{name}}. Cos'è una cosa che hai imparato su te stesso finora in questo processo — qualcosa che non sapevi prima?",
     "opener_day1_guide": "Hai scelto {{name}}. Quella scelta viene da un posto profondo. Come si sente la versione di te alla fine di questo percorso — come si sentirà la sua giornata?",
     "opener_later_guide": "Giorno {{day}}. Sei su questo cammino da {{prev}} giorni. Cos'è cambiato — anche se è piccolo — in come ti vedi?",
-    "opener_fallback": "Sono qui. Cosa hai in mente oggi riguardo al tuo percorso {{name}}?"
+    "opener_fallback": "Sono qui. Cosa hai in mente oggi riguardo al tuo percorso {{name}}?",
+    "intro_trainer": "Ti spingerò avanti, un giorno alla volta.",
+    "intro_teacher": "Capiremo tutto insieme, passo dopo passo.",
+    "intro_clinician": "Ti aiuterò a muoverti con delicatezza — e ad andare lontano.",
+    "intro_mentor": "Niente fronzoli. Solo passi chiari e feedback onesto.",
+    "intro_guide": "Scopriremo insieme cosa significa davvero questo percorso per te.",
+    "intro_fallback": "Sono qui per aiutarti a mantenere l'impegno."
   },
   "milestones": {
     "10_days": "Hai creato una vera abitudine. 10 giorni a scegliere te stesso.",
@@ -1008,7 +1014,8 @@
       "Sento la profondità di ciò che hai condiviso. Sotto la cosa specifica che vuoi cambiare vive una persona che già sa chi è destinata ad essere. Quella consapevolezza è la tua bussola—non aggiungiamo nulla qui, rimuoviamo ciò che la stava coprendo. Sarò con te ad ogni passo.",
       "Il fatto che tu l'abbia nominato—chiaramente, onestamente—ti distingue già dalla maggior parte delle persone che sentono questo peso ma non trovano mai le parole. La tua precisione è potere. Ora costruiamo qualcosa con essa, un giorno alla volta. Sarò con te ad ogni passo.",
       "Esiste una versione di te che ha già fatto questo cambiamento, e ha preso una decisione che tu stai prendendo proprio ora: iniziare. Non quando sei pronto. Non quando è perfetto. Proprio ora. Il desiderio che senti è valido, reale, e più che sufficiente. Sarò con te ad ogni passo."
-    ]
+    ],
+    "meet": "Conosci"
   },
   "fdr": {
     "welcome_name": "Benvenuto, {{name}}.",
