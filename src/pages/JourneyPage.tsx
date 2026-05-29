@@ -423,6 +423,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       journey.generatedThrough = 7;
       lsSave(LS_JOURNEY(track.slug), journey);
       lsSave(LS_DAYS(track.slug), filled);
+      localStorage.setItem(`forge-days-lang2-${track.slug}`, i18n.language);
       if (userId) { db.saveJourney(userId, journey).catch(() => {}); db.saveJourneyDays(userId, track.slug, filled).catch(() => {}); }
       onStarted(journey, filled);
     } catch {
@@ -430,6 +431,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       journey.generatedThrough = 7;
       lsSave(LS_JOURNEY(track.slug), journey);
       lsSave(LS_DAYS(track.slug), fallback);
+      localStorage.setItem(`forge-days-lang2-${track.slug}`, i18n.language);
       if (userId) { db.saveJourney(userId, journey).catch(() => {}); db.saveJourneyDays(userId, track.slug, fallback).catch(() => {}); }
       onStarted(journey, fallback);
     } finally {
@@ -676,7 +678,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
         if (!rawNext) return;
         const data = { days: rawNext };
         const filled = data.days.map((d: JourneyDay, i: number) => ({ ...d, id: nanoid(), journeyId: journey.id, dayNumber: fromDay + i, completedAt: null, userNote: null }));
-        setDays(prev => { const next = [...prev, ...filled]; lsSave(LS_DAYS(track.slug), next); localStorage.setItem(`forge-days-lang-${track.slug}`, i18n.language); if (userId) db.saveJourneyDays(userId, track.slug, next).catch(() => {}); return next; });
+        setDays(prev => { const next = [...prev, ...filled]; lsSave(LS_DAYS(track.slug), next); localStorage.setItem(`forge-days-lang2-${track.slug}`, i18n.language); if (userId) db.saveJourneyDays(userId, track.slug, next).catch(() => {}); return next; });
         const nextJourney = { ...journey, generatedThrough: fromDay + count - 1 };
         setJourney(nextJourney);
         lsSave(LS_JOURNEY(track.slug), nextJourney);

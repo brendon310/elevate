@@ -72,7 +72,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
   const [journey, setJourney] = useState<Journey | null>(() => {
     const j = lsLoad<Journey | null>(LS_JOURNEY(track.slug), null);
     const rawDays = lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []);
-    const storedLang = localStorage.getItem(`forge-days-lang-${track.slug}`) ?? 'en';
+    const storedLang = localStorage.getItem(`forge-days-lang2-${track.slug}`) ?? 'en';
     if (j && storedLang !== i18n.language && rawDays.length > 0) {
       const completed = rawDays.filter(d => d.completedAt !== null);
       return { ...j, generatedThrough: completed.length };
@@ -81,11 +81,11 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
   });
   const [days, setDays] = useState<JourneyDay[]>(() => {
     const rawDays = lsLoad<JourneyDay[]>(LS_DAYS(track.slug), []);
-    const storedLang = localStorage.getItem(`forge-days-lang-${track.slug}`) ?? 'en';
+    const storedLang = localStorage.getItem(`forge-days-lang2-${track.slug}`) ?? 'en';
     if (storedLang !== i18n.language && rawDays.length > 0) {
       const completed = rawDays.filter(d => d.completedAt !== null);
       lsSave(LS_DAYS(track.slug), completed);
-      localStorage.setItem(`forge-days-lang-${track.slug}`, i18n.language);
+      localStorage.setItem(`forge-days-lang2-${track.slug}`, i18n.language);
       return completed;
     }
     return rawDays;
