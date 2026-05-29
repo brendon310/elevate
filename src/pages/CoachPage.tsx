@@ -47,28 +47,6 @@ function archetypeForSlug(slug: string): Archetype {
   const id = TRACK_ARCHETYPE[slug] ?? "teacher";
   return ARCHETYPES[id];
 }
-const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
-  trainer: [
-    "Yesterday you chose to show up. Today is the test of whether that was a fluke or a pattern. It wasn't a fluke.",
-    "Every rep you do today compounds what you built yesterday. Clock's ticking. Get moving.",
-  ],
-  teacher: [
-    "Consistency is the silent teacher that no class can replicate. Your streak is already teaching you something. Keep the lesson going.",
-    "Yesterday's work laid a foundation. Today you get to build one more floor. Simple. Repeatable. Effective.",
-  ],
-  clinician: [
-    "Coming back again takes more courage than you may realize. I'm glad you're here. Let's make today gentle and intentional.",
-    "Progress isn't always visible in a day — but it lives in the choice to return. You returned. That matters deeply.",
-  ],
-  mentor: [
-    "The gap between who you are and who you're becoming closes one check-in at a time. Today is one of those times.",
-    "Execution is the only strategy that counts. You know what to do. Now go do it.",
-  ],
-  guide: [
-    "Morning has a particular kind of light. It's the same light that was here the day you started. You're still in it. Keep going.",
-    "Every day you return, you deepen the groove of the person you're becoming. Today, go a little deeper.",
-  ],
-};
 function lsLoad<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -105,8 +83,9 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
     if (!best) { onDismiss(); return; }
 
     const archetype = archetypeForSlug(best.slug);
-    const fallbacks = MORNING_FALLBACKS[archetype.id];
-    const fallback = fallbacks[hashStr(todayStr()) % fallbacks.length];
+    const allFallbacks = t("morning_coach.fallbacks", { returnObjects: true }) as Record<string, string[]>;
+    const fallbacks = allFallbacks[archetype.id] ?? [];
+    const fallback = fallbacks[hashStr(todayStr()) % Math.max(1, fallbacks.length)];
 
     // Try to get yesterday's note
     const days = lsLoad<JourneyDay[]>(LS_DAYS(best.slug), []);

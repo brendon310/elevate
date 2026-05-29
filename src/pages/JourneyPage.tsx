@@ -53,19 +53,6 @@ const COACH_FLASH: Record<string, string[]> = {
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
 const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
-const CHECKIN_WARNINGS = [
-  "The task won't complete itself. Write something.",
-  "Day 0 is calling. Don't pick up.",
-  "Your future self is watching. Fill this in.",
-  "The coach knows when you're faking it.",
-  "Empty field = empty progress. Come on.",
-  "You didn't come this far to leave this blank.",
-  "This is the work. Do the work.",
-  "Skip this and your streak takes the hit.",
-  "Not even one sentence? Really?",
-  "The only bad answer is no answer. Go.",
-];
-
 // Community content moderation — stems catch conjugations and variants
 const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
   trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
@@ -143,13 +130,6 @@ const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
   { content: "Finished day 7. Never thought I'd make it this far — the habit is starting to feel natural.", dayNumber: 7, flameCount: 14, userHasFlamed: false, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
   { content: "Hit my first milestone today 🎉 The science note about neuroplasticity blew my mind.", dayNumber: 21, flameCount: 8, userHasFlamed: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
   { content: "Day 3 was brutal but I checked in anyway. Small win counts.", dayNumber: 3, flameCount: 22, userHasFlamed: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
-];
-const COMMUNITY_MODERATION_MESSAGES = [
-  "Keep it real, not raw. This is a community of people doing hard work.",
-  "The coach is watching. So is everyone else. Let's keep it respectful.",
-  "Your words matter here. Try something you'd be proud to read back.",
-  "This community runs on honesty, not shock value. Say it differently.",
-  "Strong language, stronger filter. Rewrite it with intention.",
 ];
 function hashStr(s: string) {
   let h = 0;
@@ -317,7 +297,8 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
   const post = () => {
     if (!draft.trim()) return;
     if (isCommunityBlocked(draft)) {
-      const msg = COMMUNITY_MODERATION_MESSAGES[hashStr(draft) % COMMUNITY_MODERATION_MESSAGES.length];
+      const msgs = t("community.moderation", { returnObjects: true }) as string[];
+      const msg = msgs[hashStr(draft) % msgs.length];
       setModWarnMsg(msg);
       setModWarnKey(k => k + 1);
       return;
@@ -506,19 +487,19 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
           <div>
             <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.where_starting")}</label>
             <textarea value={startingPoint} onChange={e => setStartingPoint(e.target.value)}
-              placeholder={`e.g. "Complete beginner, never tried ${track.name} before"`}
+              placeholder={t("journey.placeholder_starting", { name: track.name })}
               rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
           </div>
           <div>
             <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.what_drives_you")}</label>
             <textarea value={motivation} onChange={e => setMotivation(e.target.value)}
-              placeholder={`e.g. "I want to feel calmer and less reactive in daily life"`}
+              placeholder={t("journey.placeholder_motivation")}
               rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
           </div>
           <div>
             <label className="text-xs uppercase tracking-wider text-muted-foreground">{t("journey.biggest_obstacle")}</label>
             <textarea value={obstacle} onChange={e => setObstacle(e.target.value)}
-              placeholder={`e.g. "I always quit after a few days when things get hard"`}
+              placeholder={t("journey.placeholder_obstacle")}
               rows={2} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none" />
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
@@ -833,12 +814,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const handleCheckIn = () => {
     let valid = true;
     if (!checkInTask.trim()) {
-      warnTaskIdx.current = (warnTaskIdx.current + 1) % CHECKIN_WARNINGS.length;
+      warnTaskIdx.current = (warnTaskIdx.current + 1) % 10;
       setWarnTaskKey(k => k + 1);
       valid = false;
     }
     if (!checkInReflect.trim()) {
-      warnReflectIdx.current = (warnReflectIdx.current + 1) % CHECKIN_WARNINGS.length;
+      warnReflectIdx.current = (warnReflectIdx.current + 1) % 10;
       setWarnReflectKey(k => k + 1);
       valid = false;
     }
@@ -1003,7 +984,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4 }}
                         className="text-xs text-red-500 font-medium">
-                        {CHECKIN_WARNINGS[warnTaskIdx.current % CHECKIN_WARNINGS.length]}
+                        {(t("checkin.warnings", { returnObjects: true }) as string[])[warnTaskIdx.current % 10]}
                       </motion.p>
                     )}
                   </AnimatePresence>
@@ -1023,7 +1004,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4 }}
                         className="text-xs text-red-500 font-medium">
-                        {CHECKIN_WARNINGS[warnReflectIdx.current % CHECKIN_WARNINGS.length]}
+                        {(t("checkin.warnings", { returnObjects: true }) as string[])[warnReflectIdx.current % 10]}
                       </motion.p>
                     )}
                   </AnimatePresence>

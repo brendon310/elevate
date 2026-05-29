@@ -156,29 +156,6 @@ function ghostDayFor(ut: UserTrack): number {
   return Math.max(1, Math.floor(ms / 86_400_000) + 1);
 }
 
-const MORNING_FALLBACKS: Record<ArchetypeId, string[]> = {
-  trainer: [
-    "Yesterday you chose to show up. Today is the test of whether that was a fluke or a pattern. It wasn't a fluke.",
-    "Every rep you do today compounds what you built yesterday. Clock's ticking. Get moving.",
-  ],
-  teacher: [
-    "Consistency is the silent teacher that no class can replicate. Your streak is already teaching you something. Keep the lesson going.",
-    "Yesterday's work laid a foundation. Today you get to build one more floor. Simple. Repeatable. Effective.",
-  ],
-  clinician: [
-    "Coming back again takes more courage than you may realize. I'm glad you're here. Let's make today gentle and intentional.",
-    "Progress isn't always visible in a day — but it lives in the choice to return. You returned. That matters deeply.",
-  ],
-  mentor: [
-    "The gap between who you are and who you're becoming closes one check-in at a time. Today is one of those times.",
-    "Execution is the only strategy that counts. You know what to do. Now go do it.",
-  ],
-  guide: [
-    "Morning has a particular kind of light. It's the same light that was here the day you started. You're still in it. Keep going.",
-    "Every day you return, you deepen the groove of the person you're becoming. Today, go a little deeper.",
-  ],
-};
-
 const JOURNEY_MILESTONES = [1, 3, 7, 14, 21, 30, 60, 90, 180, 365];
 
 const TRACK_HUE: Record<string, string> = {
@@ -199,19 +176,6 @@ const ONBOARDING_TRACKS: OnboardingTrack[] = ALL_TRACKS.map(t => ({
 
 // MOTIVATIONS moved to i18n JSON (app.motivations)
 
-const CHECKIN_WARNINGS = [
-  "The task won't complete itself. Write something.",
-  "Day 0 is calling. Don't pick up.",
-  "Your future self is watching. Fill this in.",
-  "The coach knows when you're faking it.",
-  "Empty field = empty progress. Come on.",
-  "You didn't come this far to leave this blank.",
-  "This is the work. Do the work.",
-  "Skip this and your streak takes the hit.",
-  "Not even one sentence? Really?",
-  "The only bad answer is no answer. Go.",
-];
-
 // Community content moderation — stems catch conjugations and variants
 const COMMUNITY_BLOCKLIST = [
   "jerk","masturbat","porn","sex ","fap","orgasm","naked","nude","dick","cock","pussy","ass ","fuck","shit ","bitch","whore","slut","cum ","jizz","rape","abuse","kill myself","kms","kys","nigger","faggot",
@@ -221,65 +185,50 @@ function isCommunityBlocked(text: string): boolean {
   return COMMUNITY_BLOCKLIST.some(w => lower.includes(w));
 }
 
-const COMMUNITY_MODERATION_MESSAGES = [
-  "Keep it real, not raw. This is a community of people doing hard work.",
-  "The coach is watching. So is everyone else. Let's keep it respectful.",
-  "Your words matter here. Try something you'd be proud to read back.",
-  "This community runs on honesty, not shock value. Say it differently.",
-  "Strong language, stronger filter. Rewrite it with intention.",
-];
-
-const COACH_RESPONSES = [
-  "What you've written holds more courage than you may realize. The desire to change isn't weakness—it's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
-  "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compass—we don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
-  "The fact that you named it—clearly, honestly—already sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
-  "There's a version of you that has already made this change, and they made one decision that you're making right now: to begin. Not when ready. Not when perfect. Just now. That desire you feel is valid, real, and more than enough. I'll be with you every step of the way.",
-];
-
 // Worldwide statistics shown during onboarding to help users feel less alone
-const TRACK_GLOBAL_STATS: Record<string, string> = {
-  "meditation":           "31% of people worldwide struggle with mental stillness",
-  "morning-run":          "54% of adults are insufficiently physically active",
-  "strength-training":    "54% of adults worldwide don't exercise enough",
-  "quit-smoking":         "22% of adults worldwide still smoke",
-  "deep-work":            "41% of workers report being unable to focus deeply",
-  "reading":              "33% of adults read less than they'd like",
-  "sleep-routine":        "45% of adults worldwide report poor sleep quality",
-  "anxiety-relief":       "28% of people experience anxiety disorders in their lifetime",
-  "journaling":           "67% of people want to reflect more but never start",
-  "cold-exposure":        "Growing wellness practice — millions are discovering this",
-  "no-social-media":      "40% of people report problematic social media use",
-  "quit-alcohol":         "14% of people worldwide struggle with alcohol use",
-  "quit-pornography":     "12% of people report problematic pornography use",
-  "quit-drugs":           "5% of adults worldwide use illicit substances regularly",
-  "quit-gambling":        "3% of people worldwide have a gambling disorder",
-  "binge-eating":         "4% of people worldwide experience binge eating disorder",
-  "video-game-addiction": "8% of gamers show signs of gaming disorder",
-  "compulsive-shopping":  "5% of people struggle with compulsive buying",
-  "no-sugar":             "50% of people struggle to reduce sugar consumption",
-  "beat-procrastination": "20% of adults are chronic procrastinators",
-  "build-discipline":     "41% say lack of discipline is their #1 challenge",
-  "stop-overthinking":    "73% of adults between 25–35 report chronic overthinking",
-  "social-anxiety":       "12% of people experience social anxiety disorder",
-  "anger-management":     "7% of adults report uncontrolled anger issues",
-  "chronic-stress":       "77% of adults regularly experience physical stress symptoms",
-  "social-isolation":     "33% of adults report chronic loneliness",
-  "negative-mindset":     "51% of people have a predominantly negative inner voice",
-  "breathwork":           "Millions worldwide use breathwork to regulate their nervous system",
-  "low-self-esteem":      "85% of people report self-esteem struggles at some point",
-  "need-for-approval":    "43% of people struggle with excessive need for validation",
-  "fear-of-failure":      "31% of people report a paralyzing fear of failure",
-  "fear-of-judgment":     "38% of people fear social judgment on a daily basis",
-  "emotional-dependency": "15% of people form emotionally dependent attachments",
-  "toxic-relationships":  "29% of adults have experienced a toxic relationship",
-  "control-issues":       "11% of people show excessive control tendencies",
-  "stop-self-sabotage":   "33% of people identify as self-sabotagers",
-  "toxic-perfectionism":  "29% of people suffer from maladaptive perfectionism",
-  "jealousy":             "22% of people report chronic jealousy in relationships",
-  "money-management":     "63% of adults live paycheck to paycheck",
-  "sedentary-lifestyle":  "54% of adults worldwide are insufficiently physically active",
-  "gratitude":            "Gratitude practice is used by millions to rewire thinking",
-};
+const TRACK_STAT_SLUGS = new Set([
+  "meditation",
+  "morning-run",
+  "strength-training",
+  "quit-smoking",
+  "deep-work",
+  "reading",
+  "sleep-routine",
+  "anxiety-relief",
+  "journaling",
+  "cold-exposure",
+  "no-social-media",
+  "quit-alcohol",
+  "quit-pornography",
+  "quit-drugs",
+  "quit-gambling",
+  "binge-eating",
+  "video-game-addiction",
+  "compulsive-shopping",
+  "no-sugar",
+  "beat-procrastination",
+  "build-discipline",
+  "stop-overthinking",
+  "social-anxiety",
+  "anger-management",
+  "chronic-stress",
+  "social-isolation",
+  "negative-mindset",
+  "breathwork",
+  "low-self-esteem",
+  "need-for-approval",
+  "fear-of-failure",
+  "fear-of-judgment",
+  "emotional-dependency",
+  "toxic-relationships",
+  "control-issues",
+  "stop-self-sabotage",
+  "toxic-perfectionism",
+  "jealousy",
+  "money-management",
+  "sedentary-lifestyle",
+  "gratitude",
+]);
 
 // Keyword map for smart path suggestion (supports both English and Italian)
 const TRACK_KEYWORDS: { slug: string; keywords: string[] }[] = [
@@ -384,9 +333,6 @@ function hashStr(s: string) {
   return Math.abs(h);
 }
 
-function pickCoachResponse(answer: string) {
-  return COACH_RESPONSES[hashStr(answer) % COACH_RESPONSES.length];
-}
 
 function trackHueVar(category?: string) {
   const map: Record<string, string> = {
@@ -484,17 +430,17 @@ function computeMomentum(tracks: UserTrack[]) {
 
 function evolutionFor(mxStreak: number) {
   const tiers = [
-    { min: 0,   label: "Spark",    ring: "evo-tier-0" },
-    { min: 7,   label: "Glow",     ring: "evo-tier-1" },
-    { min: 21,  label: "Ignite",   ring: "evo-tier-2" },
-    { min: 66,  label: "Forged",   ring: "evo-tier-3" },
-    { min: 180, label: "Anchored", ring: "evo-tier-4" },
-    { min: 365, label: "Identity", ring: "evo-tier-5" },
+    { min: 0,   labelKey: "app.evo_tier_spark",    ring: "evo-tier-0" },
+    { min: 7,   labelKey: "app.evo_tier_glow",     ring: "evo-tier-1" },
+    { min: 21,  labelKey: "app.evo_tier_ignite",   ring: "evo-tier-2" },
+    { min: 66,  labelKey: "app.evo_tier_forged",   ring: "evo-tier-3" },
+    { min: 180, labelKey: "app.evo_tier_anchored", ring: "evo-tier-4" },
+    { min: 365, labelKey: "app.evo_tier_identity", ring: "evo-tier-5" },
   ];
   let idx = 0;
   for (let i = 0; i < tiers.length; i++) if (mxStreak >= tiers[i].min) idx = i;
   const next = idx < tiers.length - 1 ? tiers[idx + 1].min : null;
-  return { label: tiers[idx].label, next, daysToNext: next ? next - mxStreak : 0, ringClass: tiers[idx].ring };
+  return { labelKey: tiers[idx].labelKey, next, daysToNext: next ? next - mxStreak : 0, ringClass: tiers[idx].ring };
 }
 
 function detectFlow(tracks: UserTrack[]) {
@@ -810,7 +756,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                 {tier === "red" || tier === "red-pulse"
                   ? <Flame className="h-3 w-3" />
                   : <Zap className="h-3 w-3" />}
-                {evo.label}
+                {t(evo.labelKey)}
               </span>
               {/* Permanent milestone badges */}
               {reachedMilestones.map(ms => {
@@ -825,7 +771,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
                     onClick={is100k ? () => setShowPrizeModal(true) : undefined}
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
                     style={{ cursor: is100k ? "pointer" : "default", ...badgeStyle }}
-                    title={is100k ? "Click to claim your prize" : `${ms.label} reached`}>
+                    title={is100k ? t("badge.claim_title") : t("badge.ms_reached", { label: ms.label })}>
                     {is100k ? "★" : ms.icon === "flame" ? <Flame className="h-2.5 w-2.5" /> : <Zap className="h-2.5 w-2.5" />}
                     {is100k ? " 100k ★" : ms.label}
                   </span>
@@ -861,8 +807,7 @@ function MomentumHero({ tracks, user, onUpdateUser, onCheckIn, onView }: {
 
             {!isMaxed && evo.next && (
               <p className="mt-2 text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground">{evo.daysToNext}</span> day{evo.daysToNext === 1 ? "" : "s"} to{" "}
-                <span className="font-semibold text-foreground">{evolutionFor(evo.next).label}</span>
+                {t("app.days_to_next", { count: evo.daysToNext, label: t(evolutionFor(evo.next!).labelKey) })}
               </p>
             )}
             <div className="mt-3 grid grid-cols-4 gap-1.5">
@@ -1323,7 +1268,8 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
     if (answer.trim().length < 10) return;
     setStep("thinking");
     await new Promise(r => setTimeout(r, 1800));
-    setMessage(pickCoachResponse(answer));
+    const coachResponses = t("onboarding.coach_responses", { returnObjects: true }) as string[];
+    setMessage(coachResponses[hashStr(answer) % coachResponses.length]);
     setStep("response");
   };
 
@@ -1421,9 +1367,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                       style={{ background: "radial-gradient(circle, oklch(0.875 0.185 95 / 0.5), transparent 70%)" }} />
                     <p className="text-[10px] uppercase tracking-[0.3em] text-yellow-400 font-mono mb-3">{sug.category}</p>
                     <h3 className="font-display text-4xl font-bold mb-4">{t(`tracks.${sug.slug}.name`, { defaultValue: sug.name })}</h3>
-                    {TRACK_GLOBAL_STATS[sug.slug] && (
+                    {TRACK_STAT_SLUGS.has(sug.slug) && (
                       <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
-                        {TRACK_GLOBAL_STATS[sug.slug]}.<br />
+                        {t(`tracks.stats.${sug.slug}`)}.<br />
                         <span className="text-yellow-400 font-medium">{t("onboarding.not_alone")}</span>
                       </p>
                     )}
@@ -1461,9 +1407,9 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
                           <div className="flex-1">
                             <p className="font-display text-xl font-semibold">{t(`tracks.${sug.slug}.name`, { defaultValue: sug.name })}</p>
                             <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-0.5">{sug.category}</p>
-                            {TRACK_GLOBAL_STATS[sug.slug] && (
+                            {TRACK_STAT_SLUGS.has(sug.slug) && (
                               <p className="text-xs text-yellow-400/90 mt-2 leading-relaxed">
-                                {TRACK_GLOBAL_STATS[sug.slug]}. {t("onboarding.not_alone")}
+                                {t(`tracks.stats.${sug.slug}`)}. {t("onboarding.not_alone")}
                               </p>
                             )}
                           </div>

@@ -15,70 +15,6 @@ function hashStr(s: string) {
 
 // REENTRY_MESSAGES moved to i18n (app.reentry_messages)
 
-const SOS_ALTERNATIVES: Record<string, string[]> = {
-  "quit-alcohol": [
-    "Call someone you trust right now — even just to talk",
-    "Drink a large glass of cold water slowly",
-    "Walk outside for 5 minutes, no destination",
-    "Write down exactly what triggered this urge",
-    "Do 20 push-ups or jumping jacks right now",
-    "Text or call a sober support person",
-    "Watch a funny video for 10 minutes",
-  ],
-  "quit-smoking": [
-    "Do 10 slow, deep breaths — 4 in, 8 out",
-    "Drink a large glass of cold water",
-    "Chew gum or eat a healthy snack",
-    "Walk outside for 5 minutes",
-    "Call or text someone",
-    "Do 20 jumping jacks",
-    "Write down why you quit",
-  ],
-  "quit-gambling": [
-    "Call someone you trust right now — even just to talk",
-    "Leave the area immediately — go somewhere public",
-    "Call a helpline: 1-800-522-4700",
-    "Write down what you would do with the money you have saved",
-    "Think about the last time gambling hurt you — write it down",
-    "Do 10 minutes of physical movement",
-    "No wallet — no access to cash or cards",
-  ],
-  "quit-porn": [
-    "Close all devices and go somewhere public",
-    "Call or text a trusted person",
-    "Do 20 push-ups or a physical activity",
-    "Write down what triggered this urge",
-    "Drink cold water and take 10 deep breaths",
-    "Pray, meditate, or read something meaningful",
-    "Change your environment immediately",
-  ],
-  "quit-weed": [
-    "Call someone you trust right now",
-    "Drink a large glass of cold water slowly",
-    "Go for a 10-minute walk outside",
-    "Write down exactly what you are feeling",
-    "Do 20 jumping jacks or push-ups",
-    "Watch or read something engaging",
-    "Remind yourself: this craving passes in 15-20 minutes",
-  ],
-  "binge-eating": [
-    "Drink 500ml of water slowly before anything else",
-    "Go for a 10-minute walk right now",
-    "Call or text someone",
-    "Write down what you would do with the money you have saved",
-    "Think about the last time gambling hurt you — write it down",
-    "Do 10 minutes of physical movement",
-  ],
-};
-
-const SOS_GENERIC = [
-  "Take a slow, deep breath right now — 4 counts in, 8 out",
-  "Go to a different room or step outside",
-  "Call or text someone you trust",
-  "Write down exactly how you are feeling",
-  "Do 10 minutes of physical movement",
-];
-
 const BREATHE_PHASES = [
   { labelKey: "sos.breathe_in", subKey: "sos.through_nose", duration: 4000, targetScale: 1.45 },
   { labelKey: "sos.hold", subKey: "sos.keep_steady", duration: 7000, targetScale: 1.45 },
@@ -247,7 +183,9 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
   }, [breatheCycles, sosPhase]);
 
   const primarySlug = tracks[0]?.slug ?? "";
-  const alternatives = SOS_ALTERNATIVES[primarySlug] ?? SOS_GENERIC;
+  const sosAlts = t("sos.alternatives", { returnObjects: true }) as Record<string, string[]>;
+  const sosGeneric = t("sos.generic", { returnObjects: true }) as string[];
+  const alternatives = sosAlts[primarySlug] ?? sosGeneric;
   const { labelKey: breatheLabelKey, subKey: breatheSubKey, duration: breatheDur } = BREATHE_PHASES[breatheIdx];
 
   return (

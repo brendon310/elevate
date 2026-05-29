@@ -213,7 +213,7 @@ function TracksPage({ userTracks, onAdd, onView, onRemove }: {
                         </button>
                         <button onClick={() => { if (confirm(t("tracks.remove_confirm", { name: track.name }))) onRemove(ut.id); }}
                           className="btn-chunk inline-flex items-center rounded-full px-2.5 py-1.5 text-xs border border-[color:var(--secondary)]/30 text-[color:var(--secondary)] hover:bg-[color:var(--secondary)]/10 transition"
-                          title="Remove track">
+                          title={t("tracks.remove_track")}>
                           ✕
                         </button>
                       </div>

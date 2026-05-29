@@ -72,7 +72,15 @@
     "reengagement_lets_go": "Let's go",
     "reengagement_maybe_later": "Maybe later",
     "track_complete_title": "Journey Complete",
-    "track_complete_body": "That is real. You showed up every day."
+    "track_complete_body": "That is real. You showed up every day.",
+    "evo_tier_spark": "Spark",
+    "evo_tier_glow": "Glow",
+    "evo_tier_ignite": "Ignite",
+    "evo_tier_forged": "Forged",
+    "evo_tier_anchored": "Anchored",
+    "evo_tier_identity": "Identity",
+    "days_to_next_one": "1 day to {{label}}",
+    "days_to_next_other": "{{count}} days to {{label}}"
   },
   "common": {
     "next": "Next",
@@ -309,7 +317,10 @@
     "keep_original_plan": "Keep original plan",
     "milestone_message": "You've hit a major milestone on your {{name}} journey. This is the moment most people quit — and you didn't.",
     "keep_going": "Keep going",
-    "custom": "Custom"
+    "custom": "Custom",
+    "placeholder_starting": "e.g. \"Complete beginner, never tried {{name}} before\"",
+    "placeholder_motivation": "e.g. \"I want to feel calmer and less reactive in daily life\"",
+    "placeholder_obstacle": "e.g. \"I always quit after a few days when things get hard\""
   },
   "adapt_reasons": {
     "busy": "Life got busy",
@@ -346,7 +357,19 @@
     "validation_joking": "Looks like you're joking — write something real!",
     "validation_write_something": "Write something real, even a short sentence.",
     "validation_real_answer": "Write a real answer — even two words is enough.",
-    "validation_bad_words": "Choose better words for your check-in."
+    "validation_bad_words": "Choose better words for your check-in.",
+    "warnings": [
+      "The task won't complete itself. Write something.",
+      "Day 0 is calling. Don't pick up.",
+      "Your future self is watching. Fill this in.",
+      "The coach knows when you're faking it.",
+      "Empty field = empty progress. Come on.",
+      "You didn't come this far to leave this blank.",
+      "This is the work. Do the work.",
+      "Skip this and your streak takes the hit.",
+      "Not even one sentence? Really?",
+      "The only bad answer is no answer. Go."
+    ]
   },
   "insights": {
     "title": "Insights",
@@ -391,7 +414,8 @@
     "this_vs_last_week": "This week vs last week",
     "ninety_day": "90-day activity",
     "no_activity_yet": "Complete your first check-in to see activity here.",
-    "letter_private": "Generated privately for you alone"
+    "letter_private": "Generated privately for you alone",
+    "letter_error": "Something went wrong generating your letter. Check your connection and try again in a moment."
   },
   "coach": {
     "nudge_inactivity": "You've been away for a few days. Every step counts — even a small one.",
@@ -554,7 +578,69 @@
     "keep_steady": "keep it steady",
     "breathe_out": "Breathe out",
     "slowly_mouth": "slowly through your mouth",
-    "ready_next": "ready for the next breath"
+    "ready_next": "ready for the next breath",
+    "alternatives": {
+      "quit-alcohol": [
+        "Call someone you trust right now — even just to talk",
+        "Drink a large glass of cold water slowly",
+        "Walk outside for 5 minutes, no destination",
+        "Write down exactly what triggered this urge",
+        "Do 20 push-ups or jumping jacks right now",
+        "Text or call a sober support person",
+        "Watch a funny video for 10 minutes"
+      ],
+      "quit-smoking": [
+        "Do 10 slow, deep breaths — 4 in, 8 out",
+        "Drink a large glass of cold water",
+        "Chew gum or eat a healthy snack",
+        "Walk outside for 5 minutes",
+        "Call or text someone",
+        "Do 20 jumping jacks",
+        "Write down why you quit"
+      ],
+      "quit-gambling": [
+        "Call someone you trust right now — even just to talk",
+        "Leave the area immediately — go somewhere public",
+        "Call a gambling support helpline",
+        "Write down what you would do with the money you have saved",
+        "Think about the last time gambling hurt you — write it down",
+        "Do 10 minutes of physical movement",
+        "No wallet — no access to cash or cards"
+      ],
+      "quit-porn": [
+        "Close all devices and go somewhere public",
+        "Call or text a trusted person",
+        "Do 20 push-ups or a physical activity",
+        "Write down what triggered this urge",
+        "Drink cold water and take 10 deep breaths",
+        "Pray, meditate, or read something meaningful",
+        "Change your environment immediately"
+      ],
+      "quit-weed": [
+        "Call someone you trust right now",
+        "Drink a large glass of cold water slowly",
+        "Go for a 10-minute walk outside",
+        "Write down exactly what you are feeling",
+        "Do 20 jumping jacks or push-ups",
+        "Watch or read something engaging",
+        "Remind yourself: this craving passes in 15–20 minutes"
+      ],
+      "binge-eating": [
+        "Drink 500ml of water slowly before anything else",
+        "Go for a 10-minute walk right now",
+        "Call or text someone",
+        "Write down what you would do if you didn't binge",
+        "Think about how you'll feel in an hour — write it down",
+        "Do 10 minutes of physical movement"
+      ]
+    },
+    "generic": [
+      "Take a slow, deep breath right now — 4 counts in, 8 out",
+      "Go to a different room or step outside",
+      "Call or text someone you trust",
+      "Write down exactly how you are feeling",
+      "Do 10 minutes of physical movement"
+    ]
   },
   "overlays": {
     "welcome_back": "Welcome back — {{days}} days later",
@@ -760,10 +846,76 @@
     "view": "View",
     "remove_confirm": "Remove {{name}} from your paths?",
     "start": "Start",
-    "one_year_label": "1 year"
+    "one_year_label": "1 year",
+    "stats": {
+      "meditation": "31% of people worldwide struggle with mental stillness",
+      "morning-run": "54% of adults are insufficiently physically active",
+      "strength-training": "54% of adults worldwide don't exercise enough",
+      "quit-smoking": "22% of adults worldwide still smoke",
+      "deep-work": "41% of workers report being unable to focus deeply",
+      "reading": "33% of adults read less than they'd like",
+      "sleep-routine": "45% of adults worldwide report poor sleep quality",
+      "anxiety-relief": "28% of people experience anxiety disorders in their lifetime",
+      "journaling": "67% of people want to reflect more but never start",
+      "cold-exposure": "Growing wellness practice — millions are discovering this",
+      "no-social-media": "40% of people report problematic social media use",
+      "quit-alcohol": "14% of people worldwide struggle with alcohol use",
+      "quit-pornography": "12% of people report problematic pornography use",
+      "quit-drugs": "5% of adults worldwide use illicit substances regularly",
+      "quit-gambling": "3% of people worldwide have a gambling disorder",
+      "binge-eating": "4% of people worldwide experience binge eating disorder",
+      "video-game-addiction": "8% of gamers show signs of gaming disorder",
+      "compulsive-shopping": "5% of people struggle with compulsive buying",
+      "no-sugar": "50% of people struggle to reduce sugar consumption",
+      "beat-procrastination": "20% of adults are chronic procrastinators",
+      "build-discipline": "41% say lack of discipline is their #1 challenge",
+      "stop-overthinking": "73% of adults between 25–35 report chronic overthinking",
+      "social-anxiety": "12% of people experience social anxiety disorder",
+      "anger-management": "7% of adults report uncontrolled anger issues",
+      "chronic-stress": "77% of adults regularly experience physical stress symptoms",
+      "social-isolation": "33% of adults report chronic loneliness",
+      "negative-mindset": "51% of people have a predominantly negative inner voice",
+      "breathwork": "Millions worldwide use breathwork to regulate their nervous system",
+      "low-self-esteem": "85% of people report self-esteem struggles at some point",
+      "need-for-approval": "43% of people struggle with excessive need for validation",
+      "fear-of-failure": "31% of people report a paralyzing fear of failure",
+      "fear-of-judgment": "38% of people fear social judgment on a daily basis",
+      "emotional-dependency": "15% of people form emotionally dependent attachments",
+      "toxic-relationships": "29% of adults have experienced a toxic relationship",
+      "control-issues": "11% of people show excessive control tendencies",
+      "stop-self-sabotage": "33% of people identify as self-sabotagers",
+      "toxic-perfectionism": "29% of people suffer from maladaptive perfectionism",
+      "jealousy": "22% of people report chronic jealousy in relationships",
+      "money-management": "63% of adults live paycheck to paycheck",
+      "sedentary-lifestyle": "54% of adults worldwide are insufficiently physically active",
+      "gratitude": "Gratitude practice is used by millions to rewire thinking"
+    },
+    "remove_track": "Remove track"
   },
   "morning_coach": {
-    "begin_today": "Begin today"
+    "begin_today": "Begin today",
+    "fallbacks": {
+      "trainer": [
+        "Yesterday you chose to show up. Today is the test of whether that was a fluke or a pattern. It wasn't a fluke.",
+        "Every rep you do today compounds what you built yesterday. Clock's ticking. Get moving."
+      ],
+      "teacher": [
+        "Consistency is the silent teacher that no class can replicate. Your streak is already teaching you something. Keep the lesson going.",
+        "Yesterday's work laid a foundation. Today you get to build one more floor. Simple. Repeatable. Effective."
+      ],
+      "clinician": [
+        "Coming back again takes more courage than you may realize. I'm glad you're here. Let's make today gentle and intentional.",
+        "Progress isn't always visible in a day — but it lives in the choice to return. You returned. That matters deeply."
+      ],
+      "mentor": [
+        "The gap between who you are and who you're becoming closes one check-in at a time. Today is one of those times.",
+        "Execution is the only strategy that counts. You know what to do. Now go do it."
+      ],
+      "guide": [
+        "Morning has a particular kind of light. It's the same light that was here the day you started. You're still in it. Keep going.",
+        "Every day you return, you deepen the groove of the person you're becoming. Today, go a little deeper."
+      ]
+    }
   },
   "email": {
     "welcome_subject": "Welcome to Forge — your journey starts now",
@@ -785,7 +937,9 @@
     "request": "Request physical badge",
     "claim_prize": "Claim your physical prize →",
     "at_100k": "At 100k you can",
-    "claim_link": "claim the physical badge"
+    "claim_link": "claim the physical badge",
+    "ms_reached": "{{label}} reached",
+    "claim_title": "Click to claim your prize"
   },
   "login": {
     "almost_there": "Almost there",
@@ -837,7 +991,13 @@
     "skip_for_now": "Skip for now",
     "start_day1_arrow": "Start Day 1",
     "what_to_change": "What is the one thing that, if you changed it, would change everything?",
-    "be_honest": "Be honest. No one else will read this."
+    "be_honest": "Be honest. No one else will read this.",
+    "coach_responses": [
+      "What you've written holds more courage than you may realize. The desire to change isn't weakness—it's the first muscle you'll train. This path isn't about willpower alone; it's about becoming someone for whom this shift feels completely natural. I'll be with you every step of the way.",
+      "I hear the depth in what you've shared. Beneath the specific thing you want to change lives a person who already knows who they're meant to be. That knowing is your compass—we don't add anything to you here, we clear away what's been covering it. I'll be with you every step of the way.",
+      "The fact that you named it—clearly, honestly—already sets you apart from most people who feel this weight but never find the words. Your precision is power. Now let's build something with it, one day at a time. I'll be with you every step of the way.",
+      "There's a version of you that has already made this change, and they made one decision that you're making right now: to begin. Not when ready. Not when perfect. Just now. That desire you feel is valid, real, and more than enough. I'll be with you every step of the way."
+    ]
   },
   "fdr": {
     "welcome_name": "Welcome, {{name}}.",
@@ -901,5 +1061,14 @@
     "default_label": "This feature requires an upgrade",
     "upgrade_btn": "Upgrade",
     "upgrade_inline": "Upgrade to unlock"
+  },
+  "community": {
+    "moderation": [
+      "Keep it real, not raw. This is a community of people doing hard work.",
+      "The coach is watching. So is everyone else. Let's keep it respectful.",
+      "Your words matter here. Try something you'd be proud to read back.",
+      "This community runs on honesty, not shock value. Say it differently.",
+      "Strong language, stronger filter. Rewrite it with intention."
+    ]
   }
 }

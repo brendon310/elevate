@@ -72,7 +72,15 @@
     "reengagement_lets_go": "Vamos",
     "reengagement_maybe_later": "Quizás después",
     "track_complete_title": "Camino Completado",
-    "track_complete_body": "Es real. Te presentaste cada día."
+    "track_complete_body": "Es real. Te presentaste cada día.",
+    "evo_tier_spark": "Chispa",
+    "evo_tier_glow": "Resplandor",
+    "evo_tier_ignite": "Ignición",
+    "evo_tier_forged": "Forjado",
+    "evo_tier_anchored": "Anclado",
+    "evo_tier_identity": "Identidad",
+    "days_to_next_one": "1 día para {{label}}",
+    "days_to_next_other": "{{count}} días para {{label}}"
   },
   "common": {
     "next": "Siguiente",
@@ -309,7 +317,10 @@
     "keep_original_plan": "Mantener plan original",
     "milestone_message": "Has alcanzado un hito importante en tu viaje {{name}}. Este es el momento en que la mayoría abandona — y tú no.",
     "keep_going": "Sigue adelante",
-    "custom": "Personalizado"
+    "custom": "Personalizado",
+    "placeholder_starting": "ej. \"Principiante completo, nunca he probado {{name}} antes\"",
+    "placeholder_motivation": "ej. \"Quiero sentirme más tranquilo y menos reactivo en la vida diaria\"",
+    "placeholder_obstacle": "ej. \"Siempre abandono después de unos días cuando las cosas se ponen difíciles\""
   },
   "adapt_reasons": {
     "busy": "La vida se puso ocupada",
@@ -346,7 +357,19 @@
     "validation_joking": "Parece que estás bromeando — ¡escribe algo real!",
     "validation_write_something": "Escribe algo real, aunque sea una frase corta.",
     "validation_real_answer": "Escribe una respuesta real — con dos palabras basta.",
-    "validation_bad_words": "Elige mejores palabras para tu check-in."
+    "validation_bad_words": "Elige mejores palabras para tu check-in.",
+    "warnings": [
+      "La tarea no se completará sola. Escribe algo.",
+      "El Día 0 te está llamando. No respondas.",
+      "Tu yo futuro está mirando. Completa esto.",
+      "El coach sabe cuando estás fingiendo.",
+      "Campo vacío = progreso vacío. Vamos.",
+      "No llegaste hasta aquí para dejarlo en blanco.",
+      "Este es el trabajo. Haz el trabajo.",
+      "Sáltate esto y tu racha lo pagará.",
+      "¿Ni siquiera una frase? ¿En serio?",
+      "La única respuesta mala es ninguna respuesta. Ve."
+    ]
   },
   "insights": {
     "title": "Estadísticas",
@@ -391,7 +414,8 @@
     "this_vs_last_week": "Esta semana vs la anterior",
     "ninety_day": "Actividad 90 días",
     "no_activity_yet": "Completa tu primer check-in para ver actividad aquí.",
-    "letter_private": "Generada privadamente solo para ti"
+    "letter_private": "Generada privadamente solo para ti",
+    "letter_error": "Algo salió mal al generar tu carta. Revisa tu conexión e inténtalo de nuevo en un momento."
   },
   "coach": {
     "nudge_inactivity": "Llevas unos días sin aparecer. Cada paso cuenta — incluso uno pequeño.",
@@ -554,7 +578,69 @@
     "keep_steady": "mantén firme",
     "breathe_out": "Exhala",
     "slowly_mouth": "lentamente por la boca",
-    "ready_next": "listo para el siguiente respiro"
+    "ready_next": "listo para el siguiente respiro",
+    "alternatives": {
+      "quit-alcohol": [
+        "Llama a alguien de confianza ahora mismo — aunque sea solo para hablar",
+        "Bebe lentamente un vaso grande de agua fría",
+        "Camina afuera durante 5 minutos sin destino",
+        "Escribe exactamente qué desencadenó este impulso",
+        "Haz 20 flexiones o saltos ahora mismo",
+        "Envía un mensaje o llama a una persona de apoyo sobria",
+        "Mira un video divertido durante 10 minutos"
+      ],
+      "quit-smoking": [
+        "Haz 10 respiraciones lentas y profundas — 4 al entrar, 8 al salir",
+        "Bebe un vaso grande de agua fría",
+        "Mastica chicle o come un snack saludable",
+        "Camina afuera durante 5 minutos",
+        "Llama o envía un mensaje a alguien",
+        "Haz 20 saltos",
+        "Escribe por qué lo dejaste"
+      ],
+      "quit-gambling": [
+        "Llama a alguien de confianza ahora mismo — aunque sea solo para hablar",
+        "Abandona el área inmediatamente — ve a un lugar público",
+        "Llama a una línea de ayuda para problemas de juego",
+        "Escribe qué harías con el dinero que has ahorrado",
+        "Piensa en la última vez que el juego te lastimó — escríbelo",
+        "Haz 10 minutos de movimiento físico",
+        "Sin billetera — sin acceso a efectivo o tarjetas"
+      ],
+      "quit-porn": [
+        "Cierra todos los dispositivos y ve a un lugar público",
+        "Llama o envía un mensaje a una persona de confianza",
+        "Haz 20 flexiones o una actividad física",
+        "Escribe qué desencadenó este impulso",
+        "Bebe agua fría y toma 10 respiraciones profundas",
+        "Reza, medita o lee algo significativo",
+        "Cambia tu entorno inmediatamente"
+      ],
+      "quit-weed": [
+        "Llama a alguien de confianza ahora mismo",
+        "Bebe lentamente un vaso grande de agua fría",
+        "Da una caminata de 10 minutos afuera",
+        "Escribe exactamente cómo te estás sintiendo",
+        "Haz 20 saltos o flexiones",
+        "Mira o lee algo interesante",
+        "Recuérdate: este deseo pasa en 15–20 minutos"
+      ],
+      "binge-eating": [
+        "Bebe 500ml de agua lentamente antes que nada",
+        "Da una caminata de 10 minutos ahora mismo",
+        "Llama o envía un mensaje a alguien",
+        "Escribe qué harías si no cedieras al impulso",
+        "Piensa en cómo te sentirás en una hora — escríbelo",
+        "Haz 10 minutos de movimiento físico"
+      ]
+    },
+    "generic": [
+      "Toma una respiración lenta y profunda ahora mismo — 4 tiempos al entrar, 8 al salir",
+      "Ve a otra habitación o sal afuera",
+      "Llama o envía un mensaje a alguien en quien confías",
+      "Escribe exactamente cómo te estás sintiendo",
+      "Haz 10 minutos de movimiento físico"
+    ]
   },
   "overlays": {
     "welcome_back": "Bienvenido de vuelta — {{days}} días después",
@@ -760,10 +846,76 @@
     "view": "Ver",
     "remove_confirm": "Eliminar {{name}} de tus rutas?",
     "start": "Iniciar",
-    "one_year_label": "1 ano"
+    "one_year_label": "1 ano",
+    "stats": {
+      "meditation": "El 31% de las personas en todo el mundo tiene dificultades con la quietud mental",
+      "morning-run": "El 54% de los adultos no es suficientemente activo físicamente",
+      "strength-training": "El 54% de los adultos en todo el mundo no hace suficiente ejercicio",
+      "quit-smoking": "El 22% de los adultos en todo el mundo todavía fuma",
+      "deep-work": "El 41% de los trabajadores informa que no puede concentrarse profundamente",
+      "reading": "El 33% de los adultos lee menos de lo que le gustaría",
+      "sleep-routine": "El 45% de los adultos en todo el mundo reporta mala calidad del sueño",
+      "anxiety-relief": "El 28% de las personas experimenta trastornos de ansiedad en su vida",
+      "journaling": "El 67% de las personas quiere reflexionar más pero nunca comienza",
+      "cold-exposure": "Práctica de bienestar en crecimiento — millones la están descubriendo",
+      "no-social-media": "El 40% de las personas reporta uso problemático de las redes sociales",
+      "quit-alcohol": "El 14% de las personas en todo el mundo tiene problemas con el alcohol",
+      "quit-pornography": "El 12% de las personas reporta uso problemático de la pornografía",
+      "quit-drugs": "El 5% de los adultos en todo el mundo usa sustancias ilícitas regularmente",
+      "quit-gambling": "El 3% de las personas en todo el mundo tiene un trastorno del juego",
+      "binge-eating": "El 4% de las personas en todo el mundo experimenta trastorno por atracón",
+      "video-game-addiction": "El 8% de los jugadores muestra signos de trastorno del juego",
+      "compulsive-shopping": "El 5% de las personas lucha con las compras compulsivas",
+      "no-sugar": "El 50% de las personas tiene dificultades para reducir el consumo de azúcar",
+      "beat-procrastination": "El 20% de los adultos son procrastinadores crónicos",
+      "build-discipline": "El 41% dice que la falta de disciplina es su desafío número 1",
+      "stop-overthinking": "El 73% de los adultos entre 25 y 35 años reporta rumiación crónica",
+      "social-anxiety": "El 12% de las personas experimenta trastorno de ansiedad social",
+      "anger-management": "El 7% de los adultos reporta problemas de ira descontrolada",
+      "chronic-stress": "El 77% de los adultos experimenta regularmente síntomas físicos de estrés",
+      "social-isolation": "El 33% de los adultos reporta soledad crónica",
+      "negative-mindset": "El 51% de las personas tiene una voz interior predominantemente negativa",
+      "breathwork": "Millones en todo el mundo usan la respiración para regular su sistema nervioso",
+      "low-self-esteem": "El 85% de las personas reporta problemas de autoestima en algún momento",
+      "need-for-approval": "El 43% de las personas lucha con la necesidad excesiva de validación",
+      "fear-of-failure": "El 31% de las personas reporta un miedo paralizante al fracaso",
+      "fear-of-judgment": "El 38% de las personas teme el juicio social a diario",
+      "emotional-dependency": "El 15% de las personas forma apegos emocionalmente dependientes",
+      "toxic-relationships": "El 29% de los adultos ha experimentado una relación tóxica",
+      "control-issues": "El 11% de las personas muestra tendencias de control excesivas",
+      "stop-self-sabotage": "El 33% de las personas se identifica como autosaboteador",
+      "toxic-perfectionism": "El 29% de las personas sufre de perfeccionismo desadaptativo",
+      "jealousy": "El 22% de las personas reporta celos crónicos en las relaciones",
+      "money-management": "El 63% de los adultos vive de sueldo en sueldo",
+      "sedentary-lifestyle": "El 54% de los adultos en todo el mundo es insuficientemente activo físicamente",
+      "gratitude": "La práctica de la gratitud es usada por millones para reprogramar el pensamiento"
+    },
+    "remove_track": "Eliminar recorrido"
   },
   "morning_coach": {
-    "begin_today": "Empieza hoy"
+    "begin_today": "Empieza hoy",
+    "fallbacks": {
+      "trainer": [
+        "Ayer elegiste aparecer. Hoy es la prueba de si fue suerte o un patrón. No fue suerte.",
+        "Cada repetición que hagas hoy amplifica lo que construiste ayer. El reloj corre. Muévete."
+      ],
+      "teacher": [
+        "La constancia es el maestro silencioso que ninguna clase puede replicar. Tu racha ya te está enseñando algo. Continúa la lección.",
+        "El trabajo de ayer sentó una base. Hoy puedes construir un piso más. Simple. Repetible. Efectivo."
+      ],
+      "clinician": [
+        "Volver de nuevo requiere más coraje del que puedes darte cuenta. Me alegra que estés aquí. Hagamos hoy suave e intencional.",
+        "El progreso no siempre es visible en un día — pero vive en la elección de regresar. Regresaste. Eso importa profundamente."
+      ],
+      "mentor": [
+        "La brecha entre quien eres y quien estás llegando a ser se cierra un check-in a la vez. Hoy es uno de esos momentos.",
+        "La ejecución es la única estrategia que cuenta. Sabes qué hacer. Ahora ve a hacerlo."
+      ],
+      "guide": [
+        "La mañana tiene una luz particular. Es la misma luz que estaba aquí el día que empezaste. Todavía estás en ella. Sigue.",
+        "Cada día que regresas, profundizas el surco de la persona en quien te estás convirtiendo. Hoy, profundiza un poco más."
+      ]
+    }
   },
   "email": {
     "welcome_subject": "Bienvenido a Forge — tu camino empieza ahora",
@@ -785,7 +937,9 @@
     "request": "Solicitar insignia física",
     "claim_prize": "Reclamar tu premio físico →",
     "at_100k": "En 100k puedes",
-    "claim_link": "reclamar la insignia física"
+    "claim_link": "reclamar la insignia física",
+    "ms_reached": "{{label}} alcanzado",
+    "claim_title": "Haz clic para reclamar tu premio"
   },
   "login": {
     "almost_there": "Casi listo",
@@ -837,7 +991,13 @@
     "skip_for_now": "Omitir por ahora",
     "start_day1_arrow": "Empezar Día 1",
     "what_to_change": "¿Cuál es la única cosa que, si la cambias, cambiaría todo?",
-    "be_honest": "Sé honesto. Nadie más leerá esto."
+    "be_honest": "Sé honesto. Nadie más leerá esto.",
+    "coach_responses": [
+      "Lo que has escrito contiene más coraje del que quizás te das cuenta. El deseo de cambiar no es debilidad—es el primer músculo que entrenarás. Este camino no se trata solo de fuerza de voluntad; se trata de convertirse en alguien para quien este cambio se siente completamente natural. Estaré contigo en cada paso del camino.",
+      "Escucho la profundidad de lo que has compartido. Debajo de la cosa específica que quieres cambiar vive una persona que ya sabe quién está destinada a ser. Ese conocimiento es tu brújula—aquí no añadimos nada, despejamos lo que lo ha estado cubriendo. Estaré contigo en cada paso del camino.",
+      "El hecho de que lo hayas nombrado—claramente, honestamente—ya te distingue de la mayoría de las personas que sienten este peso pero nunca encuentran las palabras. Tu precisión es poder. Ahora construyamos algo con eso, un día a la vez. Estaré contigo en cada paso del camino.",
+      "Existe una versión de ti que ya ha hecho este cambio, y tomó una decisión que tú estás tomando ahora mismo: comenzar. No cuando estés listo. No cuando sea perfecto. Justo ahora. Ese deseo que sientes es válido, real, y más que suficiente. Estaré contigo en cada paso del camino."
+    ]
   },
   "fdr": {
     "welcome_name": "Bienvenido, {{name}}.",
@@ -901,5 +1061,14 @@
     "default_label": "Esta función requiere una mejora",
     "upgrade_btn": "Mejorar",
     "upgrade_inline": "Mejorar para desbloquear"
+  },
+  "community": {
+    "moderation": [
+      "Sé auténtico, no agresivo. Esta es una comunidad de personas que trabajan duro.",
+      "El coach está mirando. Todos los demás también. Mantengamos el respeto.",
+      "Tus palabras importan aquí. Prueba algo de lo que te enorgullecerías al releer.",
+      "Esta comunidad funciona con honestidad, no con impacto. Dilo de otra manera.",
+      "Lenguaje fuerte, filtro más fuerte. Reescríbelo con intención."
+    ]
   }
 }

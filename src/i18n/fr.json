@@ -72,7 +72,15 @@
     "reengagement_lets_go": "C'est parti",
     "reengagement_maybe_later": "Peut-être plus tard",
     "track_complete_title": "Parcours Accompli",
-    "track_complete_body": "C'est réel. Tu t'es présenté(e) chaque jour."
+    "track_complete_body": "C'est réel. Tu t'es présenté(e) chaque jour.",
+    "evo_tier_spark": "Étincelle",
+    "evo_tier_glow": "Lueur",
+    "evo_tier_ignite": "Ignition",
+    "evo_tier_forged": "Forgé",
+    "evo_tier_anchored": "Ancré",
+    "evo_tier_identity": "Identité",
+    "days_to_next_one": "1 jour pour {{label}}",
+    "days_to_next_other": "{{count}} jours pour {{label}}"
   },
   "common": {
     "next": "Suivant",
@@ -309,7 +317,10 @@
     "keep_original_plan": "Garder le plan original",
     "milestone_message": "Tu as atteint une étape majeure dans ton parcours {{name}}. C'est le moment où la plupart des gens abandonnent — pas toi.",
     "keep_going": "Continue",
-    "custom": "Personnalisé"
+    "custom": "Personnalisé",
+    "placeholder_starting": "ex. \"Débutant complet, n'a jamais essayé {{name}} avant\"",
+    "placeholder_motivation": "ex. \"Je veux me sentir plus calme et moins réactif au quotidien\"",
+    "placeholder_obstacle": "ex. \"J'abandonne toujours après quelques jours quand ça devient difficile\""
   },
   "adapt_reasons": {
     "busy": "La vie s'est chargée",
@@ -346,7 +357,19 @@
     "validation_joking": "On dirait que tu plaisantes — écris vraiment quelque chose!",
     "validation_write_something": "Écris quelque chose de réel, même une courte phrase.",
     "validation_real_answer": "Écris une vraie réponse — même deux mots suffisent.",
-    "validation_bad_words": "Choisis de meilleurs mots pour ton check-in."
+    "validation_bad_words": "Choisis de meilleurs mots pour ton check-in.",
+    "warnings": [
+      "La tâche ne se complète pas toute seule. Écris quelque chose.",
+      "Le Jour 0 t'appelle. Ne réponds pas.",
+      "Ton futur moi regarde. Remplis ça.",
+      "Le coach sait quand tu fais semblant.",
+      "Champ vide = progrès vide. Allez.",
+      "Tu n'es pas arrivé jusqu'ici pour laisser ça vide.",
+      "C'est le travail. Fais le travail.",
+      "Passe ça et ta série en subira les conséquences.",
+      "Même pas une phrase ? Vraiment ?",
+      "La seule mauvaise réponse est l'absence de réponse. Vas-y."
+    ]
   },
   "insights": {
     "title": "Statistiques",
@@ -391,7 +414,8 @@
     "this_vs_last_week": "Cette semaine vs la semaine dernière",
     "ninety_day": "Activité 90 jours",
     "no_activity_yet": "Complète ton premier check-in pour voir l'activité ici.",
-    "letter_private": "Générée en privé uniquement pour toi"
+    "letter_private": "Générée en privé uniquement pour toi",
+    "letter_error": "Quelque chose s'est mal passé lors de la génération de ta lettre. Vérifie ta connexion et réessaie dans un moment."
   },
   "coach": {
     "nudge_inactivity": "Tu n'as pas été là depuis quelques jours. Chaque pas compte — même le plus petit.",
@@ -554,7 +578,69 @@
     "keep_steady": "restez stable",
     "breathe_out": "Expirez",
     "slowly_mouth": "lentement par la bouche",
-    "ready_next": "prêt pour le prochain souffle"
+    "ready_next": "prêt pour le prochain souffle",
+    "alternatives": {
+      "quit-alcohol": [
+        "Appelle quelqu'un en qui tu as confiance maintenant — même juste pour parler",
+        "Bois lentement un grand verre d'eau froide",
+        "Marche dehors pendant 5 minutes sans destination",
+        "Écris exactement ce qui a déclenché cette envie",
+        "Fais 20 pompes ou sauts maintenant",
+        "Envoie un message ou appelle une personne de soutien sobre",
+        "Regarde une vidéo drôle pendant 10 minutes"
+      ],
+      "quit-smoking": [
+        "Fais 10 respirations lentes et profondes — 4 à l'inspiration, 8 à l'expiration",
+        "Bois un grand verre d'eau froide",
+        "Mâche un chewing-gum ou mange une collation saine",
+        "Marche dehors pendant 5 minutes",
+        "Appelle ou envoie un message à quelqu'un",
+        "Fais 20 sauts",
+        "Écris pourquoi tu as arrêté"
+      ],
+      "quit-gambling": [
+        "Appelle quelqu'un en qui tu as confiance maintenant — même juste pour parler",
+        "Quitte l'endroit immédiatement — va quelque part de public",
+        "Appelle une ligne d'aide pour les problèmes de jeu",
+        "Écris ce que tu ferais avec l'argent que tu as économisé",
+        "Pense à la dernière fois que le jeu t'a nui — écris-le",
+        "Fais 10 minutes de mouvement physique",
+        "Pas de portefeuille — aucun accès à l'argent liquide ou aux cartes"
+      ],
+      "quit-porn": [
+        "Ferme tous les appareils et va dans un endroit public",
+        "Appelle ou envoie un message à une personne de confiance",
+        "Fais 20 pompes ou une activité physique",
+        "Écris ce qui a déclenché cette envie",
+        "Bois de l'eau froide et prends 10 respirations profondes",
+        "Prie, médite ou lis quelque chose de significatif",
+        "Change ton environnement immédiatement"
+      ],
+      "quit-weed": [
+        "Appelle quelqu'un en qui tu as confiance maintenant",
+        "Bois lentement un grand verre d'eau froide",
+        "Fais une marche de 10 minutes dehors",
+        "Écris exactement ce que tu ressens",
+        "Fais 20 sauts ou pompes",
+        "Regarde ou lis quelque chose d'engageant",
+        "Rappelle-toi : ce besoin passe en 15–20 minutes"
+      ],
+      "binge-eating": [
+        "Bois 500ml d'eau lentement avant toute chose",
+        "Fais une marche de 10 minutes maintenant",
+        "Appelle ou envoie un message à quelqu'un",
+        "Écris ce que tu ferais si tu ne cédais pas à l'envie",
+        "Pense à comment tu te sentiras dans une heure — écris-le",
+        "Fais 10 minutes de mouvement physique"
+      ]
+    },
+    "generic": [
+      "Prends une respiration lente et profonde maintenant — 4 temps à l'inspiration, 8 à l'expiration",
+      "Va dans une autre pièce ou sors dehors",
+      "Appelle ou envoie un message à quelqu'un en qui tu as confiance",
+      "Écris exactement comment tu te sens",
+      "Fais 10 minutes de mouvement physique"
+    ]
   },
   "overlays": {
     "welcome_back": "Bon retour — {{days}} jours plus tard",
@@ -760,10 +846,76 @@
     "view": "Voir",
     "remove_confirm": "Supprimer {{name}} de vos parcours?",
     "start": "Commencer",
-    "one_year_label": "1 an"
+    "one_year_label": "1 an",
+    "stats": {
+      "meditation": "31% des personnes dans le monde ont du mal à trouver la quietude mentale",
+      "morning-run": "54% des adultes ne sont pas suffisamment actifs physiquement",
+      "strength-training": "54% des adultes dans le monde ne font pas assez d'exercice",
+      "quit-smoking": "22% des adultes dans le monde fument encore",
+      "deep-work": "41% des travailleurs déclarent ne pas pouvoir se concentrer en profondeur",
+      "reading": "33% des adultes lisent moins qu'ils ne le voudraient",
+      "sleep-routine": "45% des adultes dans le monde rapportent une mauvaise qualité de sommeil",
+      "anxiety-relief": "28% des personnes connaissent des troubles anxieux au cours de leur vie",
+      "journaling": "67% des personnes veulent réfléchir davantage mais ne commencent jamais",
+      "cold-exposure": "Pratique bien-être en croissance — des millions la découvrent",
+      "no-social-media": "40% des personnes rapportent une utilisation problématique des réseaux sociaux",
+      "quit-alcohol": "14% des personnes dans le monde ont des problèmes avec l'alcool",
+      "quit-pornography": "12% des personnes rapportent une consommation problématique de pornographie",
+      "quit-drugs": "5% des adultes dans le monde utilisent régulièrement des substances illicites",
+      "quit-gambling": "3% des personnes dans le monde souffrent d'un trouble du jeu",
+      "binge-eating": "4% des personnes dans le monde souffrent d'un trouble de l'hyperphagie",
+      "video-game-addiction": "8% des joueurs montrent des signes de trouble du jeu vidéo",
+      "compulsive-shopping": "5% des personnes luttent contre les achats compulsifs",
+      "no-sugar": "50% des personnes ont du mal à réduire leur consommation de sucre",
+      "beat-procrastination": "20% des adultes sont des procrastinateurs chroniques",
+      "build-discipline": "41% disent que le manque de discipline est leur défi n°1",
+      "stop-overthinking": "73% des adultes entre 25 et 35 ans rapportent une rumination chronique",
+      "social-anxiety": "12% des personnes souffrent de trouble d'anxiété sociale",
+      "anger-management": "7% des adultes rapportent des problèmes de colère incontrôlée",
+      "chronic-stress": "77% des adultes éprouvent régulièrement des symptômes physiques de stress",
+      "social-isolation": "33% des adultes rapportent une solitude chronique",
+      "negative-mindset": "51% des personnes ont une voix intérieure principalement négative",
+      "breathwork": "Des millions dans le monde utilisent la respiration pour réguler leur système nerveux",
+      "low-self-esteem": "85% des personnes rapportent des problèmes d'estime de soi à un moment donné",
+      "need-for-approval": "43% des personnes luttent contre un besoin excessif de validation",
+      "fear-of-failure": "31% des personnes rapportent une peur paralysante de l'échec",
+      "fear-of-judgment": "38% des personnes craignent le jugement social au quotidien",
+      "emotional-dependency": "15% des personnes forment des attachements émotionnellement dépendants",
+      "toxic-relationships": "29% des adultes ont vécu une relation toxique",
+      "control-issues": "11% des personnes montrent des tendances de contrôle excessives",
+      "stop-self-sabotage": "33% des personnes s'identifient comme auto-saboteurs",
+      "toxic-perfectionism": "29% des personnes souffrent d'un perfectionnisme inadapté",
+      "jealousy": "22% des personnes rapportent une jalousie chronique dans leurs relations",
+      "money-management": "63% des adultes vivent de salaire en salaire",
+      "sedentary-lifestyle": "54% des adultes dans le monde ne sont pas suffisamment actifs physiquement",
+      "gratitude": "La pratique de la gratitude est utilisée par des millions pour reprogrammer la pensée"
+    },
+    "remove_track": "Supprimer le parcours"
   },
   "morning_coach": {
-    "begin_today": "Commencer aujourd'hui"
+    "begin_today": "Commencer aujourd'hui",
+    "fallbacks": {
+      "trainer": [
+        "Hier tu as choisi d'être là. Aujourd'hui est le test pour savoir si c'était un coup de chance ou un schéma. Ce n'était pas un coup de chance.",
+        "Chaque répétition que tu fais aujourd'hui amplifie ce que tu as construit hier. Le temps tourne. Bouge-toi."
+      ],
+      "teacher": [
+        "La constance est le professeur silencieux qu'aucun cours ne peut répliquer. Ta série t'apprend déjà quelque chose. Continue la leçon.",
+        "Le travail d'hier a posé une base. Aujourd'hui tu peux construire un étage de plus. Simple. Reproductible. Efficace."
+      ],
+      "clinician": [
+        "Revenir encore demande plus de courage que tu ne le réalises peut-être. Je suis content que tu sois là. Rendons aujourd'hui doux et intentionnel.",
+        "Le progrès n'est pas toujours visible en un jour — mais il vit dans le choix de revenir. Tu es revenu. C'est profondément important."
+      ],
+      "mentor": [
+        "L'écart entre qui tu es et qui tu deviens se réduit à chaque check-in. Aujourd'hui est l'un de ces moments.",
+        "L'exécution est la seule stratégie qui compte. Tu sais quoi faire. Maintenant va le faire."
+      ],
+      "guide": [
+        "Le matin a une lumière particulière. C'est la même lumière qui était là le jour où tu as commencé. Tu y es encore. Continue.",
+        "Chaque jour que tu reviens, tu approfondis le sillon de la personne que tu deviens. Aujourd'hui, creuse un peu plus profond."
+      ]
+    }
   },
   "email": {
     "welcome_subject": "Bienvenue sur Forge — ton parcours commence maintenant",
@@ -785,7 +937,9 @@
     "request": "Demander le badge physique",
     "claim_prize": "Réclamer ton prix physique →",
     "at_100k": "À 100k tu peux",
-    "claim_link": "réclamer le badge physique"
+    "claim_link": "réclamer le badge physique",
+    "ms_reached": "{{label}} atteint",
+    "claim_title": "Clique pour réclamer ton prix"
   },
   "login": {
     "almost_there": "Presque là",
@@ -837,7 +991,13 @@
     "skip_for_now": "Passer pour l'instant",
     "start_day1_arrow": "Commencer Jour 1",
     "what_to_change": "Quelle est la seule chose qui, si tu la changeais, changerait tout ?",
-    "be_honest": "Sois honnête. Personne d'autre ne lira ça."
+    "be_honest": "Sois honnête. Personne d'autre ne lira ça.",
+    "coach_responses": [
+      "Ce que tu as écrit contient plus de courage que tu ne le réalises peut-être. Le désir de changer n'est pas une faiblesse—c'est le premier muscle que tu entraîneras. Ce chemin ne se résume pas à la force de volonté ; il s'agit de devenir quelqu'un pour qui ce changement semble complètement naturel. Je serai avec toi à chaque étape.",
+      "J'entends la profondeur de ce que tu as partagé. Sous la chose spécifique que tu veux changer vit une personne qui sait déjà qui elle est destinée à être. Cette connaissance est ta boussole—nous n'ajoutons rien ici, nous enlevons ce qui la recouvrait. Je serai avec toi à chaque étape.",
+      "Le fait que tu l'aies nommé—clairement, honnêtement—te distingue déjà de la plupart des gens qui ressentent ce poids mais ne trouvent jamais les mots. Ta précision est ta force. Maintenant construisons quelque chose avec ça, un jour à la fois. Je serai avec toi à chaque étape.",
+      "Il existe une version de toi qui a déjà fait ce changement, et elle a pris une décision que tu prends en ce moment : commencer. Pas quand tu es prêt. Pas quand c'est parfait. Juste maintenant. Ce désir que tu ressens est valide, réel, et plus que suffisant. Je serai avec toi à chaque étape."
+    ]
   },
   "fdr": {
     "welcome_name": "Bienvenue, {{name}}.",
@@ -901,5 +1061,14 @@
     "default_label": "Cette fonctionnalité nécessite une mise à niveau",
     "upgrade_btn": "Mettre à niveau",
     "upgrade_inline": "Mettre à niveau pour déverrouiller"
+  },
+  "community": {
+    "moderation": [
+      "Sois authentique, pas agressif. C'est une communauté de personnes qui travaillent dur.",
+      "Le coach regarde. Tout le monde aussi. Gardons le respect.",
+      "Tes mots comptent ici. Essaie quelque chose dont tu serais fier en le relisant.",
+      "Cette communauté fonctionne à l'honnêteté, pas au choc. Dis-le autrement.",
+      "Langage fort, filtre plus fort. Réécris-le avec intention."
+    ]
   }
 }

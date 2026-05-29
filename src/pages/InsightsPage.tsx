@@ -79,7 +79,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
       setLetter(data.message);
       setShowLetter(true);
     } catch {
-      setLetter("Something went wrong generating your letter. Check your connection and try again in a moment.");
+      setLetter(t("insights.letter_error"));
       setShowLetter(true);
     } finally {
       setLetterLoading(false);
