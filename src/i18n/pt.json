@@ -321,7 +321,18 @@
     "custom": "Personalizado",
     "placeholder_starting": "ex. \"Iniciante completo, nunca tentei {{name}} antes\"",
     "placeholder_motivation": "ex. \"Quero sentir-me mais calmo e menos reativo na vida diária\"",
-    "placeholder_obstacle": "ex. \"Desisto sempre após alguns dias quando as coisas ficam difíceis\""
+    "placeholder_obstacle": "ex. \"Desisto sempre após alguns dias quando as coisas ficam difíceis\"",
+    "fallback_reflection": "O que notaste em ti mesmo hoje?",
+    "fallback_science": "A investigação mostra que a repetição em 24 horas fortalece as vias neurais até 40%.",
+    "fallback_checkin_prompt": "Como te sentes agora, numa escala de 1 a 10?",
+    "adapted_title": "Dia {{day}} — Adaptado para ti",
+    "adapted_description": "A tua jornada continua. Esta tarefa foi adaptada para te encontrar exatamente onde estás.",
+    "adapted_reflection": "Olhando para os dias que perdeste — qual foi a barreira real? O que tornaria mais fácil?",
+    "adapted_science": "A investigação mostra que voltar depois de uma pausa com objetivos adaptados é 3× mais eficaz do que recomeçar do zero.",
+    "adapted_checkin_prompt": "Como te sentes em relação a voltar ao caminho hoje?",
+    "seed_post_1": "Terminei o dia 7. Nunca pensei que chegaria tão longe — o hábito está começando a parecer natural.",
+    "seed_post_2": "Alcancei o meu primeiro marco hoje 🎉 A nota científica sobre neuroplasticidade explodiu-me a cabeça.",
+    "seed_post_3": "O dia 3 foi brutal mas fiz o check-in mesmo assim. Mesmo uma pequena vitória conta."
   },
   "adapt_reasons": {
     "busy": "A vida ficou ocupada",
@@ -472,7 +483,44 @@
     "intro_clinician": "Vou ajudar-te a avançar com suavidade — e a ir longe.",
     "intro_mentor": "Sem rodeios. Apenas passos claros e feedback honesto.",
     "intro_guide": "Vamos descobrir juntos o que esta jornada significa para ti.",
-    "intro_fallback": "Estou aqui para te ajudar a manter o compromisso."
+    "intro_fallback": "Estou aqui para te ajudar a manter o compromisso.",
+    "flash": {
+      "trainer": [
+        "Registado. É a repetição que importa.",
+        "Bem. Mesma hora amanhã.",
+        "A constância é a única estratégia que funciona.",
+        "Mais um dia no banco.",
+        "Estás a construir algo real aqui."
+      ],
+      "teacher": [
+        "Arquivado. O teu cérebro notou.",
+        "Os padrões formam-se um dia de cada vez. Este foi um deles.",
+        "Anotado. O progresso é mais silencioso do que pensas.",
+        "Cada check-in é um ponto de dados a teu favor.",
+        "Estás a aprender algo hoje, mesmo que seja subtil."
+      ],
+      "clinician": [
+        "Vejo-te a aparecer. Isso requer coragem.",
+        "Voltaste. Esse é todo o trabalho.",
+        "Bem. Agora descansa nisso por um momento.",
+        "Cada dia que voltas, o caminho alarga-se.",
+        "Custou-te algo. Valeu a pena."
+      ],
+      "mentor": [
+        "Feito. Empilha outro amanhã.",
+        "Execução registada. Os sistemas compõem-se.",
+        "Isso é alavancagem. Continua.",
+        "Mais uma prova de que fazes o que dizes.",
+        "O intervalo fecha-se um pouco mais hoje."
+      ],
+      "guide": [
+        "Foi um ritual. Honra-o.",
+        "Aprofundaste o sulco hoje.",
+        "O trabalho que fazes na escuridão aparece na luz.",
+        "Algo mudou. Podes ainda não sentir.",
+        "A jornada reconhece o teu regresso."
+      ]
+    }
   },
   "milestones": {
     "10_days": "Criaste um hábito real. 10 dias a escolheres-te a ti mesmo.",

@@ -321,7 +321,18 @@
     "custom": "Personalizzato",
     "placeholder_starting": "es. \"Principiante assoluto, non ho mai provato {{name}} prima\"",
     "placeholder_motivation": "es. \"Voglio sentirmi più calmo e meno reattivo nella vita quotidiana\"",
-    "placeholder_obstacle": "es. \"Smetto sempre dopo pochi giorni quando le cose si fanno difficili\""
+    "placeholder_obstacle": "es. \"Smetto sempre dopo pochi giorni quando le cose si fanno difficili\"",
+    "fallback_reflection": "Cosa hai notato di te stesso oggi?",
+    "fallback_science": "La ricerca mostra che la ripetizione entro 24 ore rafforza i percorsi neurali fino al 40%.",
+    "fallback_checkin_prompt": "Come ti senti adesso, su una scala da 1 a 10?",
+    "adapted_title": "Giorno {{day}} — Adattato per te",
+    "adapted_description": "Il tuo percorso continua. Questo compito è stato adattato per incontrarti esattamente dove sei.",
+    "adapted_reflection": "Guardando indietro ai giorni mancati — qual è stata la vera barriera? Cosa lo renderebbe più facile?",
+    "adapted_science": "La ricerca mostra che tornare dopo una pausa con obiettivi adattati è 3× più efficace che ricominciare da capo.",
+    "adapted_checkin_prompt": "Come ti senti riguardo al tornare in carreggiata oggi?",
+    "seed_post_1": "Ho finito il giorno 7. Non pensavo di arrivare così lontano — l'abitudine sta cominciando a sembrare naturale.",
+    "seed_post_2": "Ho raggiunto il mio primo traguardo oggi 🎉 La nota scientifica sulla neuroplasticità mi ha fatto saltare la mente.",
+    "seed_post_3": "Il giorno 3 è stato brutale ma mi sono presentato comunque. Anche la piccola vittoria conta."
   },
   "adapt_reasons": {
     "busy": "La vita si è fatta frenetica",
@@ -472,7 +483,44 @@
     "intro_clinician": "Ti aiuterò a muoverti con delicatezza — e ad andare lontano.",
     "intro_mentor": "Niente fronzoli. Solo passi chiari e feedback onesto.",
     "intro_guide": "Scopriremo insieme cosa significa davvero questo percorso per te.",
-    "intro_fallback": "Sono qui per aiutarti a mantenere l'impegno."
+    "intro_fallback": "Sono qui per aiutarti a mantenere l'impegno.",
+    "flash": {
+      "trainer": [
+        "Registrato. Questa è la ripetizione che conta.",
+        "Bene. Stessa ora domani.",
+        "La costanza è l'unica strategia che funziona.",
+        "Un altro giorno in banca.",
+        "Stai costruendo qualcosa di reale qui."
+      ],
+      "teacher": [
+        "Archiviato. Il tuo cervello lo ha notato.",
+        "I pattern si formano un giorno alla volta. Questo è stato uno.",
+        "Notato. Il progresso è più silenzioso di quanto pensi.",
+        "Ogni check-in è un punto dati a tuo favore.",
+        "Stai imparando qualcosa oggi, anche se è sottile."
+      ],
+      "clinician": [
+        "Ti vedo presentarti. Ci vuole coraggio.",
+        "Sei tornato. Questo è tutto il lavoro.",
+        "Bene. Ora riposati in quel momento.",
+        "Ogni giorno che torni, il percorso si allarga.",
+        "Ti ha chiesto qualcosa. Ne valeva la pena."
+      ],
+      "mentor": [
+        "Fatto. Aggiungi un altro domani.",
+        "Esecuzione registrata. I sistemi si moltiplicano.",
+        "Questa è leva. Continua.",
+        "Un'altra prova che fai quello che dici.",
+        "Il divario si chiude un po' di più oggi."
+      ],
+      "guide": [
+        "È stato un rituale. Onoralo.",
+        "Hai approfondito il solco oggi.",
+        "Il lavoro che fai nell'oscurità emerge alla luce.",
+        "Qualcosa è cambiato. Potresti non sentirlo ancora.",
+        "Il percorso riconosce il tuo ritorno."
+      ]
+    }
   },
   "milestones": {
     "10_days": "Hai creato una vera abitudine. 10 giorni a scegliere te stesso.",

@@ -321,7 +321,18 @@
     "custom": "Benutzerdefiniert",
     "placeholder_starting": "z.B. \"Kompletter Anfänger, habe {{name}} noch nie ausprobiert\"",
     "placeholder_motivation": "z.B. \"Ich möchte ruhiger und weniger reaktiv im Alltag sein\"",
-    "placeholder_obstacle": "z.B. \"Ich höre immer nach ein paar Tagen auf, wenn es schwer wird\""
+    "placeholder_obstacle": "z.B. \"Ich höre immer nach ein paar Tagen auf, wenn es schwer wird\"",
+    "fallback_reflection": "Was hast du heute über dich bemerkt?",
+    "fallback_science": "Forschungen zeigen, dass Wiederholung innerhalb von 24 Stunden neuronale Pfade um bis zu 40% stärkt.",
+    "fallback_checkin_prompt": "Wie fühlst du dich gerade, auf einer Skala von 1 bis 10?",
+    "adapted_title": "Tag {{day}} — Für dich angepasst",
+    "adapted_description": "Deine Reise geht weiter. Diese Aufgabe wurde angepasst, um dich genau dort abzuholen, wo du bist.",
+    "adapted_reflection": "Wenn du auf die verpassten Tage zurückblickst — was war die eigentliche Barriere? Was würde es einfacher machen?",
+    "adapted_science": "Forschungen zeigen, dass die Rückkehr nach einer Pause mit angepassten Zielen 3× effektiver ist als ein Neustart von vorne.",
+    "adapted_checkin_prompt": "Wie fühlst du dich heute dabei, wieder auf Kurs zu kommen?",
+    "seed_post_1": "Tag 7 geschafft. Ich hätte nie gedacht, dass ich so weit komme — die Gewohnheit fühlt sich langsam natürlich an.",
+    "seed_post_2": "Heute meinen ersten Meilenstein erreicht 🎉 Die Wissenschaftsnotiz über Neuroplastizität hat mir den Kopf weggeblasen.",
+    "seed_post_3": "Tag 3 war brutal, aber ich habe mich trotzdem eingecheckt. Auch ein kleiner Sieg zählt."
   },
   "adapt_reasons": {
     "busy": "Das Leben wurde hektisch",
@@ -472,7 +483,44 @@
     "intro_clinician": "Ich helfe dir, sanft voranzukommen — und trotzdem weit zu kommen.",
     "intro_mentor": "Kein Schnickschnack. Nur klare Schritte und ehrliches Feedback.",
     "intro_guide": "Wir finden heraus, was diese Reise wirklich für dich bedeutet.",
-    "intro_fallback": "Ich bin hier, um dir zu helfen, durchzuhalten."
+    "intro_fallback": "Ich bin hier, um dir zu helfen, durchzuhalten.",
+    "flash": {
+      "trainer": [
+        "Eingetragen. Das ist die Wiederholung, die zählt.",
+        "Gut. Gleiche Zeit morgen.",
+        "Konsequenz ist die einzige Strategie, die funktioniert.",
+        "Ein weiterer Tag auf der Bank.",
+        "Du baust hier etwas Echtes auf."
+      ],
+      "teacher": [
+        "Gespeichert. Dein Gehirn hat es bemerkt.",
+        "Muster entstehen einen Tag nach dem anderen. Dieser war einer davon.",
+        "Notiert. Fortschritt ist leiser, als du denkst.",
+        "Jeder Check-in ist ein Datenpunkt zu deinen Gunsten.",
+        "Du lernst heute etwas, auch wenn es subtil ist."
+      ],
+      "clinician": [
+        "Ich sehe, wie du dich einsetzt. Das erfordert Mut.",
+        "Du bist zurückgekommen. Das ist die ganze Arbeit.",
+        "Gut. Ruh dich jetzt kurz darin aus.",
+        "Jeden Tag, an dem du zurückkommst, weitet sich der Weg.",
+        "Das hat dir etwas abverlangt. Es war es wert."
+      ],
+      "mentor": [
+        "Erledigt. Stapel morgen noch einen drauf.",
+        "Ausführung notiert. Systeme verstärken sich.",
+        "Das ist Hebelwirkung. Weiter so.",
+        "Ein weiterer Beweis, dass du tust, was du sagst.",
+        "Die Lücke schließt sich heute etwas mehr."
+      ],
+      "guide": [
+        "Das war ein Ritual. Ehre es.",
+        "Du hast die Rille heute vertieft.",
+        "Die Arbeit, die du im Dunkeln tust, zeigt sich im Licht.",
+        "Etwas hat sich verschoben. Du spürst es vielleicht noch nicht.",
+        "Der Weg erkennt deine Rückkehr an."
+      ]
+    }
   },
   "milestones": {
     "10_days": "Du hast eine echte Gewohnheit aufgebaut. 10 Tage, an denen du dich für dich entschieden hast.",

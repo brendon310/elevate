@@ -321,7 +321,18 @@
     "custom": "Personnalisé",
     "placeholder_starting": "ex. \"Débutant complet, n'a jamais essayé {{name}} avant\"",
     "placeholder_motivation": "ex. \"Je veux me sentir plus calme et moins réactif au quotidien\"",
-    "placeholder_obstacle": "ex. \"J'abandonne toujours après quelques jours quand ça devient difficile\""
+    "placeholder_obstacle": "ex. \"J'abandonne toujours après quelques jours quand ça devient difficile\"",
+    "fallback_reflection": "Qu'as-tu remarqué sur toi-même aujourd'hui ?",
+    "fallback_science": "La recherche montre que la répétition dans les 24 heures renforce les voies neuronales jusqu'à 40%.",
+    "fallback_checkin_prompt": "Comment tu te sens là maintenant, sur une échelle de 1 à 10 ?",
+    "adapted_title": "Jour {{day}} — Adapté pour toi",
+    "adapted_description": "Ton voyage continue. Cette tâche a été adaptée pour te rejoindre exactement là où tu es.",
+    "adapted_reflection": "En repensant aux jours manqués — quelle était la vraie barrière ? Qu'est-ce qui rendrait ça plus facile ?",
+    "adapted_science": "La recherche montre que revenir après une pause avec des objectifs adaptés est 3× plus efficace que repartir de zéro.",
+    "adapted_checkin_prompt": "Comment tu te sens par rapport au retour sur les rails aujourd'hui ?",
+    "seed_post_1": "Terminé le jour 7. Je n'aurais jamais pensé aller aussi loin — l'habitude commence à sembler naturelle.",
+    "seed_post_2": "Atteint mon premier jalon aujourd'hui 🎉 La note scientifique sur la neuroplasticité m'a soufflé l'esprit.",
+    "seed_post_3": "Le jour 3 était brutal mais je me suis quand même présenté. Une petite victoire compte."
   },
   "adapt_reasons": {
     "busy": "La vie s'est chargée",
@@ -472,7 +483,44 @@
     "intro_clinician": "Je t'aiderai à avancer doucement — et à aller loin quand même.",
     "intro_mentor": "Pas de fioritures. Juste des étapes claires et un retour honnête.",
     "intro_guide": "On découvrira ce que ce voyage signifie vraiment pour toi.",
-    "intro_fallback": "Je suis là pour t'aider à tenir bon."
+    "intro_fallback": "Je suis là pour t'aider à tenir bon.",
+    "flash": {
+      "trainer": [
+        "Enregistré. C'est la répétition qui compte.",
+        "Bien. À la même heure demain.",
+        "La constance est la seule stratégie qui fonctionne.",
+        "Un jour de plus en banque.",
+        "Tu construis quelque chose de réel ici."
+      ],
+      "teacher": [
+        "Archivé. Ton cerveau l'a remarqué.",
+        "Les schémas se forment un jour à la fois. Celui-ci en était un.",
+        "Noté. Le progrès est plus silencieux que tu ne le penses.",
+        "Chaque check-in est un point de données en ta faveur.",
+        "Tu apprends quelque chose aujourd'hui, même si c'est subtil."
+      ],
+      "clinician": [
+        "Je te vois te présenter. Ça demande du courage.",
+        "Tu es revenu. C'est tout le travail.",
+        "Bien. Repose-toi dans ça un moment.",
+        "Chaque jour que tu reviens, le chemin s'élargit.",
+        "Ça t'a coûté quelque chose. Ça valait le coup."
+      ],
+      "mentor": [
+        "Fait. En empile un autre demain.",
+        "Exécution notée. Les systèmes se composent.",
+        "C'est du levier. Continue.",
+        "Une preuve de plus que tu fais ce que tu dis.",
+        "L'écart se réduit un peu plus aujourd'hui."
+      ],
+      "guide": [
+        "C'était un rituel. Honore-le.",
+        "Tu as approfondi le sillon aujourd'hui.",
+        "Le travail que tu fais dans l'obscurité apparaît dans la lumière.",
+        "Quelque chose a changé. Tu ne le sens peut-être pas encore.",
+        "Le voyage reconnaît ton retour."
+      ]
+    }
   },
   "milestones": {
     "10_days": "Tu as créé une vraie habitude. 10 jours à te choisir toi-même.",

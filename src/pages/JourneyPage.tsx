@@ -11,45 +11,6 @@ const ADAPT_REASON_IDS = ["busy", "motivation", "overwhelmed", "sick", "travel",
 const ADAPT_REASONS = ADAPT_REASON_IDS.map(id => ({ id }));
 type AdaptReasonId = typeof ADAPT_REASON_IDS[number];
 
-// Post check-in micro-reactions per archetype (no API call — instant dopamine)
-const COACH_FLASH: Record<string, string[]> = {
-  Kai: [
-    "Logged. That's the rep that matters.",
-    "Good. Same time tomorrow.",
-    "Consistency is the only strategy that works.",
-    "One more day in the bank.",
-    "You're building something real here.",
-  ],
-  Iris: [
-    "Filed. Your brain noticed that.",
-    "Patterns form one day at a time. This was one.",
-    "Noted. Progress is quieter than you think.",
-    "Every check-in is a data point in your favor.",
-    "You're learning something today, even if it's subtle.",
-  ],
-  "Dr. Mara": [
-    "I see you showing up. That takes courage.",
-    "You came back. That's the whole work.",
-    "Good. Now rest in that for a moment.",
-    "Each day you return, the path widens.",
-    "That took something from you. It was worth it.",
-  ],
-  Roy: [
-    "Done. Stack another one tomorrow.",
-    "Execution noted. Systems compound.",
-    "That's leverage. Keep going.",
-    "One more proof point that you do what you say.",
-    "The gap closes a little more today.",
-  ],
-  Sasha: [
-    "That was a ritual. Honor it.",
-    "You deepened the groove today.",
-    "The work you do in the dark shows up in the light.",
-    "Something shifted. You may not feel it yet.",
-    "The journey recognizes your return.",
-  ],
-};
-
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
 const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
@@ -111,17 +72,17 @@ const TRACK_ARCHETYPE: Record<string, ArchetypeId> = {
   "gratitude": "guide",
 };
 const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  trainer: { id: "trainer", name: "Kai", tagline: "Keeps you accountable", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
-  teacher: { id: "teacher", name: "Iris", tagline: "Makes it click", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
-  clinician: { id: "clinician", name: "Dr. Mara", tagline: "Validates, then guides", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
-  mentor: { id: "mentor", name: "Roy", tagline: "Strategic, no fluff", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
-  guide: { id: "guide", name: "Sasha", tagline: "Finds your deeper why", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
+  trainer: { id: "trainer", name: "Kai", taglineKey: "coach.trainer_tagline", voice: "You are a direct, no-bullshit performance coach. Short punchy sentences. Hold the user accountable. Celebrate effort, never excuses. Push past comfort with warmth. Never preachy." },
+  teacher: { id: "teacher", name: "Iris", taglineKey: "coach.teacher_tagline", voice: "You are a calm curious teacher. Break change into small learnable steps. Ask great questions before giving answers. Clear examples, treat user as intelligent adult. Patient, structured." },
+  clinician: { id: "clinician", name: "Dr. Mara", taglineKey: "coach.clinician_tagline", voice: "You are a warm evidence-based mental health coach. Validate first, then guide. Speak gently. Reference CBT, ACT, polyvagal in plain language. Never minimize feelings." },
+  mentor: { id: "mentor", name: "Roy", taglineKey: "coach.mentor_tagline", voice: "You are a sharp strategic mentor. Think in systems. Ask hard questions. Give crisp actionable frameworks. No fluff, no platitudes. The friend who has done it and tells the truth." },
+  guide: { id: "guide", name: "Sasha", taglineKey: "coach.guide_tagline", voice: "You are a creative soulful guide. Speak with imagery and metaphor. Honour the user's deeper why. Make practice feel like play. Blend craft, ritual, meaning. Warm, exploratory." },
 };
 const LS_COMMUNITY = (slug: string) => `forge-community-${slug}`;
-const SEED_POSTS: Omit<CommunityPost, "id" | "trackSlug">[] = [
-  { content: "Finished day 7. Never thought I'd make it this far — the habit is starting to feel natural.", dayNumber: 7, flameCount: 14, userHasFlamed: false, createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { content: "Hit my first milestone today 🎉 The science note about neuroplasticity blew my mind.", dayNumber: 21, flameCount: 8, userHasFlamed: false, createdAt: new Date(Date.now() - 86400000).toISOString() },
-  { content: "Day 3 was brutal but I checked in anyway. Small win counts.", dayNumber: 3, flameCount: 22, userHasFlamed: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
+const SEED_POST_META = [
+  { contentKey: "journey.seed_post_1", dayNumber: 7,  flameCount: 14, userHasFlamed: false, createdAt: () => new Date(Date.now() - 2 * 86400000).toISOString() },
+  { contentKey: "journey.seed_post_2", dayNumber: 21, flameCount: 8,  userHasFlamed: false, createdAt: () => new Date(Date.now() - 86400000).toISOString() },
+  { contentKey: "journey.seed_post_3", dayNumber: 3,  flameCount: 22, userHasFlamed: false, createdAt: () => new Date(Date.now() - 3600000).toISOString() },
 ];
 function hashStr(s: string) {
   let h = 0;
@@ -133,7 +94,7 @@ function isCommunityBlocked(text: string): boolean {
   return COMMUNITY_BLOCKLIST.some(w => lower.includes(w));
 }
 
-interface Archetype { id: ArchetypeId; name: string; tagline: string; voice: string; }
+interface Archetype { id: ArchetypeId; name: string; taglineKey: string; voice: string; }
 const COMMUNITY_BLOCKLIST = [
   "jerk","masturbat","porn","sex ","fap","orgasm","naked","nude","dick","cock","pussy","ass ","fuck","shit ","bitch","whore","slut","cum ","jizz","rape","abuse","kill myself","kms","kys","nigger","faggot",
 ];
@@ -239,7 +200,7 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
   const [posts, setPosts] = useState<CommunityPost[]>(() => {
     const saved = lsLoad<CommunityPost[]>(LS_COMMUNITY(slug), []);
     if (saved.length > 0) return saved;
-    const seeded = SEED_POSTS.map(p => ({ ...p, id: nanoid(), trackSlug: slug }));
+    const seeded = SEED_POST_META.map(p => ({ ...p, id: nanoid(), trackSlug: slug, content: t(p.contentKey), createdAt: p.createdAt() }));
     lsSave(LS_COMMUNITY(slug), seeded);
     return seeded;
   });
@@ -395,9 +356,9 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       title: `Day ${i + 1} — ${track.name}`,
       description: `Your ${track.name} journey, day ${i + 1}. Consistency is the foundation of every transformation.`,
       task: `Spend at least 15 minutes on ${track.name} today. Record how it felt.`,
-      reflection: "What did you notice about yourself today?",
-      science: "Research shows repetition within 24 hours strengthens neural pathways by up to 40%.",
-      checkinPrompt: "How are you feeling right now, on a scale from 1–10?",
+      reflection: t("journey.fallback_reflection"),
+      science: t("journey.fallback_science"),
+      checkinPrompt: t("journey.fallback_checkin_prompt"),
       completedAt: null, userNote: null,
     }));
     try {
@@ -755,12 +716,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
         id: nanoid(),
         journeyId: journey.id,
         dayNumber: fromDay + i,
-        title: `Day ${fromDay + i} — Adapted for you`,
-        description: `Your journey continues. This task was adapted to meet you exactly where you are.`,
+        title: t("journey.adapted_title", { day: fromDay + i }),
+        description: t("journey.adapted_description"),
         task: d.task,
-        reflection: "Looking back at the days you missed — what was the real barrier? What would make it easier?",
-        science: "Research shows returning after a break with adapted goals is 3× more effective than restarting from scratch.",
-        checkinPrompt: "How are you feeling about getting back on track today?",
+        reflection: t("journey.adapted_reflection"),
+        science: t("journey.adapted_science"),
+        checkinPrompt: t("journey.adapted_checkin_prompt"),
         completedAt: null,
         userNote: null,
       }));
@@ -802,7 +763,8 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       confetti({ particleCount: 100, spread: 80, origin: { y: 0.4 }, colors: ["#FFD000", "#FFB347", "#FFE680"] });
     } else {
       // Show coach micro-reaction (non-blocking, auto-dismisses)
-      const flashes = COACH_FLASH[archetype.name] ?? COACH_FLASH.Kai;
+      const allFlash = t("coach.flash", { returnObjects: true }) as Record<string, string[]>;
+      const flashes = allFlash[archetype.id] ?? allFlash.trainer;
       const msg = flashes[completedNow % flashes.length];
       setCoachFlash(msg);
       setTimeout(() => setCoachFlash(null), 4000);
@@ -1088,7 +1050,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               </div>
               <div>
                 <p className="font-semibold text-sm">{archetype.name}</p>
-                <p className="text-xs text-muted-foreground">{archetype.tagline}</p>
+                <p className="text-xs text-muted-foreground">{t(archetype.taglineKey)}</p>
               </div>
             </div>
             <div className="space-y-3 max-h-[420px] overflow-y-auto pb-1">

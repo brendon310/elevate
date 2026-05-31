@@ -321,7 +321,18 @@
     "custom": "Custom",
     "placeholder_starting": "e.g. \"Complete beginner, never tried {{name}} before\"",
     "placeholder_motivation": "e.g. \"I want to feel calmer and less reactive in daily life\"",
-    "placeholder_obstacle": "e.g. \"I always quit after a few days when things get hard\""
+    "placeholder_obstacle": "e.g. \"I always quit after a few days when things get hard\"",
+    "fallback_reflection": "What did you notice about yourself today?",
+    "fallback_science": "Research shows repetition within 24 hours strengthens neural pathways by up to 40%.",
+    "fallback_checkin_prompt": "How are you feeling right now, on a scale from 1–10?",
+    "adapted_title": "Day {{day}} — Adapted for you",
+    "adapted_description": "Your journey continues. This task was adapted to meet you exactly where you are.",
+    "adapted_reflection": "Looking back at the days you missed — what was the real barrier? What would make it easier?",
+    "adapted_science": "Research shows returning after a break with adapted goals is 3× more effective than restarting from scratch.",
+    "adapted_checkin_prompt": "How are you feeling about getting back on track today?",
+    "seed_post_1": "Finished day 7. Never thought I'd make it this far — the habit is starting to feel natural.",
+    "seed_post_2": "Hit my first milestone today 🎉 The science note about neuroplasticity blew my mind.",
+    "seed_post_3": "Day 3 was brutal but I checked in anyway. Small win counts."
   },
   "adapt_reasons": {
     "busy": "Life got busy",
@@ -472,7 +483,44 @@
     "intro_clinician": "I'll help you move gently — and still go far.",
     "intro_mentor": "No fluff. Just clear steps and honest feedback.",
     "intro_guide": "We'll find what this journey really means to you.",
-    "intro_fallback": "I'm here to help you follow through."
+    "intro_fallback": "I'm here to help you follow through.",
+    "flash": {
+      "trainer": [
+        "Logged. That's the rep that matters.",
+        "Good. Same time tomorrow.",
+        "Consistency is the only strategy that works.",
+        "One more day in the bank.",
+        "You're building something real here."
+      ],
+      "teacher": [
+        "Filed. Your brain noticed that.",
+        "Patterns form one day at a time. This was one.",
+        "Noted. Progress is quieter than you think.",
+        "Every check-in is a data point in your favor.",
+        "You're learning something today, even if it's subtle."
+      ],
+      "clinician": [
+        "I see you showing up. That takes courage.",
+        "You came back. That's the whole work.",
+        "Good. Now rest in that for a moment.",
+        "Each day you return, the path widens.",
+        "That took something from you. It was worth it."
+      ],
+      "mentor": [
+        "Done. Stack another one tomorrow.",
+        "Execution noted. Systems compound.",
+        "That's leverage. Keep going.",
+        "One more proof point that you do what you say.",
+        "The gap closes a little more today."
+      ],
+      "guide": [
+        "That was a ritual. Honor it.",
+        "You deepened the groove today.",
+        "The work you do in the dark shows up in the light.",
+        "Something shifted. You may not feel it yet.",
+        "The journey recognizes your return."
+      ]
+    }
   },
   "milestones": {
     "10_days": "You've built a real habit. 10 days of choosing yourself.",
