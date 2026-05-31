@@ -665,9 +665,10 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
         if (cachedNext) {
           rawNext = cachedNext as JourneyDay[];
         } else {
+          const { data: { session: _gds2 } } = await supabase.auth.getSession();
           const r = await fetch("/api/generate-days", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_gds2?.access_token ?? ""}` },
             body: JSON.stringify({ slug: track.slug, trackName: track.name, category: track.category, startingPoint: journey.startingPoint, motivation: journey.motivation, obstacle: journey.obstacle, fromDay, count, language: i18n.language }),
           }).catch(() => null);
           if (!r || !r.ok) return;
