@@ -80,7 +80,9 @@
     "evo_tier_anchored": "Anclado",
     "evo_tier_identity": "Identidad",
     "days_to_next_one": "1 día para {{label}}",
-    "days_to_next_other": "{{count}} días para {{label}}"
+    "days_to_next_other": "{{count}} días para {{label}}",
+    "landing_question": "¿Cuál es un hábito que quieres dejar?",
+    "landing_placeholder": "ej. fumar, hacer scroll, beber..."
   },
   "common": {
     "next": "Siguiente",
@@ -1007,7 +1009,12 @@
     "at_100k": "En 100k puedes",
     "claim_link": "reclamar la insignia física",
     "ms_reached": "{{label}} alcanzado",
-    "claim_title": "Haz clic para reclamar tu premio"
+    "claim_title": "Haz clic para reclamar tu premio",
+    "name_placeholder": "Juan García",
+    "address_placeholder": "Calle Mayor 12, Piso 3",
+    "city_placeholder": "Madrid",
+    "zip_placeholder": "28001",
+    "country_placeholder": "España"
   },
   "login": {
     "almost_there": "Casi listo",
@@ -1030,7 +1037,8 @@
     "terms": "Términos de Servicio",
     "privacy": "Política de Privacidad",
     "and": "y la",
-    "back": "Atrás"
+    "back": "Atrás",
+    "enter_valid_number": "Introduce un número válido"
   },
   "onboarding": {
     "one_question": "Una pregunta",

@@ -617,29 +617,29 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
 
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t("badge.full_name")}</label>
-                <input required value={form.name} onChange={f("name")} placeholder="Brendon Hoxha"
+                <input required value={form.name} onChange={f("name")} placeholder={t("badge.name_placeholder")}
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t("badge.address")}</label>
-                <input required value={form.address} onChange={f("address")} placeholder="Via Roma 12, Appartamento 3"
+                <input required value={form.address} onChange={f("address")} placeholder={t("badge.address_placeholder")}
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">{t("badge.city")}</label>
-                  <input required value={form.city} onChange={f("city")} placeholder="Milano"
+                  <input required value={form.city} onChange={f("city")} placeholder={t("badge.city_placeholder")}
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">{t("badge.zip")}</label>
-                  <input required value={form.zip} onChange={f("zip")} placeholder="20100"
+                  <input required value={form.zip} onChange={f("zip")} placeholder={t("badge.zip_placeholder")}
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
                 </div>
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t("badge.country")}</label>
-                <input required value={form.country} onChange={f("country")} placeholder="Italia"
+                <input required value={form.country} onChange={f("country")} placeholder={t("badge.country_placeholder")}
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/20" />
               </div>
 
@@ -951,7 +951,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 
   const handlePhoneContinue = async () => {
     const digits = phone.replace(/\D/g, "");
-    if (digits.length < 8) { setPhoneError("Enter a valid number"); return; }
+    if (digits.length < 8) { setPhoneError(t("login.enter_valid_number")); return; }
     setPhoneError("");
     setAuthError(null);
     setLoading("phone-send");
@@ -1146,6 +1146,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
 // ─────────────────────────────────────────────────────────────────────────────
 
 function LandingPage({ onBegin }: { onBegin: () => void }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState<"typing" | "question" | "input">("typing");
   const [answer, setAnswer] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -1192,7 +1193,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
             )}
             {phase !== "typing" && (
               <div className="bg-white/[0.07] rounded-2xl rounded-bl-sm px-4 py-3.5">
-                <p className="text-white/90 text-[15px] leading-snug">What's a habit you want to quit?</p>
+                <p className="text-white/90 text-[15px] leading-snug">{t("app.landing_question")}</p>
               </div>
             )}
           </div>
@@ -1206,7 +1207,7 @@ function LandingPage({ onBegin }: { onBegin: () => void }) {
                 value={answer}
                 onChange={e => setAnswer(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && answer.trim() && handleSubmit()}
-                placeholder="e.g. smoking, scrolling, drinking..."
+                placeholder={t("app.landing_placeholder")}
                 className="flex-1 bg-white/[0.07] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/25 outline-none focus:border-emerald-500/40 transition-colors"
               />
               <button
@@ -1859,7 +1860,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
             {customDur && (
               <input type="number" autoFocus value={customDurVal}
                 onChange={e => { setCustomDurVal(e.target.value); const n = parseInt(e.target.value); if (n >= 7 && n <= 999) setTargetDays(n); }}
-                min={7} max={999} placeholder="Days (7–999)"
+                min={7} max={999} placeholder={t("journey.days_placeholder")}
                 className="w-full max-w-xs rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring text-center" />
             )}
             <button

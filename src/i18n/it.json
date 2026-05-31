@@ -80,7 +80,9 @@
     "evo_tier_anchored": "Ancorato",
     "evo_tier_identity": "Identità",
     "days_to_next_one": "1 giorno a {{label}}",
-    "days_to_next_other": "{{count}} giorni a {{label}}"
+    "days_to_next_other": "{{count}} giorni a {{label}}",
+    "landing_question": "Qual è un'abitudine che vuoi smettere?",
+    "landing_placeholder": "es. fumo, scorrimento, alcol..."
   },
   "common": {
     "next": "Avanti",
@@ -1007,7 +1009,12 @@
     "at_100k": "A 100k puoi",
     "claim_link": "riscattare il badge fisico",
     "ms_reached": "{{label}} raggiunto",
-    "claim_title": "Clicca per riscattare il tuo premio"
+    "claim_title": "Clicca per riscattare il tuo premio",
+    "name_placeholder": "Mario Rossi",
+    "address_placeholder": "Via Roma 12, Appartamento 3",
+    "city_placeholder": "Milano",
+    "zip_placeholder": "20100",
+    "country_placeholder": "Italia"
   },
   "login": {
     "almost_there": "Quasi arrivato",
@@ -1030,7 +1037,8 @@
     "terms": "Termini di Servizio",
     "privacy": "Informativa sulla Privacy",
     "and": "e la",
-    "back": "Indietro"
+    "back": "Indietro",
+    "enter_valid_number": "Inserisci un numero valido"
   },
   "onboarding": {
     "one_question": "Una domanda",

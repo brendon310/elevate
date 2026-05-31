@@ -80,7 +80,9 @@
     "evo_tier_anchored": "Anchored",
     "evo_tier_identity": "Identity",
     "days_to_next_one": "1 day to {{label}}",
-    "days_to_next_other": "{{count}} days to {{label}}"
+    "days_to_next_other": "{{count}} days to {{label}}",
+    "landing_question": "What's a habit you want to quit?",
+    "landing_placeholder": "e.g. smoking, scrolling, drinking..."
   },
   "common": {
     "next": "Next",
@@ -1007,7 +1009,12 @@
     "at_100k": "At 100k you can",
     "claim_link": "claim the physical badge",
     "ms_reached": "{{label}} reached",
-    "claim_title": "Click to claim your prize"
+    "claim_title": "Click to claim your prize",
+    "name_placeholder": "Brendon Hoxha",
+    "address_placeholder": "Via Roma 12, Appartamento 3",
+    "city_placeholder": "Milano",
+    "zip_placeholder": "20100",
+    "country_placeholder": "Italia"
   },
   "login": {
     "almost_there": "Almost there",
@@ -1030,7 +1037,8 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "and": "and the",
-    "back": "Back"
+    "back": "Back",
+    "enter_valid_number": "Enter a valid number"
   },
   "onboarding": {
     "one_question": "One question",

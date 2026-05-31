@@ -80,7 +80,9 @@
     "evo_tier_anchored": "Ancré",
     "evo_tier_identity": "Identité",
     "days_to_next_one": "1 jour pour {{label}}",
-    "days_to_next_other": "{{count}} jours pour {{label}}"
+    "days_to_next_other": "{{count}} jours pour {{label}}",
+    "landing_question": "Quelle est une habitude que tu veux arrêter ?",
+    "landing_placeholder": "ex. fumer, scroller, boire..."
   },
   "common": {
     "next": "Suivant",
@@ -1007,7 +1009,12 @@
     "at_100k": "À 100k tu peux",
     "claim_link": "réclamer le badge physique",
     "ms_reached": "{{label}} atteint",
-    "claim_title": "Clique pour réclamer ton prix"
+    "claim_title": "Clique pour réclamer ton prix",
+    "name_placeholder": "Jean Dupont",
+    "address_placeholder": "12 rue de la Paix, Appartement 3",
+    "city_placeholder": "Paris",
+    "zip_placeholder": "75001",
+    "country_placeholder": "France"
   },
   "login": {
     "almost_there": "Presque là",
@@ -1030,7 +1037,8 @@
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
     "and": "et la",
-    "back": "Retour"
+    "back": "Retour",
+    "enter_valid_number": "Entre un numéro valide"
   },
   "onboarding": {
     "one_question": "Une question",

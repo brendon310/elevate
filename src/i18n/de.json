@@ -80,7 +80,9 @@
     "evo_tier_anchored": "Verankert",
     "evo_tier_identity": "Identität",
     "days_to_next_one": "1 Tag bis {{label}}",
-    "days_to_next_other": "{{count}} Tage bis {{label}}"
+    "days_to_next_other": "{{count}} Tage bis {{label}}",
+    "landing_question": "Was ist eine Gewohnheit, die du aufgeben möchtest?",
+    "landing_placeholder": "z.B. Rauchen, Scrollen, Trinken..."
   },
   "common": {
     "next": "Weiter",
@@ -1007,7 +1009,12 @@
     "at_100k": "Bei 100k kannst du",
     "claim_link": "das physische Abzeichen einfordern",
     "ms_reached": "{{label}} erreicht",
-    "claim_title": "Klicken um deinen Preis zu beanspruchen"
+    "claim_title": "Klicken um deinen Preis zu beanspruchen",
+    "name_placeholder": "Max Mustermann",
+    "address_placeholder": "Hauptstraße 12, Wohnung 3",
+    "city_placeholder": "Berlin",
+    "zip_placeholder": "10115",
+    "country_placeholder": "Deutschland"
   },
   "login": {
     "almost_there": "Fast geschafft",
@@ -1030,7 +1037,8 @@
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutzrichtlinie",
     "and": "und die",
-    "back": "Zurück"
+    "back": "Zurück",
+    "enter_valid_number": "Gib eine gültige Nummer ein"
   },
   "onboarding": {
     "one_question": "Eine Frage",

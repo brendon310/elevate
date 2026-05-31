@@ -80,7 +80,9 @@
     "evo_tier_anchored": "Ancorado",
     "evo_tier_identity": "Identidade",
     "days_to_next_one": "1 dia para {{label}}",
-    "days_to_next_other": "{{count}} dias para {{label}}"
+    "days_to_next_other": "{{count}} dias para {{label}}",
+    "landing_question": "Qual é um hábito que queres deixar?",
+    "landing_placeholder": "ex. fumar, fazer scroll, beber..."
   },
   "common": {
     "next": "Próximo",
@@ -1007,7 +1009,12 @@
     "at_100k": "Em 100k você pode",
     "claim_link": "resgatar o distintivo físico",
     "ms_reached": "{{label}} atingido",
-    "claim_title": "Clica para reclamar o teu prémio"
+    "claim_title": "Clica para reclamar o teu prémio",
+    "name_placeholder": "João Silva",
+    "address_placeholder": "Rua Augusta 12, Apartamento 3",
+    "city_placeholder": "Lisboa",
+    "zip_placeholder": "1000-001",
+    "country_placeholder": "Portugal"
   },
   "login": {
     "almost_there": "Quase lá",
@@ -1030,7 +1037,8 @@
     "terms": "Termos de Serviço",
     "privacy": "Política de Privacidade",
     "and": "e a",
-    "back": "Voltar"
+    "back": "Voltar",
+    "enter_valid_number": "Introduz um número válido"
   },
   "onboarding": {
     "one_question": "Uma pergunta",
