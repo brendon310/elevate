@@ -1088,5 +1088,33 @@
       "Esta comunidad funciona con honestidad, no con impacto. Dilo de otra manera.",
       "Lenguaje fuerte, filtro más fuerte. Reescríbelo con intención."
     ]
+  },
+  "pattern": {
+    "your_patterns": "Tus patrones",
+    "empty_state": "Registra datos de estado de ánimo e impulsos durante los check-ins para desbloquear el análisis de patrones personalizado.",
+    "coach_insight_label": "Tu insight del coach",
+    "top_triggers": "Principales desencadenantes",
+    "urge_by_hour": "Intensidad de impulsos por hora",
+    "urge_tooltip_one": "{{h}}:00 — {{count}} impulso",
+    "urge_tooltip_other": "{{h}}:00 — {{count}} impulsos",
+    "hour_12am": "12am",
+    "hour_6am": "6am",
+    "hour_12pm": "12pm",
+    "hour_6pm": "6pm",
+    "hour_11pm": "11pm",
+    "mood_title": "Estado de ánimo — últimos 14 días",
+    "today": "hoy",
+    "legend_good": "Bien (7-10)",
+    "legend_ok": "Ok (4-6)",
+    "legend_tough": "Difícil (1-3)",
+    "rec_trigger": "Tu desencadenante más frecuente es {{trigger}}. Tener un plan específico para cuando {{trigger}} aparece — incluso una sola acción alternativa — reduce drásticamente el riesgo de recaída.",
+    "rec_hour": "Tu momento más difícil es alrededor de las {{hour}}. Intenta programar un ritual saludable a esa hora — una caminata corta, una llamada, o cualquier actividad absorbente — antes de que llegue el impulso.",
+    "rec_mood_low": "Tu estado de ánimo reciente ha sido más bajo de lo habitual. En los días difíciles, presentarse de forma imperfecta sigue contando — un check-in de 5 minutos reinicia tu línea base neurológica.",
+    "rec_data": "Estás construyendo un verdadero autoconocimiento a través de tus datos. Sigue registrando el estado de ánimo y los desencadenantes para desbloquear perspectivas más profundas en las próximas semanas."
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "body": "Se produjo un error inesperado. Tus datos están seguros — solo recarga para continuar.",
+    "reload": "Recargar app"
   }
 }

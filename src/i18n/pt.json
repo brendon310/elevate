@@ -1088,5 +1088,33 @@
       "Esta comunidade funciona com honestidade, não com impacto. Diz-o de outra forma.",
       "Linguagem forte, filtro mais forte. Reescreve com intenção."
     ]
+  },
+  "pattern": {
+    "your_patterns": "Os teus padrões",
+    "empty_state": "Regista dados de humor e impulsos durante os check-ins para desbloquear a análise de padrões personalizada.",
+    "coach_insight_label": "O teu insight do coach",
+    "top_triggers": "Principais gatilhos",
+    "urge_by_hour": "Intensidade de impulsos por hora",
+    "urge_tooltip_one": "{{h}}:00 — {{count}} impulso",
+    "urge_tooltip_other": "{{h}}:00 — {{count}} impulsos",
+    "hour_12am": "0h",
+    "hour_6am": "6h",
+    "hour_12pm": "12h",
+    "hour_6pm": "18h",
+    "hour_11pm": "23h",
+    "mood_title": "Humor — últimos 14 dias",
+    "today": "hoje",
+    "legend_good": "Bem (7-10)",
+    "legend_ok": "Ok (4-6)",
+    "legend_tough": "Difícil (1-3)",
+    "rec_trigger": "O teu gatilho mais frequente é {{trigger}}. Ter um plano específico para quando {{trigger}} surge — mesmo uma única ação alternativa — reduz drasticamente o risco de recaída.",
+    "rec_hour": "O teu momento mais difícil é por volta das {{hour}}. Tenta programar um ritual saudável nessa hora — uma curta caminhada, uma chamada, ou qualquer atividade absorvente — antes de a vontade chegar.",
+    "rec_mood_low": "O teu humor recente tem sido mais baixo do que o normal. Nos dias difíceis, aparecer de forma imperfeita ainda conta — um check-in de 5 minutos reinicia a tua linha de base neurológica.",
+    "rec_data": "Estás a construir um verdadeiro autoconhecimento através dos teus dados. Continua a registar humor e gatilhos para desbloquear insights mais profundos nas próximas semanas."
+  },
+  "error": {
+    "title": "Algo correu mal",
+    "body": "Ocorreu um erro inesperado. Os teus dados estão seguros — apenas recarrega para continuar.",
+    "reload": "Recarregar app"
   }
 }

@@ -1088,5 +1088,33 @@
       "This community runs on honesty, not shock value. Say it differently.",
       "Strong language, stronger filter. Rewrite it with intention."
     ]
+  },
+  "pattern": {
+    "your_patterns": "Your patterns",
+    "empty_state": "Log mood and urge data during check-ins to unlock personalized pattern analysis.",
+    "coach_insight_label": "Your coach insight",
+    "top_triggers": "Top urge triggers",
+    "urge_by_hour": "Urge intensity by hour",
+    "urge_tooltip_one": "{{h}}:00 — {{count}} urge",
+    "urge_tooltip_other": "{{h}}:00 — {{count}} urges",
+    "hour_12am": "12am",
+    "hour_6am": "6am",
+    "hour_12pm": "12pm",
+    "hour_6pm": "6pm",
+    "hour_11pm": "11pm",
+    "mood_title": "Mood — last 14 days",
+    "today": "today",
+    "legend_good": "Good (7-10)",
+    "legend_ok": "Ok (4-6)",
+    "legend_tough": "Tough (1-3)",
+    "rec_trigger": "Your most frequent trigger is {{trigger}}. Having a specific plan for when {{trigger}} hits — even one alternative action — dramatically reduces relapse risk.",
+    "rec_hour": "Your most challenging time is around {{hour}}. Try scheduling a healthy ritual at that hour — a short walk, a call, or any absorbing activity — before the urge arrives.",
+    "rec_mood_low": "Your recent mood has been lower than usual. On tough days, showing up imperfectly still counts — a 5-minute check-in resets your neurological baseline.",
+    "rec_data": "You're building real self-knowledge through your data. Keep logging mood and triggers to unlock deeper insights over the coming weeks."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "body": "An unexpected error occurred. Your data is safe — just reload to continue.",
+    "reload": "Reload app"
   }
 }

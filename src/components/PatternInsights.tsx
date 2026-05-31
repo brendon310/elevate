@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Log } from '../types';
 
 export interface EnrichedLog extends Log {
@@ -10,12 +11,14 @@ export interface EnrichedLog extends Log {
 }
 
 function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
+  const { t } = useTranslation();
+
   const enriched = useMemo(() =>
     logs.filter(l => l.mood != null || l.trigger_label != null || l.hour_of_day != null),
   [logs]);
 
-  const hasUrge   = enriched.some(l => l.had_urge != null);
-  const hasMood   = enriched.some(l => l.mood != null);
+  const hasUrge = enriched.some(l => l.had_urge != null);
+  const hasMood = enriched.some(l => l.mood != null);
 
   // Top 5 triggers by frequency
   const triggerCounts = useMemo(() => {
@@ -45,7 +48,7 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
     });
   }, [enriched]);
 
-  // Personalized recommendation
+  // Personalized recommendation — uses t() for translated strings with interpolation
   const recommendation = useMemo(() => {
     if (enriched.length < 3) return null;
     const topTrigger = triggerCounts[0];
@@ -54,23 +57,23 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
     const avgMood = recentMoods.length ? recentMoods.reduce((a, b) => a + b.avg, 0) / recentMoods.length : 0;
 
     if (topTrigger && topTrigger[1] >= 3)
-      return `Your most frequent trigger is ${topTrigger[0].toLowerCase()}. Having a specific plan for when ${topTrigger[0].toLowerCase()} hits — even one alternative action — dramatically reduces relapse risk.`;
+      return t('pattern.rec_trigger', { trigger: topTrigger[0].toLowerCase() });
     if (maxHour > 1 && riskHour >= 0) {
       const h = riskHour;
-      const label = h === 0 ? 'midnight' : h < 12 ? `${h}am` : h === 12 ? 'noon' : `${h - 12}pm`;
-      return `Your most challenging time is around ${label}. Try scheduling a healthy ritual at that hour — a short walk, a call, or any absorbing activity — before the urge arrives.`;
+      const label = h === 0 ? '12am' : h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm`;
+      return t('pattern.rec_hour', { hour: label });
     }
     if (avgMood > 0 && avgMood < 4.5)
-      return `Your recent mood has been lower than usual. On tough days, showing up imperfectly still counts — a 5-minute check-in resets your neurological baseline.`;
-    return `You're building real self-knowledge through your data. Keep logging mood and triggers to unlock deeper insights over the coming weeks.`;
-  }, [triggerCounts, hourBuckets, moodTrend, enriched.length, maxHour]);
+      return t('pattern.rec_mood_low');
+    return t('pattern.rec_data');
+  }, [triggerCounts, hourBuckets, moodTrend, enriched.length, maxHour, t]);
 
   if (enriched.length === 0) {
     return (
       <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="font-semibold mb-2">Your patterns</h2>
+        <h2 className="font-semibold mb-2">{t('pattern.your_patterns')}</h2>
         <p className="text-sm text-muted-foreground">
-          Log mood and urge data during check-ins to unlock personalized pattern analysis.
+          {t('pattern.empty_state')}
         </p>
       </section>
     );
@@ -81,7 +84,7 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
       {/* Coach insight */}
       {recommendation && (
         <section className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-blue-400 mb-2">Your coach insight</p>
+          <p className="text-[10px] font-mono uppercase tracking-wider text-blue-400 mb-2">{t('pattern.coach_insight_label')}</p>
           <p className="text-sm leading-relaxed text-foreground/90">{recommendation}</p>
         </section>
       )}
@@ -89,7 +92,7 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
       {/* Top triggers */}
       {hasUrge && triggerCounts.length > 0 && (
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-3">Top urge triggers</h2>
+          <h2 className="font-semibold mb-3">{t('pattern.top_triggers')}</h2>
           <div className="space-y-2">
             {triggerCounts.map(([label, count], i) => {
               const pct = Math.round((count / triggerCounts[0][1]) * 100);
@@ -112,11 +115,11 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
       {/* Risky hours */}
       {hasUrge && maxHour > 1 && (
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-3">Urge intensity by hour</h2>
+          <h2 className="font-semibold mb-3">{t('pattern.urge_by_hour')}</h2>
           <div className="flex items-end gap-0.5 h-10">
             {hourBuckets.map((count, h) => (
               <div key={h} className="flex-1 rounded-t-sm transition-all"
-                title={`${h}:00 — ${count} urge${count !== 1 ? 's' : ''}`}
+                title={t('pattern.urge_tooltip', { count, h })}
                 style={{
                   height: count > 0 ? `${Math.max(4, Math.round((count / maxHour) * 36))}px` : '3px',
                   background: count > 0 ? 'var(--secondary)' : 'oklch(1 0 0 / 0.07)',
@@ -126,7 +129,11 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
             ))}
           </div>
           <div className="flex justify-between mt-1.5 text-[9px] text-muted-foreground font-mono">
-            <span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>11pm</span>
+            <span>{t('pattern.hour_12am')}</span>
+            <span>{t('pattern.hour_6am')}</span>
+            <span>{t('pattern.hour_12pm')}</span>
+            <span>{t('pattern.hour_6pm')}</span>
+            <span>{t('pattern.hour_11pm')}</span>
           </div>
         </section>
       )}
@@ -134,7 +141,7 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
       {/* Mood trend */}
       {hasMood && (
         <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold mb-3">Mood — last 14 days</h2>
+          <h2 className="font-semibold mb-3">{t('pattern.mood_title')}</h2>
           <div className="flex items-end gap-[3px] h-12">
             {moodTrend.map(d => (
               <div key={d.date} className="flex-1 flex flex-col justify-end h-full"
@@ -152,17 +159,17 @@ function PatternInsights({ logs }: { logs: EnrichedLog[] }) {
           </div>
           <div className="flex justify-between mt-2">
             <p className="text-[9px] text-muted-foreground font-mono">{moodTrend[0]?.date.slice(5)}</p>
-            <p className="text-[9px] text-muted-foreground font-mono">today</p>
+            <p className="text-[9px] text-muted-foreground font-mono">{t('pattern.today')}</p>
           </div>
           <div className="flex items-center gap-3 mt-2 flex-wrap">
             {[
-              { color: 'oklch(0.65 0.2 145)', label: 'Good (7-10)' },
-              { color: 'oklch(0.65 0.18 60)',  label: 'Ok (4-6)' },
-              { color: 'oklch(0.55 0.2 20)',   label: 'Tough (1-3)' },
+              { color: 'oklch(0.65 0.2 145)', key: 'pattern.legend_good' },
+              { color: 'oklch(0.65 0.18 60)',  key: 'pattern.legend_ok' },
+              { color: 'oklch(0.55 0.2 20)',   key: 'pattern.legend_tough' },
             ].map(s => (
-              <div key={s.label} className="flex items-center gap-1">
+              <div key={s.key} className="flex items-center gap-1">
                 <div className="h-2 w-2 rounded-full" style={{ background: s.color }} />
-                <span className="text-[9px] text-muted-foreground font-mono">{s.label}</span>
+                <span className="text-[9px] text-muted-foreground font-mono">{t(s.key)}</span>
               </div>
             ))}
           </div>
