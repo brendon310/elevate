@@ -82,7 +82,8 @@
     "days_to_next_one": "1 jour pour {{label}}",
     "days_to_next_other": "{{count}} jours pour {{label}}",
     "landing_question": "Quelle est une habitude que tu veux arrêter ?",
-    "landing_placeholder": "ex. fumer, scroller, boire..."
+    "landing_placeholder": "ex. fumer, scroller, boire...",
+    "notif_body": "Tu ne t'es pas encore enregistré aujourd'hui. Ta série t'attend."
   },
   "common": {
     "next": "Suivant",
@@ -334,7 +335,8 @@
     "adapted_checkin_prompt": "Comment tu te sens par rapport au retour sur les rails aujourd'hui ?",
     "seed_post_1": "Terminé le jour 7. Je n'aurais jamais pensé aller aussi loin — l'habitude commence à sembler naturelle.",
     "seed_post_2": "Atteint mon premier jalon aujourd'hui 🎉 La note scientifique sur la neuroplasticité m'a soufflé l'esprit.",
-    "seed_post_3": "Le jour 3 était brutal mais je me suis quand même présenté. Une petite victoire compte."
+    "seed_post_3": "Le jour 3 était brutal mais je me suis quand même présenté. Une petite victoire compte.",
+    "fallback_reflection_alt": "Qu'est-ce qui t'a surpris dans l'expérience d'aujourd'hui ?"
   },
   "adapt_reasons": {
     "busy": "La vie s'est chargée",

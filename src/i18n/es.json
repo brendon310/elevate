@@ -82,7 +82,8 @@
     "days_to_next_one": "1 día para {{label}}",
     "days_to_next_other": "{{count}} días para {{label}}",
     "landing_question": "¿Cuál es un hábito que quieres dejar?",
-    "landing_placeholder": "ej. fumar, hacer scroll, beber..."
+    "landing_placeholder": "ej. fumar, hacer scroll, beber...",
+    "notif_body": "Todavía no has hecho el check-in hoy. Tu racha te espera."
   },
   "common": {
     "next": "Siguiente",
@@ -334,7 +335,8 @@
     "adapted_checkin_prompt": "¿Cómo te sientes con respecto a volver a encaminarte hoy?",
     "seed_post_1": "Terminé el día 7. Nunca pensé que llegaría tan lejos — el hábito está empezando a sentirse natural.",
     "seed_post_2": "Alcancé mi primer hito hoy 🎉 La nota científica sobre la neuroplasticidad me voló la mente.",
-    "seed_post_3": "El día 3 fue brutal pero me presenté de todas formas. Una pequeña victoria cuenta."
+    "seed_post_3": "El día 3 fue brutal pero me presenté de todas formas. Una pequeña victoria cuenta.",
+    "fallback_reflection_alt": "¿Qué te sorprendió de la experiencia de hoy?"
   },
   "adapt_reasons": {
     "busy": "La vida se puso ocupada",

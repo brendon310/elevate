@@ -1722,7 +1722,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
         title: `Day ${i + 1} — ${track.name}`,
         description: `Your ${track.name} journey begins. Every day forward counts.`,
         task: `Spend at least 15 minutes on ${track.name} today. Notice how it feels.`,
-        reflection: "What surprised you about today's experience?",
+        reflection: t("journey.fallback_reflection_alt"),
         science: "Repetition within 24 hours strengthens neural pathways by up to 40%.",
         checkinPrompt: "How are you feeling right now, 1–10?",
         completedAt: null, userNote: null,
@@ -2558,13 +2558,13 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
       const now = new Date();
       const [h, m] = time.split(":").map(Number);
       if (now.getHours() !== h || now.getMinutes() !== m) return;
-      const t = todayStr();
-      const allDone = tracks.every(tr => tr.last_log_date === t);
+      const today = todayStr();
+      const allDone = tracks.every(tr => tr.last_log_date === today);
       if (allDone) return;
-      const sentKey = `forge-notif-sent-${t}`;
+      const sentKey = `forge-notif-sent-${today}`;
       if (lsLoad<boolean>(sentKey, false)) return;
       lsSave(sentKey, true);
-      new Notification("Forge", { body: "You haven't checked in yet today. Your streak is waiting." });
+      new Notification("Forge", { body: t("app.notif_body") });
     }, 60_000);
     return () => clearInterval(interval);
   }, [tracks]);

@@ -82,7 +82,8 @@
     "days_to_next_one": "1 giorno a {{label}}",
     "days_to_next_other": "{{count}} giorni a {{label}}",
     "landing_question": "Qual è un'abitudine che vuoi smettere?",
-    "landing_placeholder": "es. fumo, scorrimento, alcol..."
+    "landing_placeholder": "es. fumo, scorrimento, alcol...",
+    "notif_body": "Non hai ancora fatto il check-in oggi. La tua striscia ti aspetta."
   },
   "common": {
     "next": "Avanti",
@@ -334,7 +335,8 @@
     "adapted_checkin_prompt": "Come ti senti riguardo al tornare in carreggiata oggi?",
     "seed_post_1": "Ho finito il giorno 7. Non pensavo di arrivare così lontano — l'abitudine sta cominciando a sembrare naturale.",
     "seed_post_2": "Ho raggiunto il mio primo traguardo oggi 🎉 La nota scientifica sulla neuroplasticità mi ha fatto saltare la mente.",
-    "seed_post_3": "Il giorno 3 è stato brutale ma mi sono presentato comunque. Anche la piccola vittoria conta."
+    "seed_post_3": "Il giorno 3 è stato brutale ma mi sono presentato comunque. Anche la piccola vittoria conta.",
+    "fallback_reflection_alt": "Cosa ti ha sorpreso dell'esperienza di oggi?"
   },
   "adapt_reasons": {
     "busy": "La vita si è fatta frenetica",
