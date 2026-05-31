@@ -184,7 +184,7 @@
     "feedback_title": "Não consegues entrar?",
     "feedback_label": "Comentários",
     "feedback_body": "Se tiveste problemas a abrir a app, conta-nos o que aconteceu.",
-    "feedback_placeholder": "ex. sem conexão, o app não abria...",
+    "feedback_placeholder": "ex. sem ligação, a app não abria...",
     "feedback_sent": "Obrigado.",
     "feedback_sent_body": "Vamos ter em conta o teu feedback.",
     "feedback_privacy": "Enviado de forma privada para a equipa Forge.",
@@ -223,7 +223,8 @@
     "prize_address_placeholder": "Endereço de entrega",
     "prize_sending": "Enviando…",
     "prize_send_address": "Enviar meu endereço — €7.99",
-    "prize_claim_tooltip": "Clique para reivindicar seu prêmio"
+    "prize_claim_tooltip": "Clique para reivindicar seu prêmio",
+    "island_paused_waiting": "A tua ilha está à espera no dia {{day}}"
   },
   "journey": {
     "today": "Hoje",
@@ -415,7 +416,9 @@
     "ninety_day": "Atividade 90 dias",
     "no_activity_yet": "Complete seu primeiro check-in para ver atividade aqui.",
     "letter_private": "Gerada privadamente apenas para você",
-    "letter_error": "Algo correu mal ao gerar a tua carta. Verifica a tua ligação e tenta novamente num momento."
+    "letter_error": "Algo correu mal ao gerar a tua carta. Verifica a tua ligação e tenta novamente num momento.",
+    "checkin_tooltip_one": "{{date}}: {{count}} check-in",
+    "checkin_tooltip_other": "{{date}}: {{count}} check-ins"
   },
   "coach": {
     "nudge_inactivity": "Já faz alguns dias. Cada passo conta — mesmo o mais pequeno.",

@@ -327,7 +327,7 @@ setPushError(t("settings.push_failed"));
                 ))}
               </div>
               {onCooldown ? (
-                <p className="text-xs text-muted-foreground">{t("settings.theme_cooldown", { days: daysLeft, plural: daysLeft === 1 ? '' : 's' })}</p>
+                <p className="text-xs text-muted-foreground">{t("settings.theme_cooldown", { n: daysLeft })}</p>
               ) : (
                 <p className="text-xs text-muted-foreground">{t("settings.theme_available")}</p>
               )}

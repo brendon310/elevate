@@ -28,7 +28,7 @@ function liveStreak(ut: UserTrack): number {
 }
 
 function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; logs: Log[]; userId?: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
   const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
   const [letterLoading, setLetterLoading] = useState(false);
@@ -104,11 +104,11 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
   }, [heatmap]);
 
   const monthLabels = useMemo(() => weeks.map((w, i) => {
-    if (i === 0) return new Date(w[0].date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short' });
+    if (i === 0) return new Date(w[0].date + 'T12:00:00').toLocaleDateString(i18n.language, { month: 'short' });
     const prev = new Date(weeks[i - 1][0].date + 'T12:00:00');
     const cur  = new Date(w[0].date + 'T12:00:00');
     return prev.getMonth() !== cur.getMonth()
-      ? cur.toLocaleDateString('en-US', { month: 'short' })
+      ? cur.toLocaleDateString(i18n.language, { month: 'short' })
       : "";
   }), [weeks]);
 
@@ -234,7 +234,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
           <h2 className="font-semibold mb-4">{t("insights.daily_activity")}</h2>
           <div className="flex items-end gap-[3px] h-16">
             {last28.map(d => (
-              <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full" title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}>
+              <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full" title={t("insights.checkin_tooltip", { date: d.date, count: d.count })}>
                 <div
                   className={`w-full rounded-t-sm transition-all ${d.isToday ? "opacity-100" : "opacity-70"}`}
                   style={{
@@ -257,7 +257,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">{t("insights.ninety_day")}</h2>
           <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-            <span>less</span>
+            <span>{t("insights.less")}</span>
             {[0,1,2,3].map(v => <div key={v} className={`h-2.5 w-2.5 rounded-sm ${tone(v)}`} />)}
 <span>{t("insights.more")}</span>
           </div>
@@ -281,7 +281,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
               {weeks.map((w, i) => (
                 <div key={i} className="flex flex-col gap-1">
                   {w.map(d => (
-                    <div key={d.date} title={`${d.date}: ${d.count} check-in${d.count !== 1 ? "s" : ""}`}
+                    <div key={d.date} title={t("insights.checkin_tooltip", { date: d.date, count: d.count })}
                       className={`h-3 w-3 rounded-sm transition-colors ${tone(d.count)}`} />
                   ))}
                 </div>
@@ -376,7 +376,7 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-display font-semibold text-base">{t("insights.weekly_letter")}</p>
-                  <p className="text-[11px] text-muted-foreground font-mono">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
+                  <p className="text-[11px] text-muted-foreground font-mono">{new Date().toLocaleDateString(i18n.language, { weekday: "long", month: "long", day: "numeric" })}</p>
                 </div>
                 <button onClick={() => setShowLetter(false)}
                   className="text-muted-foreground hover:text-foreground text-xl leading-none shrink-0">✕</button>

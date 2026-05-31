@@ -223,7 +223,8 @@
     "prize_address_placeholder": "Delivery address",
     "prize_sending": "Sending…",
     "prize_send_address": "Send my address — €7.99",
-    "prize_claim_tooltip": "Click to claim your prize"
+    "prize_claim_tooltip": "Click to claim your prize",
+    "island_paused_waiting": "Your island is waiting at day {{day}}"
   },
   "journey": {
     "today": "Today",
@@ -415,7 +416,9 @@
     "ninety_day": "90-day activity",
     "no_activity_yet": "Complete your first check-in to see activity here.",
     "letter_private": "Generated privately for you alone",
-    "letter_error": "Something went wrong generating your letter. Check your connection and try again in a moment."
+    "letter_error": "Something went wrong generating your letter. Check your connection and try again in a moment.",
+    "checkin_tooltip_one": "{{date}}: {{count}} check-in",
+    "checkin_tooltip_other": "{{date}}: {{count}} check-ins"
   },
   "coach": {
     "nudge_inactivity": "You've been away for a few days. Every step counts — even a small one.",

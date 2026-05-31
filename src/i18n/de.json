@@ -184,7 +184,7 @@
     "feedback_title": "Kann nicht einloggen?",
     "feedback_label": "Feedback",
     "feedback_body": "Wenn du Probleme hattest, die App zu öffnen, erzähl uns was passiert ist.",
-    "feedback_placeholder": "z.B. keine Verbindung, App öffnete sich nicht...",
+    "feedback_placeholder": "z.B. keine Verbindung, App ließ sich nicht öffnen...",
     "feedback_sent": "Danke.",
     "feedback_sent_body": "Wir werden dein Feedback berücksichtigen.",
     "feedback_privacy": "Privat an das Forge-Team gesendet.",
@@ -223,7 +223,8 @@
     "prize_address_placeholder": "Lieferadresse",
     "prize_sending": "Wird gesendet…",
     "prize_send_address": "Adresse senden — €7.99",
-    "prize_claim_tooltip": "Klicke um deinen Preis zu beanspruchen"
+    "prize_claim_tooltip": "Klicke um deinen Preis zu beanspruchen",
+    "island_paused_waiting": "Deine Insel wartet bei Tag {{day}}"
   },
   "journey": {
     "today": "Heute",
@@ -415,7 +416,9 @@
     "ninety_day": "90-Tage-Aktivität",
     "no_activity_yet": "Schließe deinen ersten Check-in ab, um Aktivität hier zu sehen.",
     "letter_private": "Privat nur für dich generiert",
-    "letter_error": "Bei der Erstellung deines Briefes ist etwas schiefgelaufen. Überprüfe deine Verbindung und versuche es in einem Moment erneut."
+    "letter_error": "Bei der Erstellung deines Briefes ist etwas schiefgelaufen. Überprüfe deine Verbindung und versuche es in einem Moment erneut.",
+    "checkin_tooltip_one": "{{date}}: {{count}} Check-in",
+    "checkin_tooltip_other": "{{date}}: {{count}} Check-ins"
   },
   "coach": {
     "nudge_inactivity": "Du warst ein paar Tage weg. Jeder Schritt zählt — auch ein kleiner.",

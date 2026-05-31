@@ -223,7 +223,8 @@
     "prize_address_placeholder": "Indirizzo di consegna",
     "prize_sending": "Invio…",
     "prize_send_address": "Invia il mio indirizzo — €7.99",
-    "prize_claim_tooltip": "Clicca per riscattare il tuo premio"
+    "prize_claim_tooltip": "Clicca per riscattare il tuo premio",
+    "island_paused_waiting": "La tua isola ti aspetta al giorno {{day}}"
   },
   "journey": {
     "today": "Oggi",
@@ -415,7 +416,9 @@
     "ninety_day": "Attività 90 giorni",
     "no_activity_yet": "Completa il tuo primo check-in per vedere l'attività qui.",
     "letter_private": "Generata privatamente solo per te",
-    "letter_error": "Qualcosa è andato storto nella generazione della lettera. Controlla la connessione e riprova tra un momento."
+    "letter_error": "Qualcosa è andato storto nella generazione della lettera. Controlla la connessione e riprova tra un momento.",
+    "checkin_tooltip_one": "{{date}}: {{count}} check-in",
+    "checkin_tooltip_other": "{{date}}: {{count}} check-in"
   },
   "coach": {
     "nudge_inactivity": "Sono passati alcuni giorni. Ogni passo conta, anche il più piccolo.",

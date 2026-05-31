@@ -368,7 +368,7 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
           </button>
           {isPaused && (
             <div className="flex flex-col items-center gap-2 mt-3 px-6">
-              <p className="text-sm text-white/50 text-center">Your island is waiting at <span className="font-medium text-white/80">day {total}</span></p>
+              <p className="text-sm text-white/50 text-center">{t("home.island_paused_waiting", { day: total })}</p>
 <button className="text-xs font-medium px-5 py-2 rounded-full border border-white/20 text-white/70 bg-white/5 active:bg-white/10 transition-colors">{t("home.reactivate_plan")}</button>
             </div>
           )}
@@ -720,7 +720,7 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}
-              placeholder="e.g. no connection, app wouldn't open..."
+              placeholder={t("home.feedback_placeholder")}
               rows={3}
               className="w-full rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground resize-none mb-4"
             />
