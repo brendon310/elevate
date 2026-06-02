@@ -404,7 +404,7 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
     <div className="min-h-screen bg-background">
       <div className="max-w-xl mx-auto px-5 py-12 space-y-8">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{track.category}</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] font-mono text-muted-foreground">{tc(track.category)}</p>
           <h1 className="mt-2 font-display text-3xl tracking-tight">{tn(track.slug, track.name)}</h1>
           <p className="mt-2 text-muted-foreground text-sm">{t("journey.meet_coach", { name: archetypeForSlug(track.slug).name })}</p>
         </div>
@@ -851,12 +851,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
             <ChevronLeft className="h-5 w-5" />
           </button>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{track.category}</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground">{tc(track.category)}</p>
             <h1 className="font-semibold text-sm truncate">{tn(track.slug, track.name)}</h1>
           </div>
           <div className="text-right flex items-center gap-2">
             <div>
-              <p className="text-[10px] font-mono text-muted-foreground">{completedCount}/{journey.totalDays} days</p>
+              <p className="text-[10px] font-mono text-muted-foreground">{t("journey.days_progress", { done: completedCount, total: journey.totalDays })}</p>
               <div className="mt-0.5 h-1 w-20 rounded-full bg-muted overflow-hidden">
                 <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${(completedCount / journey.totalDays) * 100}%` }} />
               </div>
@@ -979,7 +979,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
               <div className="rounded-2xl bg-[color:var(--tertiary)]/10 border border-[color:var(--tertiary)]/20 p-4 flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-[color:var(--tertiary)] shrink-0" />
                 <div>
-                  <p className="font-semibold text-sm">{t("journey.day_complete", { n: todayDay.dayNumber })}</p>
+                  <p className="font-semibold text-sm">{t("journey.day_complete", { day: todayDay.dayNumber })}</p>
                   {todayDay.userNote && <p className="text-xs text-muted-foreground mt-0.5">{todayDay.userNote}</p>}
                 </div>
               </div>
@@ -1037,7 +1037,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
         {activeTab === "community" && (
           <motion.div key="community" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{t("journey.community_title", { name: track.name })}</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{t("journey.community_title", { name: tn(track.slug, track.name) })}</p>
             <CommunityBoard slug={track.slug} userId={userId} />
           </motion.div>
         )}
