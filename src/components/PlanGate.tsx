@@ -46,7 +46,7 @@ export function PlanGate({ plan, feature, accountCreatedAt, onUpgrade, children,
       </p>
       <button onClick={handleUpgrade} style={{ padding: '0.4rem 1.125rem', background: '#3b82f6',
         border: 'none', borderRadius: '2rem', color: '#fff', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}>
-        Upgrade
+        {t('plangate.upgrade_btn')}
       </button>
     </div>
   );

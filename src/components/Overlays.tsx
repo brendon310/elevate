@@ -507,7 +507,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
           <button onClick={onDismiss} className="text-muted-foreground hover:text-white text-2xl leading-none">&times;</button>
         </div>
         {imgUrl ? (
-          <img src={imgUrl} alt="certificate" className="w-full rounded-2xl mb-4 border border-white/10" />
+          <img src={imgUrl} alt={t("overlays.cert_title")} className="w-full rounded-2xl mb-4 border border-white/10" />
         ) : (
           <div className="w-full aspect-square rounded-2xl mb-4 bg-white/5 animate-pulse" />
         )}

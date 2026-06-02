@@ -1045,7 +1045,7 @@ function LoginPage({ onSuccess, onBack }: { onSuccess: (name: string) => void; o
             {mode === "phone" && (
               <motion.div key="phone" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
                 <button onClick={() => setMode("options")} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors">
-                  <ChevronLeft className="h-4 w-4" /> Back
+                  <ChevronLeft className="h-4 w-4" /> {t("common.back")}
                 </button>
                 <h1 className="font-display text-2xl font-bold tracking-tight">{t("login.your_number")}</h1>
                 <p className="text-sm text-muted-foreground mt-1 mb-6">{t("login.sms_code")}</p>
@@ -1458,7 +1458,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
             transition={{ duration: 0.6 }} className="max-w-lg w-full text-center">
             <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground mb-6">{t("onboarding.choose_island")}</p>
             <h1 className="font-display text-[clamp(1.8rem,5vw,2.6rem)] leading-tight tracking-tight mb-2">
-              Your island reflects<br /><span className="text-electric">your journey</span>
+              {t("onboarding.island_headline")}<br /><span className="text-electric">{t("onboarding.island_headline_accent")}</span>
             </h1>
             <p className="text-sm text-muted-foreground mb-10 max-w-xs mx-auto">{t("onboarding.island_body")}</p>
             <div className="grid grid-cols-2 gap-4 mb-8">
@@ -1490,7 +1490,7 @@ function OnboardingPage({ onComplete }: { onComplete: (data: { track: Onboarding
               onClick={() => { localStorage.setItem('forge_island_theme', islandThemePick); setStep('coach'); }}
               className="btn-chunk w-full inline-flex items-center justify-center gap-2 rounded-full grad-electric text-white py-4 font-bold text-sm shadow-[var(--shadow-violet)]"
             >
-              Continue <ArrowRight className="h-4 w-4" />
+              {t("common.continue")} <ArrowRight className="h-4 w-4" />
             </button>
           </motion.div>
         )}
@@ -1855,7 +1855,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
             <button
               onClick={() => { setCustomDur(true); setCustomDurVal(String(targetDays)); }}
               className={`w-full max-w-xs rounded-xl py-3 text-sm font-semibold border transition ${customDur ? "bg-foreground text-neutral-900 border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
-              Custom
+              {t("common.custom")}
             </button>
             {customDur && (
               <input type="number" autoFocus value={customDurVal}
@@ -2639,7 +2639,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
 {t("app.track_complete_title")}
           </p>
           <p className="text-white/60 text-sm max-w-xs mx-auto leading-relaxed">
-            You finished <span className="text-white font-semibold">{trackCompletion.trackName}</span>.<br />
+            {t("app.track_complete_finished", { track: trackCompletion.trackName })}<br />
 {t("app.track_complete_body")}
           </p>
           <button onClick={() => setTrackCompletion(null)}
