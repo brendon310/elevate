@@ -36,7 +36,7 @@
       "Du bist erschienen. Das ist das ganze Spiel.",
       "Disziplin ist nur Selbstliebe anders geschrieben.",
       "Eine weitere Wiederholung. Ein weiterer Baustein. Ein weiterer Tag.",
-      "Der Streak fragt nicht, wie du dich fühlst. Ihm ist wichtig, dass du gekommen bist.",
+      "Die Serie fragt nicht, wie du dich fühlst. Ihr ist wichtig, dass du gekommen bist.",
       "Die meisten haben darüber geredet. Du hast es getan.",
       "Eines Tages wirst du zurückblicken — hier hat es angefangen.",
       "Dein zukünftiges Ich hat gerade aufgeatmet.",
@@ -84,7 +84,7 @@
     "days_to_next_other": "{{count}} Tage bis {{label}}",
     "landing_question": "Was ist eine Gewohnheit, die du aufgeben möchtest?",
     "landing_placeholder": "z.B. Rauchen, Scrollen, Trinken...",
-    "notif_body": "Du hast dich heute noch nicht eingecheckt. Deine Strähne wartet."
+    "notif_body": "Du hast dich heute noch nicht eingecheckt. Deine Serie wartet."
   },
   "common": {
     "next": "Weiter",
@@ -221,7 +221,7 @@
     },
     "checkin_aria": "Check-in für {{name}}",
     "quick_note_title": "Schnelle Notiz",
-    "pause_streak_title": "Strähne pausieren",
+    "pause_streak_title": "Serie pausieren",
     "prize_name_placeholder": "Dein Name",
     "prize_email_placeholder": "Deine E-Mail",
     "prize_address_placeholder": "Lieferadresse",
@@ -390,7 +390,7 @@
       "Leeres Feld = leerer Fortschritt. Komm schon.",
       "Du bist nicht so weit gekommen, um es leer zu lassen.",
       "Das ist die Arbeit. Tu die Arbeit.",
-      "Überspringst du das, zahlt deine Strähne den Preis.",
+      "Überspringst du das, zahlt deine Serie den Preis.",
       "Nicht mal einen Satz? Wirklich?",
       "Die einzige falsche Antwort ist keine Antwort. Los."
     ]
@@ -433,7 +433,7 @@
     "left": "Verbleibend",
     "complete": "Abgeschlossen",
     "day_one": "Tag eins beginnt hier",
-    "empty_desc": "Dein erster Check-in entsperrt deine Einblicke. Jedes Muster, Streak und jeder Meilenstein beginnt mit einem ehrlichen Tag.",
+    "empty_desc": "Dein erster Check-in entsperrt deine Einblicke. Jedes Muster, jede Serie und jeder Meilenstein beginnt mit einem ehrlichen Tag.",
     "coach_waiting": "Dein Coach wartet darauf zu sehen, was in dir steckt.",
     "this_vs_last_week": "Diese Woche vs letzte Woche",
     "ninety_day": "90-Tage-Aktivität",
@@ -744,8 +744,8 @@
     "welcome_back_days": "Willkommen zurück — {{n}} Tage später",
     "days_on_track": "Tage bei {{name}}",
     "still_n_days": "Das sind immerhin {{n}} Tage, an denen du da warst.",
-    "streak_not_worth": "Streaks messen Beständigkeit — nicht Wert. Einen Tag zu verpassen löscht nicht, was du aufgebaut hast.",
-    "shields_protect": "Schilde schützen deinen Streak",
+    "streak_not_worth": "Serien messen Beständigkeit — nicht Wert. Einen Tag zu verpassen löscht nicht, was du aufgebaut hast.",
+    "shields_protect": "Schilde schützen deine Serie",
     "shields_desc": "Forge gibt dir alle 14 Tage konsistenter Nutzung 1 Schild — automatisch ausgegeben, wenn du einen Tag verpasst. Mach weiter, um den nächsten zu verdienen.",
     "certificate": "Zertifikat",
     "days_strong": "{{n}} Tage Stark",
@@ -984,7 +984,7 @@
         "Jede Wiederholung heute verstärkt, was du gestern aufgebaut hast. Die Zeit läuft. Beweg dich."
       ],
       "teacher": [
-        "Konsequenz ist der stille Lehrer, den keine Klasse replizieren kann. Deine Strähne bringt dir bereits etwas bei. Lass die Lektion weitergehen.",
+        "Konsequenz ist der stille Lehrer, den keine Klasse replizieren kann. Deine Serie bringt dir bereits etwas bei. Lass die Lektion weitergehen.",
         "Die Arbeit von gestern hat eine Grundlage gelegt. Heute kannst du ein weiteres Stockwerk bauen. Einfach. Wiederholbar. Effektiv."
       ],
       "clinician": [
