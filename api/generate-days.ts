@@ -77,7 +77,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const taskHint = TRACK_TASK_HINTS[slug] ?? `Concrete, specific daily action for ${trackName}.`;
 
-  const langName = ({ it:"Italian", es:"Spanish", de:"German", fr:"French", pt:"Portuguese" }[language ?? "en"]) ?? "English";
+  const langCode = (language ?? "en").slice(0, 2);
+  const langName = ({ it:"Italian", es:"Spanish", de:"German", fr:"French", pt:"Portuguese" }[langCode]) ?? "English";
   const systemPrompt = `IMPORTANT: Write ALL content (titles, descriptions, tasks, reflections, science, check-in prompts) in ${langName}. Native ${langName} only — not a translation, but natural fluent ${langName} as a native speaker would write it.
 
 You are a world-class behavior change coach. Design a deeply personal daily program for someone on the "${trackName}" path (category: ${category}).
