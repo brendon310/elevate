@@ -214,29 +214,29 @@ function validateQuickNote(text: string, tFn: (k: string) => string): string | n
   return null;
 }
 export const GARDEN_STAGES = [
-  { name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
-  { name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
-  { name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-03.png" },
-  { name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-04.png" },
-  { name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-05.png" },
-  { name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-06.png" },
-  { name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-07.png" },
-  { name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-08.png" },
-  { name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-09.png" },
-  { name: "The Ancient Canopy", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
+  { key: "island.garden.s1", name: "The Bare Field",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-01.png" },
+  { key: "island.garden.s2", name: "The First Sprouts",  img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-02.png" },
+  { key: "island.garden.s3", name: "The Young Garden",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-03.png" },
+  { key: "island.garden.s4", name: "The Blooming Patch", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-04.png" },
+  { key: "island.garden.s5", name: "The Meadow",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-05.png" },
+  { key: "island.garden.s6", name: "The Thicket",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-06.png" },
+  { key: "island.garden.s7", name: "The Young Grove",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-07.png" },
+  { key: "island.garden.s8", name: "The Forest",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-08.png" },
+  { key: "island.garden.s9", name: "The Living World",   img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-09.png" },
+  { key: "island.garden.s10", name: "The Ancient Canopy", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/stage-10.png" },
 ];
 
 export const MOUNTAIN_STAGES = [
-  { name: "The Barren Summit",      img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png" },
-  { name: "The First Pine",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount2.png" },
-  { name: "The Alpine Trail",       img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount3.png" },
-  { name: "The Mountain Stream",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount4.png" },
-  { name: "The Rising Peak",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount5.png" },
-  { name: "The Alpine Lake",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount6.png" },
-  { name: "The Summit Path",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount7.png" },
-  { name: "The Sacred Peak",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount8.png" },
-  { name: "The Enlightened Summit", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount9.png" },
-  { name: "The Celestial Peak",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount10.png" },
+  { key: "island.mountain.s1", name: "The Barren Summit",      img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount1.png" },
+  { key: "island.mountain.s2", name: "The First Pine",         img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount2.png" },
+  { key: "island.mountain.s3", name: "The Alpine Trail",       img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount3.png" },
+  { key: "island.mountain.s4", name: "The Mountain Stream",    img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount4.png" },
+  { key: "island.mountain.s5", name: "The Rising Peak",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount5.png" },
+  { key: "island.mountain.s6", name: "The Alpine Lake",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount6.png" },
+  { key: "island.mountain.s7", name: "The Summit Path",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount7.png" },
+  { key: "island.mountain.s8", name: "The Sacred Peak",        img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount8.png" },
+  { key: "island.mountain.s9", name: "The Enlightened Summit", img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount9.png" },
+  { key: "island.mountain.s10", name: "The Celestial Peak",     img: "https://res.cloudinary.com/dmyxmn9eg/image/upload/e_background_removal/forge/mountains/mount10.png" },
 ];
 
 function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden' }: { tracks: UserTrack[]; user?: { name: string }; isPaused?: boolean; islandTheme?: 'garden' | 'mountain' }) {
@@ -261,7 +261,7 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
   }, [stageIndex]);
   const [showClaim, setShowClaim] = useState(false);
   const stage = STAGES[stageIndex] ?? STAGES[0];
-  const { name, img } = stage;
+  const { img } = stage;
   const shareIsland = async () => {
     const canvas = document.createElement('canvas');
     canvas.width = 1080; canvas.height = 1920;
@@ -300,7 +300,7 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
     pill(60, 80, 180, 54, 27, 'rgba(10,25,50,0.8)', '#1e3a5c');
     ctx.fillStyle = '#4a7ab5'; ctx.font = '500 24px -apple-system,system-ui,sans-serif';
     ctx.textAlign = 'left'; ctx.fillText('FORGE', 100, 117);
-    const stageText = name.toUpperCase();
+    const stageText = t(stage.key).toUpperCase();
     ctx.font = '500 26px -apple-system,system-ui,sans-serif';
     const stageW = ctx.measureText(stageText).width + 60;
     pill(540 - stageW/2, 1220, stageW, 58, 29, 'rgba(10,40,20,0.8)', '#1a4a2a');
@@ -309,8 +309,8 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
     ctx.font = (total >= 100 ? '700 200px' : '700 240px') + ' -apple-system,system-ui,sans-serif';
     ctx.fillText(String(total), 540, 1560);
     ctx.fillStyle = '#4a6a90'; ctx.font = '400 36px -apple-system,system-ui,sans-serif';
-    ctx.fillText('DAYS ON STREAK', 540, 1620);
-    const trackTitle = tracks[0]?.name || 'Your Journey';
+    ctx.fillText(t('home.share_days_on_streak').toUpperCase(), 540, 1620);
+    const trackTitle = tracks[0]?.name || t('home.share_default_journey');
     ctx.font = '400 30px -apple-system,system-ui,sans-serif';
     const trackW = ctx.measureText(trackTitle).width + 80;
     pill(540 - trackW/2, 1650, trackW, 64, 32, 'rgba(20,45,80,0.8)', '#1e3a5c');
@@ -321,20 +321,20 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
     ctx.fillStyle = '#c8daf5'; ctx.font = '600 64px -apple-system,system-ui,sans-serif';
     ctx.fillText(done + '%', 270, 1850);
     ctx.fillStyle = '#3a5575'; ctx.font = '400 26px -apple-system,system-ui,sans-serif';
-    ctx.fillText('DONE', 270, 1895);
+    ctx.fillText(t('home.share_done').toUpperCase(), 270, 1895);
     ctx.strokeStyle = '#1a2840'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(540, 1780); ctx.lineTo(540, 1910); ctx.stroke();
     ctx.fillStyle = '#c8daf5'; ctx.font = '600 64px -apple-system,system-ui,sans-serif';
-    ctx.fillText('Stage ' + (stageIndex + 1), 810, 1850);
+    ctx.fillText(t('home.share_stage', { n: stageIndex + 1 }), 810, 1850);
     ctx.fillStyle = '#3a5575'; ctx.font = '400 26px -apple-system,system-ui,sans-serif';
-    ctx.fillText('ISLAND', 810, 1895);
+    ctx.fillText(t('home.share_island').toUpperCase(), 810, 1895);
     ctx.fillStyle = '#2a3d55'; ctx.font = '400 22px -apple-system,system-ui,sans-serif';
     ctx.textAlign = 'right'; ctx.fillText('FORGE-APP.COM', 1020, 1960);
     canvas.toBlob(async (blob) => {
       if (!blob) return;
       const file = new File([blob], 'forge-day-' + total + '.png', { type: 'image/png' });
       if (navigator.share && (navigator as any).canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Day ' + total + ' on Forge' });
+        await navigator.share({ files: [file], title: t('home.share_title', { n: total }) });
       } else {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url;
@@ -350,7 +350,7 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
       <div className="select-none w-full flex overflow-x-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)', maskImage: 'linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)'}}>
         <div className="shrink-0 flex flex-col items-center pt-4 pb-3" style={{minWidth: '100%', scrollSnapAlign: 'start'}}>
           <div className="relative" style={{width: '400px', height: '400px'}}>
-            <img src={img} alt={name} className={`object-contain${justUnlocked ? ' island-unlock-anim' : ''}`} style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+            <img src={img} alt={t(stage.key)} className={`object-contain${justUnlocked ? ' island-unlock-anim' : ''}`} style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '400px', height: '400px'}} loading="eager"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
             {isPaused && (
               <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
                 <div className="absolute inset-0 fog-layer-1"/>
@@ -358,7 +358,7 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
               </div>
             )}
           </div>
-          <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{name}</p>
+          <p className="text-sm font-medium text-white/60 tracking-widest uppercase mt-2">{t(stage.key)}</p>
           <button
             onClick={shareIsland}
             className="flex items-center gap-1.5 text-xs text-white/70 hover:text-white/90 transition-colors mt-3 px-4 py-2 rounded-full bg-white/8 border border-white/25 hover:bg-white/12 active:scale-95 font-medium"
@@ -383,9 +383,9 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
         {STAGES.slice(stageIndex + 1).map((s, i) => {
           const needed = THRESHOLDS[stageIndex + 1 + i] - total;
           return (
-            <div key={s.name} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
+            <div key={s.key} className="shrink-0 flex flex-col items-center pt-4 pb-3 pl-6" style={{minWidth: 'calc(100% - 60px)', scrollSnapAlign: 'start'}}>
               <div className="relative">
-                <img src={s.img} alt={s.name} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '300px', height: '300px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
+                <img src={s.img} alt={t(s.key)} className="object-contain" style={{WebkitTouchCallout: 'none', userSelect: 'none', width: '300px', height: '300px', filter: 'grayscale(1) brightness(0.18)'}} loading="lazy"  onContextMenu={(e) => e.preventDefault()} draggable={false}/>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2"/>
@@ -393,8 +393,8 @@ function ForestMomentum({ tracks, user, isPaused = false, islandTheme = 'garden'
                   </svg>
                 </div>
               </div>
-              <p className="text-sm text-white/20 tracking-widest uppercase mt-2">{s.name}</p>
-              <p className="text-xs text-white/35 mt-1">{needed} check-in{needed !== 1 ? 's' : ''} to unlock</p>
+              <p className="text-sm text-white/20 tracking-widest uppercase mt-2">{t(s.key)}</p>
+              <p className="text-xs text-white/35 mt-1">{t('home.checkins_to_unlock', { count: needed })}</p>
             </div>
           );
         })}

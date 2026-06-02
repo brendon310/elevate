@@ -465,7 +465,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       ctx.fillText('❖  F O R G E  ❖', 540, 128);
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '500 30px system-ui, sans-serif';
-      ctx.fillText('Certificate of Progress', 540, 175);
+      ctx.fillText(t('overlays.cert_subtitle'), 540, 175);
       ctx.strokeStyle = 'rgba(212,175,55,0.45)';
       ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(180, 730); ctx.lineTo(900, 730); ctx.stroke();
@@ -474,13 +474,13 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       ctx.fillText(String(streak), 540, 840);
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = 'bold 32px system-ui, sans-serif';
-      ctx.fillText('DAYS STRONG', 540, 888);
+      ctx.fillText(t('overlays.cert_days_strong_label').toUpperCase(), 540, 888);
       ctx.fillStyle = 'rgba(255,255,255,0.88)';
       ctx.font = '500 36px system-ui, sans-serif';
       ctx.fillText(userName, 540, 950);
       ctx.fillStyle = 'rgba(212,175,55,0.8)';
       ctx.font = '24px system-ui, sans-serif';
-      ctx.fillText(stage.name, 540, 995);
+      ctx.fillText(t(stage.key), 540, 995);
       canvas.toBlob(blob => { if (blob) setImgUrl(URL.createObjectURL(blob)); }, 'image/png');
     })();
   }, []);
@@ -490,7 +490,7 @@ function CertModal({ streak, tracks, islandTheme, userName, onDismiss }: {
       const blob = await fetch(imgUrl).then(r => r.blob());
       const file = new File([blob], 'forge-cert.png', { type: 'image/png' });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `${streak} Days on Forge`, text: `${streak} consecutive days — certified.` });
+        await navigator.share({ files: [file], title: t('overlays.cert_share_title', { streak }), text: t('overlays.cert_share_text', { streak }) });
       } else { const a = document.createElement('a'); a.href = imgUrl; a.download = 'forge-cert.png'; a.click(); }
     } catch {}
     setSharing(false);

@@ -167,7 +167,7 @@
     "missed_streak": "Missed a day and lost your streak? Click here",
     "no_problem": "No problem — start again whenever you're ready.",
     "start_day_1": "Start Day 1",
-    "share_island": "Share my island",
+    "share_island": "Island",
     "reactivate_plan": "Reactivate your plan",
     "final_stage_title": "You've reached the final stage.",
     "final_stage_body": "Congratulations! Want to receive your prize at home?",
@@ -228,7 +228,14 @@
     "prize_sending": "Sending…",
     "prize_send_address": "Send my address — €7.99",
     "prize_claim_tooltip": "Click to claim your prize",
-    "island_paused_waiting": "Your island is waiting at day {{day}}"
+    "island_paused_waiting": "Your island is waiting at day {{day}}",
+    "checkins_to_unlock_one": "{{count}} check-in to unlock",
+    "checkins_to_unlock_other": "{{count}} check-ins to unlock",
+    "share_days_on_streak": "Days on streak",
+    "share_done": "Done",
+    "share_stage": "Stage {{n}}",
+    "share_default_journey": "Your Journey",
+    "share_title": "Day {{n}} on Forge"
   },
   "journey": {
     "today": "Today",
@@ -742,7 +749,11 @@
     "shields_desc": "Forge gives you 1 Shield every 14 days of consistent use — automatically spent when you miss a day. Keep going to earn the next one.",
     "certificate": "Certificate",
     "days_strong": "{{n}} Days Strong",
-    "you_showed_up": "You showed up. That counts."
+    "you_showed_up": "You showed up. That counts.",
+    "cert_subtitle": "Certificate of Progress",
+    "cert_days_strong_label": "Days Strong",
+    "cert_share_title": "{{streak}} Days on Forge",
+    "cert_share_text": "{{streak}} consecutive days — certified."
   },
   "tracks": {
     "meditation": {
@@ -1180,5 +1191,31 @@
     "title": "Something went wrong",
     "body": "An unexpected error occurred. Your data is safe — just reload to continue.",
     "reload": "Reload app"
+  },
+  "island": {
+    "garden": {
+      "s1": "The Bare Field",
+      "s2": "The First Sprouts",
+      "s3": "The Young Garden",
+      "s4": "The Blooming Patch",
+      "s5": "The Meadow",
+      "s6": "The Thicket",
+      "s7": "The Young Grove",
+      "s8": "The Forest",
+      "s9": "The Living World",
+      "s10": "The Ancient Canopy"
+    },
+    "mountain": {
+      "s1": "The Barren Summit",
+      "s2": "The First Pine",
+      "s3": "The Alpine Trail",
+      "s4": "The Mountain Stream",
+      "s5": "The Rising Peak",
+      "s6": "The Alpine Lake",
+      "s7": "The Summit Path",
+      "s8": "The Sacred Peak",
+      "s9": "The Enlightened Summit",
+      "s10": "The Celestial Peak"
+    }
   }
 }

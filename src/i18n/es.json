@@ -167,7 +167,7 @@
     "missed_streak": "¿Perdiste un día y tu racha? Haz clic aquí",
     "no_problem": "No pasa nada — vuelve cuando estés listo.",
     "start_day_1": "Empieza el Día 1",
-    "share_island": "Compartir mi isla",
+    "share_island": "Isla",
     "reactivate_plan": "Reactivar tu plan",
     "final_stage_title": "Has alcanzado la etapa final.",
     "final_stage_body": "¡Felicidades! ¿Quieres recibir tu premio en casa?",
@@ -228,7 +228,14 @@
     "prize_sending": "Enviando…",
     "prize_send_address": "Enviar mi dirección — €7.99",
     "prize_claim_tooltip": "Haz clic para reclamar tu premio",
-    "island_paused_waiting": "Tu isla te espera en el día {{day}}"
+    "island_paused_waiting": "Tu isla te espera en el día {{day}}",
+    "checkins_to_unlock_one": "{{count}} check-in para desbloquear",
+    "checkins_to_unlock_other": "{{count}} check-ins para desbloquear",
+    "share_days_on_streak": "Días de racha",
+    "share_done": "Hecho",
+    "share_stage": "Etapa {{n}}",
+    "share_default_journey": "Tu Camino",
+    "share_title": "Día {{n}} en Forge"
   },
   "journey": {
     "today": "Hoy",
@@ -742,7 +749,11 @@
     "shields_desc": "Forge te da 1 Escudo cada 14 días de uso consistente — gastado automáticamente cuando pierdes un día. Sigue así para ganar el siguiente.",
     "certificate": "Certificado",
     "days_strong": "{{n}} Días Fuertes",
-    "you_showed_up": "Te presentaste. Eso cuenta."
+    "you_showed_up": "Te presentaste. Eso cuenta.",
+    "cert_subtitle": "Certificado de Progreso",
+    "cert_days_strong_label": "Días Fuertes",
+    "cert_share_title": "{{streak}} Días en Forge",
+    "cert_share_text": "{{streak}} días consecutivos — certificado."
   },
   "tracks": {
     "meditation": {
@@ -1180,5 +1191,31 @@
     "title": "Algo salió mal",
     "body": "Se produjo un error inesperado. Tus datos están seguros — solo recarga para continuar.",
     "reload": "Recargar app"
+  },
+  "island": {
+    "garden": {
+      "s1": "El Campo Desnudo",
+      "s2": "Los Primeros Brotes",
+      "s3": "El Jardín Joven",
+      "s4": "El Macizo en Flor",
+      "s5": "La Pradera",
+      "s6": "La Espesura",
+      "s7": "La Arboleda Joven",
+      "s8": "El Bosque",
+      "s9": "El Mundo Viviente",
+      "s10": "La Bóveda Ancestral"
+    },
+    "mountain": {
+      "s1": "La Cumbre Árida",
+      "s2": "El Primer Pino",
+      "s3": "El Sendero Alpino",
+      "s4": "El Arroyo de Montaña",
+      "s5": "El Pico Naciente",
+      "s6": "El Lago Alpino",
+      "s7": "La Senda de la Cumbre",
+      "s8": "El Pico Sagrado",
+      "s9": "La Cumbre Iluminada",
+      "s10": "El Pico Celestial"
+    }
   }
 }

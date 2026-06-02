@@ -167,7 +167,7 @@
     "missed_streak": "Tu as manqué un jour et perdu ta série ? Clique ici",
     "no_problem": "Pas de problème — recommence quand tu es prêt.",
     "start_day_1": "Commencer le Jour 1",
-    "share_island": "Partager mon île",
+    "share_island": "Île",
     "reactivate_plan": "Réactiver ton plan",
     "final_stage_title": "Tu as atteint l'étape finale.",
     "final_stage_body": "Félicitations ! Tu veux recevoir ton prix chez toi ?",
@@ -228,7 +228,14 @@
     "prize_sending": "Envoi…",
     "prize_send_address": "Envoyer mon adresse — €7.99",
     "prize_claim_tooltip": "Clique pour réclamer ton prix",
-    "island_paused_waiting": "Ton île t'attend au jour {{day}}"
+    "island_paused_waiting": "Ton île t'attend au jour {{day}}",
+    "checkins_to_unlock_one": "{{count}} check-in pour débloquer",
+    "checkins_to_unlock_other": "{{count}} check-ins pour débloquer",
+    "share_days_on_streak": "Jours de série",
+    "share_done": "Terminé",
+    "share_stage": "Étape {{n}}",
+    "share_default_journey": "Ton Parcours",
+    "share_title": "Jour {{n}} sur Forge"
   },
   "journey": {
     "today": "Aujourd'hui",
@@ -742,7 +749,11 @@
     "shields_desc": "Forge te donne 1 Bouclier tous les 14 jours d'utilisation régulière — automatiquement dépensé quand tu rates un jour. Continue pour en gagner le prochain.",
     "certificate": "Certificat",
     "days_strong": "{{n}} Jours Forts",
-    "you_showed_up": "Tu t'es présenté. Ça compte."
+    "you_showed_up": "Tu t'es présenté. Ça compte.",
+    "cert_subtitle": "Certificat de Progrès",
+    "cert_days_strong_label": "Jours Forts",
+    "cert_share_title": "{{streak}} Jours sur Forge",
+    "cert_share_text": "{{streak}} jours consécutifs — certifié."
   },
   "tracks": {
     "meditation": {
@@ -1180,5 +1191,31 @@
     "title": "Quelque chose s'est mal passé",
     "body": "Une erreur inattendue s'est produite. Tes données sont en sécurité — recharge juste pour continuer.",
     "reload": "Recharger l'app"
+  },
+  "island": {
+    "garden": {
+      "s1": "Le Champ Nu",
+      "s2": "Les Premières Pousses",
+      "s3": "Le Jeune Jardin",
+      "s4": "Le Massif en Fleurs",
+      "s5": "La Prairie",
+      "s6": "Le Fourré",
+      "s7": "Le Jeune Bosquet",
+      "s8": "La Forêt",
+      "s9": "Le Monde Vivant",
+      "s10": "La Canopée Ancienne"
+    },
+    "mountain": {
+      "s1": "Le Sommet Aride",
+      "s2": "Le Premier Pin",
+      "s3": "Le Sentier Alpin",
+      "s4": "Le Ruisseau de Montagne",
+      "s5": "Le Pic Naissant",
+      "s6": "Le Lac Alpin",
+      "s7": "Le Chemin du Sommet",
+      "s8": "Le Pic Sacré",
+      "s9": "Le Sommet Illuminé",
+      "s10": "Le Pic Céleste"
+    }
   }
 }

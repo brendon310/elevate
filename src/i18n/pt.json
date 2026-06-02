@@ -167,7 +167,7 @@
     "missed_streak": "Perdeste um dia e a tua sequência? Clica aqui",
     "no_problem": "Sem problema — recomeça quando estiveres pronto.",
     "start_day_1": "Começar o Dia 1",
-    "share_island": "Partilhar a minha ilha",
+    "share_island": "Ilha",
     "reactivate_plan": "Reativar o teu plano",
     "final_stage_title": "Chegaste à fase final.",
     "final_stage_body": "Parabéns! Queres receber o teu prémio em casa?",
@@ -228,7 +228,14 @@
     "prize_sending": "Enviando…",
     "prize_send_address": "Enviar meu endereço — €7.99",
     "prize_claim_tooltip": "Clique para reivindicar seu prêmio",
-    "island_paused_waiting": "A tua ilha está à espera no dia {{day}}"
+    "island_paused_waiting": "A tua ilha está à espera no dia {{day}}",
+    "checkins_to_unlock_one": "{{count}} check-in para desbloquear",
+    "checkins_to_unlock_other": "{{count}} check-ins para desbloquear",
+    "share_days_on_streak": "Dias de sequência",
+    "share_done": "Concluído",
+    "share_stage": "Estágio {{n}}",
+    "share_default_journey": "A Tua Jornada",
+    "share_title": "Dia {{n}} no Forge"
   },
   "journey": {
     "today": "Hoje",
@@ -742,7 +749,11 @@
     "shields_desc": "Forge te dá 1 Escudo a cada 14 dias de uso consistente — gasto automaticamente quando você perde um dia. Continue para ganhar o próximo.",
     "certificate": "Certificado",
     "days_strong": "{{n}} Dias Fortes",
-    "you_showed_up": "Você apareceu. Isso conta."
+    "you_showed_up": "Você apareceu. Isso conta.",
+    "cert_subtitle": "Certificado de Progresso",
+    "cert_days_strong_label": "Dias Fortes",
+    "cert_share_title": "{{streak}} Dias no Forge",
+    "cert_share_text": "{{streak}} dias consecutivos — certificado."
   },
   "tracks": {
     "meditation": {
@@ -1180,5 +1191,31 @@
     "title": "Algo correu mal",
     "body": "Ocorreu um erro inesperado. Os teus dados estão seguros — apenas recarrega para continuar.",
     "reload": "Recarregar app"
+  },
+  "island": {
+    "garden": {
+      "s1": "O Campo Nu",
+      "s2": "Os Primeiros Rebentos",
+      "s3": "O Jardim Jovem",
+      "s4": "O Canteiro Florido",
+      "s5": "O Prado",
+      "s6": "O Matagal",
+      "s7": "O Bosque Jovem",
+      "s8": "A Floresta",
+      "s9": "O Mundo Vivo",
+      "s10": "A Copa Ancestral"
+    },
+    "mountain": {
+      "s1": "O Cume Árido",
+      "s2": "O Primeiro Pinheiro",
+      "s3": "A Trilha Alpina",
+      "s4": "O Riacho da Montanha",
+      "s5": "O Pico Nascente",
+      "s6": "O Lago Alpino",
+      "s7": "O Caminho do Cume",
+      "s8": "O Pico Sagrado",
+      "s9": "O Cume Iluminado",
+      "s10": "O Pico Celeste"
+    }
   }
 }

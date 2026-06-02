@@ -167,7 +167,7 @@
     "missed_streak": "Einen Tag verpasst und deine Serie verloren? Hier klicken",
     "no_problem": "Kein Problem — fang wieder an, wenn du bereit bist.",
     "start_day_1": "Tag 1 starten",
-    "share_island": "Meine Insel teilen",
+    "share_island": "Insel",
     "reactivate_plan": "Plan reaktivieren",
     "final_stage_title": "Du hast die letzte Stufe erreicht.",
     "final_stage_body": "Glückwunsch! Möchtest du deinen Preis nach Hause erhalten?",
@@ -228,7 +228,14 @@
     "prize_sending": "Wird gesendet…",
     "prize_send_address": "Adresse senden — €7.99",
     "prize_claim_tooltip": "Klicke um deinen Preis zu beanspruchen",
-    "island_paused_waiting": "Deine Insel wartet bei Tag {{day}}"
+    "island_paused_waiting": "Deine Insel wartet bei Tag {{day}}",
+    "checkins_to_unlock_one": "{{count}} Check-in zum Freischalten",
+    "checkins_to_unlock_other": "{{count}} Check-ins zum Freischalten",
+    "share_days_on_streak": "Tage in Folge",
+    "share_done": "Erledigt",
+    "share_stage": "Stufe {{n}}",
+    "share_default_journey": "Deine Reise",
+    "share_title": "Tag {{n}} bei Forge"
   },
   "journey": {
     "today": "Heute",
@@ -742,7 +749,11 @@
     "shields_desc": "Forge gibt dir alle 14 Tage konsistenter Nutzung 1 Schild — automatisch ausgegeben, wenn du einen Tag verpasst. Mach weiter, um den nächsten zu verdienen.",
     "certificate": "Zertifikat",
     "days_strong": "{{n}} Tage Stark",
-    "you_showed_up": "Du warst da. Das zählt."
+    "you_showed_up": "Du warst da. Das zählt.",
+    "cert_subtitle": "Fortschrittszertifikat",
+    "cert_days_strong_label": "Tage Stark",
+    "cert_share_title": "{{streak}} Tage bei Forge",
+    "cert_share_text": "{{streak}} aufeinanderfolgende Tage — zertifiziert."
   },
   "tracks": {
     "meditation": {
@@ -1180,5 +1191,31 @@
     "title": "Etwas ist schiefgelaufen",
     "body": "Ein unerwarteter Fehler ist aufgetreten. Deine Daten sind sicher — lade einfach neu, um fortzufahren.",
     "reload": "App neu laden"
+  },
+  "island": {
+    "garden": {
+      "s1": "Das Kahle Feld",
+      "s2": "Die Ersten Triebe",
+      "s3": "Der Junge Garten",
+      "s4": "Das Blühende Beet",
+      "s5": "Die Wiese",
+      "s6": "Das Dickicht",
+      "s7": "Der Junge Hain",
+      "s8": "Der Wald",
+      "s9": "Die Lebendige Welt",
+      "s10": "Das Uralte Blätterdach"
+    },
+    "mountain": {
+      "s1": "Der Kahle Gipfel",
+      "s2": "Die Erste Kiefer",
+      "s3": "Der Alpenpfad",
+      "s4": "Der Bergbach",
+      "s5": "Der Aufsteigende Gipfel",
+      "s6": "Der Bergsee",
+      "s7": "Der Gipfelpfad",
+      "s8": "Der Heilige Gipfel",
+      "s9": "Der Erleuchtete Gipfel",
+      "s10": "Der Himmlische Gipfel"
+    }
   }
 }

@@ -167,7 +167,7 @@
     "missed_streak": "Hai perso un giorno e la tua streak? Clicca qui",
     "no_problem": "Nessun problema — ricomincia quando sei pronto.",
     "start_day_1": "Inizia Giorno 1",
-    "share_island": "Condividi la mia isola",
+    "share_island": "Isola",
     "reactivate_plan": "Riattiva il tuo piano",
     "final_stage_title": "Hai raggiunto lo stadio finale.",
     "final_stage_body": "Congratulazioni! Vuoi ricevere il tuo premio a casa?",
@@ -228,7 +228,14 @@
     "prize_sending": "Invio…",
     "prize_send_address": "Invia il mio indirizzo — €7.99",
     "prize_claim_tooltip": "Clicca per riscattare il tuo premio",
-    "island_paused_waiting": "La tua isola ti aspetta al giorno {{day}}"
+    "island_paused_waiting": "La tua isola ti aspetta al giorno {{day}}",
+    "checkins_to_unlock_one": "{{count}} check-in per sbloccare",
+    "checkins_to_unlock_other": "{{count}} check-in per sbloccare",
+    "share_days_on_streak": "Giorni di serie",
+    "share_done": "Fatto",
+    "share_stage": "Stadio {{n}}",
+    "share_default_journey": "Il Tuo Percorso",
+    "share_title": "Giorno {{n}} su Forge"
   },
   "journey": {
     "today": "Oggi",
@@ -742,7 +749,11 @@
     "shields_desc": "Forge ti dà 1 Scudo ogni 14 giorni di utilizzo costante — speso automaticamente quando salti un giorno. Continua per guadagnare il prossimo.",
     "certificate": "Certificato",
     "days_strong": "{{n}} Giorni Forti",
-    "you_showed_up": "Ti sei presentato. Questo conta."
+    "you_showed_up": "Ti sei presentato. Questo conta.",
+    "cert_subtitle": "Certificato di Progresso",
+    "cert_days_strong_label": "Giorni Forti",
+    "cert_share_title": "{{streak}} Giorni su Forge",
+    "cert_share_text": "{{streak}} giorni consecutivi — certificato."
   },
   "tracks": {
     "meditation": {
@@ -1180,5 +1191,31 @@
     "title": "Qualcosa è andato storto",
     "body": "Si è verificato un errore inaspettato. I tuoi dati sono al sicuro — ricarica per continuare.",
     "reload": "Ricarica l'app"
+  },
+  "island": {
+    "garden": {
+      "s1": "Il Campo Spoglio",
+      "s2": "I Primi Germogli",
+      "s3": "Il Giovane Giardino",
+      "s4": "L'Aiuola in Fiore",
+      "s5": "Il Prato",
+      "s6": "La Boscaglia",
+      "s7": "Il Giovane Bosco",
+      "s8": "La Foresta",
+      "s9": "Il Mondo Vivente",
+      "s10": "L'Antica Volta"
+    },
+    "mountain": {
+      "s1": "La Vetta Brulla",
+      "s2": "Il Primo Pino",
+      "s3": "Il Sentiero Alpino",
+      "s4": "Il Ruscello di Montagna",
+      "s5": "La Cima Nascente",
+      "s6": "Il Lago Alpino",
+      "s7": "Il Sentiero della Vetta",
+      "s8": "La Vetta Sacra",
+      "s9": "La Vetta Illuminata",
+      "s10": "La Vetta Celeste"
+    }
   }
 }
