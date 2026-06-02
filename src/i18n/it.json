@@ -4,7 +4,7 @@
     "momentum_label": "Momentum",
     "in_flow": "Sei in pieno ritmo adesso.",
     "protect_flow": "Proteggilo. Non spezzare il ritmo.",
-    "streak_at_risk": "La tua serie di {{streak}} giorni su {{track}} è a rischio.",
+    "streak_at_risk": "La tua streak di {{streak}} giorni su {{track}} è a rischio.",
     "check_in_today": "Fai il check-in oggi. So che puoi farcela.",
     "save_it": "Salvalo",
     "today_task": "Compito di Oggi",
@@ -18,7 +18,7 @@
     "momentum_building": "Il momentum sta crescendo.",
     "today_is_day_one": "Oggi è il giorno uno.",
     "volume": "Volume",
-    "streak_meter": "Serie",
+    "streak_meter": "Streak",
     "depth": "Profondità",
     "breadth": "Ampiezza",
     "days_to_next": "{{n}} giorno{{s}} a",
@@ -56,7 +56,7 @@
     "reentry_messages": [
       "Sei tornato. È tutto ciò che conta.",
       "Il vuoto non definisce il percorso. Sei qui ora.",
-      "I migliori non si arrendono — si ripartono. Ricominciamo.",
+      "I migliori non si arrendono — ripartono. Ricominciamo.",
       "Ogni grande storia ha un capitolo in cui il protagonista torna. Questo è il tuo."
     ],
     "day_complete": "Giorno {{n}} completato.",
@@ -84,7 +84,7 @@
     "days_to_next_other": "{{count}} giorni a {{label}}",
     "landing_question": "Qual è un'abitudine che vuoi smettere?",
     "landing_placeholder": "es. fumo, scorrimento, alcol...",
-    "notif_body": "Non hai ancora fatto il check-in oggi. La tua striscia ti aspetta."
+    "notif_body": "Non hai ancora fatto il check-in oggi. La tua streak ti aspetta."
   },
   "common": {
     "next": "Avanti",
@@ -221,7 +221,7 @@
     },
     "checkin_aria": "Check-in per {{name}}",
     "quick_note_title": "Nota rapida",
-    "pause_streak_title": "Metti in pausa la striscia",
+    "pause_streak_title": "Metti in pausa la streak",
     "prize_name_placeholder": "Il tuo nome",
     "prize_email_placeholder": "La tua email",
     "prize_address_placeholder": "Indirizzo di consegna",
@@ -231,7 +231,7 @@
     "island_paused_waiting": "La tua isola ti aspetta al giorno {{day}}",
     "checkins_to_unlock_one": "{{count}} check-in per sbloccare",
     "checkins_to_unlock_other": "{{count}} check-in per sbloccare",
-    "share_days_on_streak": "Giorni di serie",
+    "share_days_on_streak": "Giorni di streak",
     "share_done": "Fatto",
     "share_stage": "Stadio {{n}}",
     "share_default_journey": "Il Tuo Percorso",
@@ -390,7 +390,7 @@
       "Campo vuoto = nessun progresso. Dai.",
       "Non sei arrivato fin qui per lasciarlo in bianco.",
       "Questo è il lavoro. Fai il lavoro.",
-      "Salta questo e la tua striscia ne paga le conseguenze.",
+      "Salta questo e la tua streak ne paga le conseguenze.",
       "Nemmeno una frase? Davvero?",
       "L'unica risposta sbagliata è nessuna risposta. Vai."
     ]
@@ -984,7 +984,7 @@
         "Ogni ripetizione che fai oggi amplifica ciò che hai costruito ieri. Il tempo scorre. Muoviti."
       ],
       "teacher": [
-        "La costanza è il docente silenzioso che nessun corso può replicare. La tua striscia ti sta già insegnando qualcosa. Continua la lezione.",
+        "La costanza è il docente silenzioso che nessun corso può replicare. La tua streak ti sta già insegnando qualcosa. Continua la lezione.",
         "Il lavoro di ieri ha posto una base. Oggi puoi costruire un altro piano. Semplice. Ripetibile. Efficace."
       ],
       "clinician": [
@@ -996,7 +996,7 @@
         "L'esecuzione è l'unica strategia che conta. Sai cosa fare. Ora vai a farlo."
       ],
       "guide": [
-        "Il mattino ha una luce particolare. È la stessa luce che c'era il giorno in cui hai iniziato. Sei ancora in essa. Continua.",
+        "Il mattino ha una luce particolare. È la stessa luce che c'era il giorno in cui hai iniziato. Sei ancora dentro quella luce. Continua.",
         "Ogni giorno che torni, approfondisci il solco della persona che stai diventando. Oggi, scava un po' più in profondità."
       ]
     }
@@ -1110,7 +1110,7 @@
     "free_col": "Gratuito",
     "standard_col": "Standard",
     "premium_col": "Premium",
-    "subtitle": "La tua prova gratuita di 14 giorni è terminata. Scegli un piano per mantenere la tua serie e l'accesso completo.",
+    "subtitle": "La tua prova gratuita di 14 giorni è terminata. Scegli un piano per mantenere la tua streak e l'accesso completo.",
     "continue_free": "Continua con accesso gratuito limitato",
     "most_popular": "Più popolare",
     "per_month": "al mese, annulla quando vuoi",
@@ -1121,7 +1121,7 @@
       "journey_length": "Durata percorso",
       "ai_coach": "Messaggi AI Coach",
       "community": "Community",
-      "shields": "Scudi serie",
+      "shields": "Scudi streak",
       "island_themes": "Temi isola",
       "enriched_checkins": "Check-in arricchiti",
       "weekly_letter": "Lettera settimanale",
