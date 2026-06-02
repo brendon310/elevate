@@ -93,14 +93,6 @@ const ALL_TRACKS = [
   { id: "50", slug: "gratitude",           name: "Gratitude Practice",   category: "Mind & Learning",     short_description: "Rewire your brain for abundance." },
 ];
 
-const COACH_OPENERS: Record<string, (day: number, trackName: string) => string> = {
-  trainer:   (d, t) => d <= 1 ? `Day one of ${t}. Before we start — what's the one excuse you've already made in your head about why this won't work? Say it out loud.` : `Day ${d}. You showed up ${d - 1} times before this. What's the honest report — are you going through the motions or actually changing?`,
-  clinician: (d, t) => d <= 1 ? `Welcome. Starting ${t} takes courage most people won't admit. How are you feeling right now — not the edited version, the real one?` : `Day ${d} of ${t}. Check in with yourself: what emotion is most present when you think about this journey today?`,
-  mentor:    (d, t) => d <= 1 ? `Day 1, ${t}. Every system starts with an honest audit. What got you here, and what specifically has to change for this to be different?` : `Day ${d}. You're ${d - 1} days in. What's working, what isn't, and what would you tell yourself on Day 1 knowing what you know now?`,
-  teacher:   (d, t) => d <= 1 ? `Let's start with a question: what do you already know about why ${t} has been hard? There's data in your past attempts.` : `Day ${d} of ${t}. What's one thing you've learned about yourself so far in this process — something you didn't know before?`,
-  guide:     (d, t) => d <= 1 ? `You've chosen ${t}. That choice came from somewhere deep. What is the version of you at the end of this journey doing differently — how does their day feel?` : `Day ${d}. You've been on this path for ${d - 1} days. What's shifted — even if it's small — in how you see yourself?`,
-};
-
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
 interface Archetype { id: ArchetypeId; name: string; taglineKey: string; voice: string; }
 
@@ -1903,7 +1895,7 @@ function FirstDayReveal({ userName, track, onComplete }: {
               initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.6 }}
               className="pt-14 pb-6 px-6 text-center flex-shrink-0">
-              <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">Day 1</p>
+              <p className="text-[10px] uppercase tracking-[0.5em] font-mono text-muted-foreground mb-2">{t("journey.day_n", { n: 1 })}</p>
               <h1 className="font-display text-3xl text-foreground tracking-tight leading-tight">
                 {day1.title.replace(/^Day\s+\d+\s*[—\-–]\s*/i, "")}
               </h1>
