@@ -811,9 +811,10 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     setChatInput("");
     setChatLoading(true);
     try {
+      const { data: { session: _cs } } = await supabase.auth.getSession();
       const res = await fetch("/api/coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_cs?.access_token ?? ""}` },
         body: JSON.stringify({
           slug: track.slug, archetype: archetype.id,
           messages: newMessages.slice(-10).map(m => ({ role: m.role, content: m.content })),

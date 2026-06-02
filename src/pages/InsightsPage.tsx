@@ -6,6 +6,7 @@ import type { UserTrack, Log, JourneyDay } from '../types';
 import { PatternInsights } from '../components/PatternInsights';
 import { AccountabilityCard } from '../components/AccountabilityCard';
 import { loadPatternLogs, loadAccountabilityPairs, sendAccountabilityInvite } from '../db.phase5';
+import { supabase } from '../supabase';
 import type { EnrichedLog, AccountabilityPair } from '../types';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
@@ -65,9 +66,10 @@ ${d.recentNotes.length > 0 ? `Recent reflections:\n${d.recentNotes.join("\n")}` 
 
 Start with "This week," and sign it "— Your Coach". Write like you actually know and care about them.`;
 
+      const { data: { session: _cs } } = await supabase.auth.getSession();
       const res = await fetch("/api/coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_cs?.access_token ?? ""}` },
         body: JSON.stringify({
           slug: "weekly-letter",
           archetype: "mentor",

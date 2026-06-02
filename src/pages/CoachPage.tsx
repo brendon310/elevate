@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import type { UserTrack, JourneyDay, Journey } from '../types';
+import { supabase } from '../supabase';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 type ArchetypeId = "trainer" | "teacher" | "clinician" | "mentor" | "guide";
@@ -101,9 +102,10 @@ function MorningCoachOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDis
       let result = fallback;
       if (userNote) {
         try {
+          const { data: { session: _cs } } = await supabase.auth.getSession();
           const res = await fetch("/api/coach", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_cs?.access_token ?? ""}` },
             body: JSON.stringify({
               messages: [{ role: "user", content: userNote }],
               voice: archetype.voice,

@@ -560,9 +560,10 @@ function PrizeRequestModal({ onClose }: { onClose: () => void }) {
       });
       // Also notify via API route if available
       try {
+        const { data: { session: _prs } } = await supabase.auth.getSession();
         await fetch("/api/prize-request", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_prs?.access_token ?? ""}` },
           body: JSON.stringify(form),
         });
       } catch (_) { /* API route optional */ }
@@ -2134,10 +2135,11 @@ export function ElevateApp() {
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(key),
         });
+        const { data: { session: _ps } } = await supabase.auth.getSession();
         await fetch('/api/push', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subscription: sub.toJSON(), userId: user.supabaseId, reminderHour: 9 }),
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_ps?.access_token ?? ""}` },
+          body: JSON.stringify({ subscription: sub.toJSON(), reminderHour: 9 }),
         });
       } catch (e) {
         console.warn('Push subscription failed:', e);
@@ -2155,10 +2157,11 @@ export function ElevateApp() {
       if (supabaseId && patch.name !== undefined) {
         db.saveProfile(supabaseId, next.name, Intl.DateTimeFormat().resolvedOptions().timeZone, i18n.language).catch(() => {});
       // Welcome email (fires once per device)
-      supabase.auth.getUser().then(({ data: { user: au } }) => {
+      supabase.auth.getSession().then(({ data: { session: _es } }) => {
+        const au = _es?.user;
         if (au?.email && !localStorage.getItem('forge_welcome_sent')) {
           localStorage.setItem('forge_welcome_sent', '1');
-          fetch('/api/emails/send', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'welcome', email: au.email, name: au.user_metadata?.full_name }) }).catch(() => {});
+          fetch('/api/emails/send', { method: 'POST', headers: {'Content-Type':'application/json','Authorization':`Bearer ${_es?.access_token ?? ""}`}, body: JSON.stringify({ type: 'welcome', name: au.user_metadata?.full_name }) }).catch(() => {});
         }
       });
       }
@@ -2255,9 +2258,10 @@ export function ElevateApp() {
           lsSave(milestoneKey, true);
           setTimeout(() => setMilestone({ days: newStreak, trackName: ut.name }), 600);
           // Milestone email
-          supabase.auth.getUser().then(({ data: { user: au } }) => {
+          supabase.auth.getSession().then(({ data: { session: _es } }) => {
+            const au = _es?.user;
             if (au?.email) {
-              fetch('/api/emails/send', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'milestone', email: au.email, name: ut.name, milestone: newStreak }) }).catch(() => {});
+              fetch('/api/emails/send', { method: 'POST', headers: {'Content-Type':'application/json','Authorization':`Bearer ${_es?.access_token ?? ""}`}, body: JSON.stringify({ type: 'milestone', name: ut.name, milestone: newStreak }) }).catch(() => {});
             }
           });
         }

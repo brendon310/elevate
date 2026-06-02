@@ -1,4 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { verifyUser } from "./_auth";
+import { rateLimit } from "./_ratelimit";
 
 interface ChatMsg { role: "user" | "assistant"; content: string; }
 
@@ -12,6 +14,10 @@ const ARCHETYPES: Record<string, string> = {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: "Unauthorized" });
+  if (!rateLimit(`coach:${user.id}`, 30, 60_000)) return res.status(429).json({ error: "Rate limit exceeded" });
 
   const { archetype, messages, userContext } = req.body as {
     slug: string;

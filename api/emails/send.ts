@@ -1,5 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Resend } from "resend";
+import { verifyUser, escapeHtml } from "../_auth";
+import { rateLimit } from "../_ratelimit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM ?? "Forge <noreply@forgeapp.io>";
@@ -14,9 +16,16 @@ async function sendEmail(to: string, subject: string, html: string) {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();
-  const { type, email, name, milestone } = req.body ?? {};
+
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: "Unauthorized" });
+  if (!rateLimit(`emails:${user.id}`, 10, 60_000)) return res.status(429).json({ error: "Rate limit exceeded" });
+
+  const { type, milestone } = req.body ?? {};
+  // Recipient is always the authenticated user (prevents open relay).
+  const email = user.email;
   if (!email || !type) return res.status(400).json({ error: "email and type required" });
-  const displayName = name || "there";
+  const displayName = escapeHtml(req.body?.name || "there");
 
   if (type === "welcome") {
     await sendEmail(
@@ -33,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       email,
       "You just hit a milestone on Forge!",
       `<h2>Nice work, ${displayName}!</h2>
-      <p>You just reached a milestone: <strong>${milestone}</strong></p>
+      <p>You just reached a milestone: <strong>${escapeHtml(milestone)}</strong></p>
       <p>Every day you show up is a day that counts. Keep the streak alive.</p>
       <p><a href="https://forgeapp.io/home" style="background:#4f8ef7;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">See your progress</a></p>
       <p style="color:#888;font-size:12px;margin-top:32px;">You can manage email preferences in your account settings.</p>`

@@ -86,8 +86,8 @@ function SettingsPage({
         const sub = await reg.pushManager.getSubscription().catch(() => null);
         if (sub) await sub.unsubscribe().catch(() => {});
       }
-      const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
-      if (userId) fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, action: 'unsubscribe' }) }).catch(() => {});
+      const { data: { session: _ps } } = await supabase.auth.getSession();
+      if (_ps) fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_ps.access_token}` }, body: JSON.stringify({ action: 'unsubscribe' }) }).catch(() => {});
       setReminderOn(false);
       lsSave("forge-reminder-on", false);
       return;
@@ -102,10 +102,10 @@ setPushError(t("settings.push_not_supported"));
 if (perm !== "granted") { setPushError(t("settings.push_denied")); return; }
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
-      const userId = lsLoad<{ id: string } | null>(LS_AUTH, null)?.id;
+      const { data: { session: _ps } } = await supabase.auth.getSession();
       const hour = parseInt(reminderTime.split(":")[0], 10);
-      if (userId) {
-        await fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId, subscription: sub, reminderHour: hour }) });
+      if (_ps) {
+        await fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_ps.access_token}` }, body: JSON.stringify({ subscription: sub, reminderHour: hour }) });
       }
       setReminderOn(true);
       lsSave("forge-reminder-on", true);
