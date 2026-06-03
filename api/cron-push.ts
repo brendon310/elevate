@@ -111,7 +111,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { data: subs, error } = await supabase
     .from("push_subscriptions")
-    .select(`endpoint, p256dh, auth, user_id, profiles!inner(reminder_hour, timezone)`);
+    .select(`subscription, reminder_hour, user_id, profiles!inner(timezone)`);
 
   if (error || !subs) {
     return res.status(500).json({ error: error?.message ?? "No data" });
@@ -121,8 +121,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let skipped = 0;
 
   for (const sub of subs) {
-    const profile = Array.isArray(sub.profiles) ? sub.profiles[0] : sub.profiles as { reminder_hour?: number; timezone?: string };
-    const reminderHour: number = profile?.reminder_hour ?? 9;
+    const profile = Array.isArray(sub.profiles) ? sub.profiles[0] : sub.profiles as { timezone?: string };
+    const reminderHour: number = sub.reminder_hour ?? 9;
     const tz: string = profile?.timezone ?? "UTC";
     const userLocalHour = localHour(tz);
 
@@ -144,9 +144,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const streak = primaryTrack?.current_streak ?? 0;
     const { title, body } = pickMessage(archetypeId, streak);
 
+    let pushSub: { endpoint: string; keys: { p256dh: string; auth: string } };
+    try {
+      pushSub = typeof sub.subscription === "string" ? JSON.parse(sub.subscription) : sub.subscription;
+    } catch {
+      console.error("Invalid subscription for", sub.user_id);
+      continue;
+    }
+    if (!pushSub?.endpoint || !pushSub?.keys?.p256dh || !pushSub?.keys?.auth) { skipped++; continue; }
+
     try {
       await webpush.sendNotification(
-        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        { endpoint: pushSub.endpoint, keys: { p256dh: pushSub.keys.p256dh, auth: pushSub.keys.auth } },
         JSON.stringify({ title, body, url: "/home" })
       );
       sent++;
