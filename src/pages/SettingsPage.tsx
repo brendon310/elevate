@@ -3,6 +3,7 @@ import { User as UserIcon, Database, Download, Bell, Globe, Trash2 } from 'lucid
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
 import type { SupportedLanguage } from '../i18n';
+import { loadLanguage } from '../i18n';
 import type { UserTrack } from '../types';
 
 const LS_LOGS = "forge-logs";
@@ -73,9 +74,9 @@ function SettingsPage({
     return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
   };
 
-  const handleLangChange = (lang: SupportedLanguage) => {
-    i18n.changeLanguage(lang);
+  const handleLangChange = async (lang: SupportedLanguage) => {
     localStorage.setItem('forge_lang', lang);
+    await loadLanguage(lang);
   };
 
   const toggleReminder = async () => {

@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./app.css";
-import './i18n';
+import { i18nReady } from './i18n';
 import { ElevateApp } from "./App";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -12,10 +12,13 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <ElevateApp />
-    </ErrorBoundary>
-  </StrictMode>
-);
+// Wait for the active locale to be ready, then mount (avoids a flash of English).
+i18nReady.finally(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <ElevateApp />
+      </ErrorBoundary>
+    </StrictMode>
+  );
+});
