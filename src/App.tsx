@@ -1,6 +1,6 @@
 // Complete self-contained Forge app — localStorage persistence, no backend.
 
-import { useState, useEffect, useMemo, useCallback, useRef, type ReactNode } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef, lazy, Suspense, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,21 +12,23 @@ import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
 
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from './types';
-import { HomePage, GARDEN_STAGES, MOUNTAIN_STAGES } from './pages/HomePage';
+import { HomePage } from './pages/HomePage';
 import * as db from "./db";
 import { Plan, shouldShowPaywall } from './plans';
 import { PaywallModal } from './components/PaywallModal';
-import { JourneyView, JourneyOnboarding } from './pages/JourneyPage';
-import { MorningCoachOverlay } from './pages/CoachPage';
-import { TrackDetailPage } from './pages/TrackDetailPage';
-import { TracksPage } from './pages/TracksPage';
-import InsightsPage from './pages/InsightsPage';
-import { SettingsPage } from './pages/SettingsPage';
 import { ReEntryOverlay, StreakRecoveryOverlay, SOSOverlay, SOSButton, CertModal, MilestoneOverlay } from './components/Overlays';
 import { CheckInRichModal } from './components/CheckInModal';
 import i18n from './i18n';
 import { CoachNudge, useCoachNudge } from './components/CoachNudge';
 import { MilestoneShareCard } from './components/MilestoneShareCard';
+
+// Route-level code splitting: queste pagine vengono caricate on-demand
+// (riduce il bundle iniziale; JourneyPage entra nel chunk di TrackDetailPage).
+const MorningCoachOverlay = lazy(() => import('./pages/CoachPage').then(m => ({ default: m.MorningCoachOverlay })));
+const TrackDetailPage = lazy(() => import('./pages/TrackDetailPage').then(m => ({ default: m.TrackDetailPage })));
+const TracksPage = lazy(() => import('./pages/TracksPage').then(m => ({ default: m.TracksPage })));
+const InsightsPage = lazy(() => import('./pages/InsightsPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2676,15 +2678,17 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
 
   if (selectedTrack) {
     return (
-      <TrackDetailPage
-        track={selectedTrack}
-        onBack={handleTrackBack}
-        showCheckInHint={pendingCheckIn}
-        onTrackCheckIn={() => { checkIn(selectedTrack.id); setPendingCheckIn(false); }}
-        onVacation={setVacation}
-        onRestart={restartTrack}
-        userId={supabaseId}
-      />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Spinner /></div>}>
+        <TrackDetailPage
+          track={selectedTrack}
+          onBack={handleTrackBack}
+          showCheckInHint={pendingCheckIn}
+          onTrackCheckIn={() => { checkIn(selectedTrack.id); setPendingCheckIn(false); }}
+          onVacation={setVacation}
+          onRestart={restartTrack}
+          userId={supabaseId}
+        />
+      </Suspense>
     );
   }
 
@@ -2702,7 +2706,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         )}
         {showSOS && <SOSOverlay key="sos" tracks={tracks} onDismiss={() => setShowSOS(false)} />}
         {!milestone && showMorningCoach && (
-          <MorningCoachOverlay key="morning" tracks={tracks} onDismiss={handleMorningDismiss} />
+          <Suspense fallback={null}><MorningCoachOverlay key="morning" tracks={tracks} onDismiss={handleMorningDismiss} /></Suspense>
         )}
         {!milestone && !showReEntry && !showMorningCoach && streakRecovery && (
           <StreakRecoveryOverlay
@@ -2734,9 +2738,9 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         {page === "home" && (
           <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
         )}
-        {page === "tracks" && <TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} />}
-        {page === "insights" && <InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} />}
-        {page === "settings" && <SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks}/>}
+        {page === "tracks" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} /></Suspense>}
+        {page === "insights" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} /></Suspense>}
+        {page === "settings" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks}/></Suspense>}
             {user && shouldShowPaywall(plan, user.createdAt) && (
         <PaywallModal
           currentPlan={plan}
