@@ -15,32 +15,55 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
   let userId: string;
+  let userEmail: string | undefined;
   try {
     const { data, error } = await supabase.auth.getUser(token);
     if (error || !data.user) throw new Error("Invalid token");
     userId = data.user.id;
+    userEmail = data.user.email ?? undefined;
   } catch {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  // Delete all user data in dependency order
-  const tables = [
+  // Delete all user-owned rows (child tables first), best-effort.
+  // NOTE: journey_templates is a SHARED cache keyed by slug (no user_id) and is
+  // intentionally NOT deleted here.
+  const userIdTables = [
     "coach_messages",
+    "coach_nudges",
     "community_posts",
+    "milestones_reached",
     "check_ins",
+    "journey_days",
+    "journeys",
     "push_subscriptions",
-    "journey_templates",
     "user_tracks",
-    "profiles",
   ];
 
-  for (const table of tables) {
-    const col = table === "profiles" ? "id" : "user_id";
-    const { error } = await supabase.from(table).delete().eq(col, userId);
-    if (error) {
-      console.error(`[delete] Failed to delete from ${table}:`, error.message);
-      // Continue — best effort cleanup
-    }
+  for (const table of userIdTables) {
+    const { error } = await supabase.from(table).delete().eq("user_id", userId);
+    if (error) console.error(`[delete] Failed to delete from ${table}:`, error.message);
+  }
+
+  // accountability_pairs has no user_id column (requester_id / partner_id)
+  {
+    const { error } = await supabase
+      .from("accountability_pairs")
+      .delete()
+      .or(`requester_id.eq.${userId},partner_id.eq.${userId}`);
+    if (error) console.error("[delete] Failed to delete from accountability_pairs:", error.message);
+  }
+
+  // prize_claims is keyed by the user's email (no user_id column)
+  if (userEmail) {
+    const { error } = await supabase.from("prize_claims").delete().eq("email", userEmail);
+    if (error) console.error("[delete] Failed to delete from prize_claims:", error.message);
+  }
+
+  // profiles last (parent row)
+  {
+    const { error } = await supabase.from("profiles").delete().eq("id", userId);
+    if (error) console.error("[delete] Failed to delete from profiles:", error.message);
   }
 
   // Delete auth user (admin)
