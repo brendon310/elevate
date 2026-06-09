@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Resend } from "resend";
-import { verifyUser, escapeHtml } from "../_auth";
-import { rateLimit } from "../_ratelimit";
+import { verifyUser, escapeHtml } from "../_auth.js";
+import { rateLimit } from "../_ratelimit.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM ?? "Forge <noreply@forgeapp.io>";

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
-import { verifyUser } from "./_auth";
-import { rateLimit } from "./_ratelimit";
+import { verifyUser } from "./_auth.js";
+import { rateLimit } from "./_ratelimit.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL || "https://placeholder.invalid",

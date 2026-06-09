@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { verifyUser, escapeHtml } from './_auth';
-import { rateLimit } from './_ratelimit';
+import { verifyUser, escapeHtml } from './_auth.js';
+import { rateLimit } from './_ratelimit.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();

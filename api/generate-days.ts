@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { verifyUser } from "./_auth";
+import { verifyUser } from "./_auth.js";
 
 // Track-specific task archetypes so the AI knows what KIND of actions to generate
 const TRACK_TASK_HINTS: Record<string, string> = {

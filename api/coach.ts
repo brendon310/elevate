@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { verifyUser } from "./_auth";
-import { rateLimit } from "./_ratelimit";
+import { verifyUser } from "./_auth.js";
+import { rateLimit } from "./_ratelimit.js";
 
 interface ChatMsg { role: "user" | "assistant"; content: string; }
 
