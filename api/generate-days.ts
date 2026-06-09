@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
+import { verifyUser } from "./_auth";
 
 // Track-specific task archetypes so the AI knows what KIND of actions to generate
 const TRACK_TASK_HINTS: Record<string, string> = {
@@ -58,13 +58,9 @@ const TRACK_TASK_HINTS: Record<string, string> = {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  // Protect against unauthenticated calls — verify Supabase JWT
-  const authHeader = req.headers.authorization ?? "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
-  const _supa = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-  const { data: { user }, error: _authErr } = await _supa.auth.getUser(token);
-  if (_authErr || !user) return res.status(401).json({ error: "Unauthorized" });
+  // Verify Supabase JWT (verifyUser never throws — missing env -> clean 401, not crash)
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ error: "Unauthorized" });
 
   const { slug, trackName, category, startingPoint, motivation, obstacle, fromDay, count, language } = req.body as {
     slug: string; trackName: string; category: string;

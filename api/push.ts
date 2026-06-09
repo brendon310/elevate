@@ -4,8 +4,8 @@ import { verifyUser } from "./_auth";
 import { rateLimit } from "./_ratelimit";
 
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL || "https://placeholder.invalid",
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder"
 );
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

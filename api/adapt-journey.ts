@@ -2,8 +2,8 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL || "https://placeholder.invalid",
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder"
 );
 
 interface AdaptRequest {

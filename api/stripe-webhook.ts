@@ -3,8 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL || "https://placeholder.invalid",
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder"
 );
 
 function verifyStripeSignature(rawBody: string, sigHeader: string, secret: string): boolean {
