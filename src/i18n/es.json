@@ -344,7 +344,11 @@
     "seed_post_1": "Terminé el día 7. Nunca pensé que llegaría tan lejos — el hábito está empezando a sentirse natural.",
     "seed_post_2": "Alcancé mi primer hito hoy 🎉 La nota científica sobre la neuroplasticidad me voló la mente.",
     "seed_post_3": "El día 3 fue brutal pero me presenté de todas formas. Una pequeña victoria cuenta.",
-    "fallback_reflection_alt": "¿Qué te sorprendió de la experiencia de hoy?"
+    "fallback_reflection_alt": "¿Qué te sorprendió de la experiencia de hoy?",
+    "fallback_title": "Día {{day}} — {{track}}",
+    "fallback_description": "Tu camino de {{track}}, día {{day}}. La constancia es la base de toda transformación.",
+    "fallback_task": "Dedica al menos 15 minutos a {{track}} hoy. Anota cómo te sentiste.",
+    "invalid_answer": "Escribe una respuesta real — nada de palabras al azar."
   },
   "adapt_reasons": {
     "busy": "La vida se puso ocupada",

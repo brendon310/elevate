@@ -344,7 +344,11 @@
     "seed_post_1": "Terminei o dia 7. Nunca pensei que chegaria tão longe — o hábito está começando a parecer natural.",
     "seed_post_2": "Alcancei o meu primeiro marco hoje 🎉 A nota científica sobre neuroplasticidade explodiu-me a cabeça.",
     "seed_post_3": "O dia 3 foi brutal mas fiz o check-in mesmo assim. Mesmo uma pequena vitória conta.",
-    "fallback_reflection_alt": "O que te surpreendeu na experiência de hoje?"
+    "fallback_reflection_alt": "O que te surpreendeu na experiência de hoje?",
+    "fallback_title": "Dia {{day}} — {{track}}",
+    "fallback_description": "Sua jornada de {{track}}, dia {{day}}. A consistência é a base de toda transformação.",
+    "fallback_task": "Dedique pelo menos 15 minutos a {{track}} hoje. Anote como foi.",
+    "invalid_answer": "Escreva uma resposta real — nada de palavras aleatórias."
   },
   "adapt_reasons": {
     "busy": "A vida ficou ocupada",

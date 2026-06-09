@@ -344,7 +344,11 @@
     "seed_post_1": "Tag 7 geschafft. Ich hätte nie gedacht, dass ich so weit komme — die Gewohnheit fühlt sich langsam natürlich an.",
     "seed_post_2": "Heute meinen ersten Meilenstein erreicht 🎉 Die Wissenschaftsnotiz über Neuroplastizität hat mir den Kopf weggeblasen.",
     "seed_post_3": "Tag 3 war brutal, aber ich habe mich trotzdem eingecheckt. Auch ein kleiner Sieg zählt.",
-    "fallback_reflection_alt": "Was hat dich an der heutigen Erfahrung überrascht?"
+    "fallback_reflection_alt": "Was hat dich an der heutigen Erfahrung überrascht?",
+    "fallback_title": "Tag {{day}} — {{track}}",
+    "fallback_description": "Deine {{track}}-Reise, Tag {{day}}. Beständigkeit ist die Grundlage jeder Veränderung.",
+    "fallback_task": "Widme {{track}} heute mindestens 15 Minuten. Halte fest, wie es war.",
+    "invalid_answer": "Schreib eine echte Antwort — keine zufälligen Wörter."
   },
   "adapt_reasons": {
     "busy": "Das Leben wurde hektisch",

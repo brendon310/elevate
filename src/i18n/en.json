@@ -344,7 +344,11 @@
     "seed_post_1": "Finished day 7. Never thought I'd make it this far — the habit is starting to feel natural.",
     "seed_post_2": "Hit my first milestone today 🎉 The science note about neuroplasticity blew my mind.",
     "seed_post_3": "Day 3 was brutal but I checked in anyway. Small win counts.",
-    "fallback_reflection_alt": "What surprised you about today's experience?"
+    "fallback_reflection_alt": "What surprised you about today's experience?",
+    "fallback_title": "Day {{day}} — {{track}}",
+    "fallback_description": "Your {{track}} journey, day {{day}}. Consistency is the foundation of every transformation.",
+    "fallback_task": "Spend at least 15 minutes on {{track}} today. Record how it felt.",
+    "invalid_answer": "Write a real answer — no random words."
   },
   "adapt_reasons": {
     "busy": "Life got busy",

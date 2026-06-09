@@ -89,6 +89,14 @@ function hashStr(s: string) {
   for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
   return Math.abs(h);
 }
+const ANSWER_BANNED = ["cazz", "merd", "stronz", "vaffan", "putt", "coglion", "minchia", "porcodio", "fuck", "shit", "bitch", "asshole"];
+function isInvalidAnswer(text: string): boolean {
+  const v = text.trim().toLowerCase();
+  if (v.length < 3) return true;                                   // too short
+  if (v.length > 5 && !/[aeiouàèéìòùáéíóúäöü]/i.test(v)) return true; // no vowels = gibberish
+  if (ANSWER_BANNED.some(w => v.includes(w))) return true;          // profanity/junk
+  return false;
+}
 function isCommunityBlocked(text: string): boolean {
   const lower = text.toLowerCase();
   return COMMUNITY_BLOCKLIST.some(w => lower.includes(w));
@@ -345,6 +353,10 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
       setError(t("journey.fill_all_fields"));
       return;
     }
+    if ([startingPoint, motivation, obstacle].some(isInvalidAnswer)) {
+      setError(t("journey.invalid_answer"));
+      return;
+    }
     setError(null);
     setLoading(true);
     const journey: Journey = {
@@ -353,9 +365,9 @@ function JourneyOnboarding({ track, onStarted, userId }: { track: UserTrack; onS
     };
     const makeFallback = (): JourneyDay[] => Array.from({ length: 7 }, (_, i) => ({
       id: nanoid(), journeyId: journey.id, dayNumber: i + 1,
-      title: `Day ${i + 1} — ${track.name}`,
-      description: `Your ${track.name} journey, day ${i + 1}. Consistency is the foundation of every transformation.`,
-      task: `Spend at least 15 minutes on ${track.name} today. Record how it felt.`,
+      title: t("journey.fallback_title", { day: i + 1, track: tn(track.slug, track.name) }),
+      description: t("journey.fallback_description", { day: i + 1, track: tn(track.slug, track.name) }),
+      task: t("journey.fallback_task", { track: tn(track.slug, track.name) }),
       reflection: t("journey.fallback_reflection"),
       science: t("journey.fallback_science"),
       checkinPrompt: t("journey.fallback_checkin_prompt"),
@@ -973,7 +985,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
                 <button onClick={handleCheckIn}
                   className="btn-chunk w-full rounded-xl bg-foreground text-neutral-900 py-2.5 font-semibold text-sm flex items-center justify-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4" /> {t("journey.mark_complete", { n: todayDay.dayNumber })}
+                  <CheckCircle2 className="h-4 w-4" /> {t("journey.mark_complete", { day: todayDay.dayNumber })}
                 </button>
               </div>
             ) : (

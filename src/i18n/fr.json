@@ -344,7 +344,11 @@
     "seed_post_1": "Terminé le jour 7. Je n'aurais jamais pensé aller aussi loin — l'habitude commence à sembler naturelle.",
     "seed_post_2": "Atteint mon premier jalon aujourd'hui 🎉 La note scientifique sur la neuroplasticité m'a soufflé l'esprit.",
     "seed_post_3": "Le jour 3 était brutal mais je me suis quand même présenté. Une petite victoire compte.",
-    "fallback_reflection_alt": "Qu'est-ce qui t'a surpris dans l'expérience d'aujourd'hui ?"
+    "fallback_reflection_alt": "Qu'est-ce qui t'a surpris dans l'expérience d'aujourd'hui ?",
+    "fallback_title": "Jour {{day}} — {{track}}",
+    "fallback_description": "Ton parcours {{track}}, jour {{day}}. La constance est le fondement de toute transformation.",
+    "fallback_task": "Consacre au moins 15 minutes à {{track}} aujourd'hui. Note ton ressenti.",
+    "invalid_answer": "Écris une vraie réponse — pas de mots au hasard."
   },
   "adapt_reasons": {
     "busy": "La vie s'est chargée",
