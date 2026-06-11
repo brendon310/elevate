@@ -37,6 +37,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     fromDay, count, recentTriggers = [], recentMoods = [],
     missedDays = 0, reason = "",
   } = body;
+  const langCode = ((body as { language?: string }).language ?? "en").slice(0, 2);
+  const langName = ({ it: "Italian", es: "Spanish", de: "German", fr: "French", pt: "Portuguese" } as Record<string, string>)[langCode] ?? "English";
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: "No API key" });
@@ -55,7 +57,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     triggerSummary,
   ].filter(Boolean).join(" ");
 
-  const systemPrompt = `You are a compassionate behavior change coach creating personalized daily tasks.
+  const systemPrompt = `IMPORTANT: Write ALL content in ${langName}. Natural, native ${langName} only.
+You are a compassionate behavior change coach creating personalized daily tasks.
 The user is working on: "${trackName}" (category: ${category}).
 Their starting point: ${startingPoint}.
 Their motivation: ${motivation}.

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 import { supabase } from '../supabase';
 import { X, Moon, Zap, Heart, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -86,7 +87,7 @@ export function useCoachNudge(userId: string | undefined, _token?: string | unde
       fetch('/api/proactive-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ language: i18n.language }),
       })
         .then(r => r.ok ? r.json() : null)
         .then((data: { nudge: CoachNudgeData | null } | null) => {

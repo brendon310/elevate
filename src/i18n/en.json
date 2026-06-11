@@ -292,6 +292,8 @@
     "task_label": "Task",
     "your_note": "Your note",
     "restart_confirm": "Restart this journey? Your streak and progress will be reset.",
+    "regen_lang": "Regenerate upcoming days in your language",
+    "regen_lang_confirm": "Keep your completed days and regenerate the upcoming ones in your current language?",
     "days_progress": "{{done}}/{{total}} days",
     "welcome_back": "Welcome back",
     "away_for": "You were away for {{days}} day{{plural}}",

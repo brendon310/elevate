@@ -39,7 +39,7 @@ export function PlanGate({ plan, feature, accountCreatedAt, onUpgrade, children,
       <div style={{ width: '2.5rem', height: '2.5rem', background: 'rgba(59,130,246,0.12)',
         border: '1px solid rgba(59,130,246,0.25)', borderRadius: '50%',
         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
-        \uD83D\uDD12
+        🔒
       </div>
       <p style={{ color: '#94a3b8', fontSize: '0.875rem', lineHeight: 1.4, margin: 0, maxWidth: '200px' }}>
         {label ?? t('plangate.default_label')}
@@ -78,7 +78,7 @@ export function UpgradeInline({ label, onUpgrade }: UpgradeInlineProps) {
         padding: '0.3rem 0.75rem', background: 'rgba(59,130,246,0.12)',
         border: '1px solid rgba(59,130,246,0.25)', borderRadius: '2rem',
         color: '#93c5fd', fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer' }}>
-      <span style={{ fontSize: '0.75rem' }}>\uD83D\uDD12</span>
+      <span style={{ fontSize: '0.75rem' }}>🔒</span>
       {effectiveLabel}
     </button>
   );

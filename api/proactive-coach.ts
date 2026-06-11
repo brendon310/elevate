@@ -97,7 +97,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!nudgeType) return res.json({ nudge: null, reason: "no_trigger" });
 
-  const systemPrompt = `You are a compassionate behavior change coach inside the Forge app.
+  const langCode = (((req.body ?? {}) as { language?: string }).language ?? "en").slice(0, 2);
+  const langName = ({ it: "Italian", es: "Spanish", de: "German", fr: "French", pt: "Portuguese" } as Record<string, string>)[langCode] ?? "English";
+  const systemPrompt = `IMPORTANT: Write the message in ${langName}. Natural, native ${langName} only.
+You are a compassionate behavior change coach inside the Forge app.
 Write ONE short in-app message (2-3 sentences max) based on the user's situation.
 Rules: never shame or guilt-trip. Be warm, specific, caring. End with one gentle actionable suggestion. No emojis.`;
 

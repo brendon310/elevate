@@ -292,6 +292,8 @@
     "task_label": "Compito",
     "your_note": "La tua nota",
     "restart_confirm": "Ricominciare questo percorso? La tua streak e i progressi verranno azzerati.",
+    "regen_lang": "Rigenera i prossimi giorni nella tua lingua",
+    "regen_lang_confirm": "Tenere i giorni completati e rigenerare i prossimi nella lingua attuale?",
     "days_progress": "{{done}}/{{total}} giorni",
     "welcome_back": "Bentornato",
     "away_for": "Sei stato via per {{days}} giorno{{plural}}",

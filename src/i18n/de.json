@@ -292,6 +292,8 @@
     "task_label": "Aufgabe",
     "your_note": "Deine Notiz",
     "restart_confirm": "Diese Reise neu starten? Deine Serie und dein Fortschritt werden zurückgesetzt.",
+    "regen_lang": "Kommende Tage in deiner Sprache neu erstellen",
+    "regen_lang_confirm": "Abgeschlossene Tage behalten und die kommenden in deiner aktuellen Sprache neu erstellen?",
     "days_progress": "{{done}}/{{total}} Tage",
     "welcome_back": "Willkommen zurück",
     "away_for": "Du warst {{days}} Tag{{plural}} weg",

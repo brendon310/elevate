@@ -6,7 +6,7 @@ import * as db from "../db";
 import type { UserTrack, Journey, JourneyDay, ChatMessage, CommunityPost } from "../types";
 import { type Plan, getLimit, hasFeature } from "../plans";
 import confetti from 'canvas-confetti';
-import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock, RefreshCw } from 'lucide-react';
+import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock, RefreshCw, Globe } from 'lucide-react';
 
 const ADAPT_REASON_IDS = ["busy", "motivation", "overwhelmed", "sick", "travel", "other"] as const;
 const ADAPT_REASONS = ADAPT_REASON_IDS.map(id => ({ id }));
@@ -734,6 +734,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token ?? ""}` },
         body: JSON.stringify({
+          language: i18n.language,
           slug: track.slug,
           trackName: track.name,
           category: track.category,
@@ -919,6 +920,24 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                 <div className="h-full rounded-full bg-foreground transition-all" style={{ width: `${(completedCount / journey.totalDays) * 100}%` }} />
               </div>
             </div>
+            <button
+              onClick={() => {
+                if (!confirm(t("journey.regen_lang_confirm"))) return;
+                // Keep completed days; reset generatedThrough so the auto-gen
+                // effect regenerates upcoming days in the CURRENT app language.
+                const completed = days.filter(d => d.completedAt !== null);
+                setDays(completed);
+                lsSave(LS_DAYS(track.slug), completed);
+                localStorage.setItem(`forge-days-lang2-${track.slug}`, i18n.language);
+                const nj = { ...journey, generatedThrough: completed.length };
+                setJourney(nj);
+                lsSave(LS_JOURNEY(track.slug), nj);
+                if (userId) { db.saveJourney(userId, nj).catch(() => {}); db.saveJourneyDays(userId, track.slug, completed).catch(() => {}); }
+              }}
+              className="text-muted-foreground hover:text-foreground border border-border rounded-lg px-2 py-1 transition"
+              title={t("journey.regen_lang")}>
+              <Globe className="h-3 w-3" />
+            </button>
             {onRestart && (
               <button
                 onClick={() => { if (confirm(t("journey.restart_confirm"))) { onRestart(track.id); onBack(); } }}

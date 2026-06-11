@@ -292,6 +292,8 @@
     "task_label": "Tarefa",
     "your_note": "Sua nota",
     "restart_confirm": "Reiniciar este percurso? Sua sequência e progresso serão reiniciados.",
+    "regen_lang": "Regenerar os próximos dias no seu idioma",
+    "regen_lang_confirm": "Manter os dias concluídos e regenerar os próximos no seu idioma atual?",
     "days_progress": "{{done}}/{{total}} dias",
     "welcome_back": "Bem-vindo de volta",
     "away_for": "Você ficou ausente {{days}} dia{{plural}}",
