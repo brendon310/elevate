@@ -89,7 +89,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
     price: '\u20ac14.99/mo',
     priceYear: '\u20ac149.99/yr',
     priceId: 'price_premium_monthly',
-    color: '#8b5cf6',
+    color: '#f59e0b',
     badge: 'Premium',
     features: new Set<Feature>([
       'multiple_tracks',

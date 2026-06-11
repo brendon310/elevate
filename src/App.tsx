@@ -2131,6 +2131,9 @@ export function ElevateApp() {
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
   const [plan, setPlan] = useState<Plan>('free');
   const [paywallOpen, setPaywallOpen] = useState(false);
+  // "Continue with free" must work: once dismissed, the auto-paywall stays
+  // closed for the rest of the session (it returns next session by design).
+  const [paywallDismissed, setPaywallDismissed] = useState(false);
   const [user, setUser] = useState<ElevateUser | null>(lsLoad(LS_USER, null));
   const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
@@ -2792,11 +2795,11 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
         {page === "tracks" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} /></Suspense>}
         {page === "insights" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} plan={plan} onUpgrade={() => setPaywallOpen(true)} /></Suspense>}
         {page === "settings" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks} plan={plan} onUpgrade={() => setPaywallOpen(true)}/></Suspense>}
-            {user && (paywallOpen || shouldShowPaywall(plan, user.createdAt)) && (
+            {user && (paywallOpen || (shouldShowPaywall(plan, user.createdAt) && !paywallDismissed)) && (
         <PaywallModal
           currentPlan={plan}
           accountCreatedAt={user.createdAt}
-          onDismiss={() => setPaywallOpen(false)}
+          onDismiss={() => { setPaywallOpen(false); setPaywallDismissed(true); }}
           onPlanChange={(p) => { setPlan(p); setPaywallOpen(false); }}
         />
       )}

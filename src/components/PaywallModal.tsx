@@ -81,7 +81,7 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
                 <th style={{ ...S.th, textAlign: 'left' as const, color: '#64748b' }}>{t('paywall.feature_col')}</th>
                 <th style={{ ...S.th, color: '#6b7280' }}>{t('paywall.free_col')}</th>
                 <th style={{ ...S.th, color: '#60a5fa' }}>{t('paywall.standard_col')}</th>
-                <th style={{ ...S.th, color: '#a78bfa' }}>{t('paywall.premium_col')}</th>
+                <th style={{ ...S.th, color: '#fbbf24' }}>{t('paywall.premium_col')}</th>
               </tr>
             </thead>
             <tbody>
@@ -102,7 +102,7 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
                   <td style={{ ...S.td, color: '#cbd5e1' }}>{t(row.labelKey)}</td>
                   <td style={{ ...S.td, color: '#6b7280', textAlign: 'center' as const }}>{row.free}</td>
                   <td style={{ ...S.td, color: '#93c5fd', textAlign: 'center' as const }}>{row.standard}</td>
-                  <td style={{ ...S.td, color: '#c4b5fd', textAlign: 'center' as const }}>{row.premium}</td>
+                  <td style={{ ...S.td, color: '#fcd34d', textAlign: 'center' as const }}>{row.premium}</td>
                 </tr>
               ))}
             </tbody>
@@ -125,43 +125,66 @@ function PlanCard({ plan, recommended, yearly, onUpgrade }: PlanCardProps) {
   const { t } = useTranslation();
   const config: PlanConfig = PLANS[plan];
   const isStd = plan === 'standard';
-  const accent = isStd ? '#3b82f6' : '#8b5cf6';
+  // Standard = electric blue. Premium = GOLD \u2014 the colour of wanting it.
+  const accent = isStd ? '#3b82f6' : '#fbbf24';
 
   return (
     <div style={{
-      background: isStd ? 'rgba(59,130,246,0.08)' : 'rgba(139,92,246,0.08)',
-      border: `1px solid ${isStd ? 'rgba(59,130,246,0.25)' : 'rgba(139,92,246,0.25)'}`,
-      borderRadius: '1rem', padding: '1.25rem', position: 'relative' as const,
+      background: isStd
+        ? 'linear-gradient(165deg, rgba(59,130,246,0.16) 0%, rgba(6,182,212,0.06) 55%, rgba(12,12,20,0.2) 100%)'
+        : 'linear-gradient(165deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.06) 55%, rgba(12,12,20,0.2) 100%)',
+      border: `1px solid ${isStd ? 'rgba(59,130,246,0.40)' : 'rgba(251,191,36,0.55)'}`,
+      boxShadow: isStd
+        ? 'inset 0 1px 0 rgba(147,197,253,0.18), 0 10px 36px rgba(59,130,246,0.14)'
+        : 'inset 0 1px 0 rgba(253,230,138,0.25), 0 10px 44px rgba(251,191,36,0.18)',
+      borderRadius: '1.125rem', padding: '1.375rem 1.25rem', position: 'relative' as const,
       display: 'flex', flexDirection: 'column' as const, gap: '0.875rem',
     }}>
       {recommended && (
         <div style={{ position: 'absolute' as const, top: '-0.625rem', left: '50%', transform: 'translateX(-50%)',
-          background: accent, color: '#fff', fontSize: '0.6875rem', fontWeight: 700,
+          background: 'linear-gradient(135deg,#3b82f6,#06b6d4)', color: '#fff', fontSize: '0.6875rem', fontWeight: 700,
           letterSpacing: '0.08em', textTransform: 'uppercase' as const,
-          padding: '0.2rem 0.75rem', borderRadius: '2rem', whiteSpace: 'nowrap' as const }}>
+          padding: '0.2rem 0.75rem', borderRadius: '2rem', whiteSpace: 'nowrap' as const,
+          boxShadow: '0 4px 14px rgba(59,130,246,0.45)' }}>
 {t('paywall.most_popular')}
         </div>
       )}
+      {!isStd && (
+        <div style={{ position: 'absolute' as const, top: '-0.625rem', left: '50%', transform: 'translateX(-50%)',
+          background: 'linear-gradient(135deg,#fde68a,#f59e0b)', color: '#451a03', fontSize: '0.6875rem', fontWeight: 800,
+          letterSpacing: '0.08em', textTransform: 'uppercase' as const,
+          padding: '0.2rem 0.75rem', borderRadius: '2rem', whiteSpace: 'nowrap' as const,
+          boxShadow: '0 4px 16px rgba(251,191,36,0.5)' }}>
+          \u2726 {config.label}
+        </div>
+      )}
       <div>
-        <div style={{ color: accent, fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.25rem' }}>{config.label}</div>
-        <div style={{ fontSize: '1.625rem', fontWeight: 700, color: '#f1f5f9', lineHeight: 1.1 }}>
+        <div style={{ color: accent, fontSize: '0.8125rem', fontWeight: 700, marginBottom: '0.25rem', letterSpacing: '0.02em' }}>{config.label}</div>
+        <div style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em',
+          color: '#f8fafc', textShadow: isStd ? '0 0 24px rgba(59,130,246,0.35)' : '0 0 24px rgba(251,191,36,0.35)' }}>
           {yearly ? (config.priceYear ?? config.price) : config.price}
         </div>
-        <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.125rem' }}>
+        <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: '0.25rem' }}>
           {yearly ? t('paywall.per_year') : t('paywall.per_month')}
+          {yearly && (
+            <span style={{ marginLeft: '0.4rem', color: '#4ade80', fontWeight: 700 }}>{t('paywall.two_months_free')}</span>
+          )}
         </div>
       </div>
-      <ul style={{ margin: 0, padding: 0, listStyle: 'none' as const, display: 'flex', flexDirection: 'column' as const, gap: '0.4rem' }}>
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none' as const, display: 'flex', flexDirection: 'column' as const, gap: '0.45rem' }}>
         {Array.from(config.features).slice(0, 5).map(f => (
-          <li key={f} style={{ display: 'flex', alignItems: 'flex-start' as const, gap: '0.5rem', color: '#cbd5e1', fontSize: '0.8125rem' }}>
-            <span style={{ color: accent, marginTop: '1px', flexShrink: 0 }}>\u2713</span>
+          <li key={f} style={{ display: 'flex', alignItems: 'flex-start' as const, gap: '0.5rem', color: '#e2e8f0', fontSize: '0.8125rem' }}>
+            <span style={{ color: accent, marginTop: '1px', flexShrink: 0, fontWeight: 700 }}>\u2713</span>
 {t(FEATURE_KEYS[f as Feature] ?? f)}
           </li>
         ))}
       </ul>
       <button onClick={() => onUpgrade(plan)} style={{
-        marginTop: 'auto', padding: '0.6875rem', background: accent, border: 'none',
-        borderRadius: '0.625rem', color: '#fff', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
+        marginTop: 'auto', padding: '0.8125rem', border: 'none', borderRadius: '0.75rem',
+        background: isStd ? 'linear-gradient(135deg,#3b82f6,#06b6d4)' : 'linear-gradient(135deg,#fde047,#f59e0b)',
+        color: isStd ? '#fff' : '#451a03',
+        fontSize: '0.9375rem', fontWeight: 800, cursor: 'pointer', letterSpacing: '0.01em',
+        boxShadow: isStd ? '0 6px 22px rgba(59,130,246,0.40)' : '0 6px 26px rgba(251,191,36,0.45)',
       }}>
 {t('paywall.upgrade_to', { plan: config.label })}
       </button>

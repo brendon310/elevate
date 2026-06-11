@@ -802,7 +802,7 @@ function DopamineRow({ tracks }: { tracks: UserTrack[] }) {
             </p>
             <div className="mt-2.5 h-1.5 rounded-full bg-muted overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-400 to-purple-400 transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-blue-400 to-amber-400 transition-all"
                 style={{ width: `${Math.min(100, Math.max(4, (1 - next.daysLeft / Math.max(1, next.title.days)) * 100))}%` }}
               />
             </div>
