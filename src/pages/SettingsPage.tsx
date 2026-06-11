@@ -484,10 +484,15 @@ setPushError(t("settings.push_failed"));
         </div>
       </section>
 
-      {/* Wellbeing disclaimer + crisis resources */}
-      <footer className="px-1 pb-4 space-y-1 text-center">
+      {/* Wellbeing disclaimer + crisis resources + legal */}
+      <footer className="px-1 pb-4 space-y-2 text-center">
         <p className="text-[11px] text-muted-foreground/70 leading-relaxed">{t("common.not_therapy")}</p>
         <p className="text-[11px] text-muted-foreground leading-relaxed">{t("common.crisis_help")}</p>
+        <p className="text-[11px] text-muted-foreground/70">
+          <a href="/privacy.html" className="underline underline-offset-2 hover:text-foreground transition">{t("common.privacy_policy")}</a>
+          <span className="mx-2">·</span>
+          <a href="/terms.html" className="underline underline-offset-2 hover:text-foreground transition">{t("common.terms")}</a>
+        </p>
       </footer>
     </div>
   );
