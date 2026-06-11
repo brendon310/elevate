@@ -9,7 +9,8 @@ import {
 import confetti from "canvas-confetti";
 import { supabase } from "../supabase";
 import { CoachNudge, useCoachNudge } from '../components/CoachNudge';
-import { Plan, hasFeature } from '../plans';
+import { Plan, hasFeature, trialActive, trialDaysRemaining } from '../plans';
+import { getForgeTitle, getNextTitle } from '../forgeTitles';
 import { useTranslation } from 'react-i18next';
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from '../types';
 
@@ -749,7 +750,72 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
   );
 }
 
-export function HomePage({ user, tracks, plan, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn, onVacation }: {
+// Urge-resisted counter + next-title progress. "147 urges beaten" survives any
+// broken streak — for quit-habits it's the most resilient motivator we have.
+function DopamineRow({ tracks }: { tracks: UserTrack[] }) {
+  const { t } = useTranslation();
+  const [urges, setUrges] = useState<number>(() => lsLoad<number>('forge-urges-resisted', 0));
+  const [justPressed, setJustPressed] = useState(false);
+  const next = getNextTitle(tracks);
+  const current = getForgeTitle(tracks);
+
+  const resist = () => {
+    navigator.vibrate?.([20, 40, 20]);
+    const n = urges + 1;
+    setUrges(n);
+    lsSave('forge-urges-resisted', n);
+    setJustPressed(true);
+    setTimeout(() => setJustPressed(false), 900);
+    confetti({ particleCount: 30, spread: 55, startVelocity: 28, origin: { y: 0.35 }, colors: ['#FFD000', '#FFB347', '#4ade80'] });
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+      className="mb-6 grid grid-cols-2 gap-3">
+      {/* I beat an urge */}
+      <motion.button
+        onClick={resist}
+        whileTap={{ scale: 0.94 }}
+        animate={justPressed ? { scale: [1, 1.04, 1] } : {}}
+        className="rounded-2xl border border-emerald-500/25 bg-emerald-500/8 p-4 text-left hover:bg-emerald-500/15 transition-colors"
+      >
+        <p className="font-display text-2xl leading-none text-emerald-400">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span key={urges} initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="inline-block">
+              {urges}
+            </motion.span>
+          </AnimatePresence>
+        </p>
+        <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{t('home.urges_beaten')}</p>
+        <p className="mt-2 text-xs font-semibold text-emerald-400">
+          {justPressed ? t('home.urge_logged') : `+ ${t('home.urge_resisted_btn')}`}
+        </p>
+      </motion.button>
+
+      {/* Next title progress */}
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className={`text-xs font-semibold ${current.color}`}>{t(current.titleKey)}</p>
+        {next ? (
+          <>
+            <p className="mt-1 text-[11px] text-muted-foreground leading-tight">
+              {t('home.next_title', { n: next.daysLeft, title: t(next.title.titleKey) })}
+            </p>
+            <div className="mt-2.5 h-1.5 rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-blue-400 to-purple-400 transition-all"
+                style={{ width: `${Math.min(100, Math.max(4, (1 - next.daysLeft / Math.max(1, next.title.days)) * 100))}%` }}
+              />
+            </div>
+          </>
+        ) : (
+          <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{t('home.top_title')}</p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+export function HomePage({ user, tracks, plan, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn, onVacation, onUpgrade }: {
   plan: Plan;
   user: ElevateUser;
   tracks: UserTrack[];
@@ -759,6 +825,7 @@ export function HomePage({ user, tracks, plan, onCheckIn, onNavigate, onUpdateUs
   onView: (t: UserTrack) => void;
   onViewForCheckIn: (t: UserTrack) => void;
   onVacation: (trackId: string, until: string) => void;
+  onUpgrade?: () => void;
 }) {
   const { t, i18n: i18nInstance } = useTranslation();
   const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
@@ -829,6 +896,27 @@ export function HomePage({ user, tracks, plan, onCheckIn, onNavigate, onUpdateUs
         </h1>
         <p className="mt-3 text-base text-foreground max-w-md leading-snug">{motivation}</p>
       </motion.header>
+
+      {/* Urge resisted + next-title progress — the daily dopamine row */}
+      {tracks.length > 0 && (
+        <DopamineRow tracks={tracks} />
+      )}
+
+      {/* Trial countdown — gentle conversion nudge while the 14-day window is open */}
+      {plan === 'free' && onUpgrade && trialActive(user.createdAt) && (
+        <motion.button
+          initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          onClick={onUpgrade}
+          className="mb-6 w-full flex items-center justify-between gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/8 px-4 py-3 text-left hover:bg-amber-500/15 transition-colors"
+        >
+          <span className="text-xs text-amber-400 font-medium">
+            ⚡ {t('home.trial_left', { n: trialDaysRemaining(user.createdAt) })}
+          </span>
+          <span className="text-xs font-semibold underline underline-offset-4 text-foreground shrink-0">
+            {t('home.trial_cta')}
+          </span>
+        </motion.button>
+      )}
 
       {tracks.length > 0 && (
         <>

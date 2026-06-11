@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { verifyUser } from "./_auth.js";
+import { getUserPlan, countJourneys, PLAN_LIMITS } from "./_plans.js";
 
 // Track-specific task archetypes so the AI knows what KIND of actions to generate
 const TRACK_TASK_HINTS: Record<string, string> = {
@@ -67,6 +68,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     startingPoint: string; motivation: string; obstacle: string;
     fromDay: number; count: number; language?: string;
   };
+
+  // Server-side track limit: only on NEW journey starts (fromDay 1), not on
+  // continuation batches for an existing journey.
+  if (fromDay === 1) {
+    const plan = await getUserPlan(user.id);
+    const existing = await countJourneys(user.id);
+    if (existing >= PLAN_LIMITS[plan].maxTracks) {
+      return res.status(402).json({ error: "track_limit", limit: PLAN_LIMITS[plan].maxTracks });
+    }
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: "API key not configured" });

@@ -31,6 +31,8 @@
       "Fai una mossa di cui il te futuro sarà fiero.",
       "La disciplina è amore per sé stessi al rallentatore."
     ],
+    "rare_drop": "Momento raro",
+    "rare_phrases": ["Questo giorno esatto sarà quello che ricorderai.", "La maggior parte non arriva fin qui. Tu sì.", "Il te del futuro ha appena sorriso.", "La forgia brilla solo per chi si presenta.", "Da qualche parte, il vecchio te ha perso un altro voto.", "Questo conta doppio nell'anima."],
     "celebration_phrases": [
       "La versione di te che si è arresa si sta allontanando sempre di più.",
       "Ti sei presentato. È tutto il gioco.",
@@ -136,6 +138,8 @@
     "track_label": "Percorso",
     "error_retry": "Qualcosa è andato storto. Riprova tra poco.",
     "unlimited": "Illimitato",
+    "not_therapy": "Forge è uno strumento di crescita personale — non è terapia, assistenza medica né un servizio di emergenza.",
+    "crisis_help": "Se sei in crisi o pensi di farti del male, chiama il numero di emergenza locale (112) o trova una linea di ascolto su findahelpline.com.",
     "none": "Nessuno"
   },
   "nav": {
@@ -148,6 +152,13 @@
   },
   "home": {
     "greeting_morning": "Buongiorno",
+    "trial_left": "Prova: {{n}} giorni rimasti",
+    "trial_cta": "Vedi i piani",
+    "urges_beaten": "voglie battute",
+    "urge_resisted_btn": "Ho resistito",
+    "urge_logged": "Contata. Rispetto.",
+    "next_title": "{{n}} giorni a {{title}}",
+    "top_title": "Rango massimo. Leggenda.",
     "greeting_afternoon": "Buon pomeriggio",
     "greeting_evening": "Buona sera",
     "checkin_cta": "Registra oggi",
@@ -607,6 +618,7 @@
     "shields": "scudi",
     "shields_body": "Guadagna uno scudo ogni 10 giorni consecutivi. Usato automaticamente se salti un giorno.",
     "my_plan": "Il mio piano",
+    "manage_plan": "Gestisci abbonamento",
     "upgrade": "Fai l'upgrade",
     "plan_tracks": "Percorsi attivi: {{n}}",
     "plan_coach": "Messaggi al Coach AI: {{n}}/mese",
@@ -656,6 +668,7 @@
     "do_one": "Fai una di queste cose adesso:",
     "im_okay": "Sto bene ora",
     "breathe_again": "Respira ancora",
+    "your_why": "Il motivo per cui hai iniziato",
     "skip": "salta",
     "two_cycles": "2 cicli completi — poi ti ancoriamo",
     "struggling": "Ho bisogno di aiuto",
@@ -1119,6 +1132,7 @@
   },
   "paywall": {
     "trial_ended": "Prova terminata",
+    "unlock_title": "Sblocca tutto Forge",
     "continue_journey": "Continua il tuo percorso",
     "feature_col": "Funzionalità",
     "free_col": "Gratuito",
@@ -1128,6 +1142,10 @@
     "continue_free": "Continua con accesso gratuito limitato",
     "most_popular": "Più popolare",
     "per_month": "al mese, annulla quando vuoi",
+    "per_year": "all'anno, disdici quando vuoi",
+    "billing_monthly": "Fatturazione mensile",
+    "billing_yearly": "Fatturazione annuale",
+    "two_months_free": "−2 mesi",
     "upgrade_to": "Passa a {{plan}}",
     "upgrade": "Aggiorna",
     "features": {

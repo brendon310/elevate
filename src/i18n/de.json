@@ -31,6 +31,8 @@
       "Mach einen Schritt, den dein zukünftiges Ich bejubelt.",
       "Disziplin ist Selbstliebe in Zeitlupe."
     ],
+    "rare_drop": "Seltener Moment",
+    "rare_phrases": ["Genau dieser Tag wird der sein, an den du dich erinnerst.", "Die meisten kommen nie so weit. Du schon.", "Dein zukünftiges Ich hat gerade gelächelt.", "Die Schmiede glänzt nur für die, die erscheinen.", "Irgendwo hat dein altes Ich gerade eine Stimme verloren.", "Dieser zählt doppelt in der Seele."],
     "celebration_phrases": [
       "Die Version von dir, die aufgegeben hat, wird immer weiter weg.",
       "Du bist erschienen. Das ist das ganze Spiel.",
@@ -136,6 +138,8 @@
     "track_label": "Gewohnheit",
     "error_retry": "Etwas ist schiefgelaufen. Bitte versuche es gleich erneut.",
     "unlimited": "Unbegrenzt",
+    "not_therapy": "Forge ist ein Werkzeug zur Selbstverbesserung — keine Therapie, medizinische Versorgung oder ein Notfalldienst.",
+    "crisis_help": "Wenn du in einer Krise bist oder daran denkst, dir etwas anzutun, ruf die örtliche Notrufnummer (112) an oder finde eine Hotline auf findahelpline.com.",
     "none": "Keiner"
   },
   "nav": {
@@ -148,6 +152,13 @@
   },
   "home": {
     "greeting_morning": "Guten Morgen",
+    "trial_left": "Testphase: noch {{n}} Tage",
+    "trial_cta": "Pläne ansehen",
+    "urges_beaten": "besiegte Impulse",
+    "urge_resisted_btn": "Ich habe widerstanden",
+    "urge_logged": "Gezählt. Respekt.",
+    "next_title": "Noch {{n}} Tage bis {{title}}",
+    "top_title": "Höchster Rang. Legende.",
     "greeting_afternoon": "Guten Nachmittag",
     "greeting_evening": "Guten Abend",
     "checkin_cta": "Heute eintragen",
@@ -607,6 +618,7 @@
     "shields": "Schilde",
     "shields_body": "Verdiene alle 10 aufeinanderfolgenden Tage einen Schild. Wird automatisch eingesetzt, wenn du einen Tag verpasst.",
     "my_plan": "Mein Plan",
+    "manage_plan": "Abo verwalten",
     "upgrade": "Upgrade",
     "plan_tracks": "Aktive Wege: {{n}}",
     "plan_coach": "KI-Coach-Nachrichten: {{n}}/Monat",
@@ -656,6 +668,7 @@
     "do_one": "Mach jetzt eine dieser Dinge:",
     "im_okay": "Mir geht es jetzt gut",
     "breathe_again": "Noch einmal atmen",
+    "your_why": "Dein Grund anzufangen",
     "skip": "überspringen",
     "two_cycles": "2 vollständige Zyklen — dann erden wir dich",
     "struggling": "Ich kämpfe gerade",
@@ -1119,6 +1132,7 @@
   },
   "paywall": {
     "trial_ended": "Testphase beendet",
+    "unlock_title": "Schalte ganz Forge frei",
     "continue_journey": "Setze deinen Weg fort",
     "feature_col": "Funktion",
     "free_col": "Kostenlos",
@@ -1128,6 +1142,10 @@
     "continue_free": "Mit eingeschränktem kostenlosem Zugang fortfahren",
     "most_popular": "Am beliebtesten",
     "per_month": "pro Monat, jederzeit kündbar",
+    "per_year": "pro Jahr, jederzeit kündbar",
+    "billing_monthly": "Monatliche Abrechnung",
+    "billing_yearly": "Jährliche Abrechnung",
+    "two_months_free": "−2 Monate",
     "upgrade_to": "Zu {{plan}} wechseln",
     "upgrade": "Upgrade",
     "features": {

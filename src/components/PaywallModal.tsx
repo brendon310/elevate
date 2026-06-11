@@ -4,10 +4,10 @@
 // Placeholder checkout: wire startCheckout() in plans.ts to Stripe later.
 
 import { useTranslation } from 'react-i18next';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Plan, PlanConfig, PLANS, Feature,
-  startCheckout, trackEvent,
+  startCheckout, trackEvent, trialActive,
 } from '../plans';
 
 interface FeatureRowDef { labelKey: string; free: string; standard: string; premium: string; }
@@ -23,11 +23,12 @@ export interface PaywallModalProps {
 
 export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanChange }: PaywallModalProps) {
   const { t } = useTranslation();
+  const [yearly, setYearly] = useState(false);
   useEffect(() => { trackEvent('paywall_shown', { plan: currentPlan }); }, []);
 
   async function handleUpgrade(plan: Exclude<Plan, 'free'>) {
     trackEvent('upgrade_cta_clicked', { plan, from: currentPlan });
-    const result = await startCheckout(plan);
+    const result = await startCheckout(plan, yearly ? 'year' : 'month');
     if (result.success && onPlanChange) onPlanChange(plan);
   }
 
@@ -35,14 +36,42 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
     <div role="dialog" aria-modal="true" style={S.overlay}>
       <div style={S.card}>
         <div style={S.header}>
-          <span style={S.badge}>{t('paywall.trial_ended')}</span>
-          <h2 style={S.title}>{t('paywall.continue_journey')}</h2>
+          {trialActive(accountCreatedAt) ? (
+            <h2 style={S.title}>{t('paywall.unlock_title')}</h2>
+          ) : (
+            <>
+              <span style={S.badge}>{t('paywall.trial_ended')}</span>
+              <h2 style={S.title}>{t('paywall.continue_journey')}</h2>
+            </>
+          )}
           <p style={S.subtitle}>{t('paywall.subtitle')}</p>
         </div>
 
+        {/* Billing interval toggle */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.375rem', marginBottom: '0.875rem' }}>
+          {(['month', 'year'] as const).map(iv => {
+            const active = yearly === (iv === 'year');
+            return (
+              <button key={iv} onClick={() => setYearly(iv === 'year')} style={{
+                padding: '0.375rem 0.875rem', borderRadius: '2rem', fontSize: '0.75rem', fontWeight: 600,
+                cursor: 'pointer', border: `1px solid ${active ? '#3b82f6' : 'rgba(148,163,184,0.25)'}`,
+                background: active ? 'rgba(59,130,246,0.15)' : 'transparent',
+                color: active ? '#93c5fd' : '#64748b',
+              }}>
+                {iv === 'month' ? t('paywall.billing_monthly') : t('paywall.billing_yearly')}
+                {iv === 'year' && (
+                  <span style={{ marginLeft: '0.375rem', color: '#4ade80', fontWeight: 700 }}>
+                    {t('paywall.two_months_free')}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
         <div style={S.planGrid}>
-          <PlanCard plan="standard" recommended onUpgrade={handleUpgrade} />
-          <PlanCard plan="premium" onUpgrade={handleUpgrade} />
+          <PlanCard plan="standard" recommended yearly={yearly} onUpgrade={handleUpgrade} />
+          <PlanCard plan="premium" yearly={yearly} onUpgrade={handleUpgrade} />
         </div>
 
         <div style={S.tableWrap}>
@@ -90,9 +119,9 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
   );
 }
 
-interface PlanCardProps { plan: Exclude<Plan, 'free'>; recommended?: boolean; onUpgrade: (p: Exclude<Plan, 'free'>) => void; }
+interface PlanCardProps { plan: Exclude<Plan, 'free'>; recommended?: boolean; yearly?: boolean; onUpgrade: (p: Exclude<Plan, 'free'>) => void; }
 
-function PlanCard({ plan, recommended, onUpgrade }: PlanCardProps) {
+function PlanCard({ plan, recommended, yearly, onUpgrade }: PlanCardProps) {
   const { t } = useTranslation();
   const config: PlanConfig = PLANS[plan];
   const isStd = plan === 'standard';
@@ -115,8 +144,12 @@ function PlanCard({ plan, recommended, onUpgrade }: PlanCardProps) {
       )}
       <div>
         <div style={{ color: accent, fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.25rem' }}>{config.label}</div>
-        <div style={{ fontSize: '1.625rem', fontWeight: 700, color: '#f1f5f9', lineHeight: 1.1 }}>{config.price}</div>
-        <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.125rem' }}>{t('paywall.per_month')}</div>
+        <div style={{ fontSize: '1.625rem', fontWeight: 700, color: '#f1f5f9', lineHeight: 1.1 }}>
+          {yearly ? (config.priceYear ?? config.price) : config.price}
+        </div>
+        <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.125rem' }}>
+          {yearly ? t('paywall.per_year') : t('paywall.per_month')}
+        </div>
       </div>
       <ul style={{ margin: 0, padding: 0, listStyle: 'none' as const, display: 'flex', flexDirection: 'column' as const, gap: '0.4rem' }}>
         {Array.from(config.features).slice(0, 5).map(f => (

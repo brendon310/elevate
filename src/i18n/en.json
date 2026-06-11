@@ -31,6 +31,8 @@
       "Make one move that future-you applauds.",
       "Discipline is self-love in slow motion."
     ],
+    "rare_drop": "Rare moment",
+    "rare_phrases": ["This exact day will be the one you remember.", "Most people never get this far. You just did.", "Your future self just smiled.", "The forge only shines for those who show up.", "Somewhere, the old you just lost another vote.", "This one counts double in your soul."],
     "celebration_phrases": [
       "The version of you who quit is getting further away.",
       "You showed up. That's the whole game.",
@@ -136,6 +138,8 @@
     "track_label": "Track",
     "error_retry": "Something went wrong. Please try again shortly.",
     "unlimited": "Unlimited",
+    "not_therapy": "Forge is a self-improvement tool — it is not therapy, medical care, or an emergency service.",
+    "crisis_help": "If you're in crisis or thinking about harming yourself, call your local emergency number (112 / 911) or find a helpline at findahelpline.com.",
     "none": "None"
   },
   "nav": {
@@ -148,6 +152,13 @@
   },
   "home": {
     "greeting_morning": "Good morning",
+    "trial_left": "Trial: {{n}} days left",
+    "trial_cta": "See plans",
+    "urges_beaten": "urges beaten",
+    "urge_resisted_btn": "I beat an urge",
+    "urge_logged": "Counted. Respect.",
+    "next_title": "{{n}} days to {{title}}",
+    "top_title": "Top rank reached. Legend.",
     "greeting_afternoon": "Good afternoon",
     "greeting_evening": "Good evening",
     "checkin_cta": "Check in today",
@@ -607,6 +618,7 @@
     "shields": "shields",
     "shields_body": "Earn a shield every 10 consecutive days. Auto-used if you miss a day.",
     "my_plan": "My plan",
+    "manage_plan": "Manage subscription",
     "upgrade": "Upgrade",
     "plan_tracks": "Active tracks: {{n}}",
     "plan_coach": "AI Coach messages: {{n}}/month",
@@ -656,6 +668,7 @@
     "do_one": "Do one of these right now:",
     "im_okay": "I'm okay now",
     "breathe_again": "Breathe again",
+    "your_why": "Your reason for starting",
     "skip": "skip",
     "two_cycles": "2 full cycles — then we ground you",
     "struggling": "I'm struggling",
@@ -1119,6 +1132,7 @@
   },
   "paywall": {
     "trial_ended": "Trial ended",
+    "unlock_title": "Unlock all of Forge",
     "continue_journey": "Continue your journey",
     "feature_col": "Feature",
     "free_col": "Free",
@@ -1128,6 +1142,10 @@
     "continue_free": "Continue with limited free access",
     "most_popular": "Most popular",
     "per_month": "per month, cancel anytime",
+    "per_year": "per year, cancel anytime",
+    "billing_monthly": "Billed monthly",
+    "billing_yearly": "Billed yearly",
+    "two_months_free": "−2 months",
     "upgrade_to": "Upgrade to {{plan}}",
     "upgrade": "Upgrade",
     "features": {

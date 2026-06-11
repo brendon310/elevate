@@ -14,7 +14,7 @@ import { supabase } from "./supabase";
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from './types';
 import { HomePage } from './pages/HomePage';
 import * as db from "./db";
-import { Plan, shouldShowPaywall, getLimit, hasFeature } from './plans';
+import { Plan, shouldShowPaywall, getLimit, hasFeature, trackEvent } from './plans';
 import { PaywallModal } from './components/PaywallModal';
 import { ReEntryOverlay, StreakRecoveryOverlay, SOSOverlay, SOSButton, CertModal, MilestoneOverlay } from './components/Overlays';
 import { CheckInRichModal } from './components/CheckInModal';
@@ -1980,20 +1980,25 @@ function FirstDayReveal({ userName, track, onComplete }: {
 
 // CELEBRATION_PHRASES moved to i18n JSON (app.celebration_phrases)
 
-function CheckInCelebration({ trackName, streak, onDismiss }: {
+function CheckInCelebration({ trackName, streak, rare, onDismiss }: {
   trackName: string;
   streak: number;
+  rare?: boolean;
   onDismiss: () => void;
 }) {
   const { t } = useTranslation();
-  const celebPhrases = t("app.celebration_phrases", { returnObjects: true }) as string[];
+  const celebPhrases = t(rare ? "app.rare_phrases" : "app.celebration_phrases", { returnObjects: true }) as string[];
   const phrase = useMemo(() => celebPhrases[Math.floor(Math.random() * celebPhrases.length)], [celebPhrases]);
   const [progress, setProgress] = useState(100);
-  const DURATION = 3000;
+  const DURATION = rare ? 4000 : 3000;
 
-  // Ambient flash on mount (no confetti — cinematic, not casino)
+  // Ambient flash on mount (no confetti — cinematic, not casino).
+  // Exception: RARE drops get a golden burst — variable reward earns the noise.
   useEffect(() => {
-    void 0; // intentional — the progress bar + coach flash carry the moment
+    if (rare) {
+      confetti({ particleCount: 90, spread: 75, startVelocity: 32, origin: { y: 0.45 }, colors: ['#FFD700', '#FFC83D', '#FFF1B8'] });
+      navigator.vibrate?.([30, 60, 30, 60, 30]);
+    }
     const start = Date.now();
     const raf = requestAnimationFrame(function tick() {
       const elapsed = Date.now() - start;
@@ -2031,7 +2036,7 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
           <svg width="140" height="140" className="-rotate-90">
             <circle cx="70" cy="70" r="58" stroke="oklch(1 0 0 / 0.08)" strokeWidth="8" fill="none" />
             <motion.circle cx="70" cy="70" r="58"
-              stroke="oklch(0.65 0.22 250)" strokeWidth="8" fill="none"
+              stroke={rare ? "oklch(0.82 0.16 85)" : "oklch(0.65 0.22 250)"} strokeWidth="8" fill="none"
               strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 58}`}
               initial={{ strokeDashoffset: 2 * Math.PI * 58 }}
@@ -2059,6 +2064,14 @@ function CheckInCelebration({ trackName, streak, onDismiss }: {
           <h2 className="font-display text-2xl text-white tracking-tight">
             {t("app.day_complete", { n: streak })}
           </h2>
+          {rare && (
+            <motion.p
+              initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, type: "spring", stiffness: 260 }}
+              className="mt-2 inline-block rounded-full border border-yellow-300/40 bg-yellow-300/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.25em] text-yellow-300">
+              ✨ {t("app.rare_drop")}
+            </motion.p>
+          )}
         </motion.div>
 
         {/* Phrase */}
@@ -2105,7 +2118,7 @@ export function ElevateApp() {
   const [page, setPage] = useState<AppPage>("home");
   const [selectedTrack, setSelectedTrack] = useState<UserTrack | null>(null);
   const [firstDayReveal, setFirstDayReveal] = useState<{ track: UserTrack; userName: string } | null>(null);
-  const [checkInCelebration, setCheckInCelebration] = useState<{ trackName: string; streak: number } | null>(null);
+  const [checkInCelebration, setCheckInCelebration] = useState<{ trackName: string; streak: number; rare?: boolean } | null>(null);
   const [pendingCheckIn, setPendingCheckIn] = useState(false);
   const [showMorningCoach, setShowMorningCoach] = useState(false);
   const [showReEntry, setShowReEntry] = useState(false);
@@ -2131,8 +2144,8 @@ export function ElevateApp() {
         const reg = await navigator.serviceWorker.ready;
         const existing = await reg.pushManager.getSubscription();
         if (existing) return;
-        const resp = await fetch('/api/vapid-public-key');
-        const { key } = await resp.json();
+        // VAPID public key comes from build-time env (saves a Vercel function slot)
+        const key = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BLsx3Fhbc_Z2gD4jDBRaIUgwd8A2jAo2aBeTeZ800-y2y4yrbTDCJJoYnfaZk83VNdwKiFN6LciifgkZj5q4US4";
         if (!key) return;
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
@@ -2152,6 +2165,29 @@ export function ElevateApp() {
   const [tracks, setTracks] = useState<UserTrack[]>(() => lsLoad(LS_TRACKS, []));
   const [logs, setLogs] = useState<Log[]>(() => lsLoad(LS_LOGS, []));
   const [supabaseId, setSupabaseId] = useState<string | null>(() => lsLoad<ElevateUser | null>(LS_USER, null)?.supabaseId ?? null);
+
+  // After Stripe checkout, poll for the webhook-updated plan (webhook can lag a few seconds)
+  useEffect(() => {
+    if (!supabaseId) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('checkout') !== 'success') return;
+    window.history.replaceState({}, '', window.location.pathname);
+    let attempts = 0;
+    const poll = () => {
+      attempts++;
+      db.loadSubscription(supabaseId).then(sub => {
+        if (sub?.plan && sub.plan !== 'free') {
+          setPlan(sub.plan as Plan);
+          setPaywallOpen(false);
+          trackEvent('plan_changed', { plan: sub.plan });
+          confetti({ particleCount: 120, spread: 90, origin: { y: 0.4 } });
+        } else if (attempts < 6) {
+          setTimeout(poll, 2000);
+        }
+      }).catch(() => {});
+    };
+    poll();
+  }, [supabaseId]);
 
   const updateUser = useCallback((patch: Partial<ElevateUser>) => {
     setUser(prev => {
@@ -2295,11 +2331,12 @@ export function ElevateApp() {
             setTimeout(() => setShields(earned), 300);
           }
         }
-        // Trigger celebration for every check-in
-        if (!MILESTONE_DAYS.has(newStreak)) {
-          setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak }), 250);
-        } else {
-          setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak }), 250);
+        // Trigger celebration for every check-in.
+        // ~15% of the time it's a RARE drop (variable reward — the strongest
+        // habit-forming mechanism there is, used here for doing the healthy thing).
+        {
+          const rare = Math.random() < 0.15;
+          setTimeout(() => setCheckInCelebration({ trackName: ut.name, streak: newStreak, rare }), 250);
         }
         // Detect track completion
         const targetDays = ut.target_days || 30;
@@ -2665,6 +2702,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
       <CheckInCelebration
         trackName={checkInCelebration.trackName}
         streak={checkInCelebration.streak}
+        rare={checkInCelebration.rare}
         onDismiss={() => setCheckInCelebration(null)}
       />
     </AnimatePresence>
@@ -2749,7 +2787,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
       )}
       <DashboardLayout currentPage={page} onNavigate={setPage}>
         {page === "home" && (
-          <HomePage user={user!} tracks={tracks} plan={plan} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
+          <HomePage user={user!} tracks={tracks} plan={plan} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} onUpgrade={() => setPaywallOpen(true)} />
         )}
         {page === "tracks" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} /></Suspense>}
         {page === "insights" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} plan={plan} onUpgrade={() => setPaywallOpen(true)} /></Suspense>}

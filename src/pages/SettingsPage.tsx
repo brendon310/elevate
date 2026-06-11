@@ -5,7 +5,7 @@ import { supabase } from '../supabase';
 import type { SupportedLanguage } from '../i18n';
 import { loadLanguage } from '../i18n';
 import type { UserTrack } from '../types';
-import { type Plan, PLANS, getLimit } from '../plans';
+import { type Plan, PLANS, getLimit, openBillingPortal } from '../plans';
 
 const LS_LOGS = "forge-logs";
 const LS_USER = "forge-user";
@@ -24,20 +24,7 @@ function lsSave(key: string, val: unknown) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
 }
 
-const FORGE_TITLES = [
-  { days: 0, titleKey: 'settings.title_newcomer', color: 'text-muted-foreground' },
-  { days: 10, titleKey: 'settings.title_apprentice', color: 'text-blue-400' },
-  { days: 25, titleKey: 'settings.title_journeyman', color: 'text-purple-400' },
-  { days: 50, titleKey: 'settings.title_forge_master', color: 'text-amber-400' },
-  { days: 100, titleKey: 'settings.title_legend', color: 'text-yellow-300' },
-];
-
-function getForgeTitle(tracks: UserTrack[]): { titleKey: string; color: string } {
-  const maxStreak = Math.max(0, ...tracks.map(t => t.current_streak ?? 0));
-  let result = FORGE_TITLES[0];
-  for (const ft of FORGE_TITLES) { if (maxStreak >= ft.days) result = ft; }
-  return result;
-}
+import { getForgeTitle } from '../forgeTitles';
 
 function SettingsPage({
   userName, onSignOut, onUpdateName, islandTheme, onChangeTheme, shields, tracks, plan = 'free', onUpgrade
@@ -58,7 +45,7 @@ function SettingsPage({
   const [nameSaved, setNameSaved] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [reminderOn, setReminderOn] = useState(() => lsLoad<boolean>("forge-reminder-on", false));
-  const [reminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
+  const [reminderTime, setReminderTime] = useState(() => lsLoad<string>("forge-reminder-time", "21:00"));
   const [pushLoading, setPushLoading] = useState(false);
   const [pushError, setPushError] = useState<string | null>(null);
 
@@ -120,6 +107,21 @@ setPushError(t("settings.push_failed"));
     }
   };
 
+  // Change reminder hour; if reminders are on, sync the new hour to the server.
+  const handleReminderTimeChange = async (val: string) => {
+    setReminderTime(val);
+    lsSave("forge-reminder-time", val);
+    if (!reminderOn) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      const { data: { session: _ps } } = await supabase.auth.getSession();
+      if (sub && _ps) {
+        await fetch("/api/push", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${_ps.access_token}` }, body: JSON.stringify({ subscription: sub, reminderHour: parseInt(val.split(":")[0], 10) }) });
+      }
+    } catch { /* time saved locally; will sync on next toggle */ }
+  };
+
   const handleSaveName = () => {
     if (!displayName.trim()) return;
     onUpdateName(displayName.trim());
@@ -134,7 +136,7 @@ setPushError(t("settings.push_failed"));
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
       if (token) {
-        const resp = await fetch('/api/user/export', {
+        const resp = await fetch('/api/user', {
           headers: { Authorization: `Bearer ${token}` }
         });
         const blob = await resp.blob();
@@ -174,7 +176,7 @@ setPushError(t("settings.push_failed"));
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
       if (token) {
-        await fetch('/api/user/delete', {
+        await fetch('/api/user', {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -247,12 +249,20 @@ setPushError(t("settings.push_failed"));
               </span>
               <span className="ml-2 text-sm text-muted-foreground">{PLANS[plan].price}</span>
             </div>
-            {plan !== 'premium' && onUpgrade && (
-              <button onClick={onUpgrade}
-                className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold">
-                {t("settings.upgrade")}
-              </button>
-            )}
+            <div className="flex gap-2">
+              {plan !== 'free' && (
+                <button onClick={() => { openBillingPortal(); }}
+                  className="rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
+                  {t("settings.manage_plan")}
+                </button>
+              )}
+              {plan !== 'premium' && onUpgrade && (
+                <button onClick={onUpgrade}
+                  className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold">
+                  {t("settings.upgrade")}
+                </button>
+              )}
+            </div>
           </div>
           <ul className="text-xs text-muted-foreground space-y-1">
             <li>{t("settings.plan_tracks", { n: getLimit(plan, 'max_tracks') })}</li>
@@ -316,8 +326,14 @@ setPushError(t("settings.push_failed"));
           </button>
         </div>
         {reminderOn && (
-          <div className="flex items-center gap-1.5 py-2 border-t border-border/50 mt-1">
+          <div className="flex items-center justify-between gap-1.5 py-2 border-t border-border/50 mt-1">
             <p className="text-xs text-muted-foreground">{t("settings.reminder_active")}</p>
+            <input
+              type="time"
+              value={reminderTime}
+              onChange={e => handleReminderTimeChange(e.target.value)}
+              className="rounded-lg border border-border bg-background px-2 py-1 text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
           </div>
         )}
         {pushError && <p className="mt-2 text-xs text-[color:var(--secondary)]">{pushError}</p>}
@@ -467,6 +483,12 @@ setPushError(t("settings.push_failed"));
           </div>
         </div>
       </section>
+
+      {/* Wellbeing disclaimer + crisis resources */}
+      <footer className="px-1 pb-4 space-y-1 text-center">
+        <p className="text-[11px] text-muted-foreground/70 leading-relaxed">{t("common.not_therapy")}</p>
+        <p className="text-[11px] text-muted-foreground leading-relaxed">{t("common.crisis_help")}</p>
+      </footer>
     </div>
   );
 }

@@ -860,6 +860,13 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
           userContext: { startingPoint: journey.startingPoint, motivation: journey.motivation, daysCompleted: completedCount, totalDays: journey.totalDays },
         }),
       });
+      if (res.status === 402) {
+        // Server-side quota hit (source of truth) — sync the local counter and stop.
+        if (coachLimit > 0) { setCoachUsed(coachLimit); lsSave(LS_COACH_USED(thisMonth), coachLimit); }
+        setChatLoading(false);
+        return;
+      }
+      if (!res.ok) throw new Error("coach_error");
       const { message } = await res.json() as { message: string };
       const assistantMsg: ChatMessage = { id: nanoid(), role: "assistant", content: message, createdAt: new Date().toISOString() };
       if (userId) db.saveCoachMessage(userId, { id: assistantMsg.id, track_slug: track.slug, role: "assistant", content: assistantMsg.content, created_at: assistantMsg.createdAt }).catch(() => {});

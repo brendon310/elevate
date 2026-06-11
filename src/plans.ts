@@ -32,6 +32,7 @@ export interface PlanConfig {
   name: Plan;
   label: string;
   price: string;
+  priceYear?: string; // yearly price label (2 months free)
   priceId: string;
   color: string;
   badge: string;
@@ -60,6 +61,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
     name: 'standard',
     label: 'Standard',
     price: '\u20ac7.99/mo',
+    priceYear: '\u20ac79.99/yr',
     priceId: 'price_standard_monthly',
     color: '#3b82f6',
     badge: 'Standard',
@@ -85,6 +87,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
     name: 'premium',
     label: 'Premium',
     price: '\u20ac14.99/mo',
+    priceYear: '\u20ac149.99/yr',
     priceId: 'price_premium_monthly',
     color: '#8b5cf6',
     badge: 'Premium',
@@ -156,7 +159,7 @@ export function shouldShowPaywall(plan: Plan, accountCreatedAt: string): boolean
   return plan === 'free' && trialExpired(accountCreatedAt);
 }
 
-// ─── Checkout (placeholder — wire Stripe here later) ──────────────────────────
+// ─── Checkout (Stripe via /api/billing) ───────────────────────────────────────
 
 export interface CheckoutResult {
   success: boolean;
@@ -164,30 +167,50 @@ export interface CheckoutResult {
 }
 
 /**
- * Placeholder checkout handler.
- * TO CONNECT STRIPE: Replace the body with a real Stripe checkout redirect.
- * See comments below for the exact implementation pattern.
- *
- * STRIPE INTEGRATION STEPS:
- *   1. Create api/create-checkout.ts (Vercel function)
- *   2. const session = await stripe.checkout.sessions.create({ price_data... })
- *   3. Return { url: session.url }
- *   4. Replace this function body with:
- *      const res = await fetch('/api/create-checkout', {
- *        method: 'POST',
- *        headers: { Authorization: `Bearer ${token}` },
- *        body: JSON.stringify({ priceId: PLANS[plan].priceId }),
- *      });
- *      const { url } = await res.json();
- *      window.location.href = url;
+ * Real Stripe checkout via /api/billing.
+ * Redirects the browser to Stripe Checkout; the webhook updates profiles.plan,
+ * and the app picks the new plan up on next load (loadSubscription).
  */
-export async function startCheckout(plan: Plan): Promise<CheckoutResult> {
-  trackEvent('checkout_started', { plan, priceId: PLANS[plan].priceId });
-  console.warn('[plans] startCheckout placeholder — Stripe not connected yet. Plan:', plan);
-  window.alert(
-    'Stripe checkout coming soon!\n\nPlan: ' + PLANS[plan].label + '\nPrice: ' + PLANS[plan].price
-  );
-  return { success: false, error: 'Stripe not connected yet' };
+export async function startCheckout(plan: Plan, interval: 'month' | 'year' = 'month'): Promise<CheckoutResult> {
+  trackEvent('checkout_started', { plan, priceId: PLANS[plan].priceId, interval });
+  try {
+    const { supabase } = await import('./supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return { success: false, error: 'Not signed in' };
+    const res = await fetch('/api/billing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ action: 'checkout', plan, interval }),
+    });
+    const data = await res.json() as { url?: string; error?: string };
+    if (!res.ok || !data.url) return { success: false, error: data.error ?? 'Checkout unavailable' };
+    window.location.href = data.url;
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Checkout unavailable' };
+  }
+}
+
+/** Open the Stripe customer portal (manage/cancel subscription). */
+export async function openBillingPortal(): Promise<CheckoutResult> {
+  try {
+    const { supabase } = await import('./supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return { success: false, error: 'Not signed in' };
+    const res = await fetch('/api/billing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ action: 'portal' }),
+    });
+    const data = await res.json() as { url?: string; error?: string };
+    if (!res.ok || !data.url) return { success: false, error: data.error ?? 'Portal unavailable' };
+    window.location.href = data.url;
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Portal unavailable' };
+  }
 }
 
 // ─── Analytics (PostHog-safe) ─────────────────────────────────────────────────

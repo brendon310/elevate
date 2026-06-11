@@ -183,6 +183,14 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
   }, [breatheCycles, sosPhase]);
 
   const primarySlug = tracks[0]?.slug ?? "";
+  // The user's own reason for starting — the strongest anchor during an urge.
+  const userWhy = (() => {
+    try {
+      const j = JSON.parse(localStorage.getItem(`forge-journey-${primarySlug}`) ?? "null") as { motivation?: string } | null;
+      const m = j?.motivation?.trim();
+      return m && m.length > 2 ? m : null;
+    } catch { return null; }
+  })();
   const sosAlts = t("sos.alternatives", { returnObjects: true }) as Record<string, string[]>;
   const sosGeneric = t("sos.generic", { returnObjects: true }) as string[];
   const alternatives = sosAlts[primarySlug] ?? sosGeneric;
@@ -288,6 +296,16 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
               </p>
             </div>
 
+            {userWhy && (
+              <div
+                className="w-full rounded-2xl p-4 text-left"
+                style={{ background: "oklch(0.14 0.05 80 / 0.5)", border: "1px solid oklch(0.5 0.12 80 / 0.35)" }}
+              >
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-amber-200/60 mb-1.5">{t("sos.your_why")}</p>
+                <p className="text-sm text-white/85 leading-relaxed italic">“{userWhy}”</p>
+              </div>
+            )}
+
             <div
               className="rounded-2xl p-5 space-y-3 text-left"
               style={{ background: "oklch(0.12 0.03 230 / 0.8)", border: "1px solid oklch(0.3 0.08 230 / 0.3)" }}
@@ -346,7 +364,14 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             </div>
 
             <button
-              onClick={onDismiss}
+              onClick={() => {
+                // Surviving an SOS moment counts as an urge beaten.
+                try {
+                  const n = (JSON.parse(localStorage.getItem('forge-urges-resisted') ?? '0') as number) + 1;
+                  localStorage.setItem('forge-urges-resisted', JSON.stringify(n));
+                } catch { /* counter is best-effort */ }
+                onDismiss();
+              }}
               className="mt-2 rounded-2xl px-8 py-3.5 font-semibold text-white transition-all active:scale-95"
               style={{
                 background: "oklch(0.35 0.08 230)",
@@ -361,6 +386,15 @@ function SOSOverlay({ tracks, onDismiss }: { tracks: UserTrack[]; onDismiss: () 
             >
 {t("sos.breathe_again")}
             </button>
+
+            {/* Crisis resources — always visible in the act phase */}
+            <div
+              className="w-full rounded-xl p-4 space-y-1.5 text-center"
+              style={{ background: "oklch(0.1 0.04 25 / 0.6)", border: "1px solid oklch(0.35 0.1 25 / 0.4)" }}
+            >
+              <p className="text-[11px] text-white/50 leading-relaxed">{t("common.not_therapy")}</p>
+              <p className="text-[11px] text-white/70 leading-relaxed font-medium">{t("common.crisis_help")}</p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

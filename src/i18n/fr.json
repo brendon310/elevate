@@ -31,6 +31,8 @@
       "Fais un geste dont ton futur toi sera fier.",
       "La discipline est l'amour de soi au ralenti."
     ],
+    "rare_drop": "Moment rare",
+    "rare_phrases": ["C'est ce jour précis dont tu te souviendras.", "La plupart n'arrivent jamais jusqu'ici. Toi, si.", "Ton futur toi vient de sourire.", "La forge ne brille que pour ceux qui se présentent.", "Quelque part, l'ancien toi vient de perdre un vote.", "Celui-ci compte double dans l'âme."],
     "celebration_phrases": [
       "La version de toi qui a abandonné s'éloigne de plus en plus.",
       "Tu t'es présenté·e. C'est tout le jeu.",
@@ -136,6 +138,8 @@
     "track_label": "Habitude",
     "error_retry": "Une erreur s'est produite. Veuillez réessayer bientôt.",
     "unlimited": "Illimité",
+    "not_therapy": "Forge est un outil de développement personnel — ce n'est ni une thérapie, ni des soins médicaux, ni un service d'urgence.",
+    "crisis_help": "Si tu es en crise ou que tu penses à te faire du mal, appelle le numéro d'urgence local (112) ou trouve une ligne d'écoute sur findahelpline.com.",
     "none": "Aucun"
   },
   "nav": {
@@ -148,6 +152,13 @@
   },
   "home": {
     "greeting_morning": "Bonjour",
+    "trial_left": "Essai : {{n}} jours restants",
+    "trial_cta": "Voir les plans",
+    "urges_beaten": "envies vaincues",
+    "urge_resisted_btn": "J'ai résisté",
+    "urge_logged": "Comptée. Respect.",
+    "next_title": "{{n}} jours avant {{title}}",
+    "top_title": "Rang maximal. Légende.",
     "greeting_afternoon": "Bonne après-midi",
     "greeting_evening": "Bonsoir",
     "checkin_cta": "Enregistrer aujourd'hui",
@@ -607,6 +618,7 @@
     "shields": "boucliers",
     "shields_body": "Gagne un bouclier tous les 10 jours consécutifs. Utilisé automatiquement si tu manques un jour.",
     "my_plan": "Mon plan",
+    "manage_plan": "Gérer l'abonnement",
     "upgrade": "Changer de plan",
     "plan_tracks": "Parcours actifs : {{n}}",
     "plan_coach": "Messages au Coach IA : {{n}}/mois",
@@ -656,6 +668,7 @@
     "do_one": "Fais une de ces choses maintenant :",
     "im_okay": "Je vais bien maintenant",
     "breathe_again": "Respirer à nouveau",
+    "your_why": "Ta raison de commencer",
     "skip": "passer",
     "two_cycles": "2 cycles complets — puis on t'ancre",
     "struggling": "J'ai du mal",
@@ -1119,6 +1132,7 @@
   },
   "paywall": {
     "trial_ended": "Essai terminé",
+    "unlock_title": "Débloque tout Forge",
     "continue_journey": "Continuez votre parcours",
     "feature_col": "Fonctionnalité",
     "free_col": "Gratuit",
@@ -1128,6 +1142,10 @@
     "continue_free": "Continuer avec l'accès gratuit limité",
     "most_popular": "Le plus populaire",
     "per_month": "par mois, annulez à tout moment",
+    "per_year": "par an, annulable à tout moment",
+    "billing_monthly": "Facturation mensuelle",
+    "billing_yearly": "Facturation annuelle",
+    "two_months_free": "−2 mois",
     "upgrade_to": "Passer à {{plan}}",
     "upgrade": "Mettre à niveau",
     "features": {

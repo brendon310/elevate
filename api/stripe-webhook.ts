@@ -1,6 +1,10 @@
+// api/stripe-webhook.ts — receives Stripe events and syncs plan + status to profiles.
+// bodyParser MUST be disabled: signature verification needs the exact raw body.
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+
+export const config = { api: { bodyParser: false } };
 
 const supabase = createClient(
   process.env.SUPABASE_URL || "https://placeholder.invalid",
@@ -43,6 +47,15 @@ function mapStatus(eventType: string, stripeStatus: string): string | null {
   }
 }
 
+/** Map a Stripe price ID back to a Forge plan name. */
+function planForPrice(priceId: string | undefined): string | null {
+  if (!priceId) return null;
+  if (priceId === process.env.STRIPE_PRICE_STANDARD || priceId === process.env.STRIPE_PRICE_STANDARD_YEAR) return "standard";
+  if (priceId === process.env.STRIPE_PRICE_PREMIUM || priceId === process.env.STRIPE_PRICE_PREMIUM_YEAR) return "premium";
+  return null;
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -54,16 +67,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "Invalid signature" });
   let event: any;
   try { event = JSON.parse(rawBody); } catch { return res.status(400).json({ error: "Invalid JSON" }); }
-  const sub = event.data?.object;
-  const newStatus = mapStatus(event.type, sub?.status ?? "");
-  if (!newStatus) return res.status(200).json({ received: true });
-  const userId = sub.metadata?.supabase_user_id;
-  if (userId) {
-    await supabase.from("profiles").update({ subscription_status: newStatus }).eq("id", userId);
+
+  const obj = event.data?.object;
+
+  // Checkout completed → activate plan immediately (subscription events may lag).
+  if (event.type === "checkout.session.completed") {
+    const userId = obj?.metadata?.supabase_user_id;
+    const plan = obj?.metadata?.plan;
+    if (userId) {
+      const update: Record<string, unknown> = {
+        subscription_status: "active",
+        ...(plan === "standard" || plan === "premium" ? { plan } : {}),
+        ...(obj.customer ? { stripe_customer_id: obj.customer } : {}),
+        ...(obj.subscription ? { stripe_subscription_id: obj.subscription } : {}),
+      };
+      await supabase.from("profiles").update(update).eq("id", userId);
+    }
     return res.status(200).json({ ok: true });
   }
-  if (sub.customer) {
-    await supabase.from("profiles").update({ subscription_status: newStatus }).eq("stripe_customer_id", sub.customer);
+
+  // Subscription lifecycle → keep plan + status in sync.
+  const newStatus = mapStatus(event.type, obj?.status ?? "");
+  if (!newStatus) return res.status(200).json({ received: true });
+
+  const priceId: string | undefined = obj?.items?.data?.[0]?.price?.id;
+  const planFromPrice = planForPrice(priceId);
+  const update: Record<string, unknown> = { subscription_status: newStatus };
+  if (newStatus === "cancelled") {
+    update.plan = "free"; // downgrade on cancellation
+  } else if (planFromPrice) {
+    update.plan = planFromPrice; // upgrade/downgrade between paid tiers
+  }
+  if (obj?.id && event.type.startsWith("customer.subscription")) {
+    update.stripe_subscription_id = obj.id;
+  }
+
+  const userId = obj?.metadata?.supabase_user_id;
+  if (userId) {
+    await supabase.from("profiles").update(update).eq("id", userId);
+    return res.status(200).json({ ok: true });
+  }
+  if (obj?.customer) {
+    await supabase.from("profiles").update(update).eq("stripe_customer_id", obj.customer);
   }
   return res.status(200).json({ ok: true });
 }
