@@ -70,10 +70,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   // Server-side track limit: only on NEW journey starts (fromDay 1), not on
-  // continuation batches for an existing journey.
+  // continuation batches, and never counting the track being (re)generated.
   if (fromDay === 1) {
     const plan = await getUserPlan(user.id);
-    const existing = await countJourneys(user.id);
+    const existing = await countJourneys(user.id, slug);
     if (existing >= PLAN_LIMITS[plan].maxTracks) {
       return res.status(402).json({ error: "track_limit", limit: PLAN_LIMITS[plan].maxTracks });
     }

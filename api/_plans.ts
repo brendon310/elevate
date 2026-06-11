@@ -60,13 +60,19 @@ export async function countCoachMessagesThisMonth(userId: string): Promise<numbe
   }
 }
 
-/** Count the user's journeys (active tracks with a generated journey). */
-export async function countJourneys(userId: string): Promise<number> {
+/**
+ * Count the user's journeys (active tracks with a generated journey).
+ * excludeSlug: don't count the track being (re)generated — regenerating or
+ * restarting an EXISTING journey must never hit the plan limit.
+ */
+export async function countJourneys(userId: string, excludeSlug?: string): Promise<number> {
   try {
-    const { count } = await adminClient()
+    let q = adminClient()
       .from("journeys")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId);
+    if (excludeSlug) q = q.neq("track_slug", excludeSlug);
+    const { count } = await q;
     return count ?? 0;
   } catch {
     return 0; // fail-open

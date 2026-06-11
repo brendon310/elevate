@@ -91,6 +91,17 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
       localStorage.setItem(`forge-days-lang2-${track.slug}`, i18n.language);
       return completed;
     }
+    // Self-heal: if the saved days are the generic FALLBACK (AI generation
+    // failed at journey creation) and nothing is completed yet, discard them
+    // so the onboarding regenerates a real AI programme.
+    if (rawDays.length > 0 && rawDays.every(d => d.completedAt === null)) {
+      const trackName = t(`tracks.${track.slug}.name`, { defaultValue: track.name });
+      const fbTitle = t('journey.fallback_title', { day: rawDays[0].dayNumber ?? 1, track: trackName });
+      if (rawDays[0].title === fbTitle) {
+        lsSave(LS_DAYS(track.slug), []);
+        return [];
+      }
+    }
     return rawDays;
   });
 
@@ -113,7 +124,14 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
         completedAt: d.completed_at ?? null, userNote: d.user_note ?? null,
       })) as JourneyDay[];
       const lang = i18n.language;
-      const keep = lang !== 'en' ? mappedDays.filter(d => d.completedAt !== null) : mappedDays;
+      let keep = lang !== 'en' ? mappedDays.filter(d => d.completedAt !== null) : mappedDays;
+      // Discard restored FALLBACK days too (see self-heal note above)
+      if (keep.length > 0 && keep.every(d => d.completedAt === null)) {
+        const trackName = t(`tracks.${track.slug}.name`, { defaultValue: track.name });
+        const fbTitle = t('journey.fallback_title', { day: keep[0].dayNumber ?? 1, track: trackName });
+        if (keep[0].title === fbTitle) keep = [];
+      }
+      if (keep.length === 0) return;
       lsSave(LS_DAYS(track.slug), keep);
       localStorage.setItem(`forge-days-lang2-${track.slug}`, lang);
       setDays(keep);

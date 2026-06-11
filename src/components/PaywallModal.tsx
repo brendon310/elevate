@@ -125,7 +125,7 @@ function PlanCard({ plan, recommended, yearly, onUpgrade }: PlanCardProps) {
   const { t } = useTranslation();
   const config: PlanConfig = PLANS[plan];
   const isStd = plan === 'standard';
-  // Standard = electric blue. Premium = GOLD \u2014 the colour of wanting it.
+  // Standard = electric blue. Premium = GOLD — the colour of wanting it.
   const accent = isStd ? '#3b82f6' : '#fbbf24';
 
   return (
@@ -155,7 +155,7 @@ function PlanCard({ plan, recommended, yearly, onUpgrade }: PlanCardProps) {
           letterSpacing: '0.08em', textTransform: 'uppercase' as const,
           padding: '0.2rem 0.75rem', borderRadius: '2rem', whiteSpace: 'nowrap' as const,
           boxShadow: '0 4px 16px rgba(251,191,36,0.5)' }}>
-          \u2726 {config.label}
+          ✦ {config.label}
         </div>
       )}
       <div>
@@ -174,7 +174,7 @@ function PlanCard({ plan, recommended, yearly, onUpgrade }: PlanCardProps) {
       <ul style={{ margin: 0, padding: 0, listStyle: 'none' as const, display: 'flex', flexDirection: 'column' as const, gap: '0.45rem' }}>
         {Array.from(config.features).slice(0, 5).map(f => (
           <li key={f} style={{ display: 'flex', alignItems: 'flex-start' as const, gap: '0.5rem', color: '#e2e8f0', fontSize: '0.8125rem' }}>
-            <span style={{ color: accent, marginTop: '1px', flexShrink: 0, fontWeight: 700 }}>\u2713</span>
+            <span style={{ color: accent, marginTop: '1px', flexShrink: 0, fontWeight: 700 }}>✓</span>
 {t(FEATURE_KEYS[f as Feature] ?? f)}
           </li>
         ))}
