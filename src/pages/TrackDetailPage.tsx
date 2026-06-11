@@ -94,29 +94,37 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
     return rawDays;
   });
 
-  // Load journey days from Supabase if localStorage is empty (cross-device / cleared cache)
+  // Load journey days from Supabase if localStorage is empty (cross-device / cleared cache).
+  // Restored content has UNKNOWN language (old accounts generated in English):
+  // outside English we keep only completed days and reset generatedThrough so
+  // JourneyView auto-regenerates the upcoming days in the current app language.
   useEffect(() => {
     if (!userId || days.length > 0) return;
-    db.loadJourneyDays(userId, track.slug).then(dbDays => {
+    Promise.all([
+      db.loadJourneyDays(userId, track.slug).catch(() => []),
+      db.loadJourneys(userId).catch(() => []),
+    ]).then(([dbDays, dbJourneys]) => {
       if (dbDays.length === 0) return;
-      const mapped = dbDays.map(d => ({
+      const mappedDays = dbDays.map(d => ({
         id: d.id, journeyId: d.journey_id ?? "", dayNumber: d.day_number,
         title: d.title ?? "", description: d.description ?? "",
         task: d.task ?? "", reflection: d.reflection ?? "",
         science: d.science ?? "", checkinPrompt: d.checkin_prompt ?? "",
         completedAt: d.completed_at ?? null, userNote: d.user_note ?? null,
       })) as JourneyDay[];
-      lsSave(LS_DAYS(track.slug), mapped);
-      setDays(mapped);
-    }).catch(() => {});
-    db.loadJourneys(userId).then(dbJourneys => {
+      const lang = i18n.language;
+      const keep = lang !== 'en' ? mappedDays.filter(d => d.completedAt !== null) : mappedDays;
+      lsSave(LS_DAYS(track.slug), keep);
+      localStorage.setItem(`forge-days-lang2-${track.slug}`, lang);
+      setDays(keep);
+
       const j = dbJourneys.find(j => j.track_slug === track.slug);
       if (!j || journey) return;
       const mapped: Journey = {
         id: j.id, trackSlug: j.track_slug, totalDays: j.total_days,
         startingPoint: j.starting_point ?? "", motivation: j.motivation ?? "",
         obstacle: j.obstacle ?? "", startedAt: j.started_at ?? "",
-        generatedThrough: j.generated_through ?? 0,
+        generatedThrough: lang !== 'en' ? keep.length : (j.generated_through ?? 0),
       };
       lsSave(LS_JOURNEY(track.slug), mapped);
       setJourney(mapped);

@@ -604,20 +604,31 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
     }).catch(() => {});
   }, [userId, track.slug]);
 
-  // Auto-generate opening message on first coach tab visit
+  // Auto-generate opening message on first coach tab visit.
+  // Also replaces a stale single opener restored in another language.
   useEffect(() => {
-    if (activeTab !== "coach" || chatMessages.length > 0 || coachOpening) return;
-    setCoachOpening(true);
+    if (activeTab !== "coach" || coachOpening) return;
     const openerKey = completedCount < 1
       ? `coach.opener_day1_${archetype.id}`
       : `coach.opener_later_${archetype.id}`;
     const opener = t(openerKey, { name: track.name, day: completedCount + 1, prev: completedCount })
       || t('coach.opener_fallback', { name: track.name });
-    const openingMsg: ChatMessage = { id: nanoid(), role: "assistant", content: opener, createdAt: new Date().toISOString() };
-    const withOpening = [openingMsg];
-    setChatMessages(withOpening);
-    lsSave(LS_CHAT(track.slug), withOpening);
-    if (userId) db.saveCoachMessage(userId, { id: openingMsg.id, track_slug: track.slug, role: "assistant", content: openingMsg.content, created_at: openingMsg.createdAt }).catch(() => {});
+    if (chatMessages.length === 0) {
+      setCoachOpening(true);
+      const openingMsg: ChatMessage = { id: nanoid(), role: "assistant", content: opener, createdAt: new Date().toISOString() };
+      const withOpening = [openingMsg];
+      setChatMessages(withOpening);
+      lsSave(LS_CHAT(track.slug), withOpening);
+      if (userId) db.saveCoachMessage(userId, { id: openingMsg.id, track_slug: track.slug, role: "assistant", content: openingMsg.content, created_at: openingMsg.createdAt }).catch(() => {});
+    } else if (chatMessages.length === 1 && chatMessages[0].role === "assistant" && chatMessages[0].content !== opener) {
+      // The only message is an old opener (e.g. English from a previous session):
+      // swap it for the localized one. Real conversations (length > 1) are untouched.
+      setCoachOpening(true);
+      const replaced = [{ ...chatMessages[0], content: opener }];
+      setChatMessages(replaced);
+      lsSave(LS_CHAT(track.slug), replaced);
+      if (userId) db.saveCoachMessage(userId, { id: chatMessages[0].id, track_slug: track.slug, role: "assistant", content: opener, created_at: chatMessages[0].createdAt }).catch(() => {});
+    }
   }, [activeTab, chatMessages.length, coachOpening]);
   const [milestoneDay, setMilestoneDay] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<JourneyDay | null>(null);

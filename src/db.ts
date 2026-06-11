@@ -206,8 +206,9 @@ export async function updateFlameCount(postId: string, newCount: number): Promis
 }
 
 export async function saveCoachMessage(userId: string, msg: DbCoachMessage): Promise<void> {
-  const { error } = await supabase.from('coach_messages').insert(
-    { ...msg, user_id: userId }
+  // upsert: lets us replace a stale opener (same id) with the localized one
+  const { error } = await supabase.from('coach_messages').upsert(
+    { ...msg, user_id: userId }, { onConflict: 'id' }
   );
   if (error) console.warn('[db] saveCoachMessage:', error.message);
 }
