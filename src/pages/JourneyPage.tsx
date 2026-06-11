@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import * as db from "../db";
 import type { UserTrack, Journey, JourneyDay, ChatMessage, CommunityPost } from "../types";
+import { type Plan, getLimit, hasFeature } from "../plans";
 import confetti from 'canvas-confetti';
 import { Flame, Sparkles, ChevronLeft, Zap, CheckCircle2, Check, Trophy, Lock, RefreshCw } from 'lucide-react';
 
@@ -14,6 +15,7 @@ type AdaptReasonId = typeof ADAPT_REASON_IDS[number];
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
 const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
+const LS_COACH_USED = (month: string) => `forge-coach-used-${month}`;
 // Community content moderation — stems catch conjugations and variants
 const COACH_PROMPT_KEYS: Record<string, string[]> = {
   trainer:   ["coach.prompts.trainer_1","coach.prompts.trainer_2","coach.prompts.trainer_3","coach.prompts.trainer_4"],
@@ -203,7 +205,7 @@ function CheckInRichModal({ onConfirm, onSkip }: {
   );
 }
 
-function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null }) {
+function CommunityBoard({ slug, userId, canPost = true, onUpgrade }: { slug: string; userId?: string | null; canPost?: boolean; onUpgrade?: () => void }) {
   const { t } = useTranslation();
   const [posts, setPosts] = useState<CommunityPost[]>(() => {
     const saved = lsLoad<CommunityPost[]>(LS_COMMUNITY(slug), []);
@@ -282,6 +284,7 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
   return (
     <div className="space-y-3">
       <div className="space-y-1.5">
+        {canPost ? (
         <div className="flex gap-2">
           <input value={draft} onChange={e => { setDraft(e.target.value); if (modWarnKey > 0) setModWarnKey(0); }}
             onKeyDown={e => e.key === "Enter" && !e.shiftKey && post()}
@@ -292,6 +295,18 @@ function CommunityBoard({ slug, userId }: { slug: string; userId?: string | null
             {t("journey.post")}
           </button>
         </div>
+        ) : (
+        <div className="rounded-xl border border-border bg-muted/40 p-3 flex items-center gap-3">
+          <Lock className="h-4 w-4 text-muted-foreground shrink-0" />
+          <p className="flex-1 text-xs text-muted-foreground">{t("journey.community_readonly")}</p>
+          {onUpgrade && (
+            <button onClick={onUpgrade}
+              className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-3 py-1.5 text-xs font-semibold shrink-0">
+              {t("journey.community_readonly_cta")}
+            </button>
+          )}
+        </div>
+        )}
         <AnimatePresence mode="wait">
           {modWarnKey > 0 && (
             <motion.p key={modWarnKey}
@@ -545,7 +560,7 @@ function DurationPickerModal({ trackName, onConfirm, onCancel }: {
     </div>
   );
 }
-function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn, onRestart, userId }: {
+function JourneyView({ track, journey: initJourney, days: initDays, onBack, showCheckInHint, onTrackCheckIn, onRestart, userId, plan = 'free', onUpgrade }: {
   track: UserTrack;
   journey: Journey;
   days: JourneyDay[];
@@ -554,6 +569,8 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   onTrackCheckIn?: () => void;
   onRestart?: (trackId: string) => void;
   userId?: string | null;
+  plan?: Plan;
+  onUpgrade?: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
@@ -564,11 +581,11 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => lsLoad<ChatMessage[]>(LS_CHAT(track.slug), []));
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
-  // Count this-month user messages across all tracks for free-tier soft limit
+  // Coach quota: monthly user-message allowance by plan (0 = unlimited), counted globally across tracks
   const thisMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
-  const monthMsgCount = chatMessages.filter(m => m.role === "user" && m.createdAt.startsWith(thisMonth)).length;
-  const FREE_COACH_LIMIT = 5;
-  const coachLimitReached = monthMsgCount >= FREE_COACH_LIMIT;
+  const coachLimit = getLimit(plan, "coach_messages_month");
+  const [coachUsed, setCoachUsed] = useState<number>(() => lsLoad<number>(LS_COACH_USED(thisMonth), 0));
+  const coachLimitReached = coachLimit > 0 && coachUsed >= coachLimit;
   const [coachOpening, setCoachOpening] = useState(false);
 
   // Load coach messages from Supabase on first open
@@ -796,6 +813,13 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       valid = false;
     }
         if (!valid || !todayDay) return;
+    // Enriched check-in (mood/urge/trigger) is Premium-only — others get the basic check-in
+    if (!hasFeature(plan, 'enriched_checkin')) {
+      checkIn(todayDay.id, "Task: " + checkInTask.trim() + "\n\nReflection: " + checkInReflect.trim());
+      onTrackCheckIn?.();
+      setCheckInTask(""); setCheckInReflect(""); setCheckInNote("");
+      return;
+    }
     setShowRichModal(true);
   };
 
@@ -814,7 +838,10 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
 
   const sendChat = async () => {
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || coachLimitReached) return;
+    const used = coachUsed + 1;
+    setCoachUsed(used);
+    lsSave(LS_COACH_USED(thisMonth), used);
     const userMsg: ChatMessage = { id: nanoid(), role: "user", content: chatInput.trim(), createdAt: new Date().toISOString() };
     const newMessages = [...chatMessages, userMsg];
     setChatMessages(newMessages);
@@ -1051,7 +1078,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
         {activeTab === "community" && (
           <motion.div key="community" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-[10px] uppercase tracking-[0.25em] font-mono text-muted-foreground mb-4">{t("journey.community_title", { name: tn(track.slug, track.name) })}</p>
-            <CommunityBoard slug={track.slug} userId={userId} />
+            <CommunityBoard slug={track.slug} userId={userId} canPost={hasFeature(plan, 'community_post')} onUpgrade={onUpgrade} />
           </motion.div>
         )}
 
@@ -1104,9 +1131,15 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
             <div className="sticky bottom-0 bg-background pt-1">
               {coachLimitReached ? (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 p-3 text-center space-y-1">
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/8 p-3 text-center space-y-2">
                   <p className="text-xs font-medium text-amber-400">{t("journey.coach_limit_reached")}</p>
-                  <p className="text-[10px] text-muted-foreground">{t("journey.coach_limit_sub", { n: FREE_COACH_LIMIT })}</p>
+                  <p className="text-[10px] text-muted-foreground">{t("journey.coach_limit_sub", { n: coachLimit })}</p>
+                  {onUpgrade && plan !== 'premium' && (
+                    <button onClick={onUpgrade}
+                      className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-xs font-semibold">
+                      {t("journey.coach_upgrade")}
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="flex gap-2">
@@ -1120,12 +1153,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   </button>
                 </div>
               )}
-              {!coachLimitReached && monthMsgCount >= 3 && (
+              {!coachLimitReached && coachLimit > 0 && coachLimit - coachUsed <= 2 && (
                 <p className="mt-1.5 text-[10px] text-muted-foreground/60 font-mono text-center">
-{t("journey.messages_left", { n: FREE_COACH_LIMIT - monthMsgCount })}
+{t("journey.messages_left", { n: coachLimit - coachUsed })}
                 </p>
               )}
-              {!coachLimitReached && monthMsgCount < 3 && (
+              {!coachLimitReached && (coachLimit === 0 || coachLimit - coachUsed > 2) && (
                 <p className="mt-2 text-[10px] text-emerald-500/70 font-mono text-center">{t("journey.coach_privacy")}</p>
               )}
             </div>

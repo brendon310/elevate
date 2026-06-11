@@ -17,7 +17,8 @@ export type Feature =
   | 'enriched_checkin'     // Mood + urge intensity + trigger in check-ins
   | 'weekly_letter'        // AI-generated weekly review letter
   | 'sos_button'           // SOS crisis button
-  | 'savings_calculator';  // Savings calculator widget
+  | 'savings_calculator'   // Savings calculator widget
+  | 'vacation_mode';       // Pause streak / vacation mode
 
 export type LimitKey =
   | 'max_tracks'            // Max active tracks (0 = unlimited)
@@ -50,7 +51,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
     limits: {
       max_tracks: 1,
       coach_messages_month: 5,
-      journey_days_visible: 7,
+      journey_days_visible: 0,
       streak_shields_max: 0,
     },
   },
@@ -70,9 +71,10 @@ export const PLANS: Record<Plan, PlanConfig> = {
       'all_themes',
       'sos_button',
       'savings_calculator',
+      'vacation_mode',
     ]),
     limits: {
-      max_tracks: 5,
+      max_tracks: 2,
       coach_messages_month: 50,
       journey_days_visible: 0,
       streak_shields_max: 2,
@@ -97,9 +99,10 @@ export const PLANS: Record<Plan, PlanConfig> = {
       'weekly_letter',
       'sos_button',
       'savings_calculator',
+      'vacation_mode',
     ]),
     limits: {
-      max_tracks: 0,
+      max_tracks: 3,
       coach_messages_month: 0,
       journey_days_visible: 0,
       streak_shields_max: 5,
@@ -134,8 +137,8 @@ export function hasFeature(
   feature: Feature,
   accountCreatedAt?: string,
 ): boolean {
-  const effective = accountCreatedAt && trialActive(accountCreatedAt) ? 'standard' : plan;
-  return PLANS[effective]?.features.has(feature) ?? false;
+  void accountCreatedAt; // trial does not unlock paid features (free stays free)
+  return PLANS[plan]?.features.has(feature) ?? false;
 }
 
 export function getLimit(
@@ -143,8 +146,8 @@ export function getLimit(
   limitKey: LimitKey,
   accountCreatedAt?: string,
 ): number {
-  const effective = accountCreatedAt && trialActive(accountCreatedAt) ? 'standard' : plan;
-  return PLANS[effective]?.limits[limitKey] ?? 1;
+  void accountCreatedAt;
+  return PLANS[plan]?.limits[limitKey] ?? 1;
 }
 
 export const canAccess = hasFeature;

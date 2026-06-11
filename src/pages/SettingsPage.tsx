@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { User as UserIcon, Database, Download, Bell, Globe, Trash2 } from 'lucide-react';
+import { User as UserIcon, Database, Download, Bell, Globe, Trash2, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
 import type { SupportedLanguage } from '../i18n';
 import { loadLanguage } from '../i18n';
 import type { UserTrack } from '../types';
+import { type Plan, PLANS, getLimit } from '../plans';
 
 const LS_LOGS = "forge-logs";
 const LS_USER = "forge-user";
@@ -39,7 +40,7 @@ function getForgeTitle(tracks: UserTrack[]): { titleKey: string; color: string }
 }
 
 function SettingsPage({
-  userName, onSignOut, onUpdateName, islandTheme, onChangeTheme, shields, tracks
+  userName, onSignOut, onUpdateName, islandTheme, onChangeTheme, shields, tracks, plan = 'free', onUpgrade
 }: {
   userName: string;
   onSignOut: () => void;
@@ -48,6 +49,8 @@ function SettingsPage({
   onChangeTheme: (t: string) => void;
   shields: number;
   tracks: UserTrack[];
+  plan?: Plan;
+  onUpgrade?: () => void;
 }) {
   const { t, i18n } = useTranslation();
 
@@ -225,6 +228,42 @@ setPushError(t("settings.push_failed"));
             className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-sm font-medium hover:bg-muted transition">
             {t('settings.logout')}
           </button>
+        </div>
+      </section>
+
+      {/* My plan */}
+      <section className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+            <Crown className="h-4 w-4" />
+          </span>
+          <h2 className="font-semibold">{t("settings.my_plan")}</h2>
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white" style={{ background: PLANS[plan].color }}>
+                {PLANS[plan].label}
+              </span>
+              <span className="ml-2 text-sm text-muted-foreground">{PLANS[plan].price}</span>
+            </div>
+            {plan !== 'premium' && onUpgrade && (
+              <button onClick={onUpgrade}
+                className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold">
+                {t("settings.upgrade")}
+              </button>
+            )}
+          </div>
+          <ul className="text-xs text-muted-foreground space-y-1">
+            <li>{t("settings.plan_tracks", { n: getLimit(plan, 'max_tracks') })}</li>
+            <li>{getLimit(plan, 'coach_messages_month') === 0
+              ? t("settings.plan_coach_unlimited")
+              : t("settings.plan_coach", { n: getLimit(plan, 'coach_messages_month') })}</li>
+            <li>{t("settings.plan_shields", { n: getLimit(plan, 'streak_shields_max') })}</li>
+          </ul>
+          {plan === 'premium' && (
+            <p className="text-xs text-muted-foreground">{t("settings.plan_max")}</p>
+          )}
         </div>
       </section>
 

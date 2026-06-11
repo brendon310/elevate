@@ -57,8 +57,8 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
             </thead>
             <tbody>
               {([
-                { labelKey: 'paywall.features.active_tracks',     free: '1',           standard: t('paywall.up_to_5'),      premium: t('common.unlimited') },
-                { labelKey: 'paywall.features.journey_length',    free: t('paywall.seven_days'), standard: t('paywall.full_access'), premium: t('paywall.full_access') },
+                { labelKey: 'paywall.features.active_tracks',     free: '1',           standard: '2',      premium: '3' },
+                { labelKey: 'paywall.features.journey_length',    free: t('paywall.full_access'), standard: t('paywall.full_access'), premium: t('paywall.full_access') },
                 { labelKey: 'paywall.features.ai_coach',          free: t('paywall.five_per_month'), standard: t('paywall.fifty_per_month'), premium: t('common.unlimited') },
                 { labelKey: 'paywall.features.community',         free: t('paywall.read_only'),  standard: t('paywall.full_access'), premium: t('paywall.full_access') },
                 { labelKey: 'paywall.features.shields',           free: t('common.none'),        standard: t('paywall.two_max'),  premium: t('paywall.five_max') },
@@ -66,6 +66,7 @@ export function PaywallModal({ currentPlan, accountCreatedAt, onDismiss, onPlanC
                 { labelKey: 'paywall.features.enriched_checkins', free: '—',  standard: '—',  premium: t('common.yes') },
                 { labelKey: 'paywall.features.weekly_letter',     free: '—',  standard: '—',  premium: t('common.yes') },
                 { labelKey: 'paywall.features.sos',               free: '—',  standard: t('common.yes'), premium: t('common.yes') },
+                { labelKey: 'paywall.features.vacation',          free: '—',  standard: t('common.yes'), premium: t('common.yes') },
                 { labelKey: 'paywall.features.savings',           free: '—',  standard: t('common.yes'), premium: t('common.yes') },
               ] as FeatureRowDef[]).map((row, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.025)' }}>
@@ -146,6 +147,7 @@ const FEATURE_KEYS: Record<Feature, string> = {
   weekly_letter: 'paywall.features.weekly_letter',
   sos_button: 'paywall.features.sos',
   savings_calculator: 'paywall.features.savings',
+  vacation_mode: 'paywall.features.vacation',
 };
 
 const S = {

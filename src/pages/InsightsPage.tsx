@@ -1,12 +1,13 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Mail, BarChart2 } from 'lucide-react';
+import { Sparkles, Mail, BarChart2, Lock } from 'lucide-react';
 import type { UserTrack, Log, JourneyDay } from '../types';
 import { PatternInsights } from '../components/PatternInsights';
 import { AccountabilityCard } from '../components/AccountabilityCard';
 import { loadPatternLogs, loadAccountabilityPairs, sendAccountabilityInvite } from '../db.phase5';
 import { supabase } from '../supabase';
+import { Plan, hasFeature } from '../plans';
 import type { EnrichedLog, AccountabilityPair } from '../types';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
@@ -28,7 +29,7 @@ function liveStreak(ut: UserTrack): number {
   return 0;
 }
 
-function InsightsPage({ userTracks, logs, userId }: { userTracks: UserTrack[]; logs: Log[]; userId?: string }) {
+function InsightsPage({ userTracks, logs, userId, plan = 'free', onUpgrade }: { userTracks: UserTrack[]; logs: Log[]; userId?: string; plan?: Plan; onUpgrade?: () => void }) {
   const { t, i18n } = useTranslation();
   const tn = (slug: string, name: string) => t(`tracks.${slug}.name`, { defaultValue: name });
   const tc = (cat: string) => t(`categories.${cat}`, { defaultValue: cat });
@@ -161,14 +162,21 @@ Start with "This week," and sign it "— Your Coach". Write like you actually kn
       <header>
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-display">{t("insights.title")}</h1>
         <p className="text-muted-foreground mt-1">{t("insights.subtitle")}</p>
-        <button onClick={generateLetter} disabled={letterLoading}
-          className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
-          {letterLoading ? (
-            <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />{t("insights.generating_letter")}</>
-          ) : (
-            <><Mail className="h-3.5 w-3.5" />{t("insights.weekly_letter")}</>
-          )}
-        </button>
+        {hasFeature(plan, 'weekly_letter') ? (
+          <button onClick={generateLetter} disabled={letterLoading}
+            className="mt-4 btn-chunk inline-flex items-center gap-2 rounded-full bg-foreground text-neutral-900 px-5 py-2.5 text-sm font-semibold disabled:opacity-60 transition">
+            {letterLoading ? (
+              <><span className="h-3.5 w-3.5 rounded-full border-2 border-background/30 border-t-background animate-spin" />{t("insights.generating_letter")}</>
+            ) : (
+              <><Mail className="h-3.5 w-3.5" />{t("insights.weekly_letter")}</>
+            )}
+          </button>
+        ) : (
+          <button onClick={() => onUpgrade?.()}
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-violet-500/40 bg-violet-500/10 text-violet-300 px-5 py-2.5 text-sm font-semibold transition hover:bg-violet-500/20">
+            <Lock className="h-3.5 w-3.5" />{t("insights.weekly_letter")} · Premium
+          </button>
+        )}
       </header>
 
       {/* Empty state */}

@@ -14,7 +14,7 @@ import { supabase } from "./supabase";
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from './types';
 import { HomePage } from './pages/HomePage';
 import * as db from "./db";
-import { Plan, shouldShowPaywall } from './plans';
+import { Plan, shouldShowPaywall, getLimit, hasFeature } from './plans';
 import { PaywallModal } from './components/PaywallModal';
 import { ReEntryOverlay, StreakRecoveryOverlay, SOSOverlay, SOSButton, CertModal, MilestoneOverlay } from './components/Overlays';
 import { CheckInRichModal } from './components/CheckInModal';
@@ -2117,6 +2117,7 @@ export function ElevateApp() {
   const [cert, setCert] = useState<number | null>(null);
   const [shields, setShields] = useState<number>(() => lsLoad<number>('forge-shields', 0));
   const [plan, setPlan] = useState<Plan>('free');
+  const [paywallOpen, setPaywallOpen] = useState(false);
   const [user, setUser] = useState<ElevateUser | null>(lsLoad(LS_USER, null));
   const [reengagement, setReengagement] = useState<{ daysMissed: number; trackName: string } | null>(null);
   const [trackCompletion, setTrackCompletion] = useState<{ trackName: string } | null>(null);
@@ -2172,6 +2173,12 @@ export function ElevateApp() {
   }, [supabaseId]);
 
   const addTrack = useCallback((trackDef: typeof ALL_TRACKS[0], targetDays = 30) => {
+    const already = tracks.some(t => t.track_id === trackDef.id);
+    const maxTracks = getLimit(plan, 'max_tracks', user?.createdAt);
+    if (!already && maxTracks !== 0 && tracks.length >= maxTracks) {
+      setPaywallOpen(true);
+      return;
+    }
     setTracks(prev => {
       if (prev.some(t => t.track_id === trackDef.id)) return prev;
       const next: UserTrack[] = [...prev, {
@@ -2185,7 +2192,7 @@ export function ElevateApp() {
       if (supabaseId) db.saveTracks(supabaseId, next).catch(() => {});
       return next;
     });
-  }, [supabaseId]);
+  }, [supabaseId, plan, tracks, user?.createdAt]);
 
   const removeTrack = useCallback((trackId: string) => {
     setTracks(prev => {
@@ -2197,13 +2204,14 @@ export function ElevateApp() {
   }, [supabaseId]);
 
   const setVacation = useCallback((trackId: string, until: string) => {
+    if (until && !hasFeature(plan, 'vacation_mode', user?.createdAt)) { setPaywallOpen(true); return; }
     setTracks(prev => {
       const next = prev.map(t => t.id === trackId ? { ...t, vacation_until: until || null } : t);
       lsSave(LS_TRACKS, next);
       if (supabaseId) db.saveTracks(supabaseId, next).catch(() => {});
       return next;
     });
-  }, [supabaseId]);
+  }, [supabaseId, plan, user?.createdAt]);
 
   const restartTrack = useCallback((trackId: string) => {
     setTracks(prev => {
@@ -2244,7 +2252,7 @@ export function ElevateApp() {
         if (ut.id !== userTrackId || ut.last_log_date === t) return ut;
         const rawStreak = ut.last_log_date === y ? (ut.current_streak || 0) + 1 : 1;
         let newStreak = rawStreak;
-        if (rawStreak === 1 && (ut.current_streak || 0) > 1) {
+        if (rawStreak === 1 && (ut.current_streak || 0) > 1 && hasFeature(plan, 'streak_shield')) {
           const shieldCount = lsLoad<number>('forge-shields', 0);
           if (shieldCount > 0) {
             const used = shieldCount - 1;
@@ -2275,12 +2283,14 @@ export function ElevateApp() {
             setTimeout(() => setCert(newStreak), 900);
           }
         }
-        // Earn a shield every 10 consecutive days
-        if (newStreak % 10 === 0) {
+        // Earn a shield every 10 consecutive days (plan-gated, capped per plan)
+        if (newStreak % 10 === 0 && hasFeature(plan, 'streak_shield')) {
           const sKey = `forge-shield-${ut.id}-${newStreak}`;
-          if (!lsLoad<boolean>(sKey, false)) {
+          const shieldCap = getLimit(plan, 'streak_shields_max');
+          const current = lsLoad<number>('forge-shields', 0);
+          if (!lsLoad<boolean>(sKey, false) && (shieldCap === 0 || current < shieldCap)) {
             lsSave(sKey, true);
-            const earned = lsLoad<number>('forge-shields', 0) + 1;
+            const earned = current + 1;
             lsSave('forge-shields', earned);
             setTimeout(() => setShields(earned), 300);
           }
@@ -2320,7 +2330,7 @@ export function ElevateApp() {
         return current;
       });
     }
-  }, [supabaseId]);
+  }, [supabaseId, plan]);
 
   const handleViewForCheckIn = useCallback((t: UserTrack) => {
     setPendingCheckIn(true);
@@ -2389,13 +2399,14 @@ export function ElevateApp() {
     setScreen("landing");
   }, []);
   const handleChangeTheme = useCallback(async (newTheme: string) => {
+    if (newTheme !== 'garden' && !hasFeature(plan, 'all_themes', user?.createdAt)) { setPaywallOpen(true); return; }
     localStorage.setItem('forge_island_theme', newTheme);
     localStorage.setItem('forge_island_theme_changed_at', String(Date.now()));
     setUser(u => u ? { ...u, islandTheme: newTheme } : u);
     if (supabaseId) {
       await supabase.from('profiles').update({ island_theme: newTheme }).eq('id', supabaseId);
     }
-  }, [supabaseId]);
+  }, [supabaseId, plan, user?.createdAt]);
 
   // Handle auth state changes.
   // SIGNED_IN: fires after OAuth code exchange completes (may race with useEffect).
@@ -2687,6 +2698,8 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           onVacation={setVacation}
           onRestart={restartTrack}
           userId={supabaseId}
+          plan={plan}
+          onUpgrade={() => setPaywallOpen(true)}
         />
       </Suspense>
     );
@@ -2717,7 +2730,7 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
           />
         )}
       </AnimatePresence>
-      <SOSButton onClick={() => setShowSOS(true)} />
+      <SOSButton onClick={() => { if (hasFeature(plan, 'sos_button', user?.createdAt)) setShowSOS(true); else setPaywallOpen(true); }} />
       {showInstallBanner && (
         <motion.div className="fixed bottom-20 left-4 right-4 z-40 rounded-2xl bg-muted border border-border p-4 flex items-center gap-3 shadow-2xl"
           initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}>
@@ -2736,16 +2749,17 @@ db.loadUserData(uid).then(({ profile, tracks: dbTracks, logs: dbLogs }) => {
       )}
       <DashboardLayout currentPage={page} onNavigate={setPage}>
         {page === "home" && (
-          <HomePage user={user!} tracks={tracks} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
+          <HomePage user={user!} tracks={tracks} plan={plan} onCheckIn={checkIn} onNavigate={setPage} onUpdateUser={updateUser} onView={setSelectedTrack} onViewForCheckIn={handleViewForCheckIn} onVacation={setVacation} />
         )}
         {page === "tracks" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><TracksPage userTracks={tracks} onAdd={(t, days) => addTrack(t, days)} onView={setSelectedTrack} onRemove={removeTrack} /></Suspense>}
-        {page === "insights" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} /></Suspense>}
-        {page === "settings" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks}/></Suspense>}
-            {user && shouldShowPaywall(plan, user.createdAt) && (
+        {page === "insights" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><InsightsPage userTracks={tracks} logs={logs} userId={supabaseId || undefined} plan={plan} onUpgrade={() => setPaywallOpen(true)} /></Suspense>}
+        {page === "settings" && <Suspense fallback={<div className="flex items-center justify-center py-24"><Spinner /></div>}><SettingsPage userName={user?.name ?? ""} onSignOut={handleSignOut} onUpdateName={name => updateUser({ name })}  islandTheme={user?.islandTheme ?? 'garden'} onChangeTheme={handleChangeTheme} shields={shields} tracks={tracks} plan={plan} onUpgrade={() => setPaywallOpen(true)}/></Suspense>}
+            {user && (paywallOpen || shouldShowPaywall(plan, user.createdAt)) && (
         <PaywallModal
           currentPlan={plan}
           accountCreatedAt={user.createdAt}
-          onPlanChange={(p) => setPlan(p)}
+          onDismiss={() => setPaywallOpen(false)}
+          onPlanChange={(p) => { setPlan(p); setPaywallOpen(false); }}
         />
       )}
 </DashboardLayout>

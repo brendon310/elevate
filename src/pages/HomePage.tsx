@@ -9,6 +9,7 @@ import {
 import confetti from "canvas-confetti";
 import { supabase } from "../supabase";
 import { CoachNudge, useCoachNudge } from '../components/CoachNudge';
+import { Plan, hasFeature } from '../plans';
 import { useTranslation } from 'react-i18next';
 import type { BeforeInstallPromptEvent, Screen, AppPage, ElevateUser, UserTrack, Log, OnboardingTrack, ElevateAuth, Journey, JourneyDay, ChatMessage, CommunityPost } from '../types';
 
@@ -748,7 +749,8 @@ function MissedAccessModal({ tracks, onClose }: { tracks: UserTrack[]; onClose: 
   );
 }
 
-export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn, onVacation }: {
+export function HomePage({ user, tracks, plan, onCheckIn, onNavigate, onUpdateUser, onView, onViewForCheckIn, onVacation }: {
+  plan: Plan;
   user: ElevateUser;
   tracks: UserTrack[];
   onCheckIn: (id: string) => void;
@@ -831,7 +833,7 @@ export function HomePage({ user, tracks, onCheckIn, onNavigate, onUpdateUser, on
       {tracks.length > 0 && (
         <>
         <ForestMomentum tracks={tracks} user={user} islandTheme={islandTheme} isPaused={isPaused} />
-        <SavingsCard tracks={tracks} />
+        {hasFeature(plan, 'savings_calculator') && <SavingsCard tracks={tracks} />}
         </>
       )}
 

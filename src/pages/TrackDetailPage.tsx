@@ -4,6 +4,7 @@ import { Sun } from 'lucide-react';
 import type { UserTrack, Journey, JourneyDay } from '../types';
 import * as db from '../db';
 import { JourneyOnboarding, JourneyView } from './JourneyPage';
+import type { Plan } from '../plans';
 
 const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
@@ -58,7 +59,7 @@ function SnowfallBackground({ count = 45, speed = 1 }: { count?: number; speed?:
   );
 }
 
-function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation, onRestart, userId }: {
+function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVacation, onRestart, userId, plan = 'free', onUpgrade }: {
   track: UserTrack;
   onBack: () => void;
   showCheckInHint?: boolean;
@@ -66,6 +67,8 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
   onVacation?: (trackId: string, until: string) => void;
   onRestart?: (trackId: string) => void;
   userId?: string | null;
+  plan?: Plan;
+  onUpgrade?: () => void;
 }) {
   const { t } = useTranslation();
   const { i18n } = useTranslation();
@@ -125,7 +128,7 @@ function TrackDetailPage({ track, onBack, showCheckInHint, onTrackCheckIn, onVac
 
   const inner = !journey || days.length === 0
     ? <JourneyOnboarding track={track} onStarted={handleStarted} userId={userId} />
-    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} onRestart={onRestart} userId={userId} />;
+    : <JourneyView track={track} journey={journey} days={days} onBack={onBack} showCheckInHint={showCheckInHint} onTrackCheckIn={onTrackCheckIn} onRestart={onRestart} userId={userId} plan={plan} onUpgrade={onUpgrade} />;
 
   return (
     <div className="relative min-h-screen">
