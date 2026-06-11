@@ -27,42 +27,48 @@ DO $$ BEGIN
   END IF;
 END $$;
 
+-- Columns aligned with src/db.phase5.ts (requester_id/partner_id, share_mood)
 CREATE TABLE IF NOT EXISTS accountability_pairs (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  partner_user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  requester_id    uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  partner_id      uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   partner_email   text NOT NULL,
   status          text DEFAULT 'pending',
   share_streak    boolean DEFAULT true,
-  share_progress  boolean DEFAULT true,
+  share_mood      boolean DEFAULT true,
   invite_token    text UNIQUE DEFAULT encode(gen_random_bytes(18), 'base64'),
   created_at      timestamptz DEFAULT now() NOT NULL
 );
 ALTER TABLE accountability_pairs ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='accountability_pairs' AND policyname='Users manage own pairs') THEN
-    CREATE POLICY "Users manage own pairs" ON accountability_pairs FOR ALL USING (user_id = auth.uid() OR partner_user_id = auth.uid());
+    CREATE POLICY "Users manage own pairs" ON accountability_pairs FOR ALL
+      USING (requester_id = auth.uid() OR partner_id = auth.uid())
+      WITH CHECK (requester_id = auth.uid() OR partner_id = auth.uid());
   END IF;
 END $$;
 
+-- Columns aligned with src/db.phase5.ts (track_id/milestone_days/card_downloaded)
 CREATE TABLE IF NOT EXISTS milestones_reached (
-  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id     uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  track_slug  text NOT NULL,
-  milestone_n integer NOT NULL,
-  reached_at  timestamptz DEFAULT now() NOT NULL,
-  shared_at   timestamptz,
-  UNIQUE(user_id, track_slug, milestone_n)
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  track_id        text NOT NULL,
+  milestone_days  integer NOT NULL,
+  reached_at      timestamptz DEFAULT now() NOT NULL,
+  card_downloaded boolean DEFAULT false,
+  UNIQUE(user_id, track_id, milestone_days)
 );
 ALTER TABLE milestones_reached ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='milestones_reached' AND policyname='Users manage own milestones') THEN
-    CREATE POLICY "Users manage own milestones" ON milestones_reached FOR ALL USING (user_id = auth.uid());
+    CREATE POLICY "Users manage own milestones" ON milestones_reached FOR ALL
+      USING (user_id = auth.uid())
+      WITH CHECK (user_id = auth.uid());
   END IF;
 END $$;
 
 CREATE INDEX IF NOT EXISTS idx_checkins_trigger   ON check_ins(user_id, trigger_label) WHERE trigger_label IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_checkins_mood      ON check_ins(user_id, mood) WHERE mood IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_nudges_user_unread ON coach_nudges(user_id, created_at DESC) WHERE dismissed_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_pairs_user         ON accountability_pairs(user_id);
-CREATE INDEX IF NOT EXISTS idx_milestones_user    ON milestones_reached(user_id, track_slug);-- test
+CREATE INDEX IF NOT EXISTS idx_pairs_user         ON accountability_pairs(requester_id);
+CREATE INDEX IF NOT EXISTS idx_milestones_user    ON milestones_reached(user_id, track_id);
