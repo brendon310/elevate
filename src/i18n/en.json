@@ -338,6 +338,7 @@
     "message_coach": "Message {{name}}…",
     "messages_left": "{{n}} messages left this month",
     "coach_privacy": "This stays between you and your coach. Always.",
+    "coach_invalid": "Write a real message — your coach is here to actually help you.",
     "coach_upgrade": "Upgrade for more messages",
     "community_readonly": "On the Free plan the community is read-only.",
     "community_readonly_cta": "Upgrade",

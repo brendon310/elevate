@@ -338,6 +338,7 @@
     "message_coach": "Messaggio a {{name}}…",
     "messages_left": "{{n}} messaggi rimasti questo mese",
     "coach_privacy": "Questo rimane tra te e il tuo coach. Sempre.",
+    "coach_invalid": "Scrivi un messaggio vero — il coach è qui per aiutarti davvero.",
     "coach_upgrade": "Fai l'upgrade per più messaggi",
     "community_readonly": "Con il piano Free la community è in sola lettura.",
     "community_readonly_cta": "Fai l'upgrade",

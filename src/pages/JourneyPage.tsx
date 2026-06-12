@@ -16,6 +16,7 @@ const LS_DAYS = (slug: string) => `forge-days-${slug}`;
 const LS_JOURNEY = (slug: string) => `forge-journey-${slug}`;
 const LS_CHAT = (slug: string) => `forge-chat-${slug}`;
 const LS_COACH_USED = (month: string) => `forge-coach-used-${month}`;
+const LS_CHAT_LANG = (slug: string) => `forge-chat-lang-${slug}`;
 // Community content moderation — stems catch conjugations and variants
 const COACH_PROMPT_KEYS: Record<string, string[]> = {
   trainer:   ["coach.prompts.trainer_1","coach.prompts.trainer_2","coach.prompts.trainer_3","coach.prompts.trainer_4"],
@@ -581,6 +582,7 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => lsLoad<ChatMessage[]>(LS_CHAT(track.slug), []));
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [chatWarn, setChatWarn] = useState(0);
   // Coach quota: monthly user-message allowance by plan (0 = unlimited), counted globally across tracks
   const thisMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
   const coachLimit = getLimit(plan, "coach_messages_month");
@@ -619,15 +621,23 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
       const withOpening = [openingMsg];
       setChatMessages(withOpening);
       lsSave(LS_CHAT(track.slug), withOpening);
+      localStorage.setItem(LS_CHAT_LANG(track.slug), i18n.language);
       if (userId) db.saveCoachMessage(userId, { id: openingMsg.id, track_slug: track.slug, role: "assistant", content: openingMsg.content, created_at: openingMsg.createdAt }).catch(() => {});
-    } else if (chatMessages.length === 1 && chatMessages[0].role === "assistant" && chatMessages[0].content !== opener) {
-      // The only message is an old opener (e.g. English from a previous session):
-      // swap it for the localized one. Real conversations (length > 1) are untouched.
-      setCoachOpening(true);
-      const replaced = [{ ...chatMessages[0], content: opener }];
-      setChatMessages(replaced);
-      lsSave(LS_CHAT(track.slug), replaced);
-      if (userId) db.saveCoachMessage(userId, { id: chatMessages[0].id, track_slug: track.slug, role: "assistant", content: opener, created_at: chatMessages[0].createdAt }).catch(() => {});
+    } else {
+      // Chat exists. If it was written in another language (or has no language
+      // marker — legacy accounts), swap the leading auto-opener (always index 0)
+      // for the localized one. User messages and real replies are untouched.
+      const chatLang = localStorage.getItem(LS_CHAT_LANG(track.slug));
+      if (chatLang !== i18n.language && chatMessages[0].role === "assistant" && chatMessages[0].content !== opener) {
+        setCoachOpening(true);
+        const replaced = [{ ...chatMessages[0], content: opener }, ...chatMessages.slice(1)];
+        setChatMessages(replaced);
+        lsSave(LS_CHAT(track.slug), replaced);
+        localStorage.setItem(LS_CHAT_LANG(track.slug), i18n.language);
+        if (userId) db.saveCoachMessage(userId, { id: chatMessages[0].id, track_slug: track.slug, role: "assistant", content: opener, created_at: chatMessages[0].createdAt }).catch(() => {});
+      } else if (!chatLang) {
+        localStorage.setItem(LS_CHAT_LANG(track.slug), i18n.language);
+      }
     }
   }, [activeTab, chatMessages.length, coachOpening]);
   const [milestoneDay, setMilestoneDay] = useState<number | null>(null);
@@ -814,12 +824,12 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
   const handleCheckIn = () => {
     let valid = true;
-    if (!checkInTask.trim()) {
+    if (!checkInTask.trim() || isInvalidAnswer(checkInTask)) {
       warnTaskIdx.current = (warnTaskIdx.current + 1) % 10;
       setWarnTaskKey(k => k + 1);
       valid = false;
     }
-    if (!checkInReflect.trim()) {
+    if (!checkInReflect.trim() || isInvalidAnswer(checkInReflect)) {
       warnReflectIdx.current = (warnReflectIdx.current + 1) % 10;
       setWarnReflectKey(k => k + 1);
       valid = false;
@@ -850,7 +860,17 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
 
 
   const sendChat = async () => {
-    if (!chatInput.trim() || coachLimitReached) return;
+    const txt = chatInput.trim();
+    if (!txt || coachLimitReached) return;
+    // Reject gibberish or pure-profanity messages (real sentences that merely
+    // CONTAIN strong words still pass — a coach must handle raw emotion).
+    const low = txt.toLowerCase();
+    const gibberish = txt.length < 2 || (txt.length > 5 && !/[aeiouàèéìòùáéíóúäöü]/i.test(txt));
+    const pureProfanity = txt.length < 25 && ANSWER_BANNED.some(w => low.includes(w));
+    if (gibberish || pureProfanity) {
+      setChatWarn(k => k + 1);
+      return;
+    }
     const used = coachUsed + 1;
     setCoachUsed(used);
     lsSave(LS_COACH_USED(thisMonth), used);
@@ -1179,15 +1199,29 @@ function JourneyView({ track, journey: initJourney, days: initDays, onBack, show
                   )}
                 </div>
               ) : (
+                <div>
                 <div className="flex gap-2">
-                  <input value={chatInput} onChange={e => setChatInput(e.target.value)}
+                  <input value={chatInput} onChange={e => { setChatInput(e.target.value); if (chatWarn > 0) setChatWarn(0); }}
                     onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
                     placeholder={t("journey.message_coach", { name: archetype.name })}
-                    className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                    className={`flex-1 rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors ${chatWarn > 0 ? "border-red-500" : "border-border"}`} />
                   <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
                     className="btn-chunk rounded-xl bg-foreground text-neutral-900 px-4 py-2 text-sm font-semibold disabled:opacity-40">
                     {t("common.send")}
                   </button>
+                </div>
+                <AnimatePresence mode="wait">
+                  {chatWarn > 0 && (
+                    <motion.p key={chatWarn}
+                      initial={{ opacity: 0, x: 0 }}
+                      animate={{ opacity: 1, x: [-5, 5, -4, 4, -2, 2, 0] }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="mt-1.5 text-xs text-red-500 font-medium px-1">
+                      {t("journey.coach_invalid")}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
                 </div>
               )}
               {!coachLimitReached && coachLimit > 0 && coachLimit - coachUsed <= 2 && (
